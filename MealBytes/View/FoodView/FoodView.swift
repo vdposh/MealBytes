@@ -81,7 +81,7 @@ struct FoodView: View {
                         
                         Section {
                             VStack {
-                                HStack(alignment: .center, spacing: 12) {
+                                HStack {
                                     nutrientBlockView(
                                         title: "Kcal",
                                         value: selectedServing.calories,
@@ -111,7 +111,7 @@ struct FoodView: View {
                                     .padding(.vertical, 10)
                                     .padding(.horizontal, 10)
                                 
-                                HStack(alignment: .center, spacing: 12) {
+                                HStack() {
                                     Button(action: {
                                         // Remove from Diary
                                     }) {
