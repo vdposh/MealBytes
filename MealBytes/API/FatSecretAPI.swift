@@ -15,11 +15,16 @@ enum FatSecretAPI {
 
 extension FatSecretAPI: TargetType {
     var baseURL: URL {
-        URL(string: "https://platform.fatsecret.com/rest/server.api")!
+        URL(string: "https://platform.fatsecret.com/rest")!
     }
     
     var path: String {
-        ""
+        switch self {
+        case .searchFoods:
+            "/foods/search/v1"
+        case .getFoodDetails:
+            "/food/v4"
+        }
     }
     
     var method: Moya.Method {
@@ -27,27 +32,31 @@ extension FatSecretAPI: TargetType {
     }
     
     var task: Task {
+        let parameters: [String: Any]
+        
         switch self {
         case .searchFoods(let query):
-            return .requestParameters(parameters: [
-                "method": "foods.search",
-                "format": "json",
+            parameters = [
+                "format": format,
                 "search_expression": query
-            ], encoding: URLEncoding.queryString)
+            ]
+            
         case .getFoodDetails(let foodID):
-            return .requestParameters(parameters: [
-                "method": "food.get.v2",
-                "format": "json",
+            parameters = [
+                "format": format,
                 "food_id": foodID
-            ], encoding: URLEncoding.queryString)
+            ]
         }
+        
+        return .requestParameters(parameters: parameters,
+                                  encoding: URLEncoding.queryString)
     }
     
     var headers: [String: String]? {
-        ["Authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEwOEFEREZGRjZBNDkxOUFBNDE4QkREQTYwMDcwQzE5NzNDRjMzMUUiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJFSXJkX19ha2tacWtHTDNhWUFjTUdYUFBNeDQifQ.eyJuYmYiOjE3NDEyNTY5NTMsImV4cCI6MTc0MTM0MzM1MywiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoiYmFzaWMiLCJjbGllbnRfaWQiOiJiOWYxODNlNjkxYTY0ZTU0YjExODFhOGNkYWUxOWE0ZiIsInNjb3BlIjpbImJhc2ljIl19.pFa2AAcII52DR4a5fpBzhDnaKu0mSXpV45GJbqPMuGsAWJkOMGnDt5oyhe2vACBgqhT5JtSuZIzgQudD-p5EDwxJDzEI-s9wEOfZhqErM3kMUbj5daxdlvpO6hnTW4owJVMSw7C5KcWMdIT5b-jJeE_Rb4tisj8xRI5ebrj-RZc8GpFaRnpAiUIqrxPsSq25hjR5Rf2TBtcSdUA9DC-HfwDpPmoVinQluD-2GJrGwEPwKlKPTOpovDKIBNxc50bbJZvjTEbn-IpWtGZULH0eHMHO_kzTD1Ba3jNAmdUhF0AU-CQkGs5qmYiDBfyAj-HtLSrToDJcysVcmuBhnLDxIk3pxBzZ6KzK23lke9naeDnVQMQ9OD1aAS2nzfbGLHXKbamRiK07raDw3T6SArgHmp5MWLq-PFbXsFobqwglfGIN6GUOiyLoRVL8qv5ulJ0fcG_1WvDGlxiFx4iFEBwv3KRFFpznfoD50ZYns6KKA6QRgH5gSEG3R-8OTcYRx9hq9bKjjP_wmooUzNndCAY-czNq3Bwwv2aUE4qseIXrwS9SlKRA11kZMf72CR_sAEUCJ1t0lMarZ5Y61nBr6nNGfC_s2E4pDVjnIldCWdBFt1WwZsknyWaLsF2vN1pi8wWzIztw4JmXG4xbHPqIb2BYF4xZvLTayFYDb4s6gXNSROc"]
+        ["Authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEwOEFEREZGRjZBNDkxOUFBNDE4QkREQTYwMDcwQzE5NzNDRjMzMUUiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJFSXJkX19ha2tacWtHTDNhWUFjTUdYUFBNeDQifQ.eyJuYmYiOjE3NDEzNTYxMjgsImV4cCI6MTc0MTQ0MjUyOCwiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoiYmFzaWMiLCJjbGllbnRfaWQiOiJiOWYxODNlNjkxYTY0ZTU0YjExODFhOGNkYWUxOWE0ZiIsInNjb3BlIjpbImJhc2ljIl19.PaiNETHsOOxPaUCKxN0OQtLredef9r3j_KwWuAyyFfbGhb8zHpAkhWIOVN_T6QibX4k7y2asV4GISyUiV04PWFWBIe5WEqwOeAVNc7-h_7MrTmZsqPikFBiEfjFKnlFi8Vdg1NXf4beO2GurDP3U9FMXJVpSlocR-jzla5H1u4krReH82q6GTaD_SQzLdFpapOoiJufSaXDyzG4d44Q88iuPDd_fJ2AwXJb6LMh7dGOkT0g8YKBPOYRijt80a2bvzuS6TLY0Qp1JAdrMXsg7VYs6QgecRQoAtUleJ_zhaXgkUaOVX1hnQB5a5Y3V93nhkcVvrKtcp2sUgTgmEQlCswsjeOwN7gp8hLTLLj1Fnhar9YqO-EXOyGV_bg7vXE-XR5azNW3GASyPK5eZeikDy8WWAiiZ7GLXlFcAE9raZ4VDoF7fygOQjpisKxsXg49r2nESzpoyYUuMG0bbRimcEMKfoACPHStbSDD3mPiu6t4wnS9ytoWSSMRPJg0ch3Yp-3eabx2621OUbut8bh451QXVLCxO4lZOK0zwW56YByzPxqpF9Z9nPx-5rUxLnNRRXIUiIlTgLSJHnEoTKqGw0CBOEkrUWG-6soS5Esz19eyRmTiB7brevzoRJ73cwQ7Cb4GRzrkWn-GWd1ZnxCOcXsz7wRGev0OJJ3I8kMGLFuQ"]
     }
     
-    var sampleData: Data {
-        return Data()
+    var format: String {
+        "json"
     }
 }

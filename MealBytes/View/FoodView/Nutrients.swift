@@ -13,23 +13,23 @@ struct NutrientBlockView: View {
     let unit: String
     
     var body: some View {
-        VStack {
+        VStack() {
             Text(title)
                 .font(.subheadline)
                 .foregroundColor(.white)
+                .padding(.vertical, 1)
             HStack {
                 Text(Formatter.formattedValue(value,
                                               unit: unit,
                                               roundToInt: true,
                                               includeSpace: false))
                     .lineLimit(1)
-                    .font(.headline)
                     .foregroundColor(.white)
             }
         }
-        .frame(width: 80, height: 77)
+        .frame(width: 79, height: 70)
         .background(.green)
-        .cornerRadius(15)
+        .cornerRadius(12)
     }
 }
 

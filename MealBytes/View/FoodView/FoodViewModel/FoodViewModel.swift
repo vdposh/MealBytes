@@ -45,8 +45,8 @@ final class FoodViewModel: ObservableObject {
     //если выбрана порция - ставится 1, если выбраны г или мг - 100
     func setAmount(for serving: Serving?) {
         if let serving {
-            if serving.measurement_description == "g" ||
-                serving.measurement_description == "ml" {
+            if serving.measurementDescription == "g" ||
+                serving.measurementDescription == "ml" {
                 self.amount = "100"
             } else {
                 self.amount = "1"
@@ -58,15 +58,15 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing = selectedServing else { return 1 }
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
-        return Formatter.calculateAmountValue(String(amountValue),
-                                              measurementDescription:
-            selectedServing.measurement_description ?? "")
+        return Formatter.calculateAmountValue(
+            String(amountValue),
+            measurementDescription: selectedServing.measurementDescription)
     }
     //размер порции для sheet
     func servingDescription(for serving: Serving) -> String {
-        let description = serving.measurement_description ?? ""
-        let metricAmount = Int(serving.metric_serving_amount ?? 0)
-        let metricUnit = serving.metric_serving_unit ?? ""
+        let description = serving.measurementDescription
+        let metricAmount = Int(serving.metricServingAmount)
+        let metricUnit = serving.metricServingUnit
         
         if description == "g" || description == "ml" ||
             description.contains("serving (\(metricAmount)g") {

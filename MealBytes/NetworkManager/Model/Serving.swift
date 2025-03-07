@@ -8,71 +8,77 @@
 import SwiftUI
 
 struct Serving: Decodable, Hashable {
-    let fat: Double?
-    let saturated_fat: Double?
-    let monounsaturated_fat: Double?
-    let polyunsaturated_fat: Double?
-    let carbohydrate: Double?
-    let sugar: Double?
-    let fiber: Double?
-    let protein: Double?
-    let calories: Double?
-    let sodium: Double?
-    let cholesterol: Double?
-    let potassium: Double?
-    let measurement_description: String?
-    let metric_serving_amount: Double?
-    let metric_serving_unit: String?
-
+    let fat: Double
+    let saturatedFat: Double
+    let monounsaturatedFat: Double
+    let polyunsaturatedFat: Double
+    let carbohydrate: Double
+    let sugar: Double
+    let fiber: Double
+    let protein: Double
+    let calories: Double
+    let sodium: Double
+    let cholesterol: Double
+    let potassium: Double
+    let measurementDescription: String
+    let metricServingAmount: Double
+    let metricServingUnit: String
+    
     enum CodingKeys: String, CodingKey {
-        case fat = "fat"
-        case saturated_fat = "saturated_fat"
-        case monounsaturated_fat = "monounsaturated_fat"
-        case polyunsaturated_fat = "polyunsaturated_fat"
-        case carbohydrate = "carbohydrate"
-        case sugar = "sugar"
-        case fiber = "fiber"
-        case protein = "protein"
-        case calories = "calories"
-        case sodium = "sodium"
-        case cholesterol = "cholesterol"
-        case potassium = "potassium"
-        case measurement_description = "measurement_description" //описание порции
-        case metric_serving_amount = "metric_serving_amount" //количество г/мл в порции
-        case metric_serving_unit = "metric_serving_unit" //г или мг ТОЛЬКО у порций
+        case fat
+        case saturated_fat
+        case monounsaturated_fat
+        case polyunsaturated_fat
+        case carbohydrate
+        case sugar
+        case fiber
+        case protein
+        case calories
+        case sodium
+        case cholesterol
+        case potassium
+        case measurement_description // описание порции
+        case metric_serving_amount // количество г/мл в порции
+        case metric_serving_unit // г или мг ТОЛЬКО у порций
     }
-
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        fat = try? Double(container
-            .decodeIfPresent(String.self, forKey: .fat) ?? "")
-        saturated_fat = try? Double(container
-            .decodeIfPresent(String.self, forKey: .saturated_fat) ?? "")
-        monounsaturated_fat = try? Double(container
-            .decodeIfPresent(String.self, forKey: .monounsaturated_fat) ?? "")
-        polyunsaturated_fat = try? Double(container
-            .decodeIfPresent(String.self, forKey: .polyunsaturated_fat) ?? "")
-        carbohydrate = try? Double(container
-            .decodeIfPresent(String.self, forKey: .carbohydrate) ?? "")
-        sugar = try? Double(container
-            .decodeIfPresent(String.self, forKey: .sugar) ?? "")
-        fiber = try? Double(container
-            .decodeIfPresent(String.self, forKey: .fiber) ?? "")
-        protein = try? Double(container
-            .decodeIfPresent(String.self, forKey: .protein) ?? "")
-        calories = try? Double(container
-            .decodeIfPresent(String.self, forKey: .calories) ?? "")
-        sodium = try? Double(container
-            .decodeIfPresent(String.self, forKey: .sodium) ?? "")
-        cholesterol = try? Double(container
-            .decodeIfPresent(String.self, forKey: .cholesterol) ?? "")
-        potassium = try? Double(container
-            .decodeIfPresent(String.self, forKey: .potassium) ?? "")
-        measurement_description = try? container
-            .decode(String.self, forKey: .measurement_description)
-        metric_serving_amount = try? Double(container
-            .decodeIfPresent(String.self, forKey: .metric_serving_amount) ?? "")
-        metric_serving_unit = try? container
-            .decode(String.self, forKey: .metric_serving_unit)
+        fat = Self.decodeDouble(container, forKey: .fat)
+        saturatedFat = Self.decodeDouble(container, forKey:
+                .saturated_fat)
+        monounsaturatedFat = Self.decodeDouble(container, forKey:
+                .monounsaturated_fat)
+        polyunsaturatedFat = Self.decodeDouble(container, forKey:
+                .polyunsaturated_fat)
+        carbohydrate = Self.decodeDouble(container, forKey:
+                .carbohydrate)
+        sugar = Self.decodeDouble(container, forKey:
+                .sugar)
+        fiber = Self.decodeDouble(container, forKey:
+                .fiber)
+        protein = Self.decodeDouble(container, forKey:
+                .protein)
+        calories = Self.decodeDouble(container, forKey:
+                .calories)
+        sodium = Self.decodeDouble(container, forKey:
+                .sodium)
+        cholesterol = Self.decodeDouble(container, forKey:
+                .cholesterol)
+        potassium = Self.decodeDouble(container, forKey:
+                .potassium)
+        measurementDescription = try container.decode(String.self, forKey:
+                .measurement_description)
+        metricServingAmount = Self.decodeDouble(container, forKey:
+                .metric_serving_amount)
+        metricServingUnit = try container.decode(String.self, forKey:
+                .metric_serving_unit)
     }
+    
+    private static func decodeDouble(
+        _ container: KeyedDecodingContainer<CodingKeys>,
+        forKey key: CodingKeys) -> Double {
+            (try? Double(container.decodeIfPresent(String.self,
+                                                   forKey: key) ?? "")) ?? 0
+        }
 }

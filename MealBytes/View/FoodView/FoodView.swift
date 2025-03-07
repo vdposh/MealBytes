@@ -107,11 +107,9 @@ struct FoodView: View {
                                         amountValue: amountValue
                                     )
                                 }
-                                Divider()
-                                    .padding(.vertical, 10)
-                                    .padding(.horizontal, 10)
+                                .padding(.vertical, 12)
                                 
-                                HStack() {
+                                HStack {
                                     Button(action: {
                                         // Remove from Diary
                                     }) {
@@ -121,7 +119,7 @@ struct FoodView: View {
                                             .background(.red)
                                             .foregroundColor(.white)
                                             .font(.headline)
-                                            .cornerRadius(15)
+                                            .cornerRadius(12)
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
@@ -137,7 +135,7 @@ struct FoodView: View {
                                                 .green.opacity(0.9))
                                             .foregroundColor(.white)
                                             .font(.headline)
-                                            .cornerRadius(15)
+                                            .cornerRadius(12)
                                     }
                                     .disabled(!viewModel
                                         .isAddToDiaryButtonEnabled())
@@ -145,7 +143,6 @@ struct FoodView: View {
                                 }
                             }
                             .listRowBackground(Color.clear)
-                            .padding(.top, 10)
                         }
                         
                         Section(header: Text("Detailed Information")) {
@@ -157,8 +154,8 @@ struct FoodView: View {
                             )
                             nutrientDetailRow(
                                 title: "Serving size",
-                                value: selectedServing.metric_serving_amount,
-                                unit: selectedServing.metric_serving_unit ?? "",
+                                value: selectedServing.metricServingAmount,
+                                unit: selectedServing.metricServingUnit,
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
@@ -170,21 +167,21 @@ struct FoodView: View {
                             )
                             nutrientDetailRow(
                                 title: "Saturated Fat",
-                                value: selectedServing.saturated_fat,
+                                value: selectedServing.saturatedFat,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
                             nutrientDetailRow(
                                 title: "Monounsaturated Fat",
-                                value: selectedServing.monounsaturated_fat,
+                                value: selectedServing.monounsaturatedFat,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
                             nutrientDetailRow(
                                 title: "Polyunsaturated Fat",
-                                value: selectedServing.polyunsaturated_fat,
+                                value: selectedServing.polyunsaturatedFat,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
@@ -271,8 +268,8 @@ struct FoodView: View {
             Button(viewModel.servingDescription(for: serving)) {
                 viewModel.selectedServing = serving
                 viewModel.setAmount(for: serving)
-                unit = (serving.measurement_description == "g" ||
-                        serving.measurement_description == "ml") ?
+                unit = (serving.measurementDescription == "g" ||
+                        serving.measurementDescription == "ml") ?
                     .grams : .servings
             }
         }
