@@ -8,33 +8,33 @@
 import SwiftUI
 import Combine
 
-// ЧЕРНОВИК для перехода в FoodView
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
     
     var body: some View {
         NavigationStack {
             VStack {
-                List(viewModel.foods, id: \.food_id) { food in
-                    NavigationLink(destination: FoodView(food: food)) {
-                        Text(food.food_name)
+                if viewModel.errorMessage != nil {
+                    ContentUnavailableView.search(text: "\(viewModel.query)")
+                } else {
+                    List(viewModel.foods, id: \.food_id) { food in
+                        NavigationLink(destination: FoodView(food: food)) {
+                            Text(food.food_name)
+                        }
                     }
-                }
-                .listStyle(.plain)
-                .searchable(text: $viewModel.query)
-                .onChange(of: viewModel.query) {_, newValue in
-                    viewModel.searchFoods(newValue)
+                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Search Products")
+            .searchable(text: $viewModel.query)
+            .onChange(of: viewModel.query) { _, newValue in
+                viewModel.searchFoods(newValue)
+            }
         }
         .accentColor(.customGreen)
-        .alert(item: $viewModel.errorMessage) { error in
-            Alert(
-                title: Text(error.title),
-                message: Text(error.message),
-                dismissButton: .default(Text("OK"))
-            )
-        }
     }
+}
+
+#Preview {
+    SearchView()
 }

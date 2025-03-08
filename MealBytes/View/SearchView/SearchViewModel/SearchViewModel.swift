@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-@MainActor
+//@MainActor
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var query: String = ""
@@ -20,6 +20,7 @@ final class SearchViewModel: ObservableObject {
         self.networkManager = networkManager
     }
     
+    @MainActor
     func searchFoods(_ query: String) {
         if query.isEmpty {
             foods = []
@@ -30,12 +31,17 @@ final class SearchViewModel: ObservableObject {
             do {
                 let result = try await networkManager.searchFoods(query: query)
                 self.foods = result
+                self.errorMessage = nil
             } catch {
-                if let appError = error as? AppErrorType,
-                   appError == .networkError {
-                    self.errorMessage = AppError(error: appError)
-                }
+                self.errorMessage = AppError(
+                    title: "Unknown Error",
+                    message: error.localizedDescription
+                )
             }
         }
     }
+}
+
+#Preview {
+    SearchView()
 }

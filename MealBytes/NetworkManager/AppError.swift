@@ -12,14 +12,14 @@ class AppError: Identifiable, ObservableObject {
     let title: String
     let message: String
 
-    init(error: Error) {
-        if let appError = error as? AppErrorType {
-            self.title = "Error"
-            self.message = appError.errorDescription
-        } else {
-            self.title = "Unknown Error"
-            self.message = error.localizedDescription
-        }
+    init(title: String, message: String) {
+        self.title = title
+        self.message = message
+    }
+
+    init(error: AppErrorType) {
+        self.title = "Error"
+        self.message = error.errorDescription
     }
 }
 

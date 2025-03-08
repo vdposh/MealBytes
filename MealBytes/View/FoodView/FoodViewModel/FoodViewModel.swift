@@ -41,10 +41,15 @@ final class FoodViewModel: ObservableObject {
                 setAmount(for: self.selectedServing)
             }
         } catch {
-            self.errorMessage = AppError(error: error)
+            if let appError = error as? AppErrorType {
+                self.errorMessage = AppError(error: appError)
+            } else {
+                self.errorMessage = AppError(title: "Unknown Error",
+                                             message: error.localizedDescription)
+            }
         }
     }
-    
+
     // MARK: - Serving Selection and Amount Setting
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
