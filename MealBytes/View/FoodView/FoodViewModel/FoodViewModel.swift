@@ -12,11 +12,11 @@ final class FoodViewModel: ObservableObject {
     @Published var foodDetail: FoodDetail?
     @Published var selectedServing: Serving?
     @Published var amount: String = ""
-    @Published var errorMessage: IdentifiableString?
+    @Published var errorMessage: AppError?
     @Published var showActionSheet = false
+    @Published var unit: MeasurementUnit = .grams
     
     let food: Food
-    @Published var unit: MeasurementUnit = .grams
     
     private let networkManager: NetworkManagerProtocol
     
@@ -26,28 +26,34 @@ final class FoodViewModel: ObservableObject {
         self.networkManager = networkManager
     }
     
+    // MARK: - Fetch Food Details
     @MainActor
-    func fetchFoodDetails() {
-        Task {
-            do {
-                let fetchedFoodDetail = try await networkManager
-                    .getFoodDetails(foodID: food.food_id)
-                self.foodDetail = fetchedFoodDetail
-                if self.foodDetail?.servings.serving.isEmpty ?? true {
-                    self.selectedServing = nil
-                } else {
-                    self.selectedServing = self.foodDetail?
-                        .servings.serving.first
-                    setAmount(for: self.selectedServing)
-                }
-            } catch {
-                self.errorMessage = IdentifiableString(
-                    value: error.localizedDescription)
+    func fetchFoodDetails() async {
+        do {
+            let fetchedFoodDetail = try await networkManager
+                .getFoodDetails(foodID: food.food_id)
+            self.foodDetail = fetchedFoodDetail
+            if self.foodDetail?.servings.serving.isEmpty ?? true {
+                self.selectedServing = nil
+            } else {
+                self.selectedServing = self.foodDetail?
+                    .servings.serving.first
+                setAmount(for: self.selectedServing)
             }
+        } catch {
+            self.errorMessage = AppError(error: error)
         }
     }
     
-    //если выбрана порция - ставится 1, если выбраны г или мг - 100
+    // MARK: - Serving Selection and Amount Setting
+    func updateServing(_ serving: Serving) {
+        self.selectedServing = serving
+        setAmount(for: serving)
+        self.unit = (serving.measurementDescription == "g" ||
+                     serving.measurementDescription == "ml") ?
+            .grams : .servings
+    }
+    
     func setAmount(for serving: Serving?) {
         if let serving {
             if serving.measurementDescription == "g" ||
@@ -58,7 +64,8 @@ final class FoodViewModel: ObservableObject {
             }
         }
     }
-    //для верстки
+    
+    // MARK: - Nutrient Information Views
     func nutrientBlockView(title: String,
                            value: Double,
                            unit: String,
@@ -91,7 +98,8 @@ final class FoodViewModel: ObservableObject {
             String(amountValue),
             measurementDescription: selectedServing.measurementDescription)
     }
-    //размер порции для sheet
+    
+    // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
         let description = serving.measurementDescription
         let metricAmount = Int(serving.metricServingAmount)
@@ -112,7 +120,8 @@ final class FoodViewModel: ObservableObject {
         }
         return servingDescription(for: serving)
     }
-    //для кнопки: если в decimalPad 0 или 0,0, кнопка неактивна
+    
+    // MARK: - Button States
     func isAddToDiaryButtonEnabled() -> Bool {
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
@@ -124,7 +133,7 @@ final class FoodViewModel: ObservableObject {
     FoodView(
         food: Food(
             food_id: "39715",
-            food_name: "Oats",
+            food_name: "Oats, 123",
             food_description: ""
         )
     )

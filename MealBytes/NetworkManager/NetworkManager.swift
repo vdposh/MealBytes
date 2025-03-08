@@ -14,9 +14,9 @@ protocol NetworkManagerProtocol {
 }
 
 final class NetworkManager: NetworkManagerProtocol {
-
+    
     private lazy var provider = MoyaProvider<FatSecretAPI>()
-
+    
     private func performRequest<T: Decodable>(
         _ target: FatSecretAPI,
         responseType: T.Type
@@ -33,16 +33,16 @@ final class NetworkManager: NetworkManagerProtocol {
                         continuation.resume(returning: decodedResponse)
                     } catch {
                         continuation.resume(throwing:
-                                                ErrorManager.decodingError)
+                                                AppErrorType.decodingError)
                     }
                 case .failure:
                     continuation.resume(throwing:
-                                            ErrorManager.networkError)
+                                            AppErrorType.networkError)
                 }
             }
         }
     }
-
+    
     func searchFoods(query: String) async throws -> [Food] {
         let response: FoodResponse = try await performRequest(
             .searchFoods(query: query),
@@ -50,7 +50,7 @@ final class NetworkManager: NetworkManagerProtocol {
         )
         return response.foods
     }
-
+    
     func getFoodDetails(foodID: String) async throws -> FoodDetail {
         let response: FoodDetailResponse = try await performRequest(
             .getFoodDetails(foodID: foodID),

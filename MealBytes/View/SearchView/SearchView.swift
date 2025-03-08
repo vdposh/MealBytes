@@ -7,50 +7,34 @@
 
 import SwiftUI
 import Combine
-//ЧЕРНОВИК для перехода в FoodView
+
+// ЧЕРНОВИК для перехода в FoodView
 struct SearchView: View {
-    @State private var foods: [Food] = []
-    @State private var query: String = ""
-    private let networkManager: NetworkManagerProtocol = NetworkManager()
+    @StateObject private var viewModel = SearchViewModel()
     
     var body: some View {
         NavigationStack {
             VStack {
-                List(foods, id: \.food_id) { food in
+                List(viewModel.foods, id: \.food_id) { food in
                     NavigationLink(destination: FoodView(food: food)) {
                         Text(food.food_name)
                     }
                 }
                 .listStyle(.plain)
-                .searchable(text: $query)
-                .onChange(of: query) { _, newValue in
-                    searchFoods(newValue) }
+                .searchable(text: $viewModel.query)
+                .onChange(of: viewModel.query) {_, newValue in
+                    viewModel.searchFoods(newValue)
+                }
             }
             .navigationTitle("Search Products")
         }
-        .accentColor(.green)
-    }
-    
-    private func searchFoods(_ query: String) {
-        if query.isEmpty {
-            foods = []
-            return
-        }
-        
-        Task {
-            do {
-                let result = try await networkManager.searchFoods(query: query)
-                self.foods = result
-            } catch { }
+        .accentColor(.customGreen)
+        .alert(item: $viewModel.errorMessage) { error in
+            Alert(
+                title: Text(error.title),
+                message: Text(error.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
-}
-
-struct IdentifiableString: Identifiable {
-    let id = UUID()
-    let value: String
-}
-
-#Preview {
-    SearchView()
 }

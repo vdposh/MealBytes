@@ -56,31 +56,22 @@ struct FoodView: View {
                         
                         Section {
                             VStack {
+                                let nutrients = [
+                                    ("Kcal", selectedServing.calories, ""),
+                                    ("Fat", selectedServing.fat, "g"),
+                                    ("Protein", selectedServing.protein, "g"),
+                                    ("Carb", selectedServing.carbohydrate, "g")
+                                ]
+
                                 HStack {
-                                    viewModel.nutrientBlockView(
-                                        title: "Kcal",
-                                        value: selectedServing.calories,
-                                        unit: "",
-                                        amountValue: amountValue
-                                    )
-                                    viewModel.nutrientBlockView(
-                                        title: "Fat",
-                                        value: selectedServing.fat,
-                                        unit: "g",
-                                        amountValue: amountValue
-                                    )
-                                    viewModel.nutrientBlockView(
-                                        title: "Protein",
-                                        value: selectedServing.protein,
-                                        unit: "g",
-                                        amountValue: amountValue
-                                    )
-                                    viewModel.nutrientBlockView(
-                                        title: "Carb",
-                                        value: selectedServing.carbohydrate,
-                                        unit: "g",
-                                        amountValue: amountValue
-                                    )
+                                    ForEach(nutrients, id: \.0) { nutrient in
+                                        viewModel.nutrientBlockView(
+                                            title: nutrient.0,
+                                            value: nutrient.1,
+                                            unit: nutrient.2,
+                                            amountValue: amountValue
+                                        )
+                                    }
                                 }
                                 .padding(.vertical, 10)
                                 
@@ -127,93 +118,32 @@ struct FoodView: View {
                                 .font(.headline)
                                 .listRowSeparator(.hidden)
                                 .padding(.top, 10)
-                            viewModel.nutrientDetailRow(
-                                title: "Calories",
-                                value: selectedServing.calories,
-                                unit: "kcal",
-                                amountValue: amountValue
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Serving size",
-                                value: selectedServing.metricServingAmount,
-                                unit: selectedServing.metricServingUnit,
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Fat",
-                                value: selectedServing.fat,
-                                unit: "g",
-                                amountValue: amountValue
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Saturated Fat",
-                                value: selectedServing.saturatedFat,
-                                unit: "g",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Monounsaturated Fat",
-                                value: selectedServing.monounsaturatedFat,
-                                unit: "g",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Polyunsaturated Fat",
-                                value: selectedServing.polyunsaturatedFat,
-                                unit: "g",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Carbohydrates",
-                                value: selectedServing.carbohydrate,
-                                unit: "g",
-                                amountValue: amountValue
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Sugar",
-                                value: selectedServing.sugar,
-                                unit: "g",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Fiber",
-                                value: selectedServing.fiber,
-                                unit: "g",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Protein",
-                                value: selectedServing.protein,
-                                unit: "g",
-                                amountValue: amountValue
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Potassium",
-                                value: selectedServing.potassium,
-                                unit: "mg",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Sodium",
-                                value: selectedServing.sodium,
-                                unit: "mg",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
-                            viewModel.nutrientDetailRow(
-                                title: "Cholesterol",
-                                value: selectedServing.cholesterol,
-                                unit: "mg",
-                                amountValue: amountValue,
-                                isSubValue: true
-                            )
+                            
+                            let nutrientDetails = [
+                                ("Calories", selectedServing.calories, "kcal", false),
+                                ("Serving size", selectedServing.metricServingAmount, selectedServing.metricServingUnit, true),
+                                ("Fat", selectedServing.fat, "g", false),
+                                ("Saturated Fat", selectedServing.saturatedFat, "g", true),
+                                ("Monounsaturated Fat", selectedServing.monounsaturatedFat, "g", true),
+                                ("Polyunsaturated Fat", selectedServing.polyunsaturatedFat, "g", true),
+                                ("Carbohydrates", selectedServing.carbohydrate, "g", false),
+                                ("Sugar", selectedServing.sugar, "g", true),
+                                ("Fiber", selectedServing.fiber, "g", true),
+                                ("Protein", selectedServing.protein, "g", false),
+                                ("Potassium", selectedServing.potassium, "mg", true),
+                                ("Sodium", selectedServing.sodium, "mg", false),
+                                ("Cholesterol", selectedServing.cholesterol, "mg", true)
+                            ]
+
+                            ForEach(nutrientDetails, id: \.0) { nutrient in
+                                viewModel.nutrientDetailRow(
+                                    title: nutrient.0,
+                                    value: nutrient.1,
+                                    unit: nutrient.2,
+                                    amountValue: amountValue,
+                                    isSubValue: nutrient.3
+                                )
+                            }
                         }
                     }
                 }
@@ -232,13 +162,13 @@ struct FoodView: View {
             }
             .navigationBarTitle("Add to Diary", displayMode: .inline)
         }
-        .onAppear {
-            viewModel.fetchFoodDetails()
+        .task {
+            await viewModel.fetchFoodDetails()
         }
-        .alert(item: $viewModel.errorMessage) { message in
+        .alert(item: $viewModel.errorMessage) { error in
             Alert(
-                title: Text("Error"),
-                message: Text(message.value),
+                title: Text(error.title),
+                message: Text(error.message),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -247,11 +177,7 @@ struct FoodView: View {
     private func servingButtons(servings: [Serving]) -> some View {
         ForEach(servings, id: \.self) { serving in
             Button(viewModel.servingDescription(for: serving)) {
-                viewModel.selectedServing = serving
-                viewModel.setAmount(for: serving)
-                viewModel.unit = (serving.measurementDescription == "g" ||
-                                  serving.measurementDescription == "ml") ?
-                    .grams : .servings
+                viewModel.updateServing(serving)
             }
         }
     }
