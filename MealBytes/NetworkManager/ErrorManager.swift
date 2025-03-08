@@ -12,7 +12,7 @@ enum ErrorManager: Error, LocalizedError {
     case networkError
     case decodingError
 
-    var errorDescription: String? {
+    var errorDescription: String {
         switch self {
         case .invalidID:
             "Invalid Identifier: The ID provided is not valid. Please check and try again."

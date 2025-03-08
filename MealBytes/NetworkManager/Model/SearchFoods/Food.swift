@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-struct FoodResponse: Decodable {
-    let foods: Foods
-}
-
-struct Foods: Decodable {
-    let food: [Food]
-}
-
 struct Food: Decodable {
     let food_id: String
     let food_name: String

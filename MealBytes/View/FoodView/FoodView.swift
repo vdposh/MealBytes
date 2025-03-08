@@ -9,70 +9,45 @@ import SwiftUI
 import Combine
 
 struct FoodView: View {
-    let food: Food
-    @StateObject private var viewModel = FoodViewModel()
-    @State private var unit: MeasurementUnit = .grams
+    @StateObject private var viewModel: FoodViewModel
+    
+    init(food: Food) {
+        _viewModel = StateObject(wrappedValue: FoodViewModel(food: food))
+    }
     
     var body: some View {
         NavigationStack {
             ZStack {
                 List {
                     if viewModel.foodDetail != nil {
-                        Section(header: Text("Serving Size")) {
-                            HStack(spacing: 15) {
-                                VStack(spacing: 40) {
-                                    Image(systemName: "plusminus")
-                                        .foregroundColor(.gray)
-                                    Image(systemName: "list.bullet")
-                                        .foregroundColor(.gray)
+                        Section {
+                            Text("\(viewModel.food.food_name)")
+                                .font(.headline)
+                                .listRowSeparator(.hidden)
+                                .padding(.top, 10)
+                            
+                            VStack(spacing: 15) {
+                                CustomTextFieldView(title: "Size",
+                                                    text: $viewModel.amount)
+                                CustomButtonView(
+                                    title: "Serving",
+                                    description: viewModel.servingDescription,
+                                    showActionSheet: $viewModel.showActionSheet
+                                ) {
+                                    viewModel.showActionSheet.toggle()
                                 }
-                                
-                                VStack(spacing: 15) {
-                                    TextField("Enter amount",
-                                              text: $viewModel.amount)
-                                    .keyboardType(.decimalPad)
-                                    .padding(10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(Color.gray,
-                                                    lineWidth: 0.5)
-                                    )
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(10)
-                                    
-                                    Button(action: {
-                                        viewModel.showActionSheet.toggle()
-                                    }) {
-                                        HStack {
-                                            Text(viewModel.servingDescription)
-                                            Spacer()
-                                            Image(systemName: "chevron.down")
-                                                .foregroundColor(.green)
-                                        }
-                                        .padding(10)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(Color.gray,
-                                                        lineWidth: 0.5)
-                                        )
-                                        .background(Color(.systemGray6))
-                                        .cornerRadius(10)
+                                .confirmationDialog(
+                                    "Select Serving",
+                                    isPresented: $viewModel.showActionSheet,
+                                    titleVisibility: .visible
+                                ) {
+                                    if let servings = viewModel
+                                        .foodDetail?.servings.serving {
+                                        servingButtons(servings: servings)
                                     }
-                                    .buttonStyle(PlainButtonStyle())
-                                    .confirmationDialog(
-                                        "Select Serving",
-                                        isPresented: $viewModel.showActionSheet,
-                                        titleVisibility: .visible
-                                    ) {
-                                        if let servings = viewModel
-                                            .foodDetail?.servings.serving {
-                                            servingButtons(servings: servings)
-                                        }
-                                    }
-                                    
                                 }
                             }
-                            .padding(.vertical, 10)
+                            .padding(.bottom, 10)
                         }
                     }
                     
@@ -82,32 +57,32 @@ struct FoodView: View {
                         Section {
                             VStack {
                                 HStack {
-                                    nutrientBlockView(
+                                    viewModel.nutrientBlockView(
                                         title: "Kcal",
                                         value: selectedServing.calories,
                                         unit: "",
                                         amountValue: amountValue
                                     )
-                                    nutrientBlockView(
+                                    viewModel.nutrientBlockView(
                                         title: "Fat",
                                         value: selectedServing.fat,
                                         unit: "g",
                                         amountValue: amountValue
                                     )
-                                    nutrientBlockView(
+                                    viewModel.nutrientBlockView(
                                         title: "Protein",
                                         value: selectedServing.protein,
                                         unit: "g",
                                         amountValue: amountValue
                                     )
-                                    nutrientBlockView(
+                                    viewModel.nutrientBlockView(
                                         title: "Carb",
                                         value: selectedServing.carbohydrate,
                                         unit: "g",
                                         amountValue: amountValue
                                     )
                                 }
-                                .padding(.vertical, 12)
+                                .padding(.vertical, 10)
                                 
                                 HStack {
                                     Button(action: {
@@ -116,7 +91,7 @@ struct FoodView: View {
                                         Text("Remove")
                                             .frame(maxWidth: .infinity)
                                             .padding()
-                                            .background(.red)
+                                            .background(.customRed)
                                             .foregroundColor(.white)
                                             .font(.headline)
                                             .cornerRadius(12)
@@ -131,8 +106,8 @@ struct FoodView: View {
                                             .padding()
                                             .background(viewModel
                                                 .isAddToDiaryButtonEnabled() ?
-                                                .green : Color
-                                                .green.opacity(0.9))
+                                                .customGreen : Color
+                                                .customGreen.opacity(0.9))
                                             .foregroundColor(.white)
                                             .font(.headline)
                                             .cornerRadius(12)
@@ -141,92 +116,98 @@ struct FoodView: View {
                                         .isAddToDiaryButtonEnabled())
                                     .buttonStyle(PlainButtonStyle())
                                 }
+                                .padding(.bottom, 10)
                             }
+                            .listRowInsets(EdgeInsets())
                             .listRowBackground(Color.clear)
                         }
                         
-                        Section(header: Text("Detailed Information")) {
-                            nutrientDetailRow(
+                        Section {
+                            Text("Detailed Information")
+                                .font(.headline)
+                                .listRowSeparator(.hidden)
+                                .padding(.top, 10)
+                            viewModel.nutrientDetailRow(
                                 title: "Calories",
                                 value: selectedServing.calories,
                                 unit: "kcal",
                                 amountValue: amountValue
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Serving size",
                                 value: selectedServing.metricServingAmount,
                                 unit: selectedServing.metricServingUnit,
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Fat",
                                 value: selectedServing.fat,
                                 unit: "g",
                                 amountValue: amountValue
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Saturated Fat",
                                 value: selectedServing.saturatedFat,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Monounsaturated Fat",
                                 value: selectedServing.monounsaturatedFat,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Polyunsaturated Fat",
                                 value: selectedServing.polyunsaturatedFat,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Carbohydrates",
                                 value: selectedServing.carbohydrate,
                                 unit: "g",
                                 amountValue: amountValue
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Sugar",
                                 value: selectedServing.sugar,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Fiber",
                                 value: selectedServing.fiber,
                                 unit: "g",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Protein",
                                 value: selectedServing.protein,
                                 unit: "g",
                                 amountValue: amountValue
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Potassium",
                                 value: selectedServing.potassium,
                                 unit: "mg",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Sodium",
                                 value: selectedServing.sodium,
                                 unit: "mg",
                                 amountValue: amountValue,
                                 isSubValue: true
                             )
-                            nutrientDetailRow(
+                            viewModel.nutrientDetailRow(
                                 title: "Cholesterol",
                                 value: selectedServing.cholesterol,
                                 unit: "mg",
@@ -243,16 +224,16 @@ struct FoodView: View {
                         Spacer()
                         ProgressView()
                             .progressViewStyle(
-                                CircularProgressViewStyle(tint: .green))
+                                CircularProgressViewStyle(tint: .customGreen))
                             .scaleEffect(1.5)
                         Spacer()
                     }
                 }
             }
-            .navigationBarTitle(food.food_name, displayMode: .inline)
+            .navigationBarTitle("Add to Diary", displayMode: .inline)
         }
         .onAppear {
-            viewModel.fetchFoodDetails(foodID: food.food_id)
+            viewModel.fetchFoodDetails()
         }
         .alert(item: $viewModel.errorMessage) { message in
             Alert(
@@ -268,8 +249,8 @@ struct FoodView: View {
             Button(viewModel.servingDescription(for: serving)) {
                 viewModel.selectedServing = serving
                 viewModel.setAmount(for: serving)
-                unit = (serving.measurementDescription == "g" ||
-                        serving.measurementDescription == "ml") ?
+                viewModel.unit = (serving.measurementDescription == "g" ||
+                                  serving.measurementDescription == "ml") ?
                     .grams : .servings
             }
         }
@@ -287,7 +268,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     FoodView(
         food: Food(
             food_id: "39715",
-            food_name: "Oats",
+            food_name: "Oats, 123",
             food_description: ""
         )
     )

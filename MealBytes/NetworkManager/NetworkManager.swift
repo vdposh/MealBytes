@@ -48,7 +48,7 @@ final class NetworkManager: NetworkManagerProtocol {
             .searchFoods(query: query),
             responseType: FoodResponse.self
         )
-        return response.foods.food
+        return response.foods
     }
 
     func getFoodDetails(foodID: String) async throws -> FoodDetail {

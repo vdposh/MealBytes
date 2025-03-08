@@ -15,18 +15,23 @@ final class FoodViewModel: ObservableObject {
     @Published var errorMessage: IdentifiableString?
     @Published var showActionSheet = false
     
+    let food: Food
+    @Published var unit: MeasurementUnit = .grams
+    
     private let networkManager: NetworkManagerProtocol
     
-    init(networkManager: NetworkManagerProtocol = NetworkManager()) {
+    init(food: Food,
+         networkManager: NetworkManagerProtocol = NetworkManager()) {
+        self.food = food
         self.networkManager = networkManager
     }
     
     @MainActor
-    func fetchFoodDetails(foodID: String) {
+    func fetchFoodDetails() {
         Task {
             do {
                 let fetchedFoodDetail = try await networkManager
-                    .getFoodDetails(foodID: foodID)
+                    .getFoodDetails(foodID: food.food_id)
                 self.foodDetail = fetchedFoodDetail
                 if self.foodDetail?.servings.serving.isEmpty ?? true {
                     self.selectedServing = nil
@@ -52,6 +57,30 @@ final class FoodViewModel: ObservableObject {
                 self.amount = "1"
             }
         }
+    }
+    //для верстки
+    func nutrientBlockView(title: String,
+                           value: Double,
+                           unit: String,
+                           amountValue: Double) -> some View {
+        NutrientBlockView(
+            title: title,
+            value: (value) * amountValue,
+            unit: unit
+        )
+    }
+
+    func nutrientDetailRow(title: String,
+                           value: Double,
+                           unit: String,
+                           amountValue: Double,
+                           isSubValue: Bool = false) -> some View {
+        NutrientDetailRow(
+            title: title,
+            value: (value) * amountValue,
+            unit: unit,
+            isSubValue: isSubValue
+        )
     }
     
     func calculateAmountValue() -> Double {
@@ -89,4 +118,14 @@ final class FoodViewModel: ObservableObject {
                                                              with: ".")) ?? 0
         return amountValue > 0
     }
+}
+
+#Preview {
+    FoodView(
+        food: Food(
+            food_id: "39715",
+            food_name: "Oats",
+            food_description: ""
+        )
+    )
 }
