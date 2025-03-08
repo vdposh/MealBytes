@@ -46,18 +46,20 @@ struct Formatter {
             formattedValue = String(format: "%.2f", value)
         }
         
-        return unit.isEmpty ?
-        formattedValue : "\(formattedValue)\(includeSpace ? " " : "")\(unit)"
+        let finalValue = formattedValue.replacingOccurrences(of: ".", with: ",")
+        
+        return unit.isEmpty ? 
+        finalValue : "\(finalValue)\(includeSpace ? " " : "")\(unit)"
     }
     
     // MARK: - Calculating Amounts
-    
     static func calculateAmountValue(_ amount: String,
                                      measurementDescription: String) -> Double {
         if amount.isEmpty || amount == "0" {
             return 0
         }
-        let amountValue = Double(amount) ?? 0
+        let amountValue = Double(amount.replacingOccurrences(of: ",",
+                                                             with: ".")) ?? 0
         return measurementDescription == "g" ||
         measurementDescription == "ml" ? amountValue * 0.01 : amountValue
     }

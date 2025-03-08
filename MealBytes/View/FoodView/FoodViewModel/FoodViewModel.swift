@@ -43,7 +43,7 @@ final class FoodViewModel: ObservableObject {
             self.errorMessage = (error as? AppError) ?? .networkError
         }
     }
-
+    
     // MARK: - Serving Selection and Amount Setting
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
@@ -67,9 +67,9 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Nutrient Information Views
     func nutrientBlockView(title: String,
                            value: Double,
-                           unit: String,
-                           amountValue: Double) -> some View {
-        NutrientBlockView(
+                           unit: String) -> some View {
+        let amountValue = calculateAmountValue()
+        return NutrientBlockView(
             title: title,
             value: (value) * amountValue,
             unit: unit
@@ -79,16 +79,16 @@ final class FoodViewModel: ObservableObject {
     func nutrientDetailRow(title: String,
                            value: Double,
                            unit: String,
-                           amountValue: Double,
                            isSubValue: Bool = false) -> some View {
-        NutrientDetailRow(
+        let amountValue = calculateAmountValue()
+        return NutrientDetailRow(
             title: title,
             value: (value) * amountValue,
             unit: unit,
             isSubValue: isSubValue
         )
     }
-    
+
     func calculateAmountValue() -> Double {
         guard let selectedServing else { return 1 }
         let amountValue = Double(amount.replacingOccurrences(of: ",",
