@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
@@ -27,9 +26,6 @@ struct SearchView: View {
             }
             .navigationTitle("Search Products")
             .searchable(text: $viewModel.query)
-            .onChange(of: viewModel.query) { _, newValue in
-                viewModel.searchFoods(newValue)
-            }
         }
         .accentColor(.customGreen)
     }

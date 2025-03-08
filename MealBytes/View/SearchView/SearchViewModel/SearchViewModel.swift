@@ -10,29 +10,44 @@ import Combine
 
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
-    @Published var query: String = ""
+    @Published var query: String = "" {
+        didSet {
+            debounceSearch(query)
+        }
+    }
     @Published var errorMessage: AppError?
     
     private let networkManager: NetworkManagerProtocol
+    private var searchCancellable: AnyCancellable?
     
     init(networkManager: NetworkManagerProtocol = NetworkManager()) {
         self.networkManager = networkManager
     }
     
+    private func debounceSearch(_ query: String) {
+        searchCancellable?.cancel()
+        searchCancellable = $query
+            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                Task { @MainActor in
+                    await self?.performSearch(query)
+                }
+            }
+    }
+    
     @MainActor
-    func searchFoods(_ query: String) {
+    private func performSearch(_ query: String) async {
         if query.isEmpty {
             foods = []
+            errorMessage = nil
             return
         }
-        
-        Task {
-            do {
-                self.foods = try await networkManager.searchFoods(query: query)
-                self.errorMessage = nil
-            } catch {
-                self.errorMessage = (error as? AppError) ?? .networkError
-            }
+        do {
+            self.foods = try await networkManager.searchFoods(query: query)
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = (error as? AppError) ?? .networkError
         }
     }
 }
