@@ -36,17 +36,11 @@ final class FoodViewModel: ObservableObject {
             if self.foodDetail?.servings.serving.isEmpty ?? true {
                 self.selectedServing = nil
             } else {
-                self.selectedServing = self.foodDetail?
-                    .servings.serving.first
+                self.selectedServing = self.foodDetail?.servings.serving.first
                 setAmount(for: self.selectedServing)
             }
         } catch {
-            if let appError = error as? AppErrorType {
-                self.errorMessage = AppError(error: appError)
-            } else {
-                self.errorMessage = AppError(title: "Unknown Error",
-                                             message: error.localizedDescription)
-            }
+            self.errorMessage = (error as? AppError) ?? .networkError
         }
     }
 
@@ -96,7 +90,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     func calculateAmountValue() -> Double {
-        guard let selectedServing = selectedServing else { return 1 }
+        guard let selectedServing else { return 1 }
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
         return Formatter.calculateAmountValue(
@@ -115,8 +109,7 @@ final class FoodViewModel: ObservableObject {
             return description
         }
         
-        let metricInfo = " (\(metricAmount)\(metricUnit))"
-        return description + metricInfo
+        return "\(description) (\(metricAmount)\(metricUnit))"
     }
     
     var servingDescription: String {
@@ -137,7 +130,7 @@ final class FoodViewModel: ObservableObject {
 #Preview {
     FoodView(
         food: Food(
-            food_id: "39715",
+            food_id: "90050358",
             food_name: "Oats, 123",
             food_description: ""
         )

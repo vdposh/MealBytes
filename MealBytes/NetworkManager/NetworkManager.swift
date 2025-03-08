@@ -33,11 +33,11 @@ final class NetworkManager: NetworkManagerProtocol {
                         continuation.resume(returning: decodedResponse)
                     } catch {
                         continuation.resume(throwing:
-                                                AppErrorType.decodingError)
+                                                AppError.decodingError)
                     }
                 case .failure:
                     continuation.resume(throwing:
-                                            AppErrorType.networkError)
+                                            AppError.networkError)
                 }
             }
         }

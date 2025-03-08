@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomTextFieldView: View {
     let title: String
     @Binding var text: String
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("\(title)")

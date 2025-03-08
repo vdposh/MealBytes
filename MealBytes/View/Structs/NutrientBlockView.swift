@@ -23,8 +23,8 @@ struct NutrientBlockView: View {
                                               unit: unit,
                                               roundToInt: true,
                                               includeSpace: false))
-                    .lineLimit(1)
-                    .foregroundColor(.white)
+                .lineLimit(1)
+                .foregroundColor(.white)
             }
         }
         .frame(height: 73)

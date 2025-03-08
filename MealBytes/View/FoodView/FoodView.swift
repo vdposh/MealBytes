@@ -167,8 +167,8 @@ struct FoodView: View {
         }
         .alert(item: $viewModel.errorMessage) { error in
             Alert(
-                title: Text(error.title),
-                message: Text(error.message),
+                title: Text("Error"),
+                message: Text(error.errorDescription),
                 dismissButton: .default(Text("OK"))
             )
         }

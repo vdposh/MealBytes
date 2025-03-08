@@ -7,23 +7,11 @@
 
 import SwiftUI
 
-class AppError: Identifiable, ObservableObject {
-    let id = UUID()
-    let title: String
-    let message: String
-
-    init(title: String, message: String) {
-        self.title = title
-        self.message = message
+enum AppError: Error, Identifiable, LocalizedError {
+    var id: UUID {
+        UUID()
     }
-
-    init(error: AppErrorType) {
-        self.title = "Error"
-        self.message = error.errorDescription
-    }
-}
-
-enum AppErrorType: Error, LocalizedError {
+    
     case invalidID
     case networkError
     case decodingError
