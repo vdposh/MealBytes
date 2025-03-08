@@ -56,13 +56,9 @@ struct FoodView: View {
                         
                         Section {
                             VStack {
-                                let nutrients = [
-                                    ("Kcal", selectedServing.calories, ""),
-                                    ("Fat", selectedServing.fat, "g"),
-                                    ("Protein", selectedServing.protein, "g"),
-                                    ("Carb", selectedServing.carbohydrate, "g")
-                                ]
-
+                                let nutrients = NutrientDetailProvider
+                                    .getCompactNutrientDetails(from: selectedServing)
+                                
                                 HStack {
                                     ForEach(nutrients, id: \.0) { nutrient in
                                         viewModel.nutrientBlockView(
@@ -119,29 +115,17 @@ struct FoodView: View {
                                 .listRowSeparator(.hidden)
                                 .padding(.top, 10)
                             
-                            let nutrientDetails = [
-                                ("Calories", selectedServing.calories, "kcal", false),
-                                ("Serving size", selectedServing.metricServingAmount, selectedServing.metricServingUnit, true),
-                                ("Fat", selectedServing.fat, "g", false),
-                                ("Saturated Fat", selectedServing.saturatedFat, "g", true),
-                                ("Monounsaturated Fat", selectedServing.monounsaturatedFat, "g", true),
-                                ("Polyunsaturated Fat", selectedServing.polyunsaturatedFat, "g", true),
-                                ("Carbohydrates", selectedServing.carbohydrate, "g", false),
-                                ("Sugar", selectedServing.sugar, "g", true),
-                                ("Fiber", selectedServing.fiber, "g", true),
-                                ("Protein", selectedServing.protein, "g", false),
-                                ("Potassium", selectedServing.potassium, "mg", true),
-                                ("Sodium", selectedServing.sodium, "mg", false),
-                                ("Cholesterol", selectedServing.cholesterol, "mg", true)
-                            ]
-
-                            ForEach(nutrientDetails, id: \.0) { nutrient in
+                            let nutrientDetails = NutrientDetailProvider
+                                .getNutrientDetails(from: selectedServing)
+                            
+                            ForEach(nutrientDetails, id:
+                                        \.0.title) { nutrient in
                                 viewModel.nutrientDetailRow(
-                                    title: nutrient.0,
+                                    title: nutrient.0.title,
                                     value: nutrient.1,
-                                    unit: nutrient.2,
+                                    unit: nutrient.0.unit,
                                     amountValue: amountValue,
-                                    isSubValue: nutrient.3
+                                    isSubValue: nutrient.2
                                 )
                             }
                         }

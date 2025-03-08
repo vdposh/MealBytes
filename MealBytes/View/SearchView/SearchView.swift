@@ -21,9 +21,6 @@ struct SearchView: View {
                         NavigationLink(destination: FoodView(food: food)) {
                             Text(food.food_name)
                         }
-                        .simultaneousGesture(TapGesture().onEnded {
-                                                    print("Selected Food ID: \(food.food_id)")
-                                                })
                     }
                     .listStyle(.plain)
                 }

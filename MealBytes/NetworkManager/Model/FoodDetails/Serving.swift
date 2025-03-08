@@ -67,11 +67,11 @@ struct Serving: Decodable, Hashable {
                 .cholesterol)
         potassium = Self.decodeDouble(container, forKey:
                 .potassium)
-        measurementDescription = try container.decode(String.self, forKey:
+        measurementDescription = Self.decodeString(container, forKey:
                 .measurement_description)
         metricServingAmount = Self.decodeDouble(container, forKey:
                 .metric_serving_amount)
-        metricServingUnit = try container.decode(String.self, forKey:
+        metricServingUnit = Self.decodeString(container, forKey:
                 .metric_serving_unit)
     }
     
@@ -81,4 +81,11 @@ struct Serving: Decodable, Hashable {
             (try? Double(container.decodeIfPresent(String.self,
                                                    forKey: key) ?? "")) ?? 0
         }
+    
+    private static func decodeString(
+        _ container: KeyedDecodingContainer<CodingKeys>,
+        forKey key: CodingKeys
+    ) -> String {
+        (try? container.decode(String.self, forKey: key)) ?? ""
+    }
 }
