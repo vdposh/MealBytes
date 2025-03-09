@@ -29,9 +29,11 @@ struct NutrientDetailRow: View {
                 .foregroundColor(isSubValue ? .gray : .primary)
             Spacer()
             HStack {
-                Text(Formatter.formattedValue(value, unit: unit))
-                    .foregroundColor(isSubValue ? .gray : .primary)
-                    .lineLimit(1)
+                Text(Formatter().formattedValue(
+                    value,
+                    unit: Formatter.Unit(rawValue: unit) ?? .empty))
+                .foregroundColor(isSubValue ? .gray : .primary)
+                .lineLimit(1)
             }
         }
     }

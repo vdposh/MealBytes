@@ -13,54 +13,46 @@ struct Formatter {
         case integer
         case oneDecimal
         case twoDecimals
-    }
-    
-    static func determineFormatType(value: Double,
-                                    unit: String,
-                                    roundToInt: Bool) -> FormatType {
-        if unit.isEmpty ||
-            unit == "kcal" || roundToInt || value == floor(value) {
-            .integer
-        } else if value * 10 == floor(value * 10) {
-            .oneDecimal
-        } else {
-            .twoDecimals
+        
+        func formatString(for value: Double) -> String {
+            switch self {
+            case .integer:
+                String(format: "%.0f", value)
+            case .oneDecimal:
+                String(format: "%.1f", value)
+            case .twoDecimals:
+                String(format: "%.2f", value)
+            }
         }
     }
     
-    static func formattedValue(_ value: Double,
-                               unit: String,
-                               roundToInt: Bool = false,
-                               includeSpace: Bool = true) -> String {
+    enum Unit: String {
+        case empty = ""
+        case kcal
+    }
+    
+    func determineFormatType(value: Double, unit: Unit,
+                             roundToInt: Bool) -> FormatType {
+        if unit == .kcal || roundToInt || value == floor(value) {
+            return .integer
+        } else if value * 10 == floor(value * 10) {
+            return .oneDecimal
+        } else {
+            return .twoDecimals
+        }
+    }
+    
+    func formattedValue(_ value: Double, unit: Unit,
+                        roundToInt: Bool = false,
+                        includeSpace: Bool = true) -> String {
         let formatType = determineFormatType(value: value,
                                              unit: unit,
                                              roundToInt: roundToInt)
+        let formattedValue = formatType.formatString(for: value)
+        let finalValue = formattedValue.replacingOccurrences(of: ".",
+                                                             with: ",")
         
-        let formattedValue: String
-        switch formatType {
-        case .integer:
-            formattedValue = String(format: "%.0f", value)
-        case .oneDecimal:
-            formattedValue = String(format: "%.1f", value)
-        case .twoDecimals:
-            formattedValue = String(format: "%.2f", value)
-        }
-        
-        let finalValue = formattedValue.replacingOccurrences(of: ".", with: ",")
-        
-        return unit.isEmpty ? 
-        finalValue : "\(finalValue)\(includeSpace ? " " : "")\(unit)"
-    }
-    
-    // MARK: - Calculating Amounts
-    static func calculateAmountValue(_ amount: String,
-                                     measurementDescription: String) -> Double {
-        if amount.isEmpty || amount == "0" {
-            return 0
-        }
-        let amountValue = Double(amount.replacingOccurrences(of: ",",
-                                                             with: ".")) ?? 0
-        return measurementDescription == "g" ||
-        measurementDescription == "ml" ? amountValue * 0.01 : amountValue
+        return unit == .empty ? finalValue :
+        "\(finalValue)\(includeSpace ? " " : "")\(unit.rawValue)"
     }
 }

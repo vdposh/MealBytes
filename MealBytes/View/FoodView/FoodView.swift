@@ -71,7 +71,7 @@ struct FoodView: View {
                                 HStack {
                                     ForEach(viewModel.nutrientBlocks,
                                             id: \.title) { nutrient in
-                                        NutrientBlockView(
+                                        CompactNutrientDetailRow(
                                             title: nutrient.title,
                                             value: nutrient.value,
                                             unit: nutrient.unit

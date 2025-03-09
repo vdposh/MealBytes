@@ -1,5 +1,5 @@
 //
-//  NutrientBlockView.swift
+//  CompactNutrientDetailRow.swift
 //  MealBytes
 //
 //  Created by Porshe on 04/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NutrientBlockView: View {
+struct CompactNutrientDetailRow: View {
     let title: String
     let value: Double
     let unit: String
@@ -19,10 +19,11 @@ struct NutrientBlockView: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 1)
             HStack {
-                Text(Formatter.formattedValue(value,
-                                              unit: unit,
-                                              roundToInt: true,
-                                              includeSpace: false))
+                Text(Formatter().formattedValue(
+                    value,
+                    unit: Formatter.Unit(rawValue: unit) ?? .empty,
+                    roundToInt: true,
+                    includeSpace: false))
                 .lineLimit(1)
                 .foregroundColor(.white)
             }

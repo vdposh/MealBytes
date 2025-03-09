@@ -101,32 +101,49 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Nutrient Calculation
-    func calculateAmountValue() -> Double {
+    func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
-        return Formatter.calculateAmountValue(
-            String(amountValue),
+        return calculateBaseAmountValue(
+            amountValue,
             measurementDescription: selectedServing.measurementDescription)
     }
     
-    var nutrientBlocks: [NutrientBlock] {
+    func calculateBaseAmountValue(_ amount: Double,
+                                  measurementDescription: String) -> Double {
+        if amount == 0 {
+            return 0
+        }
+        return MeasurementType
+            .grams.fromDescription(measurementDescription) == .grams ||
+        MeasurementType.milliliters.fromDescription(measurementDescription) ==
+            .milliliters ? amount * 0.01 : amount
+    }
+    
+    var nutrientBlocks: [CompactNutrientDetail] {
         guard let selectedServing else { return [] }
-        return NutrientDetailProvider
+        return CompactNutrientDetailProvider()
             .getCompactNutrientDetails(from: selectedServing)
-            .map { NutrientBlock(title: $0.0,
-                                 value: $0.1 * calculateAmountValue(),
-                                 unit: $0.2) }
+            .map { detail in
+                CompactNutrientDetail(
+                    title: detail.title,
+                    value: detail.value * calculateSelectedAmountValue(),
+                    unit: detail.unit)
+            }
     }
     
     var nutrientDetails: [NutrientDetail] {
         guard let selectedServing else { return [] }
-        return NutrientDetailProvider
+        return NutrientDetailProvider()
             .getNutrientDetails(from: selectedServing)
-            .map { NutrientDetail(title: $0.0.title,
-                                  value: $0.1 * calculateAmountValue(),
-                                  unit: $0.0.unit,
-                                  isSubValue: $0.2) }
+            .map { detail in
+                NutrientDetail(
+                    title: detail.type.title,
+                    value: detail.value * calculateSelectedAmountValue(),
+                    unit: detail.type.unit,
+                    isSubValue: detail.isSubValue)
+            }
     }
 }
 
