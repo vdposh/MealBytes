@@ -34,7 +34,7 @@ struct CustomButtonView: View {
                     alignment: .bottom
                 )
             }
-            .buttonStyle(PlainButtonStyle())
+            .buttonStyle(.plain)
         }
     }
 }

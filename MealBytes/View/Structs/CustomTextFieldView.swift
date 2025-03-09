@@ -13,10 +13,10 @@ struct CustomTextFieldView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("\(title)")
+            Text(title)
                 .font(.caption)
                 .foregroundColor(.gray) + Text("*").foregroundColor(.customRed)
-            TextField("", text: $text)
+            TextField("Enter serving size", text: $text)
                 .keyboardType(.decimalPad)
                 .padding(.vertical, 5)
                 .overlay(

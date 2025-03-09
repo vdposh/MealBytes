@@ -9,8 +9,8 @@ import SwiftUI
 import Moya
 
 protocol NetworkManagerProtocol {
-    func searchFoods(query: String) async throws -> [Food]
-    func getFoodDetails(foodID: String) async throws -> FoodDetail
+    func fetchFoods(query: String) async throws -> [Food]
+    func fetchFoodDetails(foodID: String) async throws -> FoodDetail
 }
 
 final class NetworkManager: NetworkManagerProtocol {
@@ -43,7 +43,7 @@ final class NetworkManager: NetworkManagerProtocol {
         }
     }
     
-    func searchFoods(query: String) async throws -> [Food] {
+    func fetchFoods(query: String) async throws -> [Food] {
         let response: FoodResponse = try await performRequest(
             .searchFoods(query: query),
             responseType: FoodResponse.self
@@ -51,7 +51,7 @@ final class NetworkManager: NetworkManagerProtocol {
         return response.foods
     }
     
-    func getFoodDetails(foodID: String) async throws -> FoodDetail {
+    func fetchFoodDetails(foodID: String) async throws -> FoodDetail {
         let response: FoodDetailResponse = try await performRequest(
             .getFoodDetails(foodID: foodID),
             responseType: FoodDetailResponse.self

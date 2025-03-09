@@ -29,26 +29,35 @@ final class SearchViewModel: ObservableObject {
         searchCancellable = $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
+            .handleEvents(receiveOutput: { [weak self] query in
+                if query.isEmpty {
+                    self?.foods = []
+                    self?.errorMessage = nil
+                }
+            })
+            .filter { !$0.isEmpty }
             .sink { [weak self] query in
-                Task { @MainActor in
-                    await self?.performSearch(query)
+                Task {
+                    guard let self else { return }
+                    do {
+                        let foods = try await self.networkManager
+                            .fetchFoods(query: query)
+                        await MainActor.run {
+                            self.foods = foods
+                            self.errorMessage = nil
+                        }
+                    } catch {
+                        await MainActor.run {
+                            switch error {
+                            case let appError as AppError:
+                                self.errorMessage = appError
+                            default:
+                                self.errorMessage = .networkError
+                            }
+                        }
+                    }
                 }
             }
-    }
-    
-    @MainActor
-    private func performSearch(_ query: String) async {
-        if query.isEmpty {
-            foods = []
-            errorMessage = nil
-            return
-        }
-        do {
-            self.foods = try await networkManager.searchFoods(query: query)
-            self.errorMessage = nil
-        } catch {
-            self.errorMessage = (error as? AppError) ?? .networkError
-        }
     }
 }
 

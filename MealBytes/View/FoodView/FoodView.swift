@@ -10,8 +10,9 @@ import Combine
 
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
-    @State private var isLoading = true
     @FocusState private var isTextFieldFocused: Bool
+    @State private var isLoading = true
+    @State private var isError = false
     
     init(food: Food) {
         _viewModel = StateObject(wrappedValue: FoodViewModel(food: food))
@@ -32,6 +33,7 @@ struct FoodView: View {
                                 CustomTextFieldView(title: "Size",
                                                     text: $viewModel.amount)
                                 .focused($isTextFieldFocused)
+                                .disabled(isError)
                                 .toolbar {
                                     ToolbarItemGroup(placement: .keyboard) {
                                         Text("Enter serving size")
@@ -49,6 +51,7 @@ struct FoodView: View {
                                 ) {
                                     viewModel.showActionSheet.toggle()
                                 }
+                                .disabled(isError)
                                 .confirmationDialog(
                                     "Select Serving",
                                     isPresented: $viewModel.showActionSheet,
@@ -63,81 +66,73 @@ struct FoodView: View {
                             .padding(.bottom, 10)
                         }
                         
-                        if let selectedServing = viewModel.selectedServing {
-                            Section {
-                                VStack {
-                                    let nutrients = NutrientDetailProvider
-                                        .getCompactNutrientDetails(
-                                            from: selectedServing)
-                                    
-                                    HStack {
-                                        ForEach(nutrients,
-                                                id: \.0) { nutrient in
-                                            viewModel.nutrientBlockView(
-                                                title: nutrient.0,
-                                                value: nutrient.1,
-                                                unit: nutrient.2
-                                            )
-                                        }
+                        Section {
+                            VStack {
+                                HStack {
+                                    ForEach(viewModel.nutrientBlocks,
+                                            id: \.title) { nutrient in
+                                        NutrientBlockView(
+                                            title: nutrient.title,
+                                            value: nutrient.value,
+                                            unit: nutrient.unit
+                                        )
                                     }
-                                    .padding(.vertical, 10)
-                                    
-                                    HStack {
-                                        Button(action: {
-                                            // Remove from Diary
-                                        }) {
-                                            Text("Remove")
-                                                .frame(maxWidth: .infinity)
-                                                .padding()
-                                                .background(.customRed)
-                                                .foregroundColor(.white)
-                                                .font(.headline)
-                                                .cornerRadius(12)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                        
-                                        Button(action: {
-                                            // Add to Diary
-                                        }) {
-                                            Text("Add to Diary")
-                                                .frame(maxWidth: .infinity)
-                                                .padding()
-                                                .background(viewModel
-                                                    .isAddButtonEnabled() ?
-                                                    .customGreen : Color
-                                                    .customGreen.opacity(0.9))
-                                                .foregroundColor(.white)
-                                                .font(.headline)
-                                                .cornerRadius(12)
-                                        }
-                                        .disabled(!viewModel
-                                            .isAddButtonEnabled())
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
-                                    .padding(.bottom, 10)
                                 }
-                                .listRowInsets(EdgeInsets())
-                                .listRowBackground(Color.clear)
+                                .padding(.vertical, 10)
+                                
+                                HStack {
+                                    Button(action: {
+                                        // Remove from Diary
+                                    }) {
+                                        Text("Remove")
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(.customRed)
+                                            .foregroundColor(.white)
+                                            .font(.headline)
+                                            .cornerRadius(12)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(isError)
+                                    
+                                    Button(action: {
+                                        // Add to Diary
+                                    }) {
+                                        Text("Add to Diary")
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(viewModel
+                                                .isAddButtonEnabled() ?
+                                                .customGreen : Color
+                                                .customGreen.opacity(0.9))
+                                            .foregroundColor(.white)
+                                            .font(.headline)
+                                            .cornerRadius(12)
+                                    }
+                                    .disabled(!viewModel
+                                        .isAddButtonEnabled() || isError)
+                                    .buttonStyle(.plain)
+                                }
+                                .padding(.bottom, 10)
                             }
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                        }
+                        
+                        Section {
+                            Text("Detailed Information")
+                                .font(.headline)
+                                .listRowSeparator(.hidden)
+                                .padding(.top, 10)
                             
-                            Section {
-                                Text("Detailed Information")
-                                    .font(.headline)
-                                    .listRowSeparator(.hidden)
-                                    .padding(.top, 10)
-                                
-                                let nutrientDetails = NutrientDetailProvider
-                                    .getNutrientDetails(from: selectedServing)
-                                
-                                ForEach(nutrientDetails, id:
-                                            \.0.title) { nutrient in
-                                    viewModel.nutrientDetailRow(
-                                        title: nutrient.0.title,
-                                        value: nutrient.1,
-                                        unit: nutrient.0.unit,
-                                        isSubValue: nutrient.2
-                                    )
-                                }
+                            ForEach(viewModel.nutrientDetails, id:
+                                        \.title) { nutrient in
+                                NutrientDetailRow(
+                                    title: nutrient.title,
+                                    value: nutrient.value,
+                                    unit: nutrient.unit,
+                                    isSubValue: nutrient.isSubValue
+                                )
                             }
                         }
                     }
@@ -166,8 +161,9 @@ struct FoodView: View {
             Alert(
                 title: Text("Error"),
                 message: Text(error.errorDescription),
-                dismissButton: .default(Text("OK"))
-            )
+                dismissButton: .default(Text("OK")) {
+                    isError = true
+                })
         }
     }
     
@@ -178,13 +174,6 @@ struct FoodView: View {
             }
         }
     }
-}
-
-enum MeasurementUnit: String, CaseIterable, Identifiable {
-    case servings = "Servings"
-    case grams = "Grams"
-    
-    var id: String { self.rawValue }
 }
 
 #Preview {

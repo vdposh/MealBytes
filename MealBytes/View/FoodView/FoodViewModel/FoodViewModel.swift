@@ -9,7 +9,12 @@ import SwiftUI
 import Combine
 
 final class FoodViewModel: ObservableObject {
-    @Published var foodDetail: FoodDetail?
+    @Published var foodDetail: FoodDetail? {
+        didSet {
+            self.selectedServing = self.foodDetail?.servings.serving.first
+            setAmount(for: self.selectedServing)
+        }
+    }
     @Published var selectedServing: Serving?
     @Published var amount: String = ""
     @Published var errorMessage: AppError?
@@ -31,16 +36,15 @@ final class FoodViewModel: ObservableObject {
     func fetchFoodDetails() async {
         do {
             let fetchedFoodDetail = try await networkManager
-                .getFoodDetails(foodID: food.searchFoodId)
+                .fetchFoodDetails(foodID: food.searchFoodId)
             self.foodDetail = fetchedFoodDetail
-            if self.foodDetail?.servings.serving.isEmpty ?? true {
-                self.selectedServing = nil
-            } else {
-                self.selectedServing = self.foodDetail?.servings.serving.first
-                setAmount(for: self.selectedServing)
-            }
         } catch {
-            self.errorMessage = (error as? AppError) ?? .networkError
+            switch error {
+            case let appError as AppError:
+                self.errorMessage = appError
+            default:
+                self.errorMessage = .networkError
+            }
         }
     }
     
@@ -48,54 +52,23 @@ final class FoodViewModel: ObservableObject {
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
         setAmount(for: serving)
-        self.unit = (serving.measurementDescription == "g" ||
-                     serving.measurementDescription == "ml") ?
-            .grams : .servings
+        self.unit = MeasurementType
+            .grams.fromDescription(serving.measurementDescription) == .grams ||
+        MeasurementType
+            .milliliters.fromDescription(serving.measurementDescription) ==
+            .milliliters ? .grams : .servings
     }
     
     func setAmount(for serving: Serving?) {
         if let serving {
-            if serving.measurementDescription == "g" ||
-                serving.measurementDescription == "ml" {
+            switch MeasurementType
+                .grams.fromDescription(serving.measurementDescription) {
+            case .grams, .milliliters:
                 self.amount = "100"
-            } else {
+            default:
                 self.amount = "1"
             }
         }
-    }
-    
-    // MARK: - Nutrient Information Views
-    func nutrientBlockView(title: String,
-                           value: Double,
-                           unit: String) -> some View {
-        let amountValue = calculateAmountValue()
-        return NutrientBlockView(
-            title: title,
-            value: (value) * amountValue,
-            unit: unit
-        )
-    }
-    
-    func nutrientDetailRow(title: String,
-                           value: Double,
-                           unit: String,
-                           isSubValue: Bool = false) -> some View {
-        let amountValue = calculateAmountValue()
-        return NutrientDetailRow(
-            title: title,
-            value: (value) * amountValue,
-            unit: unit,
-            isSubValue: isSubValue
-        )
-    }
-    
-    func calculateAmountValue() -> Double {
-        guard let selectedServing else { return 1 }
-        let amountValue = Double(amount.replacingOccurrences(of: ",",
-                                                             with: ".")) ?? 0
-        return Formatter.calculateAmountValue(
-            String(amountValue),
-            measurementDescription: selectedServing.measurementDescription)
     }
     
     // MARK: - Serving Description
@@ -104,8 +77,9 @@ final class FoodViewModel: ObservableObject {
         let metricAmount = Int(serving.metricServingAmount)
         let metricUnit = serving.metricServingUnit
         
-        if description == "g" || description == "ml" ||
-            description.contains("serving (\(metricAmount)g") {
+        if MeasurementType.grams.fromDescription(description) == .grams ||
+            MeasurementType.milliliters.fromDescription(description) ==
+            .milliliters ||  description.contains("serving (\(metricAmount)g") {
             return description
         }
         
@@ -125,6 +99,56 @@ final class FoodViewModel: ObservableObject {
                                                              with: ".")) ?? 0
         return amountValue > 0
     }
+    
+    // MARK: - Nutrient Calculation
+    func calculateAmountValue() -> Double {
+        guard let selectedServing else { return 1 }
+        let amountValue = Double(amount.replacingOccurrences(of: ",",
+                                                             with: ".")) ?? 0
+        return Formatter.calculateAmountValue(
+            String(amountValue),
+            measurementDescription: selectedServing.measurementDescription)
+    }
+    
+    var nutrientBlocks: [NutrientBlock] {
+        guard let selectedServing else { return [] }
+        return NutrientDetailProvider
+            .getCompactNutrientDetails(from: selectedServing)
+            .map { NutrientBlock(title: $0.0,
+                                 value: $0.1 * calculateAmountValue(),
+                                 unit: $0.2) }
+    }
+    
+    var nutrientDetails: [NutrientDetail] {
+        guard let selectedServing else { return [] }
+        return NutrientDetailProvider
+            .getNutrientDetails(from: selectedServing)
+            .map { NutrientDetail(title: $0.0.title,
+                                  value: $0.1 * calculateAmountValue(),
+                                  unit: $0.0.unit,
+                                  isSubValue: $0.2) }
+    }
+}
+
+enum MeasurementType: String {
+    case grams = "g"
+    case milliliters = "ml"
+    case servings
+    
+    func fromDescription(_ description: String) -> MeasurementType {
+        switch description {
+        case "g": .grams
+        case "ml": .milliliters
+        default: .servings
+        }
+    }
+}
+
+enum MeasurementUnit: String, CaseIterable, Identifiable {
+    case servings = "Servings"
+    case grams = "Grams"
+    
+    var id: String { self.rawValue }
 }
 
 #Preview {
