@@ -28,6 +28,7 @@ struct SearchView: View {
             .searchable(text: $viewModel.query)
         }
         .accentColor(.customGreen)
+        .scrollDismissesKeyboard(.immediately)
     }
 }
 

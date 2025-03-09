@@ -11,6 +11,7 @@ import Combine
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @State private var isLoading = true
+    @FocusState private var isTextFieldFocused: Bool
     
     init(food: Food) {
         _viewModel = StateObject(wrappedValue: FoodViewModel(food: food))
@@ -30,6 +31,17 @@ struct FoodView: View {
                             VStack(spacing: 15) {
                                 CustomTextFieldView(title: "Size",
                                                     text: $viewModel.amount)
+                                .focused($isTextFieldFocused)
+                                .toolbar {
+                                    ToolbarItemGroup(placement: .keyboard) {
+                                        Text("Enter serving size")
+                                            .foregroundColor(.gray)
+                                        Spacer()
+                                        Button("Done") {
+                                            isTextFieldFocused = false
+                                        }
+                                    }
+                                }
                                 CustomButtonView(
                                     title: "Serving",
                                     description: viewModel.servingDescription,
@@ -91,7 +103,7 @@ struct FoodView: View {
                                                 .frame(maxWidth: .infinity)
                                                 .padding()
                                                 .background(viewModel
-                                                    .isAddToDiaryButtonEnabled() ?
+                                                    .isAddButtonEnabled() ?
                                                     .customGreen : Color
                                                     .customGreen.opacity(0.9))
                                                 .foregroundColor(.white)
@@ -99,7 +111,7 @@ struct FoodView: View {
                                                 .cornerRadius(12)
                                         }
                                         .disabled(!viewModel
-                                            .isAddToDiaryButtonEnabled())
+                                            .isAddButtonEnabled())
                                         .buttonStyle(PlainButtonStyle())
                                     }
                                     .padding(.bottom, 10)
@@ -131,6 +143,7 @@ struct FoodView: View {
                     }
                 }
                 .listSectionSpacing(.compact)
+                .scrollDismissesKeyboard(.never)
                 
                 if isLoading {
                     VStack {

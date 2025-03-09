@@ -15,3 +15,18 @@ struct MealBytesApp: App {
         }
     }
 }
+
+//@main
+//struct MealBytesApp: App {
+//    var body: some Scene {
+//        WindowGroup {
+//            FoodView(
+//                food: Food(
+//                    food_id: "39715",
+//                    food_name: "Oats, 123",
+//                    food_description: ""
+//                )
+//            )
+//        }
+//    }
+//}

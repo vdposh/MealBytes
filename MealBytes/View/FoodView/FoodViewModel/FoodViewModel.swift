@@ -75,7 +75,7 @@ final class FoodViewModel: ObservableObject {
             unit: unit
         )
     }
-
+    
     func nutrientDetailRow(title: String,
                            value: Double,
                            unit: String,
@@ -88,7 +88,7 @@ final class FoodViewModel: ObservableObject {
             isSubValue: isSubValue
         )
     }
-
+    
     func calculateAmountValue() -> Double {
         guard let selectedServing else { return 1 }
         let amountValue = Double(amount.replacingOccurrences(of: ",",
@@ -120,7 +120,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Button States
-    func isAddToDiaryButtonEnabled() -> Bool {
+    func isAddButtonEnabled() -> Bool {
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
         return amountValue > 0
