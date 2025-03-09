@@ -16,9 +16,9 @@ struct SearchView: View {
                 if viewModel.errorMessage != nil {
                     ContentUnavailableView.search(text: "\(viewModel.query)")
                 } else {
-                    List(viewModel.foods, id: \.food_id) { food in
+                    List(viewModel.foods, id: \.searchFoodId) { food in
                         NavigationLink(destination: FoodView(food: food)) {
-                            Text(food.food_name)
+                            Text(food.searchFoodName)
                         }
                     }
                     .listStyle(.plain)

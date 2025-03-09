@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct Food: Decodable {
-    let food_id: String
-    let food_name: String
-    let food_description: String
+    let searchFoodId: String
+    let searchFoodName: String
+    let searchFoodDescription: String
+    
+    enum CodingKeys: String, CodingKey {
+        case searchFoodId = "food_id", searchFoodName = "food_name", 
+             searchFoodDescription = "food_description"
+    }
 }

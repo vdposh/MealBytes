@@ -23,7 +23,7 @@ struct FoodView: View {
                 List {
                     if !isLoading {
                         Section {
-                            Text("\(viewModel.food.food_name)")
+                            Text("\(viewModel.food.searchFoodName)")
                                 .font(.headline)
                                 .listRowSeparator(.hidden)
                                 .padding(.top, 10)
@@ -190,9 +190,9 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
 #Preview {
     FoodView(
         food: Food(
-            food_id: "39715",
-            food_name: "Oats, 123",
-            food_description: ""
+            searchFoodId: "39715",
+            searchFoodName: "Oats, 123",
+            searchFoodDescription: ""
         )
     )
 }

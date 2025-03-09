@@ -31,7 +31,7 @@ final class FoodViewModel: ObservableObject {
     func fetchFoodDetails() async {
         do {
             let fetchedFoodDetail = try await networkManager
-                .getFoodDetails(foodID: food.food_id)
+                .getFoodDetails(foodID: food.searchFoodId)
             self.foodDetail = fetchedFoodDetail
             if self.foodDetail?.servings.serving.isEmpty ?? true {
                 self.selectedServing = nil
@@ -130,9 +130,9 @@ final class FoodViewModel: ObservableObject {
 #Preview {
     FoodView(
         food: Food(
-            food_id: "39715",
-            food_name: "Oats, 123",
-            food_description: ""
+            searchFoodId: "39715",
+            searchFoodName: "Oats, 123",
+            searchFoodDescription: ""
         )
     )
 }
