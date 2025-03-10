@@ -126,15 +126,17 @@ final class FoodViewModel: ObservableObject {
             .milliliters ? amount * 0.01 : amount
     }
     
-    var nutrientBlocks: [CompactNutrientDetail] {
+    var compactNutrientDetails: [CompactNutrientDetail] {
         guard let selectedServing else { return [] }
         return CompactNutrientDetailProvider()
             .getCompactNutrientDetails(from: selectedServing)
             .map { detail in
                 CompactNutrientDetail(
-                    title: detail.title,
+                    id: detail.id,
+                    type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
-                    unit: detail.unit)
+                    unit: detail.unit
+                )
             }
     }
     
@@ -144,10 +146,12 @@ final class FoodViewModel: ObservableObject {
             .getNutrientDetails(from: selectedServing)
             .map { detail in
                 NutrientDetail(
-                    title: detail.type.title,
+                    id: detail.id,
+                    type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
                     unit: detail.type.unit,
-                    isSubValue: detail.isSubValue)
+                    isSubValue: detail.isSubValue
+                )
             }
     }
 }

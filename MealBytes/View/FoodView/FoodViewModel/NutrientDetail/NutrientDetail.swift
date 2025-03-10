@@ -7,9 +7,24 @@
 
 import SwiftUI
 
-struct NutrientDetail {
-    let title: String
+struct NutrientDetail: Identifiable {
+    let id: String
+    let type: NutrientType
     let value: Double
     let unit: String
     let isSubValue: Bool
+
+    init(
+        id: String,
+        type: NutrientType,
+        value: Double,
+        unit: String,
+        isSubValue: Bool
+    ) {
+        self.id = id
+        self.type = type
+        self.value = value
+        self.unit = unit
+        self.isSubValue = isSubValue
+    }
 }

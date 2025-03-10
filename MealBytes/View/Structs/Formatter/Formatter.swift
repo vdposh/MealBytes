@@ -29,6 +29,8 @@ struct Formatter {
     enum Unit: String {
         case empty = ""
         case kcal
+        case g
+        case mg
     }
     
     func determineFormatType(value: Double, unit: Unit,

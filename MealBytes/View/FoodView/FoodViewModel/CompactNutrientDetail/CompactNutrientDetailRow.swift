@@ -8,20 +8,18 @@
 import SwiftUI
 
 struct CompactNutrientDetailRow: View {
-    let title: String
-    let value: Double
-    let unit: String
-    
+    let nutrient: CompactNutrientDetail
+
     var body: some View {
         VStack {
-            Text(title)
+            Text(nutrient.title)
                 .font(.subheadline)
                 .foregroundColor(.white)
                 .padding(.vertical, 1)
             HStack {
                 Text(Formatter().formattedValue(
-                    value,
-                    unit: Formatter.Unit(rawValue: unit) ?? .empty,
+                    nutrient.value,
+                    unit: Formatter.Unit(rawValue: nutrient.unit) ?? .empty,
                     roundToInt: true,
                     includeSpace: false))
                 .lineLimit(1)

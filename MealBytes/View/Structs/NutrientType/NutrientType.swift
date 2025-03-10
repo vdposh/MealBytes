@@ -41,7 +41,7 @@ enum NutrientType {
     var alternativeTitle: String {
         switch self {
         case .carbohydrates: "Carb"
-        default: self.title
+        default: title
         }
     }
     
@@ -54,4 +54,11 @@ enum NutrientType {
         case .potassium, .sodium, .cholesterol: "mg"
         }
     }
+    
+    var alternativeUnit: String {
+          switch self {
+          case .calories: ""
+          default: unit
+          }
+      }
 }

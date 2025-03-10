@@ -67,13 +67,9 @@ struct FoodView: View {
                         Section {
                             VStack {
                                 HStack {
-                                    ForEach(viewModel.nutrientBlocks,
-                                            id: \.title) { nutrient in
-                                        CompactNutrientDetailRow(
-                                            title: nutrient.title,
-                                            value: nutrient.value,
-                                            unit: nutrient.unit
-                                        )
+                                    ForEach(viewModel.compactNutrientDetails) {
+                                        nutrient in
+                                        CompactNutrientDetailRow(nutrient: nutrient)
                                     }
                                 }
                                 .padding(.vertical, 10)
@@ -124,13 +120,9 @@ struct FoodView: View {
                                 .listRowSeparator(.hidden)
                                 .padding(.top, 10)
                             
-                            ForEach(viewModel.nutrientDetails, id: \.title) { nutrient in
-                                NutrientDetailRow(
-                                    title: nutrient.title,
-                                    value: nutrient.value,
-                                    unit: nutrient.unit,
-                                    isSubValue: nutrient.isSubValue
-                                )
+                            ForEach(viewModel.nutrientDetails) {
+                                nutrient in
+                                NutrientDetailRow(nutrient: nutrient)
                             }
                         }
                     }
