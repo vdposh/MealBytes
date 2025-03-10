@@ -39,7 +39,7 @@ final class FoodViewModel: ObservableObject {
         isLoading = true
         do {
             let fetchedFoodDetail = try await networkManager
-                .fetchFoodDetails(foodID: food.searchFoodId)
+                .fetchFoodDetails(foodId: food.searchFoodId)
             self.foodDetail = fetchedFoodDetail
         } catch {
             switch error {
@@ -57,23 +57,16 @@ final class FoodViewModel: ObservableObject {
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
         setAmount(for: serving)
-        self.unit = MeasurementType
-            .grams.fromDescription(serving.measurementDescription) == .grams ||
-        MeasurementType
-            .milliliters.fromDescription(serving.measurementDescription) ==
-            .milliliters ? .grams : .servings
+        self.unit = serving.measurementUnit
     }
     
     func setAmount(for serving: Serving?) {
-        if let serving {
-            switch MeasurementType
-                .grams.fromDescription(serving.measurementDescription) {
-            case .grams, .milliliters:
-                self.amount = "100"
-            default:
-                self.amount = "1"
-            }
+        guard let serving else {
+            self.amount = ""
+            return
         }
+        
+        self.amount = serving.isGramsOrMilliliters ? "100" : "1"
     }
     
     // MARK: - Serving Description
@@ -81,16 +74,18 @@ final class FoodViewModel: ObservableObject {
         let description = serving.measurementDescription
         let metricAmount = Int(serving.metricServingAmount)
         let metricUnit = serving.metricServingUnit
-        
-        if MeasurementType.grams.fromDescription(description) == .grams ||
-            MeasurementType.milliliters.fromDescription(description) ==
-            .milliliters ||  description.contains("serving (\(metricAmount)g") {
+
+        switch description {
+        case MeasurementType.grams.rawValue,
+            MeasurementType.milliliters.rawValue:
             return description
+        case let desc where desc.contains("serving (\(metricAmount)g"):
+            return description
+        default:
+            return "\(description) (\(metricAmount)\(metricUnit))"
         }
-        
-        return "\(description) (\(metricAmount)\(metricUnit))"
     }
-    
+
     var servingDescription: String {
         guard let serving = selectedServing else {
             return "Select Serving"
@@ -117,13 +112,17 @@ final class FoodViewModel: ObservableObject {
     
     func calculateBaseAmountValue(_ amount: Double,
                                   measurementDescription: String) -> Double {
-        if amount == 0 {
+        if amount.isZero {
             return 0
         }
-        return MeasurementType
-            .grams.fromDescription(measurementDescription) == .grams ||
-        MeasurementType.milliliters.fromDescription(measurementDescription) ==
-            .milliliters ? amount * 0.01 : amount
+        
+        switch measurementDescription {
+        case MeasurementType.grams.rawValue,
+            MeasurementType.milliliters.rawValue:
+            return amount * 0.01
+        default:
+            return amount
+        }
     }
     
     var compactNutrientDetails: [CompactNutrientDetail] {
@@ -160,14 +159,6 @@ enum MeasurementType: String {
     case grams = "g"
     case milliliters = "ml"
     case servings
-    
-    func fromDescription(_ description: String) -> MeasurementType {
-        switch description {
-        case "g": .grams
-        case "ml": .milliliters
-        default: .servings
-        }
-    }
 }
 
 enum MeasurementUnit: String, CaseIterable, Identifiable {

@@ -24,6 +24,25 @@ struct Serving: Decodable, Hashable {
     let metricServingAmount: Double
     let metricServingUnit: String
     
+    var measurementUnit: MeasurementUnit {
+        switch isGramsOrMilliliters {
+        case true:
+            .grams
+        case false:
+            .servings
+        }
+    }
+    
+    var isGramsOrMilliliters: Bool {
+        switch measurementDescription {
+        case MeasurementType.grams.rawValue,
+            MeasurementType.milliliters.rawValue:
+            true
+        default:
+            false
+        }
+    }
+    
     enum CodingKeys: String, CodingKey {
         case fat,
              saturatedFat = "saturated_fat",

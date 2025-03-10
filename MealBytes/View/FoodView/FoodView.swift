@@ -69,7 +69,8 @@ struct FoodView: View {
                                 HStack {
                                     ForEach(viewModel.compactNutrientDetails) {
                                         nutrient in
-                                        CompactNutrientDetailRow(nutrient: nutrient)
+                                        CompactNutrientDetailRow(nutrient:
+                                                                    nutrient)
                                     }
                                 }
                                 .padding(.vertical, 10)
