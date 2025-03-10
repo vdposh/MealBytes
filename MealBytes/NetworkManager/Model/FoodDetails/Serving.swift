@@ -25,10 +25,21 @@ struct Serving: Decodable, Hashable {
     let metricServingUnit: String
     
     enum CodingKeys: String, CodingKey {
-        case fat, saturated_fat, monounsaturated_fat, polyunsaturated_fat,
-             carbohydrate, sugar, fiber, protein, calories, sodium,
-             cholesterol, potassium, measurement_description,
-             metric_serving_amount, metric_serving_unit
+        case fat,
+             saturatedFat = "saturated_fat",
+             monounsaturatedFat = "monounsaturated_fat",
+             polyunsaturatedFat = "polyunsaturated_fat",
+             carbohydrate,
+             sugar,
+             fiber,
+             protein,
+             calories,
+             sodium,
+             cholesterol,
+             potassium,
+             measurementDescription = "measurement_description",
+             metricServingAmount = "metric_serving_amount",
+             metricServingUnit = "metric_serving_unit"
     }
     
     init(from decoder: Decoder) throws {
@@ -44,9 +55,9 @@ struct Serving: Decodable, Hashable {
         }
         
         fat = decodeDouble(forKey: .fat)
-        saturatedFat = decodeDouble(forKey: .saturated_fat)
-        monounsaturatedFat = decodeDouble(forKey: .monounsaturated_fat)
-        polyunsaturatedFat = decodeDouble(forKey: .polyunsaturated_fat)
+        saturatedFat = decodeDouble(forKey: .saturatedFat)
+        monounsaturatedFat = decodeDouble(forKey: .monounsaturatedFat)
+        polyunsaturatedFat = decodeDouble(forKey: .polyunsaturatedFat)
         carbohydrate = decodeDouble(forKey: .carbohydrate)
         sugar = decodeDouble(forKey: .sugar)
         fiber = decodeDouble(forKey: .fiber)
@@ -55,8 +66,8 @@ struct Serving: Decodable, Hashable {
         sodium = decodeDouble(forKey: .sodium)
         cholesterol = decodeDouble(forKey: .cholesterol)
         potassium = decodeDouble(forKey: .potassium)
-        measurementDescription = decodeString(forKey: .measurement_description)
-        metricServingAmount = decodeDouble(forKey: .metric_serving_amount)
-        metricServingUnit = decodeString(forKey: .metric_serving_unit)
+        measurementDescription = decodeString(forKey: .measurementDescription)
+        metricServingAmount = decodeDouble(forKey: .metricServingAmount)
+        metricServingUnit = decodeString(forKey: .metricServingUnit)
     }
 }

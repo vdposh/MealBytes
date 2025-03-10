@@ -20,6 +20,8 @@ final class FoodViewModel: ObservableObject {
     @Published var errorMessage: AppError?
     @Published var showActionSheet = false
     @Published var unit: MeasurementUnit = .grams
+    @Published var isLoading = true
+    @Published var isError = false
     
     let food: Food
     
@@ -34,6 +36,7 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Fetch Food Details
     @MainActor
     func fetchFoodDetails() async {
+        isLoading = true
         do {
             let fetchedFoodDetail = try await networkManager
                 .fetchFoodDetails(foodID: food.searchFoodId)
@@ -45,7 +48,9 @@ final class FoodViewModel: ObservableObject {
             default:
                 self.errorMessage = .networkError
             }
+            isError = true
         }
+        isLoading = false
     }
     
     // MARK: - Serving Selection and Amount Setting

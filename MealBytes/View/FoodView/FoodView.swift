@@ -11,8 +11,6 @@ import Combine
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
-    @State private var isLoading = true
-    @State private var isError = false
     
     init(food: Food) {
         _viewModel = StateObject(wrappedValue: FoodViewModel(food: food))
@@ -22,9 +20,9 @@ struct FoodView: View {
         NavigationStack {
             ZStack {
                 List {
-                    if !isLoading {
+                    if !viewModel.isLoading {
                         Section {
-                            Text("\(viewModel.food.searchFoodName)")
+                            Text(viewModel.food.searchFoodName)
                                 .font(.headline)
                                 .listRowSeparator(.hidden)
                                 .padding(.top, 10)
@@ -33,7 +31,7 @@ struct FoodView: View {
                                 CustomTextFieldView(title: "Size",
                                                     text: $viewModel.amount)
                                 .focused($isTextFieldFocused)
-                                .disabled(isError)
+                                .disabled(viewModel.isError)
                                 .toolbar {
                                     ToolbarItemGroup(placement: .keyboard) {
                                         Text("Enter serving size")
@@ -51,7 +49,7 @@ struct FoodView: View {
                                 ) {
                                     viewModel.showActionSheet.toggle()
                                 }
-                                .disabled(isError)
+                                .disabled(viewModel.isError)
                                 .confirmationDialog(
                                     "Select Serving",
                                     isPresented: $viewModel.showActionSheet,
@@ -93,7 +91,7 @@ struct FoodView: View {
                                             .cornerRadius(12)
                                     }
                                     .buttonStyle(.plain)
-                                    .disabled(isError)
+                                    .disabled(viewModel.isError)
                                     
                                     Button(action: {
                                         // Add to Diary
@@ -110,7 +108,8 @@ struct FoodView: View {
                                             .cornerRadius(12)
                                     }
                                     .disabled(!viewModel
-                                        .isAddButtonEnabled() || isError)
+                                        .isAddButtonEnabled() ||
+                                              viewModel.isError)
                                     .buttonStyle(.plain)
                                 }
                                 .padding(.bottom, 10)
@@ -125,8 +124,7 @@ struct FoodView: View {
                                 .listRowSeparator(.hidden)
                                 .padding(.top, 10)
                             
-                            ForEach(viewModel.nutrientDetails, id:
-                                        \.title) { nutrient in
+                            ForEach(viewModel.nutrientDetails, id: \.title) { nutrient in
                                 NutrientDetailRow(
                                     title: nutrient.title,
                                     value: nutrient.value,
@@ -140,7 +138,7 @@ struct FoodView: View {
                 .listSectionSpacing(.compact)
                 .scrollDismissesKeyboard(.never)
                 
-                if isLoading {
+                if viewModel.isLoading {
                     VStack {
                         Spacer()
                         ProgressView()
@@ -155,15 +153,13 @@ struct FoodView: View {
         }
         .task {
             await viewModel.fetchFoodDetails()
-            isLoading = false
         }
         .alert(item: $viewModel.errorMessage) { error in
             Alert(
                 title: Text("Error"),
                 message: Text(error.errorDescription),
-                dismissButton: .default(Text("OK")) {
-                    isError = true
-                })
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
     
