@@ -13,7 +13,8 @@ struct Food: Decodable {
     let searchFoodDescription: String
     
     enum CodingKeys: String, CodingKey {
-        case searchFoodId = "food_id", searchFoodName = "food_name", 
+        case searchFoodId = "food_id",
+             searchFoodName = "food_name", 
              searchFoodDescription = "food_description"
     }
 }

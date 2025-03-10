@@ -14,14 +14,11 @@ struct Formatter {
         case oneDecimal
         case twoDecimals
         
-        func formatString(for value: Double) -> String {
+        func formatString() -> String {
             switch self {
-            case .integer:
-                String(format: "%.0f", value)
-            case .oneDecimal:
-                String(format: "%.1f", value)
-            case .twoDecimals:
-                String(format: "%.2f", value)
+            case .integer: "%.0f"
+            case .oneDecimal: "%.1f"
+            case .twoDecimals: "%.2f"
             }
         }
     }
@@ -35,12 +32,13 @@ struct Formatter {
     
     func determineFormatType(value: Double, unit: Unit,
                              roundToInt: Bool) -> FormatType {
-        if unit == .kcal || roundToInt || value == floor(value) {
-            return .integer
-        } else if value * 10 == floor(value * 10) {
-            return .oneDecimal
-        } else {
-            return .twoDecimals
+        switch true {
+        case unit == .kcal, roundToInt, value == floor(value):
+                .integer
+        case value * 10 == floor(value * 10):
+                .oneDecimal
+        default:
+                .twoDecimals
         }
     }
     
@@ -50,7 +48,8 @@ struct Formatter {
         let formatType = determineFormatType(value: value,
                                              unit: unit,
                                              roundToInt: roundToInt)
-        let formattedValue = formatType.formatString(for: value)
+        let formattedValue = "\(value)".formatted(with:
+                                                    formatType.formatString())
         let finalValue = formattedValue.replacingOccurrences(of: ".",
                                                              with: ",")
         

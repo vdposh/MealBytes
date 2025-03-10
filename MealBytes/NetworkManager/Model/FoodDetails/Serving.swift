@@ -26,20 +26,16 @@ struct Serving: Decodable, Hashable {
     
     var measurementUnit: MeasurementUnit {
         switch isGramsOrMilliliters {
-        case true:
-            .grams
-        case false:
-            .servings
+        case true: .grams
+        case false: .servings
         }
     }
     
     var isGramsOrMilliliters: Bool {
         switch measurementDescription {
         case MeasurementType.grams.rawValue,
-            MeasurementType.milliliters.rawValue:
-            true
-        default:
-            false
+            MeasurementType.milliliters.rawValue: true
+        default: false
         }
     }
     

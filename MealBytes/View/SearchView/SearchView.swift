@@ -14,7 +14,7 @@ struct SearchView: View {
         NavigationStack {
             VStack {
                 if viewModel.errorMessage != nil {
-                    ContentUnavailableView.search(text: "\(viewModel.query)")
+                    ContentUnavailableView.search(text: viewModel.query)
                 } else {
                     List(viewModel.foods, id: \.searchFoodId) { food in
                         NavigationLink(destination: FoodView(food: food)) {

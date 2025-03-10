@@ -24,21 +24,25 @@ final class SearchViewModel: ObservableObject {
         self.networkManager = networkManager
     }
     
+    deinit {
+        searchCancellable?.cancel()
+    }
+    
     private func debounceSearch(_ query: String) {
         searchCancellable?.cancel()
         searchCancellable = $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
-            .handleEvents(receiveOutput: { [weak self] query in
-                if query.isEmpty {
-                    self?.foods = []
-                    self?.errorMessage = nil
-                }
-            })
-            .filter { !$0.isEmpty }
             .sink { [weak self] query in
+                guard let self else { return }
+                
+                if query.isEmpty {
+                    foods = []
+                    errorMessage = nil
+                    return
+                }
+                
                 Task {
-                    guard let self else { return }
                     do {
                         let foods = try await self.networkManager
                             .fetchFoods(query: query)

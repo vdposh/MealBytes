@@ -18,12 +18,9 @@ enum AppError: Error, Identifiable, LocalizedError {
 
     var errorDescription: String {
         switch self {
-        case .invalidID:
-            return "Invalid Identifier: The ID provided is not valid. Please check and try again."
-        case .networkError:
-            return "Network Error: There was a problem connecting to the network. Please check your internet connection and try again."
-        case .decodingError:
-            return "Decoding Error: There was a problem decoding the data. Please ensure the data format is correct and try again."
+        case .invalidID: "Invalid Identifier: The ID provided is not valid. Please check and try again."
+        case .networkError: "Network Error: There was a problem connecting to the network. Please check your internet connection and try again."
+        case .decodingError: "Decoding Error: There was a problem decoding the data. Please ensure the data format is correct and try again."
         }
     }
 }

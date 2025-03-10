@@ -6,19 +6,19 @@
 //
 
 enum NutrientType {
-    case calories
-    case servingSize(metricServingUnit: String)
-    case fat
-    case saturatedFat
-    case monounsaturatedFat
-    case polyunsaturatedFat
-    case carbohydrates
-    case sugar
-    case fiber
-    case protein
-    case potassium
-    case sodium
-    case cholesterol
+    case calories,
+         servingSize(metricServingUnit: String),
+         fat,
+         saturatedFat,
+         monounsaturatedFat,
+         polyunsaturatedFat,
+         carbohydrates,
+         sugar,
+         fiber,
+         protein,
+         potassium,
+         sodium,
+         cholesterol
     
     var title: String {
         switch self {
@@ -49,16 +49,24 @@ enum NutrientType {
         switch self {
         case .calories: "kcal"
         case .servingSize(let metricServingUnit): metricServingUnit
-        case .fat, .saturatedFat, .monounsaturatedFat, .polyunsaturatedFat,
-                .carbohydrates, .sugar, .fiber, .protein: "g"
-        case .potassium, .sodium, .cholesterol: "mg"
+        case .fat,
+                .saturatedFat,
+                .monounsaturatedFat,
+                .polyunsaturatedFat,
+                .carbohydrates,
+                .sugar,
+                .fiber,
+                .protein: "g"
+        case .potassium,
+                .sodium,
+                .cholesterol: "mg"
         }
     }
     
     var alternativeUnit: String {
-          switch self {
-          case .calories: ""
-          default: unit
-          }
-      }
+        switch self {
+        case .calories: ""
+        default: unit
+        }
+    }
 }

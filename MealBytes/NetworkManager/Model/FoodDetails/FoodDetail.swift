@@ -13,6 +13,8 @@ struct FoodDetail: Decodable {
     var servings: Servings
     
     enum CodingKeys: String, CodingKey {
-        case foodId = "food_id", foodName = "food_name", servings
+        case foodId = "food_id",
+             foodName = "food_name",
+             servings
     }
 }
