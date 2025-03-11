@@ -13,16 +13,16 @@ struct NutrientDetail: Identifiable {
     }
     let type: NutrientType
     let value: Double
-    let unit: String
+    let serving: Serving
     let isSubValue: Bool
     
     init(type: NutrientType,
          value: Double,
-         unit: String,
+         serving: Serving,
          isSubValue: Bool) {
         self.type = type
         self.value = value
-        self.unit = unit
+        self.serving = serving
         self.isSubValue = isSubValue
     }
 }

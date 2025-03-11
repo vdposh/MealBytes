@@ -76,8 +76,8 @@ final class FoodViewModel: ObservableObject {
         let metricUnit = serving.metricServingUnit
         
         switch description {
-        case MeasurementType.grams.rawValue,
-            MeasurementType.milliliters.rawValue:
+        case MeasurementType.grams.description,
+            MeasurementType.milliliters.description:
             return description
         case let desc where desc.contains("serving (\(metricAmount)g"):
             return description
@@ -117,8 +117,8 @@ final class FoodViewModel: ObservableObject {
         }
         
         switch measurementDescription {
-        case MeasurementType.grams.rawValue,
-            MeasurementType.milliliters.rawValue:
+        case MeasurementType.grams.description,
+            MeasurementType.milliliters.description:
             return amount * 0.01
         default:
             return amount
@@ -146,17 +146,11 @@ final class FoodViewModel: ObservableObject {
                 NutrientDetail(
                     type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
-                    unit: detail.type.unit(for: selectedServing),
+                    serving: selectedServing,
                     isSubValue: detail.isSubValue
                 )
             }
     }
-}
-
-enum MeasurementType: String {
-    case grams = "g"
-    case milliliters = "ml"
-    case servings
 }
 
 enum MeasurementUnit: String, CaseIterable, Identifiable {

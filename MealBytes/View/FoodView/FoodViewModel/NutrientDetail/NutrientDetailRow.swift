@@ -18,7 +18,8 @@ struct NutrientDetailRow: View {
             HStack {
                 Text(Formatter().formattedValue(
                     nutrient.value,
-                    unit: Formatter.Unit(rawValue: nutrient.unit) ?? .empty))
+                    unit: Formatter.Unit(rawValue: nutrient.type.unit(
+                        for: nutrient.serving).description) ?? .empty))
                 .foregroundColor(nutrient.isSubValue ? .gray : .primary)
                 .lineLimit(1)
             }
