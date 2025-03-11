@@ -13,8 +13,11 @@ struct CompactNutrientDetail: Identifiable {
     let title: String
     let value: Double
     let unit: String
-
-    init(id: String, type: NutrientType, value: Double, unit: String) {
+    
+    init(id: String,
+         type: NutrientType,
+         value: Double,
+         unit: String) {
         self.id = id
         self.type = type
         self.title = type.alternativeTitle

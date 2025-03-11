@@ -13,14 +13,12 @@ struct NutrientDetail: Identifiable {
     let value: Double
     let unit: String
     let isSubValue: Bool
-
-    init(
-        id: String,
-        type: NutrientType,
-        value: Double,
-        unit: String,
-        isSubValue: Bool
-    ) {
+    
+    init(id: String,
+         type: NutrientType,
+         value: Double,
+         unit: String,
+         isSubValue: Bool) {
         self.id = id
         self.type = type
         self.value = value

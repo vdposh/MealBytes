@@ -74,7 +74,7 @@ final class FoodViewModel: ObservableObject {
         let description = serving.measurementDescription
         let metricAmount = Int(serving.metricServingAmount)
         let metricUnit = serving.metricServingUnit
-
+        
         switch description {
         case MeasurementType.grams.rawValue,
             MeasurementType.milliliters.rawValue:
@@ -85,7 +85,7 @@ final class FoodViewModel: ObservableObject {
             return "\(description) (\(metricAmount)\(metricUnit))"
         }
     }
-
+    
     var servingDescription: String {
         guard let serving = selectedServing else {
             return "Select Serving"

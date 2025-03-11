@@ -30,7 +30,8 @@ struct Formatter {
         case mg
     }
     
-    func determineFormatType(value: Double, unit: Unit,
+    func determineFormatType(value: Double,
+                             unit: Unit,
                              roundToInt: Bool) -> FormatType {
         switch true {
         case unit == .kcal, roundToInt, value == floor(value):
@@ -42,13 +43,14 @@ struct Formatter {
         }
     }
     
-    func formattedValue(_ value: Double, unit: Unit,
+    func formattedValue(_ value: Double,
+                        unit: Unit,
                         roundToInt: Bool = false,
                         includeSpace: Bool = true) -> String {
         let formatType = determineFormatType(value: value,
                                              unit: unit,
                                              roundToInt: roundToInt)
-        let formattedValue = "\(value)".formatted(with:
+        let formattedValue = value.formattedDouble(with:
                                                     formatType.formatString())
         let finalValue = formattedValue.replacingOccurrences(of: ".",
                                                              with: ",")

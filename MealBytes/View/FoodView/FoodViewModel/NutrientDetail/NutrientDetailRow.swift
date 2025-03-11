@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NutrientDetailRow: View {
     let nutrient: NutrientDetail
-
+    
     var body: some View {
         HStack {
             Text(nutrient.type.title)

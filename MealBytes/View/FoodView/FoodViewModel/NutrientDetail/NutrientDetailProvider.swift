@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct NutrientDetailProvider {
-    func getNutrientDetails(
-        from serving: Serving
-    ) -> [NutrientDetail] {
+    func getNutrientDetails(from serving:
+                            Serving) -> [NutrientDetail] {
         [
             NutrientDetail(
                 id: "calories",
@@ -96,7 +95,7 @@ struct NutrientDetailProvider {
                 type: .sodium,
                 value: serving.sodium,
                 unit: NutrientType.sodium.unit,
-                isSubValue: false
+                isSubValue: true
             ),
             NutrientDetail(
                 id: "cholesterol",

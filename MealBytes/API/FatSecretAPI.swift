@@ -33,11 +33,17 @@ extension FatSecretAPI: TargetType {
         let parameters: [String: Any]
         
         switch self {
-        case .searchFoods(let query): parameters = ["format": format,
-                                                    "search_expression": query]
+        case .searchFoods(let query):
+            parameters = [
+                "format": format,
+                "search_expression": query
+            ]
             
-        case .getFoodDetails(let foodID): parameters = ["format": format,
-                                                        "food_id": foodID]
+        case .getFoodDetails(let foodID):
+            parameters = [
+                "format": format,
+                "food_id": foodID
+            ]
         }
         
         return .requestParameters(parameters: parameters,

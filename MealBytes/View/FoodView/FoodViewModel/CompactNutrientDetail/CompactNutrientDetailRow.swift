@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CompactNutrientDetailRow: View {
     let nutrient: CompactNutrientDetail
-
+    
     var body: some View {
         VStack {
             Text(nutrient.title)
