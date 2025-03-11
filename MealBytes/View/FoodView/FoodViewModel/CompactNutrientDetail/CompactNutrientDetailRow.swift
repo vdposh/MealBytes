@@ -12,7 +12,7 @@ struct CompactNutrientDetailRow: View {
     
     var body: some View {
         VStack {
-            Text(nutrient.title)
+            Text(nutrient.type.alternativeTitle)
                 .font(.subheadline)
                 .foregroundColor(.white)
                 .padding(.vertical, 1)
