@@ -11,6 +11,7 @@ import Combine
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
+    @State private var isBookmarkFilled = false
     
     init(food: Food) {
         _viewModel = StateObject(wrappedValue: FoodViewModel(food: food))
@@ -47,7 +48,7 @@ struct FoodView: View {
         }
     }
     
-    private var                         servingSizeSection: some View {
+    private var servingSizeSection: some View {
         Section {
             Text(viewModel.food.searchFoodName)
                 .font(.headline)
@@ -122,13 +123,32 @@ struct FoodView: View {
                         Text("Add to Diary")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(viewModel.isAddButtonEnabled() ? .customGreen : Color.customGreen.opacity(0.9))
+                            .background(viewModel.isAddButtonEnabled() ?
+                                .customGreen : Color.customGreen.opacity(0.9))
                             .foregroundColor(.white)
                             .font(.headline)
                             .cornerRadius(12)
                     }
                     .disabled(!viewModel.isAddButtonEnabled() ||
                               viewModel.isError)
+                    .buttonStyle(.plain)
+                    
+                   
+                    Button(action: {
+                        isBookmarkFilled.toggle()
+                    }) {
+                        Image(systemName: isBookmarkFilled ?
+                              "bookmark.fill" : "bookmark")
+                            .foregroundColor(.customGreen)
+                            .imageScale(.large)
+                            .scaleEffect(x: 1.1, y: 0.9)
+                            .frame(width: 53, height: 53)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(.customGreen, lineWidth: 1.3)
+                                    .padding(1)
+                            )
+                    }
                     .buttonStyle(.plain)
                 }
                 .padding(.bottom, 10)
@@ -138,7 +158,7 @@ struct FoodView: View {
         }
     }
     
-    private var                         nutrientDetailSection: some View {
+    private var nutrientDetailSection: some View {
         Section {
             Text("Detailed Information")
                 .font(.headline)
@@ -174,8 +194,8 @@ struct FoodView: View {
 #Preview {
     FoodView(
         food: Food(
-            searchFoodId: "39715",
-            searchFoodName: "Oats, 123",
+            searchFoodId: "794",
+            searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         )
     )

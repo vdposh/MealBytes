@@ -66,7 +66,12 @@ final class FoodViewModel: ObservableObject {
             return
         }
         
-        self.amount = serving.isGramsOrMilliliters ? "100" : "1"
+        switch serving.isMetricMeasurement {
+        case true:
+            self.amount = "100"
+        case false:
+            self.amount = "1"
+        }
     }
     
     // MARK: - Serving Description
@@ -75,11 +80,10 @@ final class FoodViewModel: ObservableObject {
         let metricAmount = Int(serving.metricServingAmount)
         let metricUnit = serving.metricServingUnit
         
-        switch description {
-        case MeasurementType.grams.description,
-            MeasurementType.milliliters.description:
+        switch serving.isMetricMeasurement {
+        case true:
             return description
-        case let desc where desc.contains("serving (\(metricAmount)g"):
+        case false where description.contains("serving (\(metricAmount)g"):
             return description
         default:
             return "\(description) (\(metricAmount)\(metricUnit))"
@@ -105,22 +109,20 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing else { return 1 }
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
-        return calculateBaseAmountValue(
-            amountValue,
-            measurementDescription: selectedServing.measurementDescription)
+        return calculateBaseAmountValue(amountValue,
+                                        serving: selectedServing)
     }
     
     func calculateBaseAmountValue(_ amount: Double,
-                                  measurementDescription: String) -> Double {
+                                  serving: Serving) -> Double {
         if amount.isZero {
             return 0
         }
         
-        switch measurementDescription {
-        case MeasurementType.grams.description,
-            MeasurementType.milliliters.description:
+        switch serving.isMetricMeasurement {
+        case true:
             return amount * 0.01
-        default:
+        case false:
             return amount
         }
     }
@@ -163,8 +165,8 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
 #Preview {
     FoodView(
         food: Food(
-            searchFoodId: "39715",
-            searchFoodName: "Oats, 123",
+            searchFoodId: "794",
+            searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         )
     )

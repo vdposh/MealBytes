@@ -25,21 +25,16 @@ struct Serving: Decodable, Hashable {
     let metricServingUnit: String
     
     var measurementUnit: MeasurementUnit {
-        switch isGramsOrMilliliters {
-        case
-            true: .grams
-        case
-            false: .servings
+        switch isMetricMeasurement {
+        case true: .grams
+        case false: .servings
         }
     }
     
-    var isGramsOrMilliliters: Bool {
-        switch measurementDescription {
-        case MeasurementType.grams.description,
-            MeasurementType.milliliters.description: true
-        default:
-            false
-        }
+    var isMetricMeasurement: Bool {
+        [MeasurementType.grams.description,
+         MeasurementType.milliliters.description]
+            .contains(measurementDescription)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -87,5 +82,17 @@ struct Serving: Decodable, Hashable {
         measurementDescription = decodeString(forKey: .measurementDescription)
         metricServingAmount = decodeDouble(forKey: .metricServingAmount)
         metricServingUnit = decodeString(forKey: .metricServingUnit)
+    }
+}
+
+enum MeasurementType: String {
+    case grams
+    case milliliters
+    
+    var description: String {
+        switch self {
+        case .grams: "g"
+        case .milliliters: "ml"
+        }
     }
 }
