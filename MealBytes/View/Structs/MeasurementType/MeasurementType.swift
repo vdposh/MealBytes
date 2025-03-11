@@ -8,15 +8,15 @@
 import SwiftUI
 
 enum MeasurementType: String {
-    case grams = "g"
-    case milliliters = "ml"
+    case grams
+    case milliliters
     case servings
 
     var description: String {
         switch self {
         case .grams: "g"
         case .milliliters: "ml"
-        case .servings: "servings"
+        case .servings: "serving"
         }
     }
 }

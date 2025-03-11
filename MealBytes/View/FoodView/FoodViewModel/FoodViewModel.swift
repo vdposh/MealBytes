@@ -133,7 +133,7 @@ final class FoodViewModel: ObservableObject {
                 CompactNutrientDetail(
                     type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
-                    unit: detail.unit
+                    serving: detail.serving
                 )
             }
     }

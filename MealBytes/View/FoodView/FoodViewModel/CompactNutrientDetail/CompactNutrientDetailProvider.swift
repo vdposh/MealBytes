@@ -14,22 +14,22 @@ struct CompactNutrientDetailProvider {
             CompactNutrientDetail(
                 type: .calories,
                 value: serving.calories,
-                unit: NutrientType.calories.alternativeUnit(for: serving)
+                serving: serving
             ),
             CompactNutrientDetail(
                 type: .fat,
                 value: serving.fat,
-                unit: NutrientType.fat.unit(for: serving)
+                serving: serving
             ),
             CompactNutrientDetail(
                 type: .protein,
                 value: serving.protein,
-                unit: NutrientType.protein.unit(for: serving)
+                serving: serving
             ),
             CompactNutrientDetail(
                 type: .carbohydrates,
                 value: serving.carbohydrate,
-                unit: NutrientType.carbohydrates.unit(for: serving)
+                serving: serving
             )
         ]
     }
