@@ -5,9 +5,11 @@
 //  Created by Porshe on 08/03/2025.
 //
 
-enum NutrientType {
+enum NutrientType: String, Identifiable {
+    var id: String { self.rawValue }
+    
     case calories,
-         servingSize(metricServingUnit: String),
+         servingSize,
          fat,
          saturatedFat,
          monounsaturatedFat,
@@ -45,10 +47,10 @@ enum NutrientType {
         }
     }
     
-    var unit: String {
+    func unit(for serving: Serving) -> String {
         switch self {
         case .calories: "kcal"
-        case .servingSize(let metricServingUnit): metricServingUnit
+        case .servingSize: serving.metricServingUnit
         case .fat,
                 .saturatedFat,
                 .monounsaturatedFat,
@@ -63,10 +65,10 @@ enum NutrientType {
         }
     }
     
-    var alternativeUnit: String {
+    func alternativeUnit(for serving: Serving) -> String {
         switch self {
         case .calories: ""
-        default: unit
+        default: unit(for: serving)
         }
     }
 }

@@ -12,96 +12,81 @@ struct NutrientDetailProvider {
                             Serving) -> [NutrientDetail] {
         [
             NutrientDetail(
-                id: "calories",
                 type: .calories,
                 value: serving.calories,
-                unit: NutrientType.calories.unit,
+                unit: NutrientType.calories.unit(for: serving),
                 isSubValue: false
             ),
             NutrientDetail(
-                id: "servingSize",
-                type: .servingSize(
-                    metricServingUnit: serving.metricServingUnit
-                ),
+                type: .servingSize,
                 value: serving.metricServingAmount,
-                unit: serving.metricServingUnit,
+                unit: NutrientType.servingSize.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "fat",
                 type: .fat,
                 value: serving.fat,
-                unit: NutrientType.fat.unit,
+                unit: NutrientType.fat.unit(for: serving),
                 isSubValue: false
             ),
             NutrientDetail(
-                id: "saturatedFat",
                 type: .saturatedFat,
                 value: serving.saturatedFat,
-                unit: NutrientType.saturatedFat.unit,
+                unit: NutrientType.saturatedFat.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "monounsaturatedFat",
                 type: .monounsaturatedFat,
                 value: serving.monounsaturatedFat,
-                unit: NutrientType.monounsaturatedFat.unit,
+                unit: NutrientType.monounsaturatedFat.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "polyunsaturatedFat",
                 type: .polyunsaturatedFat,
                 value: serving.polyunsaturatedFat,
-                unit: NutrientType.polyunsaturatedFat.unit,
+                unit: NutrientType.polyunsaturatedFat.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "carbohydrates",
                 type: .carbohydrates,
                 value: serving.carbohydrate,
-                unit: NutrientType.carbohydrates.unit,
+                unit: NutrientType.carbohydrates.unit(for: serving),
                 isSubValue: false
             ),
             NutrientDetail(
-                id: "sugar",
                 type: .sugar,
                 value: serving.sugar,
-                unit: NutrientType.sugar.unit,
+                unit: NutrientType.sugar.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "fiber",
                 type: .fiber,
                 value: serving.fiber,
-                unit: NutrientType.fiber.unit,
+                unit: NutrientType.fiber.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "protein",
                 type: .protein,
                 value: serving.protein,
-                unit: NutrientType.protein.unit,
+                unit: NutrientType.protein.unit(for: serving),
                 isSubValue: false
             ),
             NutrientDetail(
-                id: "potassium",
                 type: .potassium,
                 value: serving.potassium,
-                unit: NutrientType.potassium.unit,
+                unit: NutrientType.potassium.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "sodium",
                 type: .sodium,
                 value: serving.sodium,
-                unit: NutrientType.sodium.unit,
+                unit: NutrientType.sodium.unit(for: serving),
                 isSubValue: true
             ),
             NutrientDetail(
-                id: "cholesterol",
                 type: .cholesterol,
                 value: serving.cholesterol,
-                unit: NutrientType.cholesterol.unit,
+                unit: NutrientType.cholesterol.unit(for: serving),
                 isSubValue: true
             )
         ]

@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct NutrientDetail: Identifiable {
-    let id: String
+    var id: String {
+        String(describing: type)
+    }
     let type: NutrientType
     let value: Double
     let unit: String
     let isSubValue: Bool
     
-    init(id: String,
-         type: NutrientType,
+    init(type: NutrientType,
          value: Double,
          unit: String,
          isSubValue: Bool) {
-        self.id = id
         self.type = type
         self.value = value
         self.unit = unit

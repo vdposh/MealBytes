@@ -87,10 +87,10 @@ final class FoodViewModel: ObservableObject {
     }
     
     var servingDescription: String {
-        guard let serving = selectedServing else {
+        guard let selectedServing else {
             return "Select Serving"
         }
-        return servingDescription(for: serving)
+        return servingDescription(for: selectedServing)
     }
     
     // MARK: - Button States
@@ -131,7 +131,6 @@ final class FoodViewModel: ObservableObject {
             .getCompactNutrientDetails(from: selectedServing)
             .map { detail in
                 CompactNutrientDetail(
-                    id: detail.id,
                     type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
                     unit: detail.unit
@@ -145,10 +144,9 @@ final class FoodViewModel: ObservableObject {
             .getNutrientDetails(from: selectedServing)
             .map { detail in
                 NutrientDetail(
-                    id: detail.id,
                     type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
-                    unit: detail.type.unit,
+                    unit: detail.type.unit(for: selectedServing),
                     isSubValue: detail.isSubValue
                 )
             }

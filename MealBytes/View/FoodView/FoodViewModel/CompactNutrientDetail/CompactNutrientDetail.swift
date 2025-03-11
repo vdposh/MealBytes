@@ -8,17 +8,15 @@
 import SwiftUI
 
 struct CompactNutrientDetail: Identifiable {
-    let id: String
+    var id: NutrientType { type }
     let type: NutrientType
     let title: String
     let value: Double
     let unit: String
     
-    init(id: String,
-         type: NutrientType,
+    init(type: NutrientType,
          value: Double,
          unit: String) {
-        self.id = id
         self.type = type
         self.title = type.alternativeTitle
         self.value = value

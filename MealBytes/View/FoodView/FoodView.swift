@@ -21,125 +21,16 @@ struct FoodView: View {
             ZStack {
                 List {
                     if !viewModel.isLoading {
-                        Section {
-                            Text(viewModel.food.searchFoodName)
-                                .font(.headline)
-                                .listRowSeparator(.hidden)
-                                .padding(.top, 10)
-                            
-                            VStack(spacing: 15) {
-                                CustomTextFieldView(title: "Size",
-                                                    text: $viewModel.amount)
-                                .focused($isTextFieldFocused)
-                                .disabled(viewModel.isError)
-                                .toolbar {
-                                    ToolbarItemGroup(placement: .keyboard) {
-                                        Text("Enter serving size")
-                                            .foregroundColor(.gray)
-                                        Spacer()
-                                        Button("Done") {
-                                            isTextFieldFocused = false
-                                        }
-                                    }
-                                }
-                                CustomButtonView(
-                                    title: "Serving",
-                                    description: viewModel.servingDescription,
-                                    showActionSheet: $viewModel.showActionSheet
-                                ) {
-                                    viewModel.showActionSheet.toggle()
-                                }
-                                .disabled(viewModel.isError)
-                                .confirmationDialog(
-                                    "Select Serving",
-                                    isPresented: $viewModel.showActionSheet,
-                                    titleVisibility: .visible
-                                ) {
-                                    if let servings = viewModel
-                                        .foodDetail?.servings.serving {
-                                        servingButtons(servings: servings)
-                                    }
-                                }
-                            }
-                            .padding(.bottom, 10)
-                        }
-                        
-                        Section {
-                            VStack {
-                                HStack {
-                                    ForEach(viewModel.compactNutrientDetails) {
-                                        nutrient in
-                                        CompactNutrientDetailRow(nutrient:
-                                                                    nutrient)
-                                    }
-                                }
-                                .padding(.vertical, 10)
-                                
-                                HStack {
-                                    Button(action: {
-                                        // Remove from Diary
-                                    }) {
-                                        Text("Remove")
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(.customRed)
-                                            .foregroundColor(.white)
-                                            .font(.headline)
-                                            .cornerRadius(12)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .disabled(viewModel.isError)
-                                    
-                                    Button(action: {
-                                        // Add to Diary
-                                    }) {
-                                        Text("Add to Diary")
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(viewModel
-                                                .isAddButtonEnabled() ?
-                                                .customGreen : Color
-                                                .customGreen.opacity(0.9))
-                                            .foregroundColor(.white)
-                                            .font(.headline)
-                                            .cornerRadius(12)
-                                    }
-                                    .disabled(!viewModel
-                                        .isAddButtonEnabled() ||
-                                              viewModel.isError)
-                                    .buttonStyle(.plain)
-                                }
-                                .padding(.bottom, 10)
-                            }
-                            .listRowInsets(EdgeInsets())
-                            .listRowBackground(Color.clear)
-                        }
-                        
-                        Section {
-                            Text("Detailed Information")
-                                .font(.headline)
-                                .listRowSeparator(.hidden)
-                                .padding(.top, 10)
-                            
-                            ForEach(viewModel.nutrientDetails) {
-                                nutrient in
-                                NutrientDetailRow(nutrient: nutrient)
-                            }
-                        }
+                        servingSizeSection
+                        nutrientActionSection
+                        nutrientDetailSection
                     }
                 }
                 .listSectionSpacing(.compact)
                 .scrollDismissesKeyboard(.never)
                 
                 if viewModel.isLoading {
-                    VStack {
-                        Spacer()
-                        ProgressView()
-                            .progressViewStyle(
-                                CircularProgressViewStyle(tint: .customGreen))
-                            .scaleEffect(1.5)
-                        Spacer()
-                    }
+                    loadingView
                 }
             }
             .navigationBarTitle("Add to Diary", displayMode: .inline)
@@ -153,6 +44,121 @@ struct FoodView: View {
                 message: Text(error.errorDescription),
                 dismissButton: .default(Text("OK"))
             )
+        }
+    }
+    
+    private var                         servingSizeSection: some View {
+        Section {
+            Text(viewModel.food.searchFoodName)
+                .font(.headline)
+                .listRowSeparator(.hidden)
+                .padding(.top, 10)
+            
+            VStack(spacing: 15) {
+                CustomTextFieldView(title: "Size",
+                                    text: $viewModel.amount)
+                .focused($isTextFieldFocused)
+                .disabled(viewModel.isError)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Text("Enter serving size")
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Button("Done") {
+                            isTextFieldFocused = false
+                        }
+                    }
+                }
+                CustomButtonView(
+                    title: "Serving",
+                    description: viewModel.servingDescription,
+                    showActionSheet: $viewModel.showActionSheet
+                ) {
+                    viewModel.showActionSheet.toggle()
+                }
+                .disabled(viewModel.isError)
+                .confirmationDialog(
+                    "Select Serving",
+                    isPresented: $viewModel.showActionSheet,
+                    titleVisibility: .visible
+                ) {
+                    if let servings = viewModel.foodDetail?.servings.serving {
+                        servingButtons(servings: servings)
+                    }
+                }
+            }
+            .padding(.bottom, 10)
+        }
+    }
+    
+    private var nutrientActionSection: some View {
+        Section {
+            VStack {
+                HStack {
+                    ForEach(viewModel.compactNutrientDetails) { nutrient in
+                        CompactNutrientDetailRow(nutrient: nutrient)
+                    }
+                }
+                .padding(.vertical, 10)
+                
+                HStack {
+                    Button(action: {
+                        // Remove from Diary
+                    }) {
+                        Text("Remove")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.customRed)
+                            .foregroundColor(.white)
+                            .font(.headline)
+                            .cornerRadius(12)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(viewModel.isError)
+                    
+                    Button(action: {
+                        // Add to Diary
+                    }) {
+                        Text("Add to Diary")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(viewModel.isAddButtonEnabled() ? .customGreen : Color.customGreen.opacity(0.9))
+                            .foregroundColor(.white)
+                            .font(.headline)
+                            .cornerRadius(12)
+                    }
+                    .disabled(!viewModel.isAddButtonEnabled() ||
+                              viewModel.isError)
+                    .buttonStyle(.plain)
+                }
+                .padding(.bottom, 10)
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+        }
+    }
+    
+    private var                         nutrientDetailSection: some View {
+        Section {
+            Text("Detailed Information")
+                .font(.headline)
+                .listRowSeparator(.hidden)
+                .padding(.top, 10)
+            
+            ForEach(viewModel.nutrientDetails) { nutrient in
+                NutrientDetailRow(nutrient: nutrient)
+            }
+        }
+    }
+    
+    private var loadingView: some View {
+        VStack {
+            Spacer()
+            ProgressView()
+                .progressViewStyle(
+                    CircularProgressViewStyle(tint: .customGreen))
+                .scaleEffect(1.5)
+            Spacer()
         }
     }
     

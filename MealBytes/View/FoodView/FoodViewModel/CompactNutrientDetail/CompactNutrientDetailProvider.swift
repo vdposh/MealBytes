@@ -12,28 +12,24 @@ struct CompactNutrientDetailProvider {
                                    Serving) -> [CompactNutrientDetail] {
         [
             CompactNutrientDetail(
-                id: "calories",
                 type: .calories,
                 value: serving.calories,
-                unit: NutrientType.calories.alternativeUnit
+                unit: NutrientType.calories.alternativeUnit(for: serving)
             ),
             CompactNutrientDetail(
-                id: "fat",
                 type: .fat,
                 value: serving.fat,
-                unit: NutrientType.fat.unit
+                unit: NutrientType.fat.unit(for: serving)
             ),
             CompactNutrientDetail(
-                id: "protein",
                 type: .protein,
                 value: serving.protein,
-                unit: NutrientType.protein.unit
+                unit: NutrientType.protein.unit(for: serving)
             ),
             CompactNutrientDetail(
-                id: "carbohydrates",
                 type: .carbohydrates,
                 value: serving.carbohydrate,
-                unit: NutrientType.carbohydrates.unit
+                unit: NutrientType.carbohydrates.unit(for: serving)
             )
         ]
     }
