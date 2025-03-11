@@ -9,20 +9,6 @@ import SwiftUI
 
 struct Formatter {
     // MARK: - Formatting Values
-    enum FormatType {
-        case integer
-        case oneDecimal
-        case twoDecimals
-        
-        func formatString() -> String {
-            switch self {
-            case .integer: "%.0f"
-            case .oneDecimal: "%.1f"
-            case .twoDecimals: "%.2f"
-            }
-        }
-    }
-    
     enum Unit: String {
         case empty = ""
         case kcal
@@ -30,32 +16,34 @@ struct Formatter {
         case mg
     }
     
-    func determineFormatType(value: Double,
-                             unit: Unit,
-                             roundToInt: Bool) -> FormatType {
-        switch true {
-        case unit == .kcal, roundToInt, value == floor(value):
-                .integer
-        case value * 10 == floor(value * 10):
-                .oneDecimal
-        default:
-                .twoDecimals
-        }
-    }
-    
     func formattedValue(_ value: Double,
                         unit: Unit,
-                        roundToInt: Bool = false,
-                        includeSpace: Bool = true) -> String {
-        let formatType = determineFormatType(value: value,
-                                             unit: unit,
-                                             roundToInt: roundToInt)
-        let formattedValue = value.formattedDouble(with:
-                                                    formatType.formatString())
-        let finalValue = formattedValue.replacingOccurrences(of: ".",
-                                                             with: ",")
+                        alwaysRoundUp: Bool = false) -> String {
+        let roundedValue: Double
         
-        return unit == .empty ? finalValue :
-        "\(finalValue)\(includeSpace ? " " : "")\(unit.rawValue)"
+        switch alwaysRoundUp {
+        case true:
+            roundedValue = ceil(value)
+        case false:
+            roundedValue = round(value * 10) / 10
+        }
+        
+        var finalValue: String
+        
+        switch roundedValue.truncatingRemainder(dividingBy: 1) {
+        case 0:
+            finalValue = String(format: "%.0f", roundedValue)
+        default:
+            finalValue = String(format: "%.1f", roundedValue)
+        }
+        
+        finalValue = finalValue.replacingOccurrences(of: ".", with: ",")
+        
+        switch unit {
+        case .empty:
+            return finalValue
+        default:
+            return "\(finalValue) \(unit.rawValue)"
+        }
     }
 }

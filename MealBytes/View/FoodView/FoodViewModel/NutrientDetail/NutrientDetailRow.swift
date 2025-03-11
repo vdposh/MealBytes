@@ -16,10 +16,7 @@ struct NutrientDetailRow: View {
                 .foregroundColor(nutrient.isSubValue ? .gray : .primary)
             Spacer()
             HStack {
-                Text(Formatter().formattedValue(
-                    nutrient.value,
-                    unit: Formatter.Unit(rawValue: nutrient.type.unit(
-                        for: nutrient.serving).description) ?? .empty))
+                Text("\(Formatter().formattedValue(nutrient.value, unit: Formatter.Unit(rawValue: nutrient.type.unit(for: nutrient.serving)) ?? .empty, alwaysRoundUp: nutrient.type == .calories))")
                 .foregroundColor(nutrient.isSubValue ? .gray : .primary)
                 .lineLimit(1)
             }

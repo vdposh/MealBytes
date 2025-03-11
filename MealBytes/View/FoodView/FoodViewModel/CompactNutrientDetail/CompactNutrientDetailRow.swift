@@ -17,13 +17,9 @@ struct CompactNutrientDetailRow: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 1)
             HStack {
-                Text(Formatter().formattedValue(
-                    nutrient.value,
-                    unit: Formatter.Unit(rawValue: nutrient.unit) ?? .empty,
-                    roundToInt: true,
-                    includeSpace: false))
-                .lineLimit(1)
-                .foregroundColor(.white)
+                Text(Formatter().formattedValue(nutrient.value, unit: Formatter.Unit(rawValue: nutrient.unit) ?? .empty, alwaysRoundUp: nutrient.type == .calories))
+                    .lineLimit(1)
+                    .foregroundColor(.white)
             }
         }
         .frame(height: 73)
