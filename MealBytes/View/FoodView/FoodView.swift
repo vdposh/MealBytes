@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
@@ -133,21 +132,20 @@ struct FoodView: View {
                               viewModel.isError)
                     .buttonStyle(.plain)
                     
-                   
                     Button(action: {
                         isBookmarkFilled.toggle()
                     }) {
                         Image(systemName: isBookmarkFilled ?
                               "bookmark.fill" : "bookmark")
-                            .foregroundColor(.customGreen)
-                            .imageScale(.large)
-                            .scaleEffect(x: 1.3, y: 1.0)
-                            .frame(width: 53, height: 53)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(.customGreen, lineWidth: 1.65)
-                                    .padding(1)
-                            )
+                        .foregroundColor(.customGreen)
+                        .imageScale(.large)
+                        .scaleEffect(x: 1.3, y: 1.0)
+                        .frame(width: 52, height: 53)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(.customGreen, lineWidth: 1.65)
+                                .padding(1)
+                        )
                     }
                     .buttonStyle(.plain)
                 }
