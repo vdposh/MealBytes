@@ -14,7 +14,14 @@ struct Food: Decodable {
     
     enum CodingKeys: String, CodingKey {
         case searchFoodId = "food_id",
-             searchFoodName = "food_name", 
+             searchFoodName = "food_name",
              searchFoodDescription = "food_description"
+    }
+    
+    var parsedDescription: String? {
+        let components = searchFoodDescription.split(
+            separator: "|", maxSplits: 1, omittingEmptySubsequences: true)
+        guard let firstPart = components.first else { return nil }
+        return String(firstPart.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 }

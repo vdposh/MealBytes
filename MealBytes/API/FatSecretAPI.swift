@@ -9,7 +9,7 @@ import SwiftUI
 import Moya
 
 enum FatSecretAPI {
-    case searchFoods(query: String)
+    case searchFoods(query: String, page: Int, maxResults: Int)
     case getFoodDetails(foodID: String)
 }
 
@@ -33,10 +33,12 @@ extension FatSecretAPI: TargetType {
         let parameters: [String: Any]
         
         switch self {
-        case .searchFoods(let query):
+        case .searchFoods(let query, let page, let maxResults):
             parameters = [
                 "format": format,
-                "search_expression": query
+                "search_expression": query,
+                "page_number": page,
+                "max_results": maxResults
             ]
             
         case .getFoodDetails(let foodID):
@@ -51,7 +53,7 @@ extension FatSecretAPI: TargetType {
     }
     
     var headers: [String: String]? {
-        ["Authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEwOEFEREZGRjZBNDkxOUFBNDE4QkREQTYwMDcwQzE5NzNDRjMzMUUiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJFSXJkX19ha2tacWtHTDNhWUFjTUdYUFBNeDQifQ.eyJuYmYiOjE3NDE2OTQzNTUsImV4cCI6MTc0MTc4MDc1NSwiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoiYmFzaWMiLCJjbGllbnRfaWQiOiJiOWYxODNlNjkxYTY0ZTU0YjExODFhOGNkYWUxOWE0ZiIsInNjb3BlIjpbImJhc2ljIl19.m4bTOWABOU0kc3kHGUWIH44f-hRfBGokij5Djke_Ou5iO7r-RsbDIEZnnEFeRPhZyMOfxw7WY9vEFZ0IskKiPncj4b2SEbu7NrVjCGcw-F8ONBl3i60mqwPwfT5dS2-zPpXqyM3xnoqKtoSZ2vmNk_Wm6uwalWLYoKYEe-ZVThWx9RlWaPT7t4PJMpCfNcZkXZoJSL4ylrJ90vHsCXF_PB3k84BnNJD3TP--pL-qOez93o7czZeaDPb1c9T3zU8mSdG2B9qtawh8QLLy0jBIzQEEeGLW2uFMaraG8ygUlBpVeg3B3kEeR7-K9jBTX7dSZ0f9lPe3hnXvV5PbDqHTT7yEfc8zeRQ2UnM1mGYT21ppQ31qzmKx_YHs5w2Bc0-Zy2Y49Lky7llkXqaBfueAThg29mJZr42pR-1jexnrbfuGUzdtCng369HBbSJYb6TkByhQiAOzTwqW6Ll6Df2AW3yjSRTwTEJiau_Ucu-9YGpElFxgQi3nUHi-Ya6oWocWOgQvsVTKzTU9iMBX8WMXvirxHx6fs0QODgbqdMnwFB-T2ja9369dxC7DjcVPa6D_dxPwEmMsPp5rfwohtaPBK1um3MXQOVFxZVvMoB29A1eT9ublk6py4nWGwUC9JpYnkbrlFRZWpKXwojBQpqaVkT9Mu6yOHhnDprBZ0isgm7A"]
+        ["Authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjEwOEFEREZGRjZBNDkxOUFBNDE4QkREQTYwMDcwQzE5NzNDRjMzMUUiLCJ0eXAiOiJhdCtqd3QiLCJ4NXQiOiJFSXJkX19ha2tacWtHTDNhWUFjTUdYUFBNeDQifQ.eyJuYmYiOjE3NDE3ODEyMjMsImV4cCI6MTc0MTg2NzYyMywiaXNzIjoiaHR0cHM6Ly9vYXV0aC5mYXRzZWNyZXQuY29tIiwiYXVkIjoiYmFzaWMiLCJjbGllbnRfaWQiOiJiOWYxODNlNjkxYTY0ZTU0YjExODFhOGNkYWUxOWE0ZiIsInNjb3BlIjpbImJhc2ljIl19.QD_fG5FyXn7JkbbiGi6nAWtA_cVSesTW9rbM6WV7XozqdSsZY1r3sfn79t01eRtwTo44K0YLbeMI48Q_G4s_m_UWphES764D2NqEEoe4ip0U4R2pIUZk7S4ZK5BsSAWUC0uDs4RamCRNQtWcTR5IJ7Sz0WVLwV7yORl-SaBr7It0xC5yZVwKMMJ2t9ZVklfmMjMFIGQTT1u8J63U5JQrGI6SlVnSIqb0Xw9v3CFkqMUKxZtiXImJ_dUbwI1zQh7UI2B3YZQ_vWoZaCcekhs0O4owWPMkk-zrXj6ZZWmBwZN-u0aPJTV8RCsJTNyz4JZCNSIHB6Zmp9gYJP831oy40T9XXdbnv7kTzjn1jYPaNuLXamZWpPkH3lhM9sF2yFEmf_bvzcV3a0kZMJ6lKAu069nr4V_wgS5WGQm0uuuPhdqsfMdVb18NgHc6ESYN2XF53R62gtRYjKaNC3v5PYJXfy-ksF6h4eZXXVKf9ak8MiqILBzoNEvgKRpl7XYkknm8iCyFYNffk0gHvNeyAbkJTDM_fNAoOYqgL4szkvUFNZ-EKrhWdMm_b-2kv2-3bnlDP8gnv63GDvTDOQgkjRYI6ZloEzF5Cjp5Sxoqfip68ml7ZyS_O60YNPr1nRhzpuJPs59ellLowTAW88CyWHz9WvzEzsJXX7BLUjezCwLxMyk"]
     }
     
     var format: String {
