@@ -9,8 +9,7 @@ import SwiftUI
 import Moya
 
 protocol NetworkManagerProtocol {
-    func fetchFoods(query: String, page: Int, maxResults:
-                    Int) async throws -> [Food]
+    func fetchFoods(query: String, page: Int) async throws -> [Food]
     func fetchFoodDetails(foodId: String) async throws -> FoodDetail
 }
 
@@ -42,10 +41,9 @@ final class NetworkManager: NetworkManagerProtocol {
         }
     }
     
-    func fetchFoods(query: String, page: Int, maxResults:
-                    Int) async throws -> [Food] {
+    func fetchFoods(query: String, page: Int) async throws -> [Food] {
         let response: FoodResponse = try await performRequest(
-            .searchFoods(query: query, page: page, maxResults: maxResults),
+            .searchFoods(query: query, page: page),
             responseType: FoodResponse.self
         )
         return response.foods

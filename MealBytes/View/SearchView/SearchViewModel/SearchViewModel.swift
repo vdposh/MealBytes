@@ -51,8 +51,7 @@ final class SearchViewModel: ObservableObject {
                     do {
                         let foods = try await self.networkManager
                             .fetchFoods(query: query,
-                                        page: self.currentPage,
-                                        maxResults: self.maxResultsPerPage)
+                                        page: self.currentPage)
                         await MainActor.run {
                             self.foods = foods
                             self.errorMessage = nil

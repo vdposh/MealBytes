@@ -9,7 +9,7 @@ import SwiftUI
 import Moya
 
 enum FatSecretAPI {
-    case searchFoods(query: String, page: Int, maxResults: Int)
+    case searchFoods(query: String, page: Int)
     case getFoodDetails(foodID: String)
 }
 
@@ -33,12 +33,11 @@ extension FatSecretAPI: TargetType {
         let parameters: [String: Any]
         
         switch self {
-        case .searchFoods(let query, let page, let maxResults):
+        case .searchFoods(let query, let page):
             parameters = [
                 "format": format,
                 "search_expression": query,
-                "page_number": page,
-                "max_results": maxResults
+                "page_number": page
             ]
             
         case .getFoodDetails(let foodID):
