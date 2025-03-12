@@ -21,3 +21,18 @@ struct CompactNutrientDetail: Identifiable {
         self.serving = serving
     }
 }
+
+extension CompactNutrientDetail {
+    var formattedValue: String {
+        Formatter().formattedValue(
+            value,
+            unit: {
+                switch type {
+                case .calories: .empty
+                default: Formatter.Unit(rawValue: type.unit(for: serving)) ??
+                        .empty
+                }
+            }(),
+            alwaysRoundUp: type == .calories)
+    }
+}

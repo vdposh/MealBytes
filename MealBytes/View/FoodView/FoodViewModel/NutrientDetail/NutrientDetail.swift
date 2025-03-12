@@ -26,3 +26,13 @@ struct NutrientDetail: Identifiable {
         self.isSubValue = isSubValue
     }
 }
+
+extension NutrientDetail {
+    var formattedValue: String {
+        Formatter().formattedValue(
+            value,
+            unit: Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty,
+            alwaysRoundUp: type == .calories)
+    }
+}
+
