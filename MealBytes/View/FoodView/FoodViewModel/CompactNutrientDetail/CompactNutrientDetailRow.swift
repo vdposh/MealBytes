@@ -19,7 +19,13 @@ struct CompactNutrientDetailRow: View {
             HStack {
                 Text(Formatter().formattedValue(
                     nutrient.value,
-                    unit: Formatter.Unit(rawValue: nutrient.unit) ?? .empty,
+                    unit: {
+                        switch nutrient.type {
+                        case .calories: .empty
+                        default: Formatter.Unit(rawValue: nutrient.type.unit(
+                            for: nutrient.serving)) ?? .empty
+                        }
+                    }(),
                     alwaysRoundUp: nutrient.type == .calories))
                 .lineLimit(1)
                 .foregroundColor(.white)

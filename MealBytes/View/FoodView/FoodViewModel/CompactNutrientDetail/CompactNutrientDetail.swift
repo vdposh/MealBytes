@@ -13,15 +13,6 @@ struct CompactNutrientDetail: Identifiable {
     let value: Double
     let serving: Serving
     
-    var unit: String {
-        switch type {
-        case .calories:
-            type.alternativeUnit(for: serving)
-        default:
-            type.unit(for: serving)
-        }
-    }
-    
     init(type: NutrientType,
          value: Double,
          serving: Serving) {

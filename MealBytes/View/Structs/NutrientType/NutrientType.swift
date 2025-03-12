@@ -64,11 +64,4 @@ enum NutrientType: String, Identifiable {
                 .cholesterol: "mg"
         }
     }
-    
-    func alternativeUnit(for serving: Serving) -> String {
-        switch self {
-        case .calories: ""
-        default: unit(for: serving)
-        }
-    }
 }
