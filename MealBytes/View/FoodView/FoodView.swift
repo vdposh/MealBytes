@@ -35,6 +35,25 @@ struct FoodView: View {
                 }
             }
             .navigationBarTitle("Add to Diary", displayMode: .inline)
+            .confirmationDialog(
+                "Select Serving",
+                isPresented: $viewModel.showActionSheet,
+                titleVisibility: .visible
+            ) {
+                if let servings = viewModel.foodDetail?.servings.serving {
+                    servingButtons(servings: servings)
+                }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Text("Enter serving size")
+                        .foregroundColor(.gray)
+                    Spacer()
+                    Button("Done") {
+                        isTextFieldFocused = false
+                    }
+                }
+            }
         }
         .task {
             await viewModel.fetchFoodDetails()
@@ -60,16 +79,6 @@ struct FoodView: View {
                                     text: $viewModel.amount)
                 .focused($isTextFieldFocused)
                 .disabled(viewModel.isError)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Text("Enter serving size")
-                            .foregroundColor(.gray)
-                        Spacer()
-                        Button("Done") {
-                            isTextFieldFocused = false
-                        }
-                    }
-                }
                 CustomButtonView(
                     title: "Serving",
                     description: viewModel.servingDescription,
@@ -78,15 +87,6 @@ struct FoodView: View {
                     viewModel.showActionSheet.toggle()
                 }
                 .disabled(viewModel.isError)
-                .confirmationDialog(
-                    "Select Serving",
-                    isPresented: $viewModel.showActionSheet,
-                    titleVisibility: .visible
-                ) {
-                    if let servings = viewModel.foodDetail?.servings.serving {
-                        servingButtons(servings: servings)
-                    }
-                }
             }
             .padding(.bottom, 10)
         }
@@ -173,12 +173,10 @@ struct FoodView: View {
     
     private var loadingView: some View {
         VStack {
-            Spacer()
             ProgressView()
                 .progressViewStyle(
                     CircularProgressViewStyle(tint: .customGreen))
                 .scaleEffect(1.5)
-            Spacer()
         }
     }
     
