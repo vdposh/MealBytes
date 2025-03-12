@@ -10,10 +10,19 @@ import SwiftUI
 struct Formatter {
     // MARK: - Formatting Values
     enum Unit: String {
-        case empty = ""
+        case empty
         case kcal
         case g
         case mg
+        
+        var description: String {
+            switch self {
+            case .empty: ""
+            case .kcal: "kcal"
+            case .g: "g"
+            case .mg: "mg"
+            }
+        }
     }
     
     func formattedValue(_ value: Double,
@@ -43,7 +52,7 @@ struct Formatter {
         case .empty:
             return finalValue
         default:
-            return "\(finalValue) \(unit.rawValue)"
+            return "\(finalValue) \(unit.description)"
         }
     }
 }
