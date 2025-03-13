@@ -26,14 +26,8 @@ struct SearchView: View {
                                     destination: FoodView(
                                         food: food,
                                         searchViewModel: viewModel)) {
-                                            VStack(alignment: .leading) {
-                                                Text(food.searchFoodName)
-                                                if let parsedDescription = food
-                                                    .parsedDescription {
-                                                    Text(parsedDescription)
-                                                        .foregroundColor(.customGreen)
-                                                }
-                                            }
+                                            FoodDetailView(food: food,
+                                                           viewModel: viewModel)
                                         }
                                 
                                 BookmarkButtonView(
@@ -45,23 +39,8 @@ struct SearchView: View {
                             }
                         }
                         
-                        if viewModel.canLoadPage(direction: .next) {
-                            Button(action: {
-                                viewModel.loadPage(direction: .next)
-                            }) {
-                                Text("> Next Page")
-                                    .foregroundColor(.customGreen)
-                            }
-                        }
-                        
-                        if viewModel.canLoadPage(direction: .previous) {
-                            Button(action: {
-                                viewModel.loadPage(direction: .previous)
-                            }) {
-                                Text("< Previous Page")
-                                    .foregroundColor(.customGreen)
-                            }
-                        }
+                        pageButton(direction: .next)
+                        pageButton(direction: .previous)
                     }
                     .listStyle(.plain)
                 }
@@ -71,6 +50,27 @@ struct SearchView: View {
         }
         .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
+    }
+    
+    @ViewBuilder
+    private func pageButton(direction:
+                            SearchViewModel.PageDirection) -> some View {
+        if viewModel.canLoadPage(direction: direction) {
+            Button(action: {
+                viewModel.loadPage(direction: direction)
+            }) {
+                switch direction {
+                case .next:
+                    Text("> Next Page")
+                        .foregroundColor(.customGreen)
+                case .previous:
+                    Text("< Previous Page")
+                        .foregroundColor(.customGreen)
+                }
+            }
+        } else {
+            EmptyView()
+        }
     }
 }
 
