@@ -1,5 +1,5 @@
 //
-//  ButtonView.swift
+//  ServingButtonView.swift
 //  MealBytes
 //
 //  Created by Porshe on 08/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ButtonView: View {
+struct ServingButtonView: View {
     let title: String
     let description: String
     @Binding var showActionSheet: Bool

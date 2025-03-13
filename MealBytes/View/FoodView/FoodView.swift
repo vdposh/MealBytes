@@ -74,11 +74,11 @@ struct FoodView: View {
                 .padding(.top, 10)
             
             VStack(spacing: 15) {
-                TextFieldView(title: "Size",
-                              text: $viewModel.amount)
+                ServingTextFieldView(title: "Size",
+                                     text: $viewModel.amount)
                 .focused($isTextFieldFocused)
                 .disabled(viewModel.isError)
-                ButtonView(
+                ServingButtonView(
                     title: "Serving",
                     description: viewModel.servingDescription,
                     showActionSheet: $viewModel.showActionSheet
@@ -102,35 +102,24 @@ struct FoodView: View {
                 .padding(.vertical, 10)
                 
                 HStack {
-                    Button(action: {
-                        // Remove from Diary
-                    }) {
-                        Text("Remove")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(.customRed)
-                            .foregroundColor(.white)
-                            .font(.headline)
-                            .cornerRadius(12)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(viewModel.isError)
+                    ActionButtonView(
+                        title: "Remove",
+                        action: {
+                            // Remove from Diary
+                        },
+                        backgroundColor: .customRed,
+                        isEnabled: !viewModel.isError
+                    )
                     
-                    Button(action: {
-                        // Add to Diary
-                    }) {
-                        Text("Add to Diary")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(viewModel.isAddButtonEnabled() ?
-                                .customGreen : Color.customGreen.opacity(0.9))
-                            .foregroundColor(.white)
-                            .font(.headline)
-                            .cornerRadius(12)
-                    }
-                    .disabled(!viewModel.isAddButtonEnabled() ||
-                              viewModel.isError)
-                    .buttonStyle(.plain)
+                    ActionButtonView(
+                        title: "Add to Diary",
+                        action: {
+                            // Add to Diary
+                        },
+                        backgroundColor: .customGreen,
+                        isEnabled: viewModel.isAddButtonEnabled() &&
+                        !viewModel.isError
+                    )
                     
                     BookmarkButtonView(
                         action: {

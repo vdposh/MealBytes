@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TextFieldView: View {
+struct ServingTextFieldView: View {
     let title: String
     @Binding var text: String
     

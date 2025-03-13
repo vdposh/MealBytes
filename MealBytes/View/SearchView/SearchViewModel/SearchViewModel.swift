@@ -10,7 +10,7 @@ import Combine
 
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
-    @Published var favoriteFoods: [Food] = [] // Избранные продукты
+    @Published var favoriteFoods: [Food] = []
     @Published var query: String = "" {
         didSet {
             switch query.isEmpty {
@@ -49,7 +49,7 @@ final class SearchViewModel: ObservableObject {
                 guard let self else { return }
                 
                 if query.isEmpty {
-                    self.foods = self.favoriteFoods // Избранные продукты
+                    self.foods = self.favoriteFoods
                     self.errorMessage = nil
                     return
                 }
