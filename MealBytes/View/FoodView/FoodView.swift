@@ -112,7 +112,7 @@ struct FoodView: View {
                     )
                     
                     ActionButtonView(
-                        title: "Add to Diary",
+                        title: "Add",
                         action: {
                             // Add to Diary
                         },
