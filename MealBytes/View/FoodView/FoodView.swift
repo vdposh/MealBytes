@@ -30,7 +30,7 @@ struct FoodView: View {
                 .scrollDismissesKeyboard(.never)
                 
                 if viewModel.isLoading {
-                    loadingView
+                    LoadingView()
                 }
             }
             .navigationBarTitle("Add to Diary", displayMode: .inline)
@@ -74,11 +74,11 @@ struct FoodView: View {
                 .padding(.top, 10)
             
             VStack(spacing: 15) {
-                CustomTextFieldView(title: "Size",
-                                    text: $viewModel.amount)
+                TextFieldView(title: "Size",
+                              text: $viewModel.amount)
                 .focused($isTextFieldFocused)
                 .disabled(viewModel.isError)
-                CustomButtonView(
+                ButtonView(
                     title: "Serving",
                     description: viewModel.servingDescription,
                     showActionSheet: $viewModel.showActionSheet
@@ -132,22 +132,14 @@ struct FoodView: View {
                               viewModel.isError)
                     .buttonStyle(.plain)
                     
-                    Button(action: {
-                        isBookmarkFilled.toggle()
-                    }) {
-                        Image(systemName: isBookmarkFilled ?
-                              "bookmark.fill" : "bookmark")
-                        .foregroundColor(.customGreen)
-                        .imageScale(.large)
-                        .scaleEffect(x: 1.3, y: 1.0)
-                        .frame(width: 52, height: 53)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(.customGreen, lineWidth: 1.65)
-                                .padding(1)
-                        )
-                    }
-                    .buttonStyle(.plain)
+                    BookmarkButtonView(
+                        action: {
+                            isBookmarkFilled.toggle()
+                        },
+                        isFilled: isBookmarkFilled,
+                        cornerRadius: 12,
+                        lineWidth: 1.65
+                    )
                 }
                 .padding(.bottom, 10)
             }
@@ -166,15 +158,6 @@ struct FoodView: View {
             ForEach(viewModel.nutrientDetails) { nutrient in
                 NutrientDetailRow(nutrient: nutrient)
             }
-        }
-    }
-    
-    private var loadingView: some View {
-        VStack {
-            ProgressView()
-                .progressViewStyle(
-                    CircularProgressViewStyle(tint: .customGreen))
-                .scaleEffect(1.5)
         }
     }
     

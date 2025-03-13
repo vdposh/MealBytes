@@ -1,5 +1,5 @@
 //
-//  CustomTextFieldView.swift
+//  TextFieldView.swift
 //  MealBytes
 //
 //  Created by Porshe on 08/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CustomTextFieldView: View {
+struct TextFieldView: View {
     let title: String
     @Binding var text: String
     

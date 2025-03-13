@@ -13,9 +13,10 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = [] // Избранные продукты
     @Published var query: String = "" {
         didSet {
-            if query.isEmpty {
+            switch query.isEmpty {
+            case true:
                 resetSearch()
-            } else {
+            case false:
                 debounceSearch(query)
             }
         }
@@ -107,27 +108,15 @@ final class SearchViewModel: ObservableObject {
         switch bookmarkedFoods.contains(food.searchFoodId) {
         case true:
             bookmarkedFoods.remove(food.searchFoodId)
+            favoriteFoods.removeAll { $0.searchFoodId == food.searchFoodId }
         case false:
             bookmarkedFoods.insert(food.searchFoodId)
+            favoriteFoods.append(food)
         }
     }
     
     func isBookmarked(_ food: Food) -> Bool {
         bookmarkedFoods.contains(food.searchFoodId)
-    }
-    
-    // MARK: - Square fill
-    func toggleSquareFill(for food: Food) {
-        switch squareFilledFoods.contains(food.searchFoodId) {
-        case true:
-            squareFilledFoods.remove(food.searchFoodId)
-        case false:
-            squareFilledFoods.insert(food.searchFoodId)
-        }
-    }
-    
-    func isSquareFilled(_ food: Food) -> Bool {
-        squareFilledFoods.contains(food.searchFoodId)
     }
 }
 

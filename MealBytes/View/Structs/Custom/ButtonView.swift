@@ -1,5 +1,5 @@
 //
-//  CustomButtonView.swift
+//  ButtonView.swift
 //  MealBytes
 //
 //  Created by Porshe on 08/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CustomButtonView: View {
+struct ButtonView: View {
     let title: String
     let description: String
     @Binding var showActionSheet: Bool
