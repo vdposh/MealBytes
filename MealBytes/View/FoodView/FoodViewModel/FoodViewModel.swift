@@ -22,15 +22,20 @@ final class FoodViewModel: ObservableObject {
     @Published var unit: MeasurementUnit = .grams
     @Published var isLoading = true
     @Published var isError = false
+    @Published var isBookmarkFilled = false
     
     let food: Food
     
     private let networkManager: NetworkManagerProtocol
+    private let searchViewModel: SearchViewModel
     
     init(food: Food,
+         searchViewModel: SearchViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager()) {
         self.food = food
         self.networkManager = networkManager
+        self.searchViewModel = searchViewModel
+        self.isBookmarkFilled = searchViewModel.isBookmarked(food)
     }
     
     // MARK: - Fetch Food Details
@@ -51,6 +56,12 @@ final class FoodViewModel: ObservableObject {
             isError = true
         }
         isLoading = false
+    }
+    
+    // MARK: - Bookmark Management
+    func toggleBookmark() {
+        isBookmarkFilled.toggle()
+        searchViewModel.toggleBookmark(for: food)
     }
     
     // MARK: - Serving Selection and Amount Setting
@@ -168,6 +179,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
             searchFoodId: "794",
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
-        )
+        ),
+        searchViewModel: SearchViewModel(networkManager: NetworkManager())
     )
 }

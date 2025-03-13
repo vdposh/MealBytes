@@ -10,10 +10,10 @@ import SwiftUI
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
-    @State private var isBookmarkFilled = false
     
-    init(food: Food) {
-        _viewModel = StateObject(wrappedValue: FoodViewModel(food: food))
+    init(food: Food, searchViewModel: SearchViewModel) {
+        _viewModel = StateObject(wrappedValue: FoodViewModel(
+            food: food, searchViewModel: searchViewModel))
     }
     
     var body: some View {
@@ -53,16 +53,16 @@ struct FoodView: View {
                     }
                 }
             }
-        }
-        .task {
-            await viewModel.fetchFoodDetails()
-        }
-        .alert(item: $viewModel.errorMessage) { error in
-            Alert(
-                title: Text("Error"),
-                message: Text(error.errorDescription),
-                dismissButton: .default(Text("OK"))
-            )
+            .task {
+                await viewModel.fetchFoodDetails()
+            }
+            .alert(item: $viewModel.errorMessage) { error in
+                Alert(
+                    title: Text("Error"),
+                    message: Text(error.errorDescription),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
     }
     
@@ -123,9 +123,9 @@ struct FoodView: View {
                     
                     BookmarkButtonView(
                         action: {
-                            isBookmarkFilled.toggle()
+                            viewModel.toggleBookmark()
                         },
-                        isFilled: isBookmarkFilled,
+                        isFilled: viewModel.isBookmarkFilled,
                         cornerRadius: 12,
                         lineWidth: 1.65
                     )
@@ -165,6 +165,7 @@ struct FoodView: View {
             searchFoodId: "794",
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
-        )
+        ),
+        searchViewModel: SearchViewModel(networkManager: NetworkManager())
     )
 }

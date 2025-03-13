@@ -11,6 +11,7 @@ import Combine
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
+    @Published var bookmarkedFoods: Set<String> = []
     @Published var query: String = "" {
         didSet {
             switch query.isEmpty {
@@ -25,8 +26,6 @@ final class SearchViewModel: ObservableObject {
     @Published var currentPage: Int = 0
     @Published var maxResultsPerPage: Int = 20
     @Published var isLoading = false
-    @Published private(set) var bookmarkedFoods: Set<String> = []
-    @Published private(set) var squareFilledFoods: Set<String> = []
     
     private let networkManager: NetworkManagerProtocol
     private var searchCancellable: AnyCancellable?

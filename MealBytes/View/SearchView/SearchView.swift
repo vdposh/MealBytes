@@ -22,17 +22,19 @@ struct SearchView: View {
                     List {
                         ForEach(viewModel.foods, id: \.searchFoodId) { food in
                             HStack {
-                                NavigationLink(destination:
-                                                FoodView(food: food)) {
-                                    VStack(alignment: .leading) {
-                                        Text(food.searchFoodName)
-                                        if let parsedDescription = food
-                                            .parsedDescription {
-                                            Text(parsedDescription)
-                                                .foregroundColor(.customGreen)
+                                NavigationLink(
+                                    destination: FoodView(
+                                        food: food,
+                                        searchViewModel: viewModel)) {
+                                            VStack(alignment: .leading) {
+                                                Text(food.searchFoodName)
+                                                if let parsedDescription = food
+                                                    .parsedDescription {
+                                                    Text(parsedDescription)
+                                                        .foregroundColor(.customGreen)
+                                                }
+                                            }
                                         }
-                                    }
-                                }
                                 
                                 BookmarkButtonView(
                                     action: {
