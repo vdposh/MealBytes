@@ -45,24 +45,21 @@ struct SearchView: View {
                             }
                         }
                         
-                        if !viewModel.foods.isEmpty {
-                            if viewModel.foods.count ==
-                                viewModel.maxResultsPerPage {
-                                Button(action: {
-                                    viewModel.loadNextPage()
-                                }) {
-                                    Text("> Next Page")
-                                        .foregroundColor(.customGreen)
-                                }
+                        if viewModel.canLoadPage(direction: .next) {
+                            Button(action: {
+                                viewModel.loadPage(direction: .next)
+                            }) {
+                                Text("> Next Page")
+                                    .foregroundColor(.customGreen)
                             }
-                            
-                            if viewModel.currentPage > 0 {
-                                Button(action: {
-                                    viewModel.loadPreviousPage()
-                                }) {
-                                    Text("< Previous Page")
-                                        .foregroundColor(.customGreen)
-                                }
+                        }
+                        
+                        if viewModel.canLoadPage(direction: .previous) {
+                            Button(action: {
+                                viewModel.loadPage(direction: .previous)
+                            }) {
+                                Text("< Previous Page")
+                                    .foregroundColor(.customGreen)
                             }
                         }
                     }

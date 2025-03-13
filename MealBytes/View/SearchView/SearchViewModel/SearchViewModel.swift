@@ -80,18 +80,31 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Pagination
-    func loadNextPage() {
-        isLoading = true
-        currentPage += 1
-        debounceSearch(query)
+    enum PageDirection {
+        case next
+        case previous
     }
     
-    func loadPreviousPage() {
-        if currentPage > 0 {
-            isLoading = true
-            currentPage -= 1
-            debounceSearch(query)
+    func canLoadPage(direction: PageDirection) -> Bool {
+        switch direction {
+        case .next:
+            foods.count == maxResultsPerPage
+        case .previous:
+            currentPage > 0
         }
+    }
+    
+    func loadPage(direction: PageDirection) {
+        isLoading = true
+        switch direction {
+        case .next:
+            currentPage += 1
+        case .previous:
+            if currentPage > 0 {
+                currentPage -= 1
+            }
+        }
+        debounceSearch(query)
     }
     
     // MARK: - Reset Search
