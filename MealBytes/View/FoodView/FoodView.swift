@@ -126,8 +126,7 @@ struct FoodView: View {
                             viewModel.toggleBookmark()
                         },
                         isFilled: viewModel.isBookmarkFilled,
-                        cornerRadius: 12,
-                        lineWidth: 1.65
+                        isEnabled: !viewModel.isError
                     )
                 }
                 .padding(.bottom, 10)

@@ -10,6 +10,7 @@ import SwiftUI
 struct BookmarkButtonView: View {
     var action: () -> Void
     var isFilled: Bool
+    var isEnabled: Bool = false
     var systemNameFilled: String = "bookmark.fill"
     var systemNameEmpty: String = "bookmark"
     var width: CGFloat = 52
@@ -26,10 +27,14 @@ struct BookmarkButtonView: View {
                 .frame(width: width, height: height)
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius ?? 0)
-                        .stroke(.customGreen, lineWidth: lineWidth ?? 0)
+                        .stroke(isEnabled ? .customGreen :
+                                .customGreen.opacity(0.5),
+                                lineWidth: lineWidth ?? 0)
                         .padding(1)
                 )
+                .opacity(isEnabled ? 1.0 : 0.5)
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
     }
 }
