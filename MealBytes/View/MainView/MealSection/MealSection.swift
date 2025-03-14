@@ -12,9 +12,13 @@ struct MealSection: View {
     let iconName: String
     let color: Color
     
+    @State private var isPresented = false
+    
     var body: some View {
         Section {
-            NavigationLink(destination: SearchView()) {
+            Button(action: {
+                isPresented = true
+            }) {
                 VStack(spacing: 10) {
                     HStack {
                         Label {
@@ -24,37 +28,40 @@ struct MealSection: View {
                                 .foregroundColor(color)
                         }
                         Spacer()
-                        Text("0")
+                        Text("калории")
                     }
                     HStack {
                         Text("F")
                             .foregroundColor(.gray)
                             .font(.footnote)
-                        Text("0")
+                        Text("жиры")
                             .foregroundColor(.gray)
                             .font(.footnote)
                         Text("P")
                             .foregroundColor(.gray)
                             .font(.footnote)
                             .padding(.leading)
-                        Text("0")
+                        Text("белки")
                             .foregroundColor(.gray)
                             .font(.footnote)
                         Text("C")
                             .foregroundColor(.gray)
                             .font(.footnote)
                             .padding(.leading)
-                        Text("0")
+                        Text("углеводы")
                             .foregroundColor(.gray)
                             .font(.footnote)
                         Spacer()
-                        Text("0")
+                        Text("РСК")
                             .foregroundColor(.gray)
                             .font(.footnote)
                     }
                 }
                 .padding(.vertical, 5)
                 .padding(.trailing, 5)
+            }
+            .fullScreenCover(isPresented: $isPresented) {
+                SearchView()
             }
         }
     }

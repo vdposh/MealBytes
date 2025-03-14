@@ -10,10 +10,10 @@ import Combine
 
 final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
-    @Published var calories: Int = 0
-    @Published var fats: Int = 0
-    @Published var proteins: Int = 0
-    @Published var carbohydrates: Int = 0
+    @Published var calories: Double = 0
+    @Published var fats: Double = 0
+    @Published var proteins: Double = 0
+    @Published var carbohydrates: Double = 0
     @Published var isDatePickerPresented = false
     @Published var meals: [MealType: [Food]] = [:]
     
@@ -25,11 +25,6 @@ final class MainViewModel: ObservableObject {
     
     func addFood(_ food: Food, to meal: MealType) {
         meals[meal]?.append(food)
-        updateNutrientValues()
-    }
-    
-    func updateNutrientValues() {
-        // Обновляем значения калорий, жиров, белков и углеводов
     }
 }
 

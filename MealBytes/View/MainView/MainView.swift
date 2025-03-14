@@ -14,7 +14,6 @@ struct MainView: View {
         NavigationStack {
             VStack {
                 List {
-                    dateCarouselSection
                     caloriesSection
                     MealSection(title: "Breakfast", iconName: "sunrise.fill", color: .customBreakfast)
                     MealSection(title: "Lunch", iconName: "sun.max.fill", color: .customLunch)
@@ -35,29 +34,6 @@ struct MainView: View {
         }
         .listSectionSpacing(.compact)
         .accentColor(.customGreen)
-    }
-    
-    private var dateCarouselSection: some View {
-        Section {
-            HStack {
-                ForEach(-3...3, id: \.self) { offset in
-                    let date = Calendar.current.date(byAdding: .day, value: offset, to: Date()) ?? Date()
-                    dateView(for: date)
-                        .onTapGesture {
-                            viewModel.selectedDate = date
-                        }
-                }
-            }
-        }
-        .listRowInsets(EdgeInsets())
-        .listRowBackground(Color.clear)
-        .padding(.bottom, 5)
-    }
-    
-    private func dateView(for date: Date) -> some View {
-        return DateView(date: date,
-                        isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
-                        isSelected: Calendar.current.isDate(date, inSameDayAs: viewModel.selectedDate))
     }
     
     private var caloriesSection: some View {
