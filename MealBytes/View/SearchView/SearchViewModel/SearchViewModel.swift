@@ -11,7 +11,7 @@ import Combine
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
-    @Published var bookmarkedFoods: Set<String> = []
+    @Published var bookmarkedFoods: Set<Int> = []
     @Published var query: String = "" {
         didSet {
             switch query.isEmpty {

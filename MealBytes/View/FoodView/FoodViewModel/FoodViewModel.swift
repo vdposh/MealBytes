@@ -176,7 +176,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
 #Preview {
     FoodView(
         food: Food(
-            searchFoodId: "794",
+            searchFoodId: 794,
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),

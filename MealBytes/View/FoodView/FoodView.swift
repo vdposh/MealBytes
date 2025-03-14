@@ -161,7 +161,7 @@ struct FoodView: View {
 #Preview {
     FoodView(
         food: Food(
-            searchFoodId: "794",
+            searchFoodId: 794,
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),
