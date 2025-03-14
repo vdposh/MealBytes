@@ -10,7 +10,7 @@ import SwiftUI
 struct BookmarkButtonView: View {
     var action: () -> Void
     var isFilled: Bool
-    var isEnabled: Bool = false
+    var isEnabled: Bool = true
     var systemNameFilled: String = "bookmark.fill"
     var systemNameEmpty: String = "bookmark"
     var width: CGFloat = 52

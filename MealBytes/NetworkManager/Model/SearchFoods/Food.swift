@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Food: Decodable {
-    let searchFoodId: String
+    let searchFoodId: Int
     let searchFoodName: String
     let searchFoodDescription: String
     
@@ -16,6 +16,27 @@ struct Food: Decodable {
         case searchFoodId = "food_id",
              searchFoodName = "food_name",
              searchFoodDescription = "food_description"
+    }
+    
+    init(searchFoodId: Int,
+         searchFoodName: String,
+         searchFoodDescription: String) {
+        self.searchFoodId = searchFoodId
+        self.searchFoodName = searchFoodName
+        self.searchFoodDescription = searchFoodDescription
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let searchFoodIdString = try container.decode(
+            String.self, forKey: .searchFoodId)
+        self.searchFoodId = Int(searchFoodIdString) ?? 0
+        
+        self.searchFoodName = try container.decode(
+            String.self, forKey: .searchFoodName)
+        self.searchFoodDescription = try container.decode(
+            String.self, forKey: .searchFoodDescription)
     }
     
     var parsedDescription: String? {

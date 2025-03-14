@@ -10,7 +10,7 @@ import Moya
 
 protocol NetworkManagerProtocol {
     func fetchFoods(query: String, page: Int) async throws -> [Food]
-    func fetchFoodDetails(foodId: String) async throws -> FoodDetail
+    func fetchFoodDetails(foodId: Int) async throws -> FoodDetail
 }
 
 final class NetworkManager: NetworkManagerProtocol {
@@ -49,7 +49,7 @@ final class NetworkManager: NetworkManagerProtocol {
         return response.foods
     }
     
-    func fetchFoodDetails(foodId: String) async throws -> FoodDetail {
+    func fetchFoodDetails(foodId: Int) async throws -> FoodDetail {
         let response: FoodDetailResponse = try await performRequest(
             .getFoodDetails(foodID: foodId),
             responseType: FoodDetailResponse.self
