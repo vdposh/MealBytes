@@ -56,10 +56,10 @@ enum NutrientType: String, Identifiable, CaseIterable {
         }
     }
     
-    func unit(for serving: Serving) -> String {
+    private var baseUnit: String {
         switch self {
         case .calories: "kcal"
-        case .servingSize: serving.metricServingUnit
+        case .servingSize: "g"
         case .fat,
                 .saturatedFat,
                 .monounsaturatedFat,
@@ -74,26 +74,20 @@ enum NutrientType: String, Identifiable, CaseIterable {
         }
     }
     
-    var alternativeUnit: String {
+    func unit(for serving: Serving) -> String {
         switch self {
-        case .servingSize: "g"
-        case .calories: "kcal"
-        case .fat,
-             .saturatedFat,
-             .monounsaturatedFat,
-             .polyunsaturatedFat,
-             .carbohydrates,
-             .sugar,
-             .fiber,
-             .protein: "g"
-        case .potassium,
-             .sodium,
-             .cholesterol: "mg"
+        case .servingSize:
+            return serving.metricServingUnit
+        default:
+            return baseUnit
         }
+    }
+    
+    var alternativeUnit: String {
+        baseUnit
     }
     
     var isServingSize: Bool {
         self == .servingSize
     }
-    
 }
