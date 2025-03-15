@@ -10,8 +10,6 @@ import SwiftUI
 struct MealItem: Identifiable {
     let id = UUID()
     let foodName: String
-    let portionSize: Double
     let portionUnit: String
     let nutrients: [NutrientType: Double]
-    let rsk: String
 }

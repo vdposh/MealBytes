@@ -117,16 +117,16 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Add Food Item
     func addFoodItem(to mainViewModel: MainViewModel) {
-        let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) { result, detail in
+        let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
+            result, detail in
             result[detail.type] = detail.value
         }
-
+        
         let newItem = MealItem(
             foodName: food.searchFoodName,
-            portionSize: nutrients[.servingSize] ?? 0.0,
-            portionUnit: nutrientDetails.first(where: { $0.type == .servingSize })?.serving.metricServingUnit ?? "",
-            nutrients: nutrients,
-            rsk: "N/A"
+            portionUnit: nutrientDetails.first(where: {
+                $0.type == .servingSize })?.serving.metricServingUnit ?? "",
+            nutrients: nutrients
         )
         
         mainViewModel.addFoodItem(newItem)

@@ -24,7 +24,8 @@ struct MealSection: View {
     
     var body: some View {
         Section {
-            NavigationLink(destination: SearchView(mainViewModel: mainViewModel)) {
+            NavigationLink(destination: SearchView(
+                mainViewModel: mainViewModel)) {
                 VStack(spacing: 15) {
                     HStack {
                         Image(systemName: iconName)
@@ -55,9 +56,6 @@ struct MealSection: View {
                             .foregroundColor(.gray)
                             .font(.footnote)
                         Spacer()
-                        Text("RDA")
-                            .foregroundColor(.gray)
-                            .font(.footnote)
                     }
                 }
                 .padding(.vertical, 5)
@@ -68,13 +66,12 @@ struct MealSection: View {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         foodName: item.foodName,
-                        portionSize: item.portionSize,
+                        portionSize: item.nutrients[.servingSize] ?? 0.0,
                         portionUnit: item.portionUnit,
                         calories: item.nutrients[.calories] ?? 0.0,
                         fats: item.nutrients[.fat] ?? 0.0,
                         proteins: item.nutrients[.protein] ?? 0.0,
-                        carbohydrates: item.nutrients[.carbohydrates] ?? 0.0,
-                        rsk: item.rsk
+                        carbohydrates: item.nutrients[.carbohydrates] ?? 0.0
                     )
                 }
             }
@@ -98,27 +95,23 @@ struct MealSection: View {
         foodItems: [
             MealItem(
                 foodName: "Oatmeal",
-                portionSize: 100.0,
                 portionUnit: "g",
                 nutrients: [
                     .calories: 150.0,
                     .fat: 3.0,
                     .protein: 5.0,
                     .carbohydrates: 27.0
-                ],
-                rsk: "20%"
+                ]
             ),
             MealItem(
                 foodName: "Banana",
-                portionSize: 120.0,
                 portionUnit: "g",
                 nutrients: [
                     .calories: 105.0,
                     .fat: 0.3,
                     .protein: 1.3,
                     .carbohydrates: 27.0
-                ],
-                rsk: "15%"
+                ]
             )
         ],
         mainViewModel: MainViewModel()

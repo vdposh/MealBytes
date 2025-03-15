@@ -15,7 +15,6 @@ struct FoodItemRow: View {
     let fats: Double
     let proteins: Double
     let carbohydrates: Double
-    let rsk: String
     private let formatter = Formatter()
 
     var body: some View {
@@ -29,8 +28,6 @@ struct FoodItemRow: View {
                 Spacer()
                 Text(formatter.formattedValue(calories, unit: .empty))
             }
-
-            
             HStack {
                 Text("F")
                     .foregroundColor(.gray)
@@ -53,9 +50,6 @@ struct FoodItemRow: View {
                     .foregroundColor(.gray)
                     .font(.footnote)
                 Spacer()
-                Text(rsk)
-                    .foregroundColor(.gray)
-                    .font(.footnote)
             }
         }
         .padding(.vertical, 5)
@@ -65,12 +59,11 @@ struct FoodItemRow: View {
 
 #Preview {
     FoodItemRow(
-        foodName: "Whole Milk aads asdsad dsd sad sadasds dsadsa asdd sad asd sad sasda asdsa",
+        foodName: "Whole Milk",
         portionSize: 200.0, portionUnit: "g",
         calories: 12032.0,
         fats: 3.2,
         proteins: 6.8,
-        carbohydrates: 4.7,
-        rsk: "РСК"
+        carbohydrates: 4.7
     )
 }
