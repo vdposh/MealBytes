@@ -10,6 +10,7 @@ import Combine
 
 final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
+    @Published var foodItems: [MealItem] = []
 }
 
 #Preview {

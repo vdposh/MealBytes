@@ -10,6 +10,7 @@ import SwiftUI
 struct FoodItemRow: View {
     let foodName: String
     let portionSize: Double
+    let portionUnit: String
     let calories: Double
     let fats: Double
     let proteins: Double
@@ -21,12 +22,14 @@ struct FoodItemRow: View {
         VStack(spacing: 10) {
             HStack {
                 Text(foodName)
-                Text("\(formatter.formattedValue(portionSize, unit: .empty)) g")
+                    .lineLimit(1)
+                Text("\(formatter.formattedValue(portionSize, unit: .empty)) \(portionUnit)")
                     .foregroundColor(.gray)
-                    .padding(.leading, 5)
+                    .frame(width: 180, alignment: .leading)
                 Spacer()
                 Text(formatter.formattedValue(calories, unit: .empty))
             }
+
             
             HStack {
                 Text("F")
@@ -62,9 +65,9 @@ struct FoodItemRow: View {
 
 #Preview {
     FoodItemRow(
-        foodName: "Whole Milk",
-        portionSize: 200.0,
-        calories: 120.0,
+        foodName: "Whole Milk aads asdsad dsd sad sadasds dsadsa asdd sad asd sad sasda asdsa",
+        portionSize: 200.0, portionUnit: "g",
+        calories: 12032.0,
         fats: 3.2,
         proteins: 6.8,
         carbohydrates: 4.7,

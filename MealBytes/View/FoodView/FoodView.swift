@@ -11,9 +11,12 @@ struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
     
-    init(food: Food, searchViewModel: SearchViewModel) {
+    var onAddFoodItem: (MealItem) -> Void
+    
+    init(food: Food, searchViewModel: SearchViewModel, onAddFoodItem: @escaping (MealItem) -> Void) {
         _viewModel = StateObject(wrappedValue: FoodViewModel(
             food: food, searchViewModel: searchViewModel))
+        self.onAddFoodItem = onAddFoodItem
     }
     
     var body: some View {
@@ -114,7 +117,21 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Add",
                         action: {
-                            // Add to Diary
+                            let servingDetail = viewModel.nutrientDetails.first(where: { $0.type == .servingSize })
+                            let servingSize = servingDetail?.value ?? 0.0
+                            let servingUnit = servingDetail?.serving.metricServingUnit ?? "N/A"
+                            
+                            let newItem = MealItem(
+                                foodName: viewModel.food.searchFoodName,
+                                portionSize: servingSize,
+                                portionUnit: servingUnit,
+                                calories: viewModel.nutrientDetails.first(where: { $0.type == .calories })?.value ?? 0.0,
+                                fats: viewModel.nutrientDetails.first(where: { $0.type == .fat })?.value ?? 0.0,
+                                proteins: viewModel.nutrientDetails.first(where: { $0.type == .protein })?.value ?? 0.0,
+                                carbohydrates: viewModel.nutrientDetails.first(where: { $0.type == .carbohydrates })?.value ?? 0.0,
+                                rsk: "N/A"
+                            )
+                            onAddFoodItem(newItem)
                         },
                         backgroundColor: .customGreen,
                         isEnabled: viewModel.isAddButtonEnabled() &&
@@ -165,6 +182,7 @@ struct FoodView: View {
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),
-        searchViewModel: SearchViewModel(networkManager: NetworkManager())
+        searchViewModel: SearchViewModel(networkManager: NetworkManager()),
+        onAddFoodItem: { _ in }
     )
 }

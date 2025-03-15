@@ -20,9 +20,11 @@ struct MealSection: View {
     @State private var isExpanded: Bool = false
     private let formatter = Formatter()
     
+    var onAddFoodItem: (MealItem) -> Void
+    
     var body: some View {
         Section {
-            NavigationLink(destination: SearchView()) {
+            NavigationLink(destination: SearchView(onAddFoodItem: onAddFoodItem)) {
                 VStack(spacing: 15) {
                     HStack {
                         Image(systemName: iconName)
@@ -62,12 +64,12 @@ struct MealSection: View {
                 .padding(.trailing, 5)
             }
             
-            switch isExpanded {
-            case true:
+            if isExpanded {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         foodName: item.foodName,
                         portionSize: item.portionSize,
+                        portionUnit: item.portionUnit,
                         calories: item.calories,
                         fats: item.fats,
                         proteins: item.proteins,
@@ -75,18 +77,48 @@ struct MealSection: View {
                         rsk: item.rsk
                     )
                 }
-                ShowHideButtonView(isExpanded: isExpanded) {
-                    isExpanded.toggle()
-                }
-            case false:
-                ShowHideButtonView(isExpanded: isExpanded) {
-                    isExpanded.toggle()
-                }
+            }
+            
+            ShowHideButtonView(isExpanded: isExpanded) {
+                isExpanded.toggle()
             }
         }
     }
 }
 
 #Preview {
-    MainView()
+    MealSection(
+        title: "Breakfast",
+        iconName: "sunrise.fill",
+        color: .customBreakfast,
+        calories: 500.0,
+        fats: 20.0,
+        proteins: 30.0,
+        carbohydrates: 50.0,
+        foodItems: [
+            MealItem(
+                foodName: "Oatmeal",
+                portionSize: 100.0,
+                portionUnit: "g",
+                calories: 150.0,
+                fats: 3.0,
+                proteins: 5.0,
+                carbohydrates: 27.0,
+                rsk: "20%"
+            ),
+            MealItem(
+                foodName: "Banana",
+                portionSize: 120.0,
+                portionUnit: "g",
+                calories: 105.0,
+                fats: 0.3,
+                proteins: 1.3,
+                carbohydrates: 27.0,
+                rsk: "15%"
+            )
+        ],
+        onAddFoodItem: { newItem in
+            print("Added: \(newItem)")
+        }
+    )
 }

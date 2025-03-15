@@ -180,6 +180,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),
-        searchViewModel: SearchViewModel(networkManager: NetworkManager())
+        searchViewModel: SearchViewModel(networkManager: NetworkManager()),
+        onAddFoodItem: { _ in }
     )
 }

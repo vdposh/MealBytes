@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct MealItem: Identifiable {
-    var id: UUID = UUID()
+    let id = UUID()
     let foodName: String
     let portionSize: Double
+    let portionUnit: String // Новое свойство для описания порции
     let calories: Double
     let fats: Double
     let proteins: Double

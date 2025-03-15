@@ -11,6 +11,8 @@ struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
     @State private var currentPage: Int = 0
     
+    var onAddFoodItem: (MealItem) -> Void
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -25,10 +27,13 @@ struct SearchView: View {
                                 NavigationLink(
                                     destination: FoodView(
                                         food: food,
-                                        searchViewModel: viewModel)) {
-                                            FoodDetailView(food: food,
-                                                           viewModel: viewModel)
-                                        }
+                                        searchViewModel: viewModel,
+                                        onAddFoodItem: onAddFoodItem
+                                    )
+                                ) {
+                                    FoodDetailView(food: food,
+                                                   viewModel: viewModel)
+                                }
                                 
                                 BookmarkButtonView(
                                     action: {
@@ -75,5 +80,7 @@ struct SearchView: View {
 }
 
 #Preview {
-    SearchView()
+    SearchView(
+        onAddFoodItem: { _ in }
+    )
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var viewModel = MainViewModel()
+    private let formatter = Formatter()
     
     var body: some View {
         NavigationStack {
@@ -20,11 +21,14 @@ struct MainView: View {
                     title: "Breakfast",
                     iconName: "sunrise.fill",
                     color: .customBreakfast,
-                    calories: 0.0,
-                    fats: 0.0,
-                    proteins: 0.0,
-                    carbohydrates: 0.0,
-                    foodItems: []
+                    calories: calculateCalories(),
+                    fats: calculateFats(),
+                    proteins: calculateProteins(),
+                    carbohydrates: calculateCarbohydrates(),
+                    foodItems: viewModel.foodItems,
+                    onAddFoodItem: { newItem in
+                        viewModel.foodItems.append(newItem)
+                    }
                 )
             }
         }
@@ -61,27 +65,27 @@ struct MainView: View {
                 HStack {
                     Text("Calories")
                     Spacer()
-                    Text("0")
+                    Text(formatter.formattedValue(calculateCalories(), unit: .empty))
                 }
                 HStack {
                     Text("F")
                         .foregroundColor(.gray)
                         .font(.footnote)
-                    Text("0")
+                    Text(formatter.formattedValue(calculateFats(), unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Text("P")
                         .foregroundColor(.gray)
                         .font(.footnote)
                         .padding(.leading)
-                    Text("0")
+                    Text(formatter.formattedValue(calculateProteins(), unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Text("C")
                         .foregroundColor(.gray)
                         .font(.footnote)
                         .padding(.leading)
-                    Text("0")
+                    Text(formatter.formattedValue(calculateCarbohydrates(), unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Spacer()
@@ -92,6 +96,22 @@ struct MainView: View {
             }
             .padding(.vertical, 5)
         }
+    }
+    
+    private func calculateCalories() -> Double {
+        viewModel.foodItems.reduce(0) { $0 + $1.calories }
+    }
+    
+    private func calculateFats() -> Double {
+        viewModel.foodItems.reduce(0) { $0 + $1.fats }
+    }
+    
+    private func calculateProteins() -> Double {
+        viewModel.foodItems.reduce(0) { $0 + $1.proteins }
+    }
+    
+    private func calculateCarbohydrates() -> Double {
+        viewModel.foodItems.reduce(0) { $0 + $1.carbohydrates }
     }
 }
 
