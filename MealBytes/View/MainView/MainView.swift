@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var viewModel = MainViewModel()
+    @State private var isExpanded: Bool = false
     private let formatter = Formatter()
     
     var body: some View {
@@ -40,7 +41,8 @@ struct MainView: View {
         Section {
             HStack {
                 ForEach(-3...3, id: \.self) { offset in
-                    let date = Calendar.current.date(byAdding: .day, value: offset, to: Date()) ?? Date()
+                    let date = Calendar.current.date(
+                        byAdding: .day, value: offset, to: Date()) ?? Date()
                     dateView(for: date)
                         .onTapGesture {
                             viewModel.selectedDate = date
@@ -102,10 +104,7 @@ struct MainView: View {
     }
     
     private var detailedInformationSection: some View {
-        let nutrients = DetailedNutrientProvider()
-            .getDetailedNutrients(from: viewModel.nutrientSummaries)
-        
-        return Section {
+        Section {
             Text("Detailed Information")
                 .font(.headline)
                 .listRowSeparator(.hidden)
@@ -114,7 +113,22 @@ struct MainView: View {
             ForEach(nutrients) { nutrient in
                 DetailedNutrientRow(nutrient: nutrient)
             }
+            
+            ShowHideButtonView(isExpanded: isExpanded) {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            }
         }
+    }
+
+    private var nutrients: [DetailedNutrient] {
+        let summaries = viewModel.nutrientSummaries
+        let allNutrients = DetailedNutrientProvider()
+            .getDetailedNutrients(from: summaries)
+        return isExpanded
+            ? allNutrients
+            : allNutrients.filter { [.calories, .fat, .protein, .carbohydrates].contains($0.type) }
     }
 }
 

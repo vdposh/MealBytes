@@ -91,4 +91,9 @@ enum NutrientType: String, Identifiable, CaseIterable {
              .cholesterol: "mg"
         }
     }
+    
+    var isServingSize: Bool {
+        self == .servingSize
+    }
+    
 }

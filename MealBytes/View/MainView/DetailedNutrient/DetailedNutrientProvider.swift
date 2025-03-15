@@ -9,14 +9,16 @@ import SwiftUI
 
 struct DetailedNutrientProvider {
     func getDetailedNutrients(from nutrientSummaries:
-    [NutrientType: Double]) -> [DetailedNutrient] {
-        NutrientType.allCases.map { type in
-            DetailedNutrient(
-                type: type,
-                value: nutrientSummaries[type] ?? 0.0,
-                isSubValue: isSubValue(nutrient: type)
-            )
-        }
+                              [NutrientType: Double]) -> [DetailedNutrient] {
+        NutrientType.allCases
+            .filter { !$0.isServingSize }
+            .map { type in
+                DetailedNutrient(
+                    type: type,
+                    value: nutrientSummaries[type] ?? 0.0,
+                    isSubValue: isSubValue(nutrient: type)
+                )
+            }
     }
     
     private func isSubValue(nutrient: NutrientType) -> Bool {
@@ -29,9 +31,9 @@ struct DetailedNutrientProvider {
                 .potassium,
                 .sodium,
                 .cholesterol:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
