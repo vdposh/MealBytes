@@ -55,3 +55,13 @@ enum DisplayElement {
     case day
     case weekday
 }
+
+//    .toolbar {
+//        ToolbarItem(placement: .principal) {
+//            HStack {
+//                DatePicker("", selection: $viewModel.selectedDate, displayedComponents: .date)
+//                    .accentColor(.customGreen)
+//                    .labelsHidden()
+//            }
+//        }
+//    }

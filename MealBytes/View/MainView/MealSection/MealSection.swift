@@ -62,7 +62,8 @@ struct MealSection: View {
                 .padding(.trailing, 5)
             }
             
-            if isExpanded {
+            switch isExpanded {
+            case true:
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         foodName: item.foodName,
@@ -77,7 +78,7 @@ struct MealSection: View {
                 ShowHideButtonView(isExpanded: isExpanded) {
                     isExpanded.toggle()
                 }
-            } else {
+            case false:
                 ShowHideButtonView(isExpanded: isExpanded) {
                     isExpanded.toggle()
                 }
