@@ -102,25 +102,17 @@ struct MainView: View {
     }
     
     private var detailedInformationSection: some View {
-        Section {
+        let nutrients = DetailedNutrientProvider()
+            .getDetailedNutrients(from: viewModel.nutrientSummaries)
+        
+        return Section {
             Text("Detailed Information")
                 .font(.headline)
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
-            ForEach(NutrientType.allCases, id: \.self) { nutrient in
-                HStack {
-                    Text(nutrient.title)
-                        .foregroundColor(.primary)
-                    Spacer()
-                    Text(
-                        formatter.formattedValue(
-                            viewModel.nutrientSummaries[nutrient] ?? 0.0,
-                            unit: .init(rawValue: nutrient.alternativeUnit) ?? .empty
-                        )
-                    )
-                    .foregroundColor(.primary)
-                }
+            ForEach(nutrients) { nutrient in
+                DetailedNutrientRow(nutrient: nutrient)
             }
         }
     }
