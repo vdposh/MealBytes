@@ -16,10 +16,15 @@ struct MainView: View {
                 List {
                     dateCarouselSection
                     caloriesSection
-                    MealSection(title: "Breakfast", iconName: "sunrise.fill", color: .customBreakfast)
-                    MealSection(title: "Lunch", iconName: "sun.max.fill", color: .customLunch)
-                    MealSection(title: "Dinner", iconName: "moon.fill", color: .customDinner)
-                    MealSection(title: "Other", iconName: "applelogo", color: .customOther)
+                    MealSection(
+                        title: "Breakfast",
+                        iconName: "sunrise.fill",
+                        color: .customBreakfast,
+                        calories: 500.0,
+                        fats: 20.5,
+                        proteins: 30.0,
+                        carbohydrates: 50.0
+                    )
                     detailedInformationSection
                 }
             }

@@ -9,44 +9,48 @@ import SwiftUI
 
 struct FoodItemRow: View {
     let foodName: String
-    let portionSize: String
-    let calories: String
-    let nutrition: [String: String]
-    
+    let portionSize: Double
+    let calories: Double
+    let fats: Double
+    let proteins: Double
+    let carbohydrates: Double
+    let rsk: String
+    private let formatter = Formatter()
+
     var body: some View {
         VStack(spacing: 10) {
             HStack {
                 Text(foodName)
-                Text(portionSize)
+                Text("\(formatter.formattedValue(portionSize, unit: .empty)) g")
                     .foregroundColor(.gray)
                     .padding(.leading)
                 Spacer()
-                Text("\(calories) ккал")
+                Text(formatter.formattedValue(calories, unit: .empty))
             }
             
             HStack {
                 Text("F")
                     .foregroundColor(.gray)
                     .font(.footnote)
-                Text("жиры")
+                Text(formatter.formattedValue(fats, unit: .empty))
                     .foregroundColor(.gray)
                     .font(.footnote)
                 Text("P")
                     .foregroundColor(.gray)
                     .font(.footnote)
                     .padding(.leading)
-                Text("белки")
+                Text(formatter.formattedValue(proteins, unit: .empty))
                     .foregroundColor(.gray)
                     .font(.footnote)
                 Text("C")
                     .foregroundColor(.gray)
                     .font(.footnote)
                     .padding(.leading)
-                Text("углеводы")
+                Text(formatter.formattedValue(carbohydrates, unit: .empty))
                     .foregroundColor(.gray)
                     .font(.footnote)
                 Spacer()
-                Text("РСК")
+                Text(rsk)
                     .foregroundColor(.gray)
                     .font(.footnote)
             }
@@ -58,9 +62,12 @@ struct FoodItemRow: View {
 
 #Preview {
     FoodItemRow(
-        foodName: "1",
-        portionSize: "1",
-        calories: "1",
-        nutrition: [:]
+        foodName: "Whole Milk",
+        portionSize: 200.0,
+        calories: 120.0,
+        fats: 3.2,
+        proteins: 6.8,
+        carbohydrates: 4.7,
+        rsk: "РСК"
     )
 }

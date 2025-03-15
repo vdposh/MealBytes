@@ -11,7 +11,12 @@ struct MealSection: View {
     let title: String
     let iconName: String
     let color: Color
-    
+    let calories: Double
+    let fats: Double
+    let proteins: Double
+    let carbohydrates: Double
+    private let formatter = Formatter()
+
     var body: some View {
         Section {
             NavigationLink(destination: SearchView()) {
@@ -24,29 +29,33 @@ struct MealSection: View {
                                 .foregroundColor(color)
                         }
                         Spacer()
-                        Text("калории")
+                        Text(formatter.formattedValue(calories, unit: .empty))
                     }
+                    
                     HStack {
                         Text("F")
                             .foregroundColor(.gray)
                             .font(.footnote)
-                        Text("жиры")
+                        Text(formatter.formattedValue(fats, unit: .empty))
                             .foregroundColor(.gray)
                             .font(.footnote)
+                        
                         Text("P")
                             .foregroundColor(.gray)
                             .font(.footnote)
                             .padding(.leading)
-                        Text("белки")
+                        Text(formatter.formattedValue(proteins, unit: .empty))
                             .foregroundColor(.gray)
                             .font(.footnote)
+                        
                         Text("C")
                             .foregroundColor(.gray)
                             .font(.footnote)
                             .padding(.leading)
-                        Text("углеводы")
+                        Text(formatter.formattedValue(carbohydrates, unit: .empty))
                             .foregroundColor(.gray)
                             .font(.footnote)
+                        
                         Spacer()
                         Text("РСК")
                             .foregroundColor(.gray)

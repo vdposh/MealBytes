@@ -47,6 +47,15 @@ enum NutrientType: String, Identifiable {
         }
     }
     
+    var alternativeNutrientsTitle: String {
+        switch self {
+        case .fat: "F"
+        case .protein: "P"
+        case .carbohydrates: "C"
+        default: title
+        }
+    }
+    
     func unit(for serving: Serving) -> String {
         switch self {
         case .calories: "kcal"
