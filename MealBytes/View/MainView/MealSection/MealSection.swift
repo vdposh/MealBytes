@@ -12,13 +12,9 @@ struct MealSection: View {
     let iconName: String
     let color: Color
     
-    @State private var isPresented = false
-    
     var body: some View {
         Section {
-            Button(action: {
-                isPresented = true
-            }) {
+            NavigationLink(destination: SearchView()) {
                 VStack(spacing: 10) {
                     HStack {
                         Label {
@@ -59,9 +55,6 @@ struct MealSection: View {
                 }
                 .padding(.vertical, 5)
                 .padding(.trailing, 5)
-            }
-            .fullScreenCover(isPresented: $isPresented) {
-                SearchView()
             }
         }
     }
