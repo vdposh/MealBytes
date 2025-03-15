@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct FoodView: View {
-    @ObservedObject var mainViewModel: MainViewModel // Для связи с MainViewModel
     @StateObject private var viewModel: FoodViewModel
+    @ObservedObject private var mainViewModel: MainViewModel
     @FocusState private var isTextFieldFocused: Bool
     
     init(food: Food, searchViewModel: SearchViewModel, mainViewModel: MainViewModel) {
@@ -17,7 +17,6 @@ struct FoodView: View {
         _viewModel = StateObject(wrappedValue: FoodViewModel(
             food: food, searchViewModel: searchViewModel))
     }
-
     
     var body: some View {
         NavigationStack {
@@ -117,22 +116,7 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Add",
                         action: {
-                            let servingDetail = viewModel.nutrientDetails.first(where: { $0.type == .servingSize })
-                            let servingSize = servingDetail?.value ?? 0.0
-                            let servingUnit = servingDetail?.serving.metricServingUnit ?? "N/A"
-                            
-                            let newItem = MealItem(
-                                foodName: viewModel.food.searchFoodName,
-                                portionSize: servingSize,
-                                portionUnit: servingUnit,
-                                calories: viewModel.nutrientDetails.first(where: { $0.type == .calories })?.value ?? 0.0,
-                                fats: viewModel.nutrientDetails.first(where: { $0.type == .fat })?.value ?? 0.0,
-                                proteins: viewModel.nutrientDetails.first(where: { $0.type == .protein })?.value ?? 0.0,
-                                carbohydrates: viewModel.nutrientDetails.first(where: { $0.type == .carbohydrates })?.value ?? 0.0,
-                                rsk: "N/A"
-                            )
-                            
-                            mainViewModel.addFoodItem(newItem)
+                            viewModel.addFoodItem(to: mainViewModel)
                         },
                         backgroundColor: .customGreen,
                         isEnabled: viewModel.isAddButtonEnabled() &&

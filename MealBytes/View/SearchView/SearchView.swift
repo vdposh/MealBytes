@@ -8,9 +8,13 @@
 import SwiftUI
 
 struct SearchView: View {
-    @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject private var mainViewModel: MainViewModel
     @StateObject private var viewModel = SearchViewModel()
     @State private var currentPage: Int = 0
+    
+    init(mainViewModel: MainViewModel) {
+        self.mainViewModel = mainViewModel
+    }
     
     var body: some View {
         NavigationStack {

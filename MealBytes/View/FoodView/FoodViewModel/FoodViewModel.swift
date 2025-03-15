@@ -115,6 +115,26 @@ final class FoodViewModel: ObservableObject {
         return amountValue > 0
     }
     
+    // MARK: - Add Food Item
+    func addFoodItem(to mainViewModel: MainViewModel) {
+        let servingDetail = nutrientDetails.first(where: { $0.type == .servingSize })
+        let servingSize = servingDetail?.value ?? 0.0
+        let servingUnit = servingDetail?.serving.metricServingUnit ?? ""
+        
+        let newItem = MealItem(
+            foodName: food.searchFoodName,
+            portionSize: servingSize,
+            portionUnit: servingUnit,
+            calories: nutrientDetails.first(where: { $0.type == .calories })?.value ?? 0.0,
+            fats: nutrientDetails.first(where: { $0.type == .fat })?.value ?? 0.0,
+            proteins: nutrientDetails.first(where: { $0.type == .protein })?.value ?? 0.0,
+            carbohydrates: nutrientDetails.first(where: { $0.type == .carbohydrates })?.value ?? 0.0,
+            rsk: "N/A"
+        )
+        
+        mainViewModel.addFoodItem(newItem)
+    }
+    
     // MARK: - Nutrient Calculation
     func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }

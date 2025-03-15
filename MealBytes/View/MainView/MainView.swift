@@ -21,10 +21,10 @@ struct MainView: View {
                     title: "Breakfast",
                     iconName: "sunrise.fill",
                     color: .customBreakfast,
-                    calories: calculateCalories(),
-                    fats: calculateFats(),
-                    proteins: calculateProteins(),
-                    carbohydrates: calculateCarbohydrates(),
+                    calories: viewModel.calculateCalories(),
+                    fats: viewModel.calculateFats(),
+                    proteins: viewModel.calculateProteins(),
+                    carbohydrates: viewModel.calculateCarbohydrates(),
                     foodItems: viewModel.foodItems,
                     mainViewModel: viewModel
                 )
@@ -52,9 +52,11 @@ struct MainView: View {
     }
     
     private func dateView(for date: Date) -> some View {
-        return DateView(date: date,
-                        isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
-                        isSelected: Calendar.current.isDate(date, inSameDayAs: viewModel.selectedDate))
+        DateView(
+            date: date,
+            isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
+            isSelected: Calendar.current.isDate(date, inSameDayAs: viewModel.selectedDate)
+        )
     }
     
     private var caloriesSection: some View {
@@ -63,27 +65,27 @@ struct MainView: View {
                 HStack {
                     Text("Calories")
                     Spacer()
-                    Text(formatter.formattedValue(calculateCalories(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.calculateCalories(), unit: .empty))
                 }
                 HStack {
                     Text("F")
                         .foregroundColor(.gray)
                         .font(.footnote)
-                    Text(formatter.formattedValue(calculateFats(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.calculateFats(), unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Text("P")
                         .foregroundColor(.gray)
                         .font(.footnote)
                         .padding(.leading)
-                    Text(formatter.formattedValue(calculateProteins(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.calculateProteins(), unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Text("C")
                         .foregroundColor(.gray)
                         .font(.footnote)
                         .padding(.leading)
-                    Text(formatter.formattedValue(calculateCarbohydrates(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.calculateCarbohydrates(), unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Spacer()
@@ -94,22 +96,6 @@ struct MainView: View {
             }
             .padding(.vertical, 5)
         }
-    }
-    
-    private func calculateCalories() -> Double {
-        viewModel.foodItems.reduce(0) { $0 + $1.calories }
-    }
-    
-    private func calculateFats() -> Double {
-        viewModel.foodItems.reduce(0) { $0 + $1.fats }
-    }
-    
-    private func calculateProteins() -> Double {
-        viewModel.foodItems.reduce(0) { $0 + $1.proteins }
-    }
-    
-    private func calculateCarbohydrates() -> Double {
-        viewModel.foodItems.reduce(0) { $0 + $1.carbohydrates }
     }
 }
 
