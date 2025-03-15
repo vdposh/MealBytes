@@ -20,14 +20,11 @@ struct MainView: View {
                     title: "Breakfast",
                     iconName: "sunrise.fill",
                     color: .customBreakfast,
-                    calories: 500.0,
-                    fats: 20.5,
-                    proteins: 30.0,
-                    carbohydrates: 50.0,
-                    foodItems: [
-                        MealItem(foodName: "Oatmeal", portionSize: 150.0, calories: 250.0, fats: 5.0, proteins: 10.0, carbohydrates: 40.0, rsk: "50%"),
-                        MealItem(foodName: "Banana", portionSize: 120.0, calories: 105.0, fats: 0.3, proteins: 1.3, carbohydrates: 27.0, rsk: "15%")
-                    ]
+                    calories: 0.0,
+                    fats: 0.0,
+                    proteins: 0.0,
+                    carbohydrates: 0.0,
+                    foodItems: []
                 )
             }
         }
