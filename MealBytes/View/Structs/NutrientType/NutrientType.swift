@@ -5,7 +5,7 @@
 //  Created by Porshe on 08/03/2025.
 //
 
-enum NutrientType: String, Identifiable {
+enum NutrientType: String, Identifiable, CaseIterable {
     var id: String { self.rawValue }
     
     case calories,
@@ -71,6 +71,24 @@ enum NutrientType: String, Identifiable {
         case .potassium,
                 .sodium,
                 .cholesterol: "mg"
+        }
+    }
+    
+    var alternativeUnit: String {
+        switch self {
+        case .servingSize: "g"
+        case .calories: "kcal"
+        case .fat,
+             .saturatedFat,
+             .monounsaturatedFat,
+             .polyunsaturatedFat,
+             .carbohydrates,
+             .sugar,
+             .fiber,
+             .protein: "g"
+        case .potassium,
+             .sodium,
+             .cholesterol: "mg"
         }
     }
 }

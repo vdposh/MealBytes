@@ -11,10 +11,7 @@ struct MealItem: Identifiable {
     let id = UUID()
     let foodName: String
     let portionSize: Double
-    let portionUnit: String // Новое свойство для описания порции
-    let calories: Double
-    let fats: Double
-    let proteins: Double
-    let carbohydrates: Double
+    let portionUnit: String
+    let nutrients: [NutrientType: Double]
     let rsk: String
 }

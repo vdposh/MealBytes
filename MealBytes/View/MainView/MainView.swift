@@ -21,13 +21,15 @@ struct MainView: View {
                     title: "Breakfast",
                     iconName: "sunrise.fill",
                     color: .customBreakfast,
-                    calories: viewModel.calculateCalories(),
-                    fats: viewModel.calculateFats(),
-                    proteins: viewModel.calculateProteins(),
-                    carbohydrates: viewModel.calculateCarbohydrates(),
+                    calories: viewModel.nutrientSummaries[.calories] ?? 0.0,
+                    fats: viewModel.nutrientSummaries[.fat] ?? 0.0,
+                    proteins: viewModel.nutrientSummaries[.protein] ?? 0.0,
+                    carbohydrates: viewModel.nutrientSummaries[.carbohydrates] ?? 0.0,
                     foodItems: viewModel.foodItems,
                     mainViewModel: viewModel
                 )
+                
+                detailedInformationSection
             }
         }
         .accentColor(.customGreen)
@@ -65,27 +67,27 @@ struct MainView: View {
                 HStack {
                     Text("Calories")
                     Spacer()
-                    Text(formatter.formattedValue(viewModel.calculateCalories(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.calories] ?? 0.0, unit: .empty))
                 }
                 HStack {
                     Text("F")
                         .foregroundColor(.gray)
                         .font(.footnote)
-                    Text(formatter.formattedValue(viewModel.calculateFats(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.fat] ?? 0.0, unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Text("P")
                         .foregroundColor(.gray)
                         .font(.footnote)
                         .padding(.leading)
-                    Text(formatter.formattedValue(viewModel.calculateProteins(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.protein] ?? 0.0, unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Text("C")
                         .foregroundColor(.gray)
                         .font(.footnote)
                         .padding(.leading)
-                    Text(formatter.formattedValue(viewModel.calculateCarbohydrates(), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.carbohydrates] ?? 0.0, unit: .empty))
                         .foregroundColor(.gray)
                         .font(.footnote)
                     Spacer()
@@ -93,8 +95,33 @@ struct MainView: View {
                         .foregroundColor(.gray)
                         .font(.footnote)
                 }
+                
             }
             .padding(.vertical, 5)
+        }
+    }
+    
+    private var detailedInformationSection: some View {
+        Section {
+            Text("Detailed Information")
+                .font(.headline)
+                .listRowSeparator(.hidden)
+                .padding(.top, 10)
+            
+            ForEach(NutrientType.allCases, id: \.self) { nutrient in
+                HStack {
+                    Text(nutrient.title)
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text(
+                        formatter.formattedValue(
+                            viewModel.nutrientSummaries[nutrient] ?? 0.0,
+                            unit: .init(rawValue: nutrient.alternativeUnit) ?? .empty
+                        )
+                    )
+                    .foregroundColor(.primary)
+                }
+            }
         }
     }
 }

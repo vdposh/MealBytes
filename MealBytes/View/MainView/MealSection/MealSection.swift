@@ -70,10 +70,10 @@ struct MealSection: View {
                         foodName: item.foodName,
                         portionSize: item.portionSize,
                         portionUnit: item.portionUnit,
-                        calories: item.calories,
-                        fats: item.fats,
-                        proteins: item.proteins,
-                        carbohydrates: item.carbohydrates,
+                        calories: item.nutrients[.calories] ?? 0.0,
+                        fats: item.nutrients[.fat] ?? 0.0,
+                        proteins: item.nutrients[.protein] ?? 0.0,
+                        carbohydrates: item.nutrients[.carbohydrates] ?? 0.0,
                         rsk: item.rsk
                     )
                 }
@@ -100,20 +100,24 @@ struct MealSection: View {
                 foodName: "Oatmeal",
                 portionSize: 100.0,
                 portionUnit: "g",
-                calories: 150.0,
-                fats: 3.0,
-                proteins: 5.0,
-                carbohydrates: 27.0,
+                nutrients: [
+                    .calories: 150.0,
+                    .fat: 3.0,
+                    .protein: 5.0,
+                    .carbohydrates: 27.0
+                ],
                 rsk: "20%"
             ),
             MealItem(
                 foodName: "Banana",
                 portionSize: 120.0,
                 portionUnit: "g",
-                calories: 105.0,
-                fats: 0.3,
-                proteins: 1.3,
-                carbohydrates: 27.0,
+                nutrients: [
+                    .calories: 105.0,
+                    .fat: 0.3,
+                    .protein: 1.3,
+                    .carbohydrates: 27.0
+                ],
                 rsk: "15%"
             )
         ],
