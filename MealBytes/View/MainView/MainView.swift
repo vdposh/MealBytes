@@ -12,21 +12,23 @@ struct MainView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                List {
-                    dateCarouselSection
-                    caloriesSection
-                    MealSection(
-                        title: "Breakfast",
-                        iconName: "sunrise.fill",
-                        color: .customBreakfast,
-                        calories: 500.0,
-                        fats: 20.5,
-                        proteins: 30.0,
-                        carbohydrates: 50.0
-                    )
-                    detailedInformationSection
-                }
+            List {
+                dateCarouselSection
+                caloriesSection
+                
+                MealSection(
+                    title: "Breakfast",
+                    iconName: "sunrise.fill",
+                    color: .customBreakfast,
+                    calories: 500.0,
+                    fats: 20.5,
+                    proteins: 30.0,
+                    carbohydrates: 50.0,
+                    foodItems: [
+                        MealItem(foodName: "Oatmeal", portionSize: 150.0, calories: 250.0, fats: 5.0, proteins: 10.0, carbohydrates: 40.0, rsk: "50%"),
+                        MealItem(foodName: "Banana", portionSize: 120.0, calories: 105.0, fats: 0.3, proteins: 1.3, carbohydrates: 27.0, rsk: "15%")
+                    ]
+                )
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -38,8 +40,8 @@ struct MainView: View {
                 }
             }
         }
-        .listSectionSpacing(.compact)
         .accentColor(.customGreen)
+        .listSectionSpacing(.compact)
     }
     
     private var dateCarouselSection: some View {
@@ -101,15 +103,6 @@ struct MainView: View {
                 }
             }
             .padding(.vertical, 5)
-        }
-    }
-    
-    private var detailedInformationSection: some View {
-        Section {
-            Text("Detailed Information")
-                .font(.headline)
-                .listRowSeparator(.hidden)
-                .padding(.top, 10)
         }
     }
 }
