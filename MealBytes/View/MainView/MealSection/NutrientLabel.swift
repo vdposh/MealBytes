@@ -1,35 +1,22 @@
 //
-//  MealSection.swift
+//  NutrientLabel.swift
 //  MealBytes
 //
-//  Created by Porshe on 14/03/2025.
+//  Created by Porshe on 16/03/2025.
 //
 
 import SwiftUI
 
-struct MealSection: View {
-    let title: String
-    let iconName: String
-    let color: Color
-    let calories: Double
-    let fats: Double
-    let proteins: Double
-    let carbohydrates: Double
-    let foodItems: [MealItem]
-    @ObservedObject var mainViewModel: MainViewModel
+struct NutrientLabel: View {
+    let label: String
+    let value: Double
+    let formatter: Formatter
     
     var body: some View {
-        MealHeaderView(
-            title: title,
-            iconName: iconName,
-            color: color,
-            calories: calories,
-            fats: fats,
-            proteins: proteins,
-            carbohydrates: carbohydrates,
-            foodItems: foodItems,
-            mainViewModel: mainViewModel
-        )
+        Text(label)
+            .foregroundColor(.gray)
+        Text(formatter.formattedValue(value, unit: .empty))
+            .foregroundColor(.gray)
     }
 }
 

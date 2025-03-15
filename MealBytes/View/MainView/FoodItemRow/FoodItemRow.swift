@@ -28,29 +28,7 @@ struct FoodItemRow: View {
                 Spacer()
                 Text(formatter.formattedValue(calories, unit: .empty))
             }
-            HStack {
-                Text("F")
-                    .foregroundColor(.gray)
-                    .font(.footnote)
-                Text(formatter.formattedValue(fats, unit: .empty))
-                    .foregroundColor(.gray)
-                    .font(.footnote)
-                Text("C")
-                    .foregroundColor(.gray)
-                    .font(.footnote)
-                    .padding(.leading, 5)
-                Text(formatter.formattedValue(carbohydrates, unit: .empty))
-                    .foregroundColor(.gray)
-                    .font(.footnote)
-                Text("P")
-                    .foregroundColor(.gray)
-                    .font(.footnote)
-                    .padding(.leading, 5)
-                Text(formatter.formattedValue(proteins, unit: .empty))
-                    .foregroundColor(.gray)
-                    .font(.footnote)
-                Spacer()
-            }
+            NutrientRow(fats: fats, carbs: carbohydrates, proteins: proteins)
         }
         .padding(.vertical, 5)
         .padding(.trailing, 5)
@@ -61,7 +39,7 @@ struct FoodItemRow: View {
     FoodItemRow(
         foodName: "Whole Milk",
         portionSize: 200.0, portionUnit: "g",
-        calories: 12032.0,
+        calories: 120.0,
         fats: 3.2,
         proteins: 6.8,
         carbohydrates: 4.7

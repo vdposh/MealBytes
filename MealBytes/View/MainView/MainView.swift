@@ -17,19 +17,7 @@ struct MainView: View {
             List {
                 dateCarouselSection
                 caloriesSection
-                
-                MealSection(
-                    title: "Breakfast",
-                    iconName: "sunrise.fill",
-                    color: .customBreakfast,
-                    calories: viewModel.nutrientSummaries[.calories] ?? 0.0,
-                    fats: viewModel.nutrientSummaries[.fat] ?? 0.0,
-                    proteins: viewModel.nutrientSummaries[.protein] ?? 0.0,
-                    carbohydrates: viewModel.nutrientSummaries[.carbohydrates] ?? 0.0,
-                    foodItems: viewModel.foodItems,
-                    mainViewModel: viewModel
-                )
-                
+                breakfastSection
                 detailedInformationSection
             }
         }
@@ -63,72 +51,62 @@ struct MainView: View {
         )
     }
     
+    private var breakfastSection: some View {
+        MealSection(
+            title: "Breakfast",
+            iconName: "sunrise.fill",
+            color: .customBreakfast,
+            calories: viewModel.value(for: .calories),
+            fats: viewModel.value(for: .fat),
+            proteins: viewModel.value(for: .protein),
+            carbohydrates: viewModel.value(for: .carbohydrates),
+            foodItems: viewModel.foodItems,
+            mainViewModel: viewModel
+        )
+    }
+    
     private var caloriesSection: some View {
         Section {
             VStack(spacing: 10) {
                 HStack {
                     Text("Calories")
                     Spacer()
-                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.calories] ?? 0.0, unit: .empty))
-                }
-                HStack {
-                    Text("F")
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.fat] ?? 0.0, unit: .empty))
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                    Text("P")
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                        .padding(.leading)
-                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.protein] ?? 0.0, unit: .empty))
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                    Text("C")
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                        .padding(.leading)
-                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.carbohydrates] ?? 0.0, unit: .empty))
-                        .foregroundColor(.gray)
-                        .font(.footnote)
-                    Spacer()
-                    Text("0")
-                        .foregroundColor(.gray)
-                        .font(.footnote)
+                    Text(formatter.formattedValue(viewModel.value(for: .calories), unit: .empty))
                 }
                 
+                HStack {
+                    NutrientLabel(label: "F", value: viewModel.value(for: .fat), formatter: formatter)
+                    NutrientLabel(label: "P", value: viewModel.value(for: .protein), formatter: formatter)
+                        .padding(.leading, 5)
+                    NutrientLabel(label: "C", value: viewModel.value(for: .carbohydrates), formatter: formatter)
+                        .padding(.leading, 5)
+                    Spacer()
+                }
             }
             .padding(.vertical, 5)
         }
     }
     
     private var detailedInformationSection: some View {
-        Section {
-            Text("Detailed Information")
-                .font(.headline)
-                .listRowSeparator(.hidden)
-                .padding(.top, 10)
-            
-            ForEach(nutrients) { nutrient in
-                DetailedNutrientRow(nutrient: nutrient)
-            }
-            
-            ShowHideButtonView(isExpanded: isExpanded) {
-                withAnimation {
-                    isExpanded.toggle()
-                }
-            }
-        }
+        DetailedInformationSection(
+            nutrients: nutrients,
+            isExpanded: $isExpanded
+        )
     }
-
+    
     private var nutrients: [DetailedNutrient] {
         let summaries = viewModel.nutrientSummaries
         let allNutrients = DetailedNutrientProvider()
             .getDetailedNutrients(from: summaries)
-        return isExpanded
-            ? allNutrients
-            : allNutrients.filter { [.calories, .fat, .protein, .carbohydrates].contains($0.type) }
+        
+        switch isExpanded {
+        case true:
+            return allNutrients
+        case false:
+            return allNutrients.filter {
+                [.calories, .fat, .protein, .carbohydrates].contains($0.type)
+            }
+        }
     }
 }
 
