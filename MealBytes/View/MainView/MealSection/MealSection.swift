@@ -20,11 +20,11 @@ struct MealSection: View {
     @State private var isExpanded: Bool = false
     private let formatter = Formatter()
     
-    var onAddFoodItem: (MealItem) -> Void
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
-            NavigationLink(destination: SearchView(onAddFoodItem: onAddFoodItem)) {
+            NavigationLink(destination: SearchView(mainViewModel: mainViewModel)) {
                 VStack(spacing: 15) {
                     HStack {
                         Image(systemName: iconName)
@@ -117,8 +117,6 @@ struct MealSection: View {
                 rsk: "15%"
             )
         ],
-        onAddFoodItem: { newItem in
-            print("Added: \(newItem)")
-        }
+        mainViewModel: MainViewModel()
     )
 }

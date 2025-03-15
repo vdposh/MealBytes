@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct FoodView: View {
+    @ObservedObject var mainViewModel: MainViewModel // Для связи с MainViewModel
     @StateObject private var viewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
     
-    var onAddFoodItem: (MealItem) -> Void
-    
-    init(food: Food, searchViewModel: SearchViewModel, onAddFoodItem: @escaping (MealItem) -> Void) {
+    init(food: Food, searchViewModel: SearchViewModel, mainViewModel: MainViewModel) {
+        self.mainViewModel = mainViewModel
         _viewModel = StateObject(wrappedValue: FoodViewModel(
             food: food, searchViewModel: searchViewModel))
-        self.onAddFoodItem = onAddFoodItem
     }
+
     
     var body: some View {
         NavigationStack {
@@ -131,7 +131,8 @@ struct FoodView: View {
                                 carbohydrates: viewModel.nutrientDetails.first(where: { $0.type == .carbohydrates })?.value ?? 0.0,
                                 rsk: "N/A"
                             )
-                            onAddFoodItem(newItem)
+                            
+                            mainViewModel.addFoodItem(newItem)
                         },
                         backgroundColor: .customGreen,
                         isEnabled: viewModel.isAddButtonEnabled() &&
@@ -183,6 +184,6 @@ struct FoodView: View {
             searchFoodDescription: ""
         ),
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
-        onAddFoodItem: { _ in }
+        mainViewModel: MainViewModel()
     )
 }

@@ -134,6 +134,6 @@ final class SearchViewModel: ObservableObject {
 
 #Preview {
     SearchView(
-        onAddFoodItem: { _ in }
+        mainViewModel: MainViewModel()
     )
 }

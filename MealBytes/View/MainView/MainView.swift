@@ -26,9 +26,7 @@ struct MainView: View {
                     proteins: calculateProteins(),
                     carbohydrates: calculateCarbohydrates(),
                     foodItems: viewModel.foodItems,
-                    onAddFoodItem: { newItem in
-                        viewModel.foodItems.append(newItem)
-                    }
+                    mainViewModel: viewModel
                 )
             }
         }

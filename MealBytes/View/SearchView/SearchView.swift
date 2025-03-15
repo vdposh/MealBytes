@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct SearchView: View {
+    @ObservedObject var mainViewModel: MainViewModel
     @StateObject private var viewModel = SearchViewModel()
     @State private var currentPage: Int = 0
-    
-    var onAddFoodItem: (MealItem) -> Void
     
     var body: some View {
         NavigationStack {
@@ -28,7 +27,7 @@ struct SearchView: View {
                                     destination: FoodView(
                                         food: food,
                                         searchViewModel: viewModel,
-                                        onAddFoodItem: onAddFoodItem
+                                        mainViewModel: mainViewModel
                                     )
                                 ) {
                                     FoodDetailView(food: food,
@@ -81,6 +80,6 @@ struct SearchView: View {
 
 #Preview {
     SearchView(
-        onAddFoodItem: { _ in }
+        mainViewModel: MainViewModel()
     )
 }
