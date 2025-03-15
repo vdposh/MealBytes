@@ -26,41 +26,41 @@ struct MealSection: View {
         Section {
             NavigationLink(destination: SearchView(
                 mainViewModel: mainViewModel)) {
-                VStack(spacing: 15) {
-                    HStack {
-                        Image(systemName: iconName)
-                            .foregroundColor(color)
-                        Text(title)
-                        Spacer()
-                        Text(formatter.formattedValue(calories, unit: .empty))
+                    VStack(spacing: 15) {
+                        HStack {
+                            Image(systemName: iconName)
+                                .foregroundColor(color)
+                            Text(title)
+                            Spacer()
+                            Text(formatter.formattedValue(calories, unit: .empty))
+                        }
+                        HStack {
+                            Text("F")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                            Text(formatter.formattedValue(fats, unit: .empty))
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                            Text("C")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                                .padding(.leading, 5)
+                            Text(formatter.formattedValue(carbohydrates, unit: .empty))
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                            Text("P")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                                .padding(.leading, 5)
+                            Text(formatter.formattedValue(proteins, unit: .empty))
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                            Spacer()
+                        }
                     }
-                    HStack {
-                        Text("F")
-                            .foregroundColor(.gray)
-                            .font(.footnote)
-                        Text(formatter.formattedValue(fats, unit: .empty))
-                            .foregroundColor(.gray)
-                            .font(.footnote)
-                        Text("C")
-                            .foregroundColor(.gray)
-                            .font(.footnote)
-                            .padding(.leading, 5)
-                        Text(formatter.formattedValue(carbohydrates, unit: .empty))
-                            .foregroundColor(.gray)
-                            .font(.footnote)
-                        Text("P")
-                            .foregroundColor(.gray)
-                            .font(.footnote)
-                            .padding(.leading, 5)
-                        Text(formatter.formattedValue(proteins, unit: .empty))
-                            .foregroundColor(.gray)
-                            .font(.footnote)
-                        Spacer()
-                    }
+                    .padding(.vertical, 5)
+                    .padding(.trailing, 5)
                 }
-                .padding(.vertical, 5)
-                .padding(.trailing, 5)
-            }
             
             if isExpanded {
                 ForEach(foodItems) { item in
@@ -94,6 +94,7 @@ struct MealSection: View {
         carbohydrates: 50.0,
         foodItems: [
             MealItem(
+                foodId: 1,
                 foodName: "Oatmeal",
                 portionUnit: "g",
                 nutrients: [
@@ -101,9 +102,12 @@ struct MealSection: View {
                     .fat: 3.0,
                     .protein: 5.0,
                     .carbohydrates: 27.0
-                ]
+                ],
+                servingDescription: "1 cup (100g)",
+                amount: 100.0
             ),
             MealItem(
+                foodId: 2,
                 foodName: "Banana",
                 portionUnit: "g",
                 nutrients: [
@@ -111,7 +115,9 @@ struct MealSection: View {
                     .fat: 0.3,
                     .protein: 1.3,
                     .carbohydrates: 27.0
-                ]
+                ],
+                servingDescription: "1 medium (120g)",
+                amount: 120.0
             )
         ],
         mainViewModel: MainViewModel()
