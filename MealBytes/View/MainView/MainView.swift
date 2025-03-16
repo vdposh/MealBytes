@@ -22,7 +22,7 @@ struct MainView: View {
             }
         }
         .accentColor(.customGreen)
-        .listSectionSpacing(.compact)
+        .listSectionSpacing(15)
     }
     
     private var dateCarouselSection: some View {
@@ -53,7 +53,11 @@ struct MainView: View {
     
     private var mealSections: some View {
         ForEach(MealType.allCases) { mealType in
-            MealSectionView(mealType: mealType, viewModel: viewModel)
+            MealSectionView(
+                mealType: mealType,
+                mealItems: viewModel.mealItems[mealType] ?? [],
+                viewModel: viewModel
+            )
         }
     }
     

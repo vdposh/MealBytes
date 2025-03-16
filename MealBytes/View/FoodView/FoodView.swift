@@ -33,7 +33,7 @@ struct FoodView: View {
                         nutrientDetailSection
                     }
                 }
-                .listSectionSpacing(.compact)
+                .listSectionSpacing(10)
                 .scrollDismissesKeyboard(.never)
                 
                 if viewModel.isLoading {

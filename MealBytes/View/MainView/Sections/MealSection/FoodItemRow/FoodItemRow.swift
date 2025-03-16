@@ -23,15 +23,12 @@ struct FoodItemRow: View {
             HStack {
                 Text(foodName)
                     .lineLimit(1)
-                    .font(.callout)
+                    .fontWeight(.medium)
                 Text("\(formatter.formattedValue(portionSize, unit: .empty)) \(portionUnit)")
                     .foregroundColor(.gray)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .frame(width: 160, alignment: .leading)
+                    .frame(width: 140, alignment: .leading)
                 Spacer()
                 Text(formatter.formattedValue(calories, unit: .empty))
-                    .font(.subheadline)
                     .fontWeight(.medium)
             }
             HStack {
