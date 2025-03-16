@@ -53,47 +53,15 @@ struct MainView: View {
     
     private var mealSections: some View {
         ForEach(MealType.allCases) { mealType in
-            MealSection(
-                mealType: mealType,
-                title: mealType.rawValue,
-                iconName: mealType == .breakfast ? "sunrise.fill" :
-                    mealType == .lunch ? "sun.max.fill" :
-                    mealType == .dinner ? "moon.fill" : "tray.fill",
-                color: mealType == .breakfast ? .customBreakfast :
-                    mealType == .lunch ? .customLunch :
-                    mealType == .dinner ? .customDinner : .customOther,
-                calories: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.calories] ?? 0.0) } ?? 0,
-                fats: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.fat] ?? 0.0) } ?? 0,
-                proteins: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.protein] ?? 0.0) } ?? 0,
-                carbohydrates: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.carbohydrates] ?? 0.0) } ?? 0,
-                foodItems: viewModel.mealItems[mealType] ?? [],
-                mainViewModel: viewModel
-            )
+            MealSectionView(mealType: mealType, viewModel: viewModel)
         }
     }
     
     private var caloriesSection: some View {
-        Section {
-            VStack(spacing: 10) {
-                HStack {
-                    Text("Calories")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Spacer()
-                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.calories] ?? 0.0, unit: .empty))
-                        .font(.headline)
-                }
-                HStack {
-                    NutrientLabel(label: "F", value: viewModel.nutrientSummaries[.fat] ?? 0.0, formatter: formatter)
-                    NutrientLabel(label: "P", value: viewModel.nutrientSummaries[.protein] ?? 0.0, formatter: formatter)
-                        .padding(.leading, 5)
-                    NutrientLabel(label: "C", value: viewModel.nutrientSummaries[.carbohydrates] ?? 0.0, formatter: formatter)
-                        .padding(.leading, 5)
-                    Spacer()
-                }
-            }
-            .padding(.vertical, 5)
-        }
+        CaloriesSection(
+            summaries: viewModel.nutrientSummaries,
+            formatter: formatter
+        )
     }
     
     private var detailedInformationSection: some View {
@@ -117,15 +85,6 @@ struct MainView: View {
             }
         }
     }
-}
-
-enum MealType: String, CaseIterable, Identifiable {
-    case breakfast = "Breakfast"
-    case lunch = "Lunch"
-    case dinner = "Dinner"
-    case other = "Other"
-    
-    var id: String { rawValue }
 }
 
 #Preview {

@@ -15,7 +15,6 @@ struct DetailedInformationSection: View {
     var body: some View {
         Section {
             Text("Detailed Information")
-                .font(.subheadline)
                 .fontWeight(.medium)
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)

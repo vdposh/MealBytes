@@ -34,10 +34,10 @@ struct MealHeaderView: View {
                         Image(systemName: iconName)
                             .foregroundColor(color)
                         Text(title)
-                            .font(.headline)
+                            .fontWeight(.medium)
                         Spacer()
                         Text(formatter.formattedValue(calories, unit: .empty))
-                            .font(.headline)
+                            .fontWeight(.medium)
                     }
                     NutrientSummaryRow(
                         fats: fats,

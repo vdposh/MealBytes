@@ -145,17 +145,10 @@ struct FoodView: View {
     }
     
     private var nutrientDetailSection: some View {
-        Section {
-            Text("Detailed Information")
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .listRowSeparator(.hidden)
-                .padding(.top, 10)
-            
-            ForEach(viewModel.nutrientDetails) { nutrient in
-                NutrientDetailRow(nutrient: nutrient)
-            }
-        }
+        NutrientDetailSectionView(
+            title: "Detailed Information",
+            nutrientDetails: viewModel.nutrientDetails
+        )
     }
     
     private func servingButtons(servings: [Serving]) -> some View {
