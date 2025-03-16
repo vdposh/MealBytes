@@ -21,7 +21,7 @@ struct ShowHideButtonView: View {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .foregroundColor(.customGreen)
                 Text(isExpanded ? "Hide" : "Show")
-                    .font(.subheadline)
+                    .font(.footnote)
                     .foregroundColor(.customGreen)
             }
             .frame(maxWidth: .infinity)

@@ -16,7 +16,13 @@ struct NutrientLabel: View {
     var body: some View {
         Text(label)
             .foregroundColor(.gray)
+            .font(.subheadline)
         Text(formatter.formattedValue(value, unit: .empty))
             .foregroundColor(.gray)
+            .font(.subheadline)
     }
+}
+
+#Preview {
+    MainView()
 }

@@ -11,9 +11,12 @@ struct SearchView: View {
     @ObservedObject private var mainViewModel: MainViewModel
     @StateObject private var viewModel = SearchViewModel()
     @State private var currentPage: Int = 0
+    let mealType: MealType
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModel,
+         mealType: MealType) {
         self.mainViewModel = mainViewModel
+        self.mealType = mealType
     }
     
     var body: some View {
@@ -31,7 +34,8 @@ struct SearchView: View {
                                     destination: FoodView(
                                         food: food,
                                         searchViewModel: viewModel,
-                                        mainViewModel: mainViewModel
+                                        mainViewModel: mainViewModel,
+                                        mealType: mealType
                                     )
                                 ) {
                                     FoodDetailView(food: food,
@@ -84,6 +88,7 @@ struct SearchView: View {
 
 #Preview {
     SearchView(
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast
     )
 }

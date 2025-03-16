@@ -15,12 +15,12 @@ struct NutrientDetailRow: View {
         HStack {
             Text(nutrient.type.title)
                 .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                .font(.subheadline)
             Spacer()
-            HStack {
-                Text(nutrient.formattedValue)
-                    .foregroundColor(nutrient.isSubValue ? .gray : .primary)
-                    .lineLimit(1)
-            }
+            Text(nutrient.formattedValue)
+                .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                .font(.subheadline)
+                .lineLimit(1)
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Displays a meal section by incorporating its header view, macronutrient summary, and food items
 struct MealSection: View {
+    let mealType: MealType
     let title: String
     let iconName: String
     let color: Color
@@ -21,6 +22,7 @@ struct MealSection: View {
     
     var body: some View {
         MealHeaderView(
+            mealType: mealType,
             title: title,
             iconName: iconName,
             color: color,

@@ -115,7 +115,8 @@ final class FoodViewModel: ObservableObject {
         return amountValue > 0
     }
     
-    func addFoodItem(to mainViewModel: MainViewModel) {
+    // MARK: - Adds a food item to the specified meal section
+    func addFoodItem(to mainViewModel: MainViewModel, in section: MealType) {
         let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
             result, detail in
             result[detail.type] = detail.value
@@ -132,9 +133,9 @@ final class FoodViewModel: ObservableObject {
                                                        with: ".")) ?? 0
         )
         
-        mainViewModel.addFoodItem(newItem)
+        mainViewModel.addFoodItem(newItem, to: section)
     }
-
+    
     // MARK: - Nutrient Calculation
     func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }
@@ -201,6 +202,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
             searchFoodDescription: ""
         ),
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast
     )
 }

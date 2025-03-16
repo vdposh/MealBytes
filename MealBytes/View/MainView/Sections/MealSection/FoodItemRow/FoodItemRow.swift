@@ -17,19 +17,31 @@ struct FoodItemRow: View {
     let proteins: Double
     let carbohydrates: Double
     private let formatter = Formatter()
-
+    
     var body: some View {
         VStack(spacing: 10) {
             HStack {
                 Text(foodName)
                     .lineLimit(1)
+                    .font(.callout)
                 Text("\(formatter.formattedValue(portionSize, unit: .empty)) \(portionUnit)")
                     .foregroundColor(.gray)
-                    .frame(width: 180, alignment: .leading)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .frame(width: 160, alignment: .leading)
                 Spacer()
                 Text(formatter.formattedValue(calories, unit: .empty))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
             }
-            NutrientRow(fats: fats, carbs: carbohydrates, proteins: proteins)
+            HStack {
+                NutrientLabel(label: "F", value: fats, formatter: formatter)
+                NutrientLabel(label: "C", value: carbohydrates, formatter: formatter)
+                    .padding(.leading, 5)
+                NutrientLabel(label: "P", value: proteins, formatter: formatter)
+                    .padding(.leading, 5)
+                Spacer()
+            }
         }
         .padding(.vertical, 5)
         .padding(.trailing, 5)

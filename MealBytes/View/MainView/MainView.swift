@@ -17,7 +17,7 @@ struct MainView: View {
             List {
                 dateCarouselSection
                 caloriesSection
-                breakfastSection
+                mealSections
                 detailedInformationSection
             }
         }
@@ -51,18 +51,25 @@ struct MainView: View {
         )
     }
     
-    private var breakfastSection: some View {
-        MealSection(
-            title: "Breakfast",
-            iconName: "sunrise.fill",
-            color: .customBreakfast,
-            calories: viewModel.value(for: .calories),
-            fats: viewModel.value(for: .fat),
-            proteins: viewModel.value(for: .protein),
-            carbohydrates: viewModel.value(for: .carbohydrates),
-            foodItems: viewModel.foodItems,
-            mainViewModel: viewModel
-        )
+    private var mealSections: some View {
+        ForEach(MealType.allCases) { mealType in
+            MealSection(
+                mealType: mealType,
+                title: mealType.rawValue,
+                iconName: mealType == .breakfast ? "sunrise.fill" :
+                    mealType == .lunch ? "sun.max.fill" :
+                    mealType == .dinner ? "moon.fill" : "tray.fill",
+                color: mealType == .breakfast ? .customBreakfast :
+                    mealType == .lunch ? .customLunch :
+                    mealType == .dinner ? .customDinner : .customOther,
+                calories: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.calories] ?? 0.0) } ?? 0,
+                fats: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.fat] ?? 0.0) } ?? 0,
+                proteins: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.protein] ?? 0.0) } ?? 0,
+                carbohydrates: viewModel.mealItems[mealType]?.reduce(0) { $0 + ($1.nutrients[.carbohydrates] ?? 0.0) } ?? 0,
+                foodItems: viewModel.mealItems[mealType] ?? [],
+                mainViewModel: viewModel
+            )
+        }
     }
     
     private var caloriesSection: some View {
@@ -70,15 +77,17 @@ struct MainView: View {
             VStack(spacing: 10) {
                 HStack {
                     Text("Calories")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
                     Spacer()
-                    Text(formatter.formattedValue(viewModel.value(for: .calories), unit: .empty))
+                    Text(formatter.formattedValue(viewModel.nutrientSummaries[.calories] ?? 0.0, unit: .empty))
+                        .font(.headline)
                 }
-                
                 HStack {
-                    NutrientLabel(label: "F", value: viewModel.value(for: .fat), formatter: formatter)
-                    NutrientLabel(label: "P", value: viewModel.value(for: .protein), formatter: formatter)
+                    NutrientLabel(label: "F", value: viewModel.nutrientSummaries[.fat] ?? 0.0, formatter: formatter)
+                    NutrientLabel(label: "P", value: viewModel.nutrientSummaries[.protein] ?? 0.0, formatter: formatter)
                         .padding(.leading, 5)
-                    NutrientLabel(label: "C", value: viewModel.value(for: .carbohydrates), formatter: formatter)
+                    NutrientLabel(label: "C", value: viewModel.nutrientSummaries[.carbohydrates] ?? 0.0, formatter: formatter)
                         .padding(.leading, 5)
                     Spacer()
                 }
@@ -108,6 +117,15 @@ struct MainView: View {
             }
         }
     }
+}
+
+enum MealType: String, CaseIterable, Identifiable {
+    case breakfast = "Breakfast"
+    case lunch = "Lunch"
+    case dinner = "Dinner"
+    case other = "Other"
+    
+    var id: String { rawValue }
 }
 
 #Preview {

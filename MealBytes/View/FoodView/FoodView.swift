@@ -10,10 +10,15 @@ import SwiftUI
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @ObservedObject private var mainViewModel: MainViewModel
+    let mealType: MealType
     @FocusState private var isTextFieldFocused: Bool
     
-    init(food: Food, searchViewModel: SearchViewModel, mainViewModel: MainViewModel) {
+    init(food: Food,
+         searchViewModel: SearchViewModel,
+         mainViewModel: MainViewModel,
+         mealType: MealType) {
         self.mainViewModel = mainViewModel
+        self.mealType = mealType
         _viewModel = StateObject(wrappedValue: FoodViewModel(
             food: food, searchViewModel: searchViewModel))
     }
@@ -116,7 +121,8 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Add",
                         action: {
-                            viewModel.addFoodItem(to: mainViewModel)
+                            viewModel.addFoodItem(to: mainViewModel,
+                                                  in: mealType)
                         },
                         backgroundColor: .customGreen,
                         isEnabled: viewModel.isAddButtonEnabled() &&
@@ -141,7 +147,8 @@ struct FoodView: View {
     private var nutrientDetailSection: some View {
         Section {
             Text("Detailed Information")
-                .font(.headline)
+                .font(.subheadline)
+                .fontWeight(.medium)
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
@@ -168,6 +175,7 @@ struct FoodView: View {
             searchFoodDescription: ""
         ),
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast
     )
 }

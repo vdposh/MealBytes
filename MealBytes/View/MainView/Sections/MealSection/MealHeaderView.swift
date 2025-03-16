@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - Displays a header for a meal section, showing its title, icon, macronutrient summary, and a toggle for expanding or collapsing the food items
 struct MealHeaderView: View {
+    let mealType: MealType
     let title: String
     let iconName: String
     let color: Color
@@ -25,26 +26,29 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             NavigationLink(
-                destination: SearchView(mainViewModel: mainViewModel)) {
-                    VStack(spacing: 15) {
-                        HStack {
-                            Image(systemName: iconName)
-                                .foregroundColor(color)
-                            Text(title)
-                            Spacer()
-                            Text(formatter.formattedValue(calories,
-                                                          unit: .empty))
-                        }
-                        NutrientSummaryRow(
-                            fats: fats,
-                            carbs: carbohydrates,
-                            proteins: proteins,
-                            formatter: formatter
-                        )
+                destination: SearchView(mainViewModel: mainViewModel,
+                                        mealType: mealType)
+            ) {
+                VStack(spacing: 15) {
+                    HStack {
+                        Image(systemName: iconName)
+                            .foregroundColor(color)
+                        Text(title)
+                            .font(.headline)
+                        Spacer()
+                        Text(formatter.formattedValue(calories, unit: .empty))
+                            .font(.headline)
                     }
-                    .padding(.vertical, 5)
-                    .padding(.trailing, 5)
+                    NutrientSummaryRow(
+                        fats: fats,
+                        carbs: carbohydrates,
+                        proteins: proteins,
+                        formatter: formatter
+                    )
                 }
+                .padding(.vertical, 5)
+                .padding(.trailing, 5)
+            }
             
             if isExpanded {
                 ForEach(foodItems) { item in
@@ -69,6 +73,7 @@ struct MealHeaderView: View {
 
 #Preview {
     MealSection(
+        mealType: .breakfast,
         title: "Breakfast",
         iconName: "sunrise.fill",
         color: .customBreakfast,

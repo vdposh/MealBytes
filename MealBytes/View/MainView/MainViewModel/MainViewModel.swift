@@ -10,26 +10,27 @@ import Combine
 
 final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
-    @Published var foodItems: [MealItem] = []
-    
-    @Published var nutrientSummaries: [NutrientType: Double] = {
-        var summaries = [NutrientType: Double]()
-        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
-        return summaries
+    @Published var mealItems: [MealType: [MealItem]] = {
+        var items = [MealType: [MealItem]]()
+        MealType.allCases.forEach { items[$0] = [] }
+        return items
     }()
     
+    @Published var nutrientSummaries: [NutrientType: Double] = NutrientType.allCases
+        .reduce(into: [NutrientType: Double]()) { $0[$1] = 0.0 }
+
     // MARK: - Add Food Item
-    func addFoodItem(_ item: MealItem) {
-        foodItems.append(item)
+    func addFoodItem(_ item: MealItem, to mealType: MealType) {
+        mealItems[mealType]?.append(item)
         recalculateNutrients()
     }
-    
+
     // MARK: - Recalculate Nutrients
     private func recalculateNutrients() {
         nutrientSummaries = NutrientType.allCases.reduce(
             into: [NutrientType: Double]()) { result, nutrient in
-                result[nutrient] = foodItems.reduce(0) {
-                    $0 + ($1.nutrients[nutrient] ?? 0.0) }
+                result[nutrient] = mealItems.values.flatMap { $0 }
+                    .reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
             }
     }
 }
