@@ -19,5 +19,6 @@ struct NutrientLabel: View {
         Text(formatter.formattedValue(value, unit: .empty))
             .foregroundColor(.gray)
             .font(.subheadline)
+            .padding(.trailing, 5)
     }
 }

@@ -17,9 +17,7 @@ struct NutrientSummaryRow: View {
         HStack {
             NutrientLabel(label: "F", value: fats, formatter: formatter)
             NutrientLabel(label: "C", value: carbs, formatter: formatter)
-                .padding(.leading, 5)
             NutrientLabel(label: "P", value: proteins, formatter: formatter)
-                .padding(.leading, 5)
             Spacer()
         }
     }

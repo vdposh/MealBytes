@@ -8,48 +8,67 @@
 import SwiftUI
 
 struct FoodItemRow: View {
-    let foodName: String
-    let portionSize: Double
-    let portionUnit: String
-    let calories: Double
-    let fats: Double
-    let proteins: Double
-    let carbohydrates: Double
+    let mealItem: MealItem
+    @ObservedObject var searchViewModel: SearchViewModel
+    @ObservedObject var mainViewModel: MainViewModel
+    let mealType: MealType
+    
     private let formatter = Formatter()
     
     var body: some View {
-        VStack(spacing: 10) {
-            HStack {
-                Text(foodName)
-                    .lineLimit(1)
-                    .fontWeight(.medium)
-                    .frame(width: 120, alignment: .leading)
-                Text("\(formatter.formattedValue(portionSize, unit: .empty)) \(portionUnit)")
-                    .foregroundColor(.gray)
-                Spacer()
-                Text(
-                    formatter.formattedValue(
-                        calories,
-                        unit: .empty,
-                        alwaysRoundUp: true
+        NavigationLink(
+            destination: FoodView(
+                food: Food(
+                    searchFoodId: mealItem.foodId,
+                    searchFoodName: mealItem.foodName,
+                    searchFoodDescription: ""
+                ),
+                searchViewModel: searchViewModel,
+                mainViewModel: mainViewModel,
+                mealType: mealType,
+                isFromSearchView: false
+            )
+        ) {
+            VStack(spacing: 10) {
+                HStack {
+                    Text(mealItem.foodName)
+                        .lineLimit(1)
+                        .fontWeight(.medium)
+                        .frame(width: 120, alignment: .leading)
+                    Text("\(formatter.formattedValue(mealItem.amount, unit: .empty)) \(mealItem.portionUnit)")
+                        .foregroundColor(.gray)
+                    Spacer()
+                    Text(
+                        formatter.formattedValue(
+                            mealItem.nutrients.value(for: .calories),
+                            unit: .empty,
+                            alwaysRoundUp: true
+                        )
                     )
-                )
-                .fontWeight(.medium)
+                    .fontWeight(.medium)
+                }
+                HStack {
+                    NutrientLabel(
+                        label: "F",
+                        value: mealItem.nutrients.value(for: .fat),
+                        formatter: formatter
+                    )
+                    NutrientLabel(
+                        label: "C",
+                        value: mealItem.nutrients.value(for: .carbohydrates),
+                        formatter: formatter
+                    )
+                    NutrientLabel(
+                        label: "P",
+                        value: mealItem.nutrients.value(for: .protein),
+                        formatter: formatter
+                    )
+                    Spacer()
+                }
             }
-            HStack {
-                NutrientLabel(
-                    label: "F", value: fats, formatter: formatter)
-                NutrientLabel(
-                    label: "C", value: carbohydrates, formatter: formatter)
-                    .padding(.leading, 5)
-                NutrientLabel(
-                    label: "P", value: proteins, formatter: formatter)
-                    .padding(.leading, 5)
-                Spacer()
-            }
+            .padding(.vertical, 5)
+            .padding(.trailing, 5)
         }
-        .padding(.vertical, 5)
-        .padding(.trailing, 5)
     }
 }
 

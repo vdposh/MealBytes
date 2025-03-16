@@ -13,7 +13,7 @@ struct FoodView: View {
     let mealType: MealType
     @FocusState private var isTextFieldFocused: Bool
     let isFromSearchView: Bool
-
+    
     init(food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
@@ -111,39 +111,38 @@ struct FoodView: View {
                 }
                 .padding(.vertical, 10)
                 
-                if !isFromSearchView {
-                    HStack {
+                HStack {
+                    switch isFromSearchView {
+                    case true:
+                        ActionButtonView(
+                            title: "Add",
+                            action: {
+                                viewModel.addFoodItem(to: mainViewModel,
+                                                      in: mealType)
+                            },
+                            backgroundColor: .customGreen,
+                            isEnabled: viewModel.isAddButtonEnabled() &&
+                            !viewModel.isError
+                        )
+                    case false:
                         ActionButtonView(
                             title: "Remove",
                             action: {
                                 // Remove from Diary
                             },
                             backgroundColor: .customRed,
-                            isEnabled: !viewModel.isError
+                            isEnabled: true
                         )
-
+                        
                         ActionButtonView(
                             title: "Save",
                             action: {
                                 // Save
                             },
                             backgroundColor: .customGreen,
-                            isEnabled: !viewModel.isError
+                            isEnabled: true
                         )
                     }
-                }
-                
-                HStack {
-                    ActionButtonView(
-                        title: "Add",
-                        action: {
-                            viewModel.addFoodItem(to: mainViewModel,
-                                                  in: mealType)
-                        },
-                        backgroundColor: .customGreen,
-                        isEnabled: viewModel.isAddButtonEnabled() &&
-                        !viewModel.isError
-                    )
                     
                     BookmarkButtonView(
                         action: {

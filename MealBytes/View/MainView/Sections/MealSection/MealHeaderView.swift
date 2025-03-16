@@ -56,13 +56,10 @@ struct MealHeaderView: View {
             if isExpanded {
                 ForEach(foodItems) { item in
                     FoodItemRow(
-                        foodName: item.foodName,
-                        portionSize: item.nutrients.value(for: .servingSize),
-                        portionUnit: item.portionUnit,
-                        calories: item.nutrients.value(for: .calories),
-                        fats: item.nutrients.value(for: .fat),
-                        proteins: item.nutrients.value(for: .protein),
-                        carbohydrates: item.nutrients.value(for: .carbohydrates)
+                        mealItem: item,
+                        searchViewModel: SearchViewModel(),
+                        mainViewModel: mainViewModel,
+                        mealType: mealType
                     )
                 }
             }

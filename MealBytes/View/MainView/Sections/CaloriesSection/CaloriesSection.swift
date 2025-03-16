@@ -34,7 +34,6 @@ struct CaloriesSection: View {
                         value: summaries.value(for: .fat),
                         formatter: formatter
                     )
-                    .padding(.leading, 5)
                     NutrientLabel(
                         label: "C",
                         value: summaries.value(for: .carbohydrates),
@@ -45,7 +44,6 @@ struct CaloriesSection: View {
                         value: summaries.value(for: .protein),
                         formatter: formatter
                     )
-                    .padding(.leading, 5)
                     Spacer()
                 }
             }
