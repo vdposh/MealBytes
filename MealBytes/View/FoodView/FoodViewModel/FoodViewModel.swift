@@ -203,6 +203,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
         ),
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
         mainViewModel: MainViewModel(),
-        mealType: .breakfast
+        mealType: .breakfast,
+        isFromSearchView: true
     )
 }

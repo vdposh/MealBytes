@@ -12,13 +12,16 @@ struct FoodView: View {
     @ObservedObject private var mainViewModel: MainViewModel
     let mealType: MealType
     @FocusState private var isTextFieldFocused: Bool
-    
+    let isFromSearchView: Bool
+
     init(food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
-         mealType: MealType) {
+         mealType: MealType,
+         isFromSearchView: Bool) {
         self.mainViewModel = mainViewModel
         self.mealType = mealType
+        self.isFromSearchView = isFromSearchView
         _viewModel = StateObject(wrappedValue: FoodViewModel(
             food: food, searchViewModel: searchViewModel))
     }
@@ -108,16 +111,29 @@ struct FoodView: View {
                 }
                 .padding(.vertical, 10)
                 
+                if !isFromSearchView {
+                    HStack {
+                        ActionButtonView(
+                            title: "Remove",
+                            action: {
+                                // Remove from Diary
+                            },
+                            backgroundColor: .customRed,
+                            isEnabled: !viewModel.isError
+                        )
+
+                        ActionButtonView(
+                            title: "Save",
+                            action: {
+                                // Save
+                            },
+                            backgroundColor: .customGreen,
+                            isEnabled: !viewModel.isError
+                        )
+                    }
+                }
+                
                 HStack {
-                    ActionButtonView(
-                        title: "Remove",
-                        action: {
-                            // Remove from Diary
-                        },
-                        backgroundColor: .customRed,
-                        isEnabled: !viewModel.isError
-                    )
-                    
                     ActionButtonView(
                         title: "Add",
                         action: {
@@ -169,6 +185,7 @@ struct FoodView: View {
         ),
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
         mainViewModel: MainViewModel(),
-        mealType: .breakfast
+        mealType: .breakfast,
+        isFromSearchView: true
     )
 }

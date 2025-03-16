@@ -79,7 +79,7 @@ struct MealHeaderView: View {
         mealType: .breakfast,
         title: "Breakfast",
         iconName: "sunrise.fill",
-        color: .customBreakfast,
+        color: .customGreen,
         calories: 500.0,
         fats: 20.0,
         proteins: 30.0,
