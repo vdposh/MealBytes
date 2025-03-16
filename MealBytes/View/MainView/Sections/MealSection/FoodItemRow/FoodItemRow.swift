@@ -27,6 +27,7 @@ struct FoodItemRow: View {
                 mainViewModel: mainViewModel,
                 mealType: mealType,
                 isFromSearchView: false,
+                isFromFoodItemRow: true,
                 amount: String(mealItem.amount),
                 measurementDescription: mealItem.measurementDescription
             )
@@ -37,8 +38,11 @@ struct FoodItemRow: View {
                         .lineLimit(1)
                         .fontWeight(.medium)
                         .frame(width: 120, alignment: .leading)
-                    Text("\(formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty)) \(mealItem.portionUnit)")
-                        .foregroundColor(.gray)
+                    Group {
+                        Text(formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty))
+                        Text(mealItem.portionUnit)
+                    }
+                    .foregroundColor(.gray)
                     Spacer()
                     Text(formatter.formattedValue(
                         mealItem.nutrients.value(for: .calories),

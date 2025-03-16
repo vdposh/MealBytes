@@ -13,22 +13,26 @@ struct FoodView: View {
     @FocusState private var isTextFieldFocused: Bool
     let mealType: MealType
     let isFromSearchView: Bool
+    let isFromFoodItemRow: Bool
     
     init(food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          mealType: MealType,
          isFromSearchView: Bool,
+         isFromFoodItemRow: Bool,
          amount: String,
          measurementDescription: String) {
         self.mainViewModel = mainViewModel
         self.mealType = mealType
         self.isFromSearchView = isFromSearchView
+        self.isFromFoodItemRow = isFromFoodItemRow
         _viewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             searchViewModel: searchViewModel,
             initialAmount: amount,
-            initialMeasurementDescription: measurementDescription
+            initialMeasurementDescription: measurementDescription,
+            isFromFoodItemRow: isFromFoodItemRow
         ))
     }
     
@@ -192,6 +196,7 @@ struct FoodView: View {
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
         isFromSearchView: true,
+        isFromFoodItemRow: true,
         amount: "",
         measurementDescription: ""
     )

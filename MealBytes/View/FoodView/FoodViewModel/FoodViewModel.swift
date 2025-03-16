@@ -19,26 +19,34 @@ final class FoodViewModel: ObservableObject {
     @Published var isBookmarkFilled = false
     @Published var foodDetail: FoodDetail? {
         didSet {
-            self.selectedServing = self.foodDetail?.servings.serving.first
-            setAmount(for: self.selectedServing)
+            self.selectedServing = nil
         }
     }
     private let networkManager: NetworkManagerProtocol
     private let searchViewModel: SearchViewModel
     private let initialMeasurementDescription: String
+    private let isFromFoodItemRow: Bool
     let food: Food
     
     init(food: Food,
          searchViewModel: SearchViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager(),
          initialAmount: String = "",
-         initialMeasurementDescription: String = "") {
+         initialMeasurementDescription: String = "",
+         isFromFoodItemRow: Bool = false) {
+        let roundedAmount = Formatter().formattedValue(
+            Double(initialAmount) ?? 0.0,
+            unit: .empty,
+            alwaysRoundUp: false
+        )
+        
         self.food = food
         self.networkManager = networkManager
         self.searchViewModel = searchViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarked(food)
-        self.amount = initialAmount
+        self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
+        self.isFromFoodItemRow = isFromFoodItemRow
     }
     
     // MARK: - Fetch Food Details
@@ -59,7 +67,9 @@ final class FoodViewModel: ObservableObject {
                 self.selectedServing = fetchedFoodDetail.servings.serving.first
             }
             
-            setAmount(for: selectedServing)
+            if !isFromFoodItemRow {
+                setAmount(for: selectedServing)
+            }
         } catch {
             switch error {
             case let appError as AppError:
@@ -220,6 +230,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
         isFromSearchView: true,
+        isFromFoodItemRow: true,
         amount: "",
         measurementDescription: ""
     )
