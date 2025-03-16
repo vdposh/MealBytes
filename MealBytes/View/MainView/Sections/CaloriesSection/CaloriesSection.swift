@@ -22,7 +22,8 @@ struct CaloriesSection: View {
                     Text(
                         formatter.formattedValue(
                             summaries[.calories] ?? 0.0,
-                            unit: .empty
+                            unit: .empty,
+                            alwaysRoundUp: true
                         )
                     )
                     .fontWeight(.medium)

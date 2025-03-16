@@ -36,8 +36,12 @@ struct MealHeaderView: View {
                         Text(title)
                             .fontWeight(.medium)
                         Spacer()
-                        Text(formatter.formattedValue(calories, unit: .empty))
-                            .fontWeight(.medium)
+                        Text(formatter.formattedValue(
+                            calories,
+                            unit: .empty,
+                            alwaysRoundUp: true
+                        ))
+                        .fontWeight(.medium)
                     }
                     NutrientSummaryRow(
                         fats: fats,

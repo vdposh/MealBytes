@@ -24,18 +24,28 @@ struct FoodItemRow: View {
                 Text(foodName)
                     .lineLimit(1)
                     .fontWeight(.medium)
+                    .frame(width: 120, alignment: .leading)
                 Text("\(formatter.formattedValue(portionSize, unit: .empty)) \(portionUnit)")
                     .foregroundColor(.gray)
-                    .frame(width: 140, alignment: .leading)
+                    .frame(width: 150, alignment: .leading)
                 Spacer()
-                Text(formatter.formattedValue(calories, unit: .empty))
-                    .fontWeight(.medium)
+                Text(
+                    formatter.formattedValue(
+                        calories,
+                        unit: .empty,
+                        alwaysRoundUp: true
+                    )
+                )
+                .fontWeight(.medium)
             }
             HStack {
-                NutrientLabel(label: "F", value: fats, formatter: formatter)
-                NutrientLabel(label: "C", value: carbohydrates, formatter: formatter)
+                NutrientLabel(
+                    label: "F", value: fats, formatter: formatter)
+                NutrientLabel(
+                    label: "C", value: carbohydrates, formatter: formatter)
                     .padding(.leading, 5)
-                NutrientLabel(label: "P", value: proteins, formatter: formatter)
+                NutrientLabel(
+                    label: "P", value: proteins, formatter: formatter)
                     .padding(.leading, 5)
                 Spacer()
             }
