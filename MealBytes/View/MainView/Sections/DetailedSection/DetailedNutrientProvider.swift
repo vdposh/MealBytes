@@ -7,9 +7,6 @@
 
 import SwiftUI
 
-//MARK: - Handles the logic for generating and providing detailed nutrient data based on summaries
-import SwiftUI
-
 struct DetailedNutrientProvider {
     func getDetailedNutrients(from nutrientSummaries:
                               [NutrientType: Double]) -> [DetailedNutrient] {

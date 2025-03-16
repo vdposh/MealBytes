@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Generates an array of NutrientDetail objects by extracting detailed nutrient values from a given serving, including main and sub-values
 struct NutrientDetailProvider {
     func getNutrientDetails(from serving:
                             Serving) -> [NutrientDetail] {

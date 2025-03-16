@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Displays a summary row for macronutrients, including fats, carbohydrates, and proteins with formatted labels
 struct NutrientSummaryRow: View {
     let fats: Double
     let carbs: Double

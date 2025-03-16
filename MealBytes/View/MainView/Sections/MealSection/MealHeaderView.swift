@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Displays a header for a meal section, showing its title, icon, macronutrient summary, and a toggle for expanding or collapsing the food items
 struct MealHeaderView: View {
     let mealType: MealType
     let title: String

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Displays a label with a nutrient's name and its formatted value, styled for a clean UI
 struct NutrientLabel: View {
     let label: String
     let value: Double
