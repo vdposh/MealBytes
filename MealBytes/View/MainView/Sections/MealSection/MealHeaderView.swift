@@ -57,12 +57,12 @@ struct MealHeaderView: View {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         foodName: item.foodName,
-                        portionSize: item.nutrients[.servingSize] ?? 0.0,
+                        portionSize: item.nutrients.value(for: .servingSize),
                         portionUnit: item.portionUnit,
-                        calories: item.nutrients[.calories] ?? 0.0,
-                        fats: item.nutrients[.fat] ?? 0.0,
-                        proteins: item.nutrients[.protein] ?? 0.0,
-                        carbohydrates: item.nutrients[.carbohydrates] ?? 0.0
+                        calories: item.nutrients.value(for: .calories),
+                        fats: item.nutrients.value(for: .fat),
+                        proteins: item.nutrients.value(for: .protein),
+                        carbohydrates: item.nutrients.value(for: .carbohydrates)
                     )
                 }
             }

@@ -42,8 +42,10 @@ enum NutrientType: String, Identifiable, CaseIterable {
     
     var alternativeTitle: String {
         switch self {
-        case .carbohydrates: "Carb"
-        default: title
+        case .carbohydrates: 
+            "Carb"
+        default:
+            title
         }
     }
     
@@ -77,9 +79,9 @@ enum NutrientType: String, Identifiable, CaseIterable {
     func unit(for serving: Serving) -> String {
         switch self {
         case .servingSize:
-            return serving.metricServingUnit
+            serving.metricServingUnit
         default:
-            return baseUnit
+            baseUnit
         }
     }
     

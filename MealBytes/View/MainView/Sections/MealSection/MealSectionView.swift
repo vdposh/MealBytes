@@ -18,10 +18,14 @@ struct MealSectionView: View {
             title: mealType.rawValue,
             iconName: mealType.iconName,
             color: mealType.color,
-            calories: mealItems.reduce(0) { $0 + ($1.nutrients[.calories] ?? 0.0) },
-            fats: mealItems.reduce(0) { $0 + ($1.nutrients[.fat] ?? 0.0) },
-            proteins: mealItems.reduce(0) { $0 + ($1.nutrients[.protein] ?? 0.0) },
-            carbohydrates: mealItems.reduce(0) { $0 + ($1.nutrients[.carbohydrates] ?? 0.0) },
+            calories: mealItems.reduce(0) {
+                $0 + $1.nutrients.value(for: .calories) },
+            fats: mealItems.reduce(0) {
+                $0 + $1.nutrients.value(for: .fat) },
+            proteins: mealItems.reduce(0) {
+                $0 + $1.nutrients.value(for: .protein) },
+            carbohydrates: mealItems.reduce(0) {
+                $0 + $1.nutrients.value(for: .carbohydrates) },
             foodItems: mealItems,
             mainViewModel: viewModel
         )

@@ -21,7 +21,7 @@ struct CaloriesSection: View {
                     Spacer()
                     Text(
                         formatter.formattedValue(
-                            summaries[.calories] ?? 0.0,
+                            summaries.value(for: .calories),
                             unit: .empty,
                             alwaysRoundUp: true
                         )
@@ -31,18 +31,18 @@ struct CaloriesSection: View {
                 HStack {
                     NutrientLabel(
                         label: "F",
-                        value: summaries[.fat] ?? 0.0,
-                        formatter: formatter
-                    )
-                    NutrientLabel(
-                        label: "P",
-                        value: summaries[.protein] ?? 0.0,
+                        value: summaries.value(for: .fat),
                         formatter: formatter
                     )
                     .padding(.leading, 5)
                     NutrientLabel(
                         label: "C",
-                        value: summaries[.carbohydrates] ?? 0.0,
+                        value: summaries.value(for: .carbohydrates),
+                        formatter: formatter
+                    )
+                    NutrientLabel(
+                        label: "P",
+                        value: summaries.value(for: .protein),
                         formatter: formatter
                     )
                     .padding(.leading, 5)
@@ -52,8 +52,4 @@ struct CaloriesSection: View {
             .padding(.vertical, 5)
         }
     }
-}
-
-#Preview {
-    MainView()
 }

@@ -55,7 +55,7 @@ struct MainView: View {
         ForEach(MealType.allCases) { mealType in
             MealSectionView(
                 mealType: mealType,
-                mealItems: viewModel.mealItems[mealType] ?? [],
+                mealItems: viewModel.mealItems[mealType, default: []],
                 viewModel: viewModel
             )
         }
