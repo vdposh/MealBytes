@@ -26,7 +26,9 @@ struct FoodItemRow: View {
                 searchViewModel: searchViewModel,
                 mainViewModel: mainViewModel,
                 mealType: mealType,
-                isFromSearchView: false
+                isFromSearchView: false,
+                amount: String(mealItem.amount),
+                measurementDescription: mealItem.measurementDescription
             )
         ) {
             VStack(spacing: 10) {
@@ -38,13 +40,11 @@ struct FoodItemRow: View {
                     Text("\(formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty)) \(mealItem.portionUnit)")
                         .foregroundColor(.gray)
                     Spacer()
-                    Text(
-                        formatter.formattedValue(
-                            mealItem.nutrients.value(for: .calories),
-                            unit: .empty,
-                            alwaysRoundUp: true
-                        )
-                    )
+                    Text(formatter.formattedValue(
+                        mealItem.nutrients.value(for: .calories),
+                        unit: .empty,
+                        alwaysRoundUp: true
+                    ))
                     .fontWeight(.medium)
                 }
                 HStack {
@@ -93,7 +93,7 @@ struct FoodItemRow: View {
                     .protein: 5.0,
                     .carbohydrates: 27.0
                 ],
-                servingDescription: "1 cup (100g)",
+                measurementDescription: "1 cup (100g)",
                 amount: 100.0
             ),
             MealItem(
@@ -106,7 +106,7 @@ struct FoodItemRow: View {
                     .protein: 1.3,
                     .carbohydrates: 27.0
                 ],
-                servingDescription: "1 medium (120g)",
+                measurementDescription: "1 medium (120g)",
                 amount: 120.0
             )
         ],

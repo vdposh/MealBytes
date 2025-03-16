@@ -10,20 +10,26 @@ import SwiftUI
 struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @ObservedObject private var mainViewModel: MainViewModel
-    let mealType: MealType
     @FocusState private var isTextFieldFocused: Bool
+    let mealType: MealType
     let isFromSearchView: Bool
     
     init(food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          mealType: MealType,
-         isFromSearchView: Bool) {
+         isFromSearchView: Bool,
+         amount: String,
+         measurementDescription: String) {
         self.mainViewModel = mainViewModel
         self.mealType = mealType
         self.isFromSearchView = isFromSearchView
         _viewModel = StateObject(wrappedValue: FoodViewModel(
-            food: food, searchViewModel: searchViewModel))
+            food: food,
+            searchViewModel: searchViewModel,
+            initialAmount: amount,
+            initialMeasurementDescription: measurementDescription
+        ))
     }
     
     var body: some View {
@@ -185,6 +191,8 @@ struct FoodView: View {
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
-        isFromSearchView: true
+        isFromSearchView: true,
+        amount: "",
+        measurementDescription: ""
     )
 }

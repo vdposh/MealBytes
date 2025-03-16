@@ -9,33 +9,36 @@ import SwiftUI
 import Combine
 
 final class FoodViewModel: ObservableObject {
+    @Published var selectedServing: Serving?
+    @Published var amount: String = ""
+    @Published var errorMessage: AppError?
+    @Published var unit: MeasurementUnit = .grams
+    @Published var showActionSheet = false
+    @Published var isLoading = true
+    @Published var isError = false
+    @Published var isBookmarkFilled = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = self.foodDetail?.servings.serving.first
             setAmount(for: self.selectedServing)
         }
     }
-    @Published var selectedServing: Serving?
-    @Published var amount: String = ""
-    @Published var errorMessage: AppError?
-    @Published var showActionSheet = false
-    @Published var unit: MeasurementUnit = .grams
-    @Published var isLoading = true
-    @Published var isError = false
-    @Published var isBookmarkFilled = false
-    
-    let food: Food
-    
     private let networkManager: NetworkManagerProtocol
     private let searchViewModel: SearchViewModel
+    private let initialMeasurementDescription: String
+    let food: Food
     
     init(food: Food,
          searchViewModel: SearchViewModel,
-         networkManager: NetworkManagerProtocol = NetworkManager()) {
+         networkManager: NetworkManagerProtocol = NetworkManager(),
+         initialAmount: String = "",
+         initialMeasurementDescription: String = "") {
         self.food = food
         self.networkManager = networkManager
         self.searchViewModel = searchViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarked(food)
+        self.amount = initialAmount
+        self.initialMeasurementDescription = initialMeasurementDescription
     }
     
     // MARK: - Fetch Food Details
@@ -46,6 +49,17 @@ final class FoodViewModel: ObservableObject {
             let fetchedFoodDetail = try await networkManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
             self.foodDetail = fetchedFoodDetail
+            
+            switch fetchedFoodDetail.servings.serving.first(where: {
+                $0.measurementDescription == initialMeasurementDescription
+            }) {
+            case let matchingServing?:
+                self.selectedServing = matchingServing
+            default:
+                self.selectedServing = fetchedFoodDetail.servings.serving.first
+            }
+            
+            setAmount(for: selectedServing)
         } catch {
             switch error {
             case let appError as AppError:
@@ -115,7 +129,7 @@ final class FoodViewModel: ObservableObject {
         return amountValue > 0
     }
     
-    // MARK: - Adds a food item to the specified meal section
+    // MARK: - Adds a food item to MainView
     func addFoodItem(to mainViewModel: MainViewModel, in section: MealType) {
         let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
             result, detail in
@@ -128,7 +142,8 @@ final class FoodViewModel: ObservableObject {
             portionUnit: nutrientDetails.first(where: {
                 $0.type == .servingSize })?.serving.metricServingUnit ?? "",
             nutrients: nutrients,
-            servingDescription: servingDescription,
+            measurementDescription:
+                selectedServing?.measurementDescription ?? "",
             amount: Double(amount.replacingOccurrences(of: ",",
                                                        with: ".")) ?? 0
         )
@@ -204,6 +219,8 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
         searchViewModel: SearchViewModel(networkManager: NetworkManager()),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
-        isFromSearchView: true
+        isFromSearchView: true,
+        amount: "",
+        measurementDescription: ""
     )
 }

@@ -36,7 +36,9 @@ struct SearchView: View {
                                         searchViewModel: viewModel,
                                         mainViewModel: mainViewModel,
                                         mealType: mealType,
-                                        isFromSearchView: true
+                                        isFromSearchView: true,
+                                        amount: "",
+                                        measurementDescription: ""
                                     )
                                 ) {
                                     FoodDetailView(food: food,
