@@ -35,7 +35,7 @@ struct FoodItemRow: View {
                         .lineLimit(1)
                         .fontWeight(.medium)
                         .frame(width: 120, alignment: .leading)
-                    Text("\(formatter.formattedValue(mealItem.amount, unit: .empty)) \(mealItem.portionUnit)")
+                    Text("\(formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty)) \(mealItem.portionUnit)")
                         .foregroundColor(.gray)
                     Spacer()
                     Text(
