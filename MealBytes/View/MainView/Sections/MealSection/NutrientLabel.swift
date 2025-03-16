@@ -21,7 +21,3 @@ struct NutrientLabel: View {
             .font(.subheadline)
     }
 }
-
-#Preview {
-    MainView()
-}
