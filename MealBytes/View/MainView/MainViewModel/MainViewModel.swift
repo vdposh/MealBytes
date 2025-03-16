@@ -12,9 +12,11 @@ final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
     @Published var foodItems: [MealItem] = []
     
-    @Published var nutrientSummaries:
-    [NutrientType: Double] = NutrientType.allCases
-        .reduce(into: [NutrientType: Double]()) { $0[$1] = 0.0 }
+    @Published var nutrientSummaries: [NutrientType: Double] = {
+        var summaries = [NutrientType: Double]()
+        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
+        return summaries
+    }()
     
     // MARK: - Add Food Item
     func addFoodItem(_ item: MealItem) {

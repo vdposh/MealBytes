@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//MARK: - Responsible for the main section displaying detailed nutrient information
 struct DetailedInformationSection: View {
     let nutrients: [DetailedNutrient]
     @Binding var isExpanded: Bool

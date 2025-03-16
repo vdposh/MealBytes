@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - Displays a row showing nutritional information, including fats, carbohydrates, and proteins with formatted values
 struct NutrientRow: View {
     let fats: Double
     let carbs: Double

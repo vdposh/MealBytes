@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Represents a compact model of a nutrient with details such as nutrient type, value, and serving information
+
 struct CompactNutrientDetail: Identifiable {
     var id: NutrientType { type }
     let type: NutrientType

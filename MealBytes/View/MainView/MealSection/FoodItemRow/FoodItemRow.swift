@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - Displays a row showing food item details, including name, portion size, calories, and a breakdown of macronutrients
 struct FoodItemRow: View {
     let foodName: String
     let portionSize: Double

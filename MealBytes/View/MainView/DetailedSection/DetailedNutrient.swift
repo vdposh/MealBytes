@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//MARK: - Represents the model for a nutrient, containing its type, value, and other related properties
 struct DetailedNutrient: Identifiable {
     var id: String {
         String(describing: type)

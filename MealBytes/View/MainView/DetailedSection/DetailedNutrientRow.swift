@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//MARK: - Displays a single row in the UI for a specific nutrient, showing its type and formatted value
 struct DetailedNutrientRow: View {
     let nutrient: DetailedNutrient
     

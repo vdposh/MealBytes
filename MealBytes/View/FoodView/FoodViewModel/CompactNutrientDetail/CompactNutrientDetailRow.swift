@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - Defines a view for displaying a compact row with a nutrient's alternative title and formatted value
 struct CompactNutrientDetailRow: View {
     let nutrient: CompactNutrientDetail
     
