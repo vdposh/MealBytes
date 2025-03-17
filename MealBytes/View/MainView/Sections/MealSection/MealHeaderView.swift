@@ -76,9 +76,7 @@ struct MealHeaderView: View {
                 }
             }
             
-            ShowHideButtonView(isExpanded: isExpanded) {
-                isExpanded.toggle()
-            }
+            ShowHideButtonView(isExpanded: $isExpanded)
         }
     }
 }

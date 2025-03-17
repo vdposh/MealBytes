@@ -22,11 +22,7 @@ struct DetailedInformationSection: View {
                 DetailedNutrientRow(nutrient: nutrient)
             }
             
-            ShowHideButtonView(isExpanded: isExpanded) {
-                withAnimation {
-                    isExpanded.toggle()
-                }
-            }
+            ShowHideButtonView(isExpanded: $isExpanded)
         }
     }
 }

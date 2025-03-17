@@ -29,20 +29,17 @@ struct NutrientDetail: Identifiable {
 
 extension NutrientDetail {
     var formattedValue: String {
-        let unit: String
-        switch type.unit(for: serving).isEmpty {
-        case true:
-            unit = ""
-        case false:
-            unit = type.unit(for: serving)
-        }
-        
-        let roundedValue = Formatter().formattedValue(
+        Formatter().formattedValue(
             value,
-            unit: .empty,
+            unit: {
+                switch type {
+                case .calories:
+                        .empty
+                default:
+                    Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
+                }
+            }(),
             alwaysRoundUp: type == .calories
         )
-        
-        return "\(roundedValue) \(unit)"
     }
 }

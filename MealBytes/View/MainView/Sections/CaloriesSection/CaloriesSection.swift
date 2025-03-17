@@ -15,7 +15,7 @@ struct CaloriesSection: View {
         Section {
             VStack(spacing: 10) {
                 HStack {
-                    Text("Kcal")
+                    Text("Calories")
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Spacer()

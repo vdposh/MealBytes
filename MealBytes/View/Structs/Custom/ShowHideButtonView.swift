@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct ShowHideButtonView: View {
-    let isExpanded: Bool
-    let action: () -> Void
-
+    @Binding var isExpanded: Bool
+    
     var body: some View {
         Button(action: {
             withAnimation {
-                action()
+                isExpanded.toggle()
             }
         }) {
             HStack {

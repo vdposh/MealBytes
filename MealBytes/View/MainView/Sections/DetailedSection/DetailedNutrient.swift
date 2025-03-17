@@ -28,7 +28,13 @@ extension DetailedNutrient {
     var formattedValue: String {
         Formatter().formattedValue(
             value,
-            unit: Formatter.Unit(rawValue: type.alternativeUnit) ?? .empty,
+            unit: {
+                switch type {
+                case .calories: .empty
+                default: Formatter.Unit(rawValue: type.alternativeUnit) ??
+                        .empty
+                }
+            }(),
             alwaysRoundUp: type == .calories
         )
     }
