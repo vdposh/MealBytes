@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MealSection: View {
     let model: MealSectionModel
-    @ObservedObject var mainViewModel: MainViewModel
+    let mainViewModel: MainViewModel
     
     var body: some View {
         MealHeaderView(

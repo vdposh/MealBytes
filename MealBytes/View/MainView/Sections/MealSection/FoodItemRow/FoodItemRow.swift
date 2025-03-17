@@ -9,10 +9,8 @@ import SwiftUI
 
 struct FoodItemRow: View {
     let mealItem: MealItem
-    @ObservedObject var mainViewModel: MainViewModel
+    let mainViewModel: MainViewModel
     let mealType: MealType
-    
-    private let formatter = Formatter()
     
     var body: some View {
         NavigationLink(
@@ -43,7 +41,7 @@ struct FoodItemRow: View {
                     }
                     .foregroundColor(.gray)
                     Spacer()
-                    Text(formatter.formattedValue(
+                    Text(mainViewModel.formatter.formattedValue(
                         mealItem.nutrients[.calories] ?? 0.0,
                         unit: .empty,
                         alwaysRoundUp: true
@@ -54,17 +52,17 @@ struct FoodItemRow: View {
                     NutrientLabel(
                         label: "F",
                         value: mealItem.nutrients[.fat] ?? 0.0,
-                        formatter: formatter
+                        formatter: mainViewModel.formatter
                     )
                     NutrientLabel(
                         label: "C",
                         value: mealItem.nutrients[.carbohydrates] ?? 0.0,
-                        formatter: formatter
+                        formatter: mainViewModel.formatter
                     )
                     NutrientLabel(
                         label: "P",
                         value: mealItem.nutrients[.protein] ?? 0.0,
-                        formatter: formatter
+                        formatter: mainViewModel.formatter
                     )
                     Spacer()
                 }
