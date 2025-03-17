@@ -18,16 +18,16 @@ struct MealSectionView: View {
             title: mealType.rawValue,
             iconName: mealType.iconName,
             color: mealType.color,
-            calories: mealItems.reduce(0) {
-                $0 + $1.nutrients.value(for: .calories) },
-            fats: mealItems.reduce(0) {
-                $0 + $1.nutrients.value(for: .fat) },
-            proteins: mealItems.reduce(0) {
-                $0 + $1.nutrients.value(for: .protein) },
-            carbohydrates: mealItems.reduce(0) {
-                $0 + $1.nutrients.value(for: .carbohydrates) },
+            calories: viewModel.totalNutrient(.calories, for: mealItems),
+            fats: viewModel.totalNutrient(.fat, for: mealItems),
+            proteins: viewModel.totalNutrient(.protein, for: mealItems),
+            carbohydrates: viewModel.totalNutrient(.carbohydrates, for: mealItems),
             foodItems: mealItems,
             mainViewModel: viewModel
         )
     }
+}
+
+#Preview {
+    MainView()
 }

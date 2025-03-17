@@ -34,3 +34,7 @@ struct MealSection: View {
         )
     }
 }
+
+#Preview {
+    MainView()
+}

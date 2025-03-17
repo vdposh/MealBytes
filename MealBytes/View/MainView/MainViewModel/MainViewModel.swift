@@ -19,6 +19,11 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double] = NutrientType.allCases
         .reduce(into: [NutrientType: Double]()) { $0[$1] = 0.0 }
 
+    // MARK: - Calculate Totals for Nutrients
+    func totalNutrient(_ nutrient: NutrientType, for mealItems: [MealItem]) -> Double {
+        mealItems.reduce(0) { $0 + $1.nutrients.value(for: nutrient) }
+    }
+
     // MARK: - Add Food Item
     func addFoodItem(_ item: MealItem, to mealType: MealType) {
         mealItems[mealType]?.append(item)
@@ -34,6 +39,7 @@ final class MainViewModel: ObservableObject {
             }
     }
 }
+
 
 #Preview {
     MainView()
