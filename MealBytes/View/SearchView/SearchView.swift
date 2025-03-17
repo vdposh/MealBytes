@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    @ObservedObject private var mainViewModel: MainViewModel
+    private var mainViewModel: MainViewModel
     @StateObject private var viewModel = SearchViewModel()
     @State private var currentPage: Int = 0
     @Environment(\.dismiss) private var dismiss

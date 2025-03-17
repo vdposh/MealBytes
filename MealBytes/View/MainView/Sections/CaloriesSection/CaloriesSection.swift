@@ -29,21 +29,19 @@ struct CaloriesSection: View {
                     .fontWeight(.medium)
                 }
                 HStack {
-                    NutrientLabel(
-                        label: "F",
-                        value: summaries.value(for: .fat),
-                        formatter: formatter
-                    )
-                    NutrientLabel(
-                        label: "C",
-                        value: summaries.value(for: .carbohydrates),
-                        formatter: formatter
-                    )
-                    NutrientLabel(
-                        label: "P",
-                        value: summaries.value(for: .protein),
-                        formatter: formatter
-                    )
+                    let nutrientTypes: [(label: String, type: NutrientType)] = [
+                        ("F", .fat),
+                        ("C", .carbohydrates),
+                        ("P", .protein)
+                    ]
+                    
+                    ForEach(nutrientTypes, id: \.label) { nutrient in
+                        NutrientLabel(
+                            label: nutrient.label,
+                            value: summaries.value(for: nutrient.type),
+                            formatter: formatter
+                        )
+                    }
                     Spacer()
                 }
             }

@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FoodItemRow: View {
     let mealItem: MealItem
-    var searchViewModel: SearchViewModel
     @ObservedObject var mainViewModel: MainViewModel
     let mealType: MealType
     
@@ -38,8 +37,11 @@ struct FoodItemRow: View {
                         .lineLimit(1)
                         .fontWeight(.medium)
                         .frame(width: 120, alignment: .leading)
-                    Text(mainViewModel.formattedServingSize(for: mealItem))
-                        .foregroundColor(.gray)
+                    Group{
+                        Text(mainViewModel.formattedServingSize(for: mealItem))
+                        Text(mealItem.portionUnit)
+                    }
+                    .foregroundColor(.gray)
                     Spacer()
                     Text(formatter.formattedValue(
                         mealItem.nutrients.value(for: .calories),

@@ -18,8 +18,17 @@ struct DetailedInformationSection: View {
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
-            ForEach(nutrients) { nutrient in
-                DetailedNutrientRow(nutrient: nutrient)
+            ForEach(nutrients, id: \.id) { nutrient in
+                HStack {
+                    Text(nutrient.type.title)
+                        .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                        .font(.subheadline)
+                    Spacer()
+                    Text(nutrient.formattedValue)
+                        .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                        .font(.subheadline)
+                        .lineLimit(1)
+                }
             }
             
             ShowHideButtonView(isExpanded: $isExpanded)

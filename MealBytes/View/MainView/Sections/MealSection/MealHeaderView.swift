@@ -49,7 +49,7 @@ struct MealHeaderView: View {
                         )
                     }
                     .padding(.vertical, 5)
-                    .padding(.trailing, 1)
+                    .padding(.trailing, 5)
                     
                     Text("+")
                         .font(.title)
@@ -65,7 +65,6 @@ struct MealHeaderView: View {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         mealItem: item,
-                        searchViewModel: mainViewModel.searchViewModel,
                         mainViewModel: mainViewModel,
                         mealType: mealType
                     )

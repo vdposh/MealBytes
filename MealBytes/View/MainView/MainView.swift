@@ -28,13 +28,16 @@ struct MainView: View {
     private var dateCarouselSection: some View {
         Section {
             HStack {
-                ForEach(-3...3, id: \.self) { offset in
-                    let date = Calendar.current.date(
-                        byAdding: .day, value: offset, to: Date()) ?? Date()
-                    dateView(for: date)
-                        .onTapGesture {
-                            viewModel.selectedDate = date
-                        }
+                let daysBeforeAndAfter = 3
+                ForEach(-daysBeforeAndAfter...daysBeforeAndAfter, id: \.self) {
+                    offset in
+                    let date = viewModel.date(for: offset)
+                    Button(action: {
+                        viewModel.selectedDate = date
+                    }) {
+                        dateView(for: date)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -70,51 +73,9 @@ struct MainView: View {
     
     private var detailedInformationSection: some View {
         DetailedInformationSection(
-            nutrients: nutrients,
-            isExpanded: $isExpanded
+            nutrients: viewModel.filteredNutrients,
+            isExpanded: $viewModel.isExpanded
         )
-    }
-    
-    private var nutrients: [DetailedNutrient] {
-        let summaries = viewModel.nutrientSummaries
-        let allNutrients = DetailedNutrientProvider()
-            .getDetailedNutrients(from: summaries)
-        
-        switch isExpanded {
-        case true:
-            return allNutrients
-        case false:
-            return allNutrients.filter {
-                [.calories, .fat, .protein, .carbohydrates].contains($0.type)
-            }
-        }
-    }
-}
-
-enum MealType: String, CaseIterable, Identifiable {
-    case breakfast = "Breakfast"
-    case lunch = "Lunch"
-    case dinner = "Dinner"
-    case other = "Other"
-    
-    var id: String { rawValue }
-    
-    var iconName: String {
-        switch self {
-        case .breakfast: "sunrise.fill"
-        case .lunch: "sun.max.fill"
-        case .dinner: "moon.fill"
-        case .other: "tray.fill"
-        }
-    }
-    
-    var color: Color {
-        switch self {
-        case .breakfast: .customGreen.opacity(0.6)
-        case .lunch: .customGreen.opacity(0.6)
-        case .dinner: .customGreen.opacity(0.6)
-        case .other: .customGreen.opacity(0.6)
-        }
     }
 }
 

@@ -19,8 +19,17 @@ struct NutrientDetailSectionView: View {
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
-            ForEach(nutrientDetails) { nutrient in
-                NutrientDetailRow(nutrient: nutrient)
+            ForEach(nutrientDetails, id: \.id) { nutrient in
+                HStack {
+                    Text(nutrient.type.title)
+                        .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                        .font(.subheadline)
+                    Spacer()
+                    Text(nutrient.formattedValue)
+                        .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                        .font(.subheadline)
+                        .lineLimit(1)
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
+    @Published var isExpanded: Bool = false
     let searchViewModel: SearchViewModel
     let formatter = Formatter()
 
@@ -27,6 +28,31 @@ final class MainViewModel: ObservableObject {
         self.searchViewModel = searchViewModel
     }
     
+    // MARK: - Calculate Date Offset
+    func date(for offset: Int) -> Date {
+        Calendar.current.date(byAdding: .day, value: offset, to: Date()) ?? Date()
+    }
+    
+    // MARK: - Filtered Nutrients
+    var filteredNutrients: [DetailedNutrient] {
+        let allNutrients = DetailedNutrientProvider()
+            .getDetailedNutrients(from: nutrientSummaries)
+        
+        switch isExpanded {
+        case true:
+            return allNutrients
+        case false:
+            return allNutrients.filter {
+                [.calories, .fat, .protein, .carbohydrates].contains($0.type)
+            }
+        }
+    }
+    
+    // MARK: - Value for Nutrient Type
+    func value(for type: NutrientType) -> Double {
+        nutrientSummaries[type] ?? 0.0
+    }
+
     // MARK: - Format Serving Size
     func formattedServingSize(for mealItem: MealItem) -> String {
         return formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty)

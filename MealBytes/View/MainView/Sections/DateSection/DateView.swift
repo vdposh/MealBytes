@@ -36,17 +36,15 @@ struct DateView: View {
     }
     
     private func color(for element: DisplayElement) -> Color {
-        switch (element, isSelected, isToday) {
-        case (_, true, _):
-            .customGreen
-        case (_, _, true):
-            .customGreen
-        case (.day, false, false):
-            .primary
-        case (.weekday, false, false):
-            .gray
-        default:
-            .clear
+        if isSelected || isToday {
+            return .customGreen
+        }
+
+        switch element {
+        case .day:
+            return .primary
+        case .weekday:
+            return .gray
         }
     }
 }
