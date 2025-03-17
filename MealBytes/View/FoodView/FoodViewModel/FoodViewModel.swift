@@ -139,6 +139,12 @@ final class FoodViewModel: ObservableObject {
         return amountValue > 0
     }
     
+    var canAddFood: Bool {
+        let amountValue = Double(amount.replacingOccurrences(of: ",",
+                                                             with: ".")) ?? 0
+        return amountValue > 0 && !isError
+    }
+    
     // MARK: - Adds a food item to MainView
     func addFoodItem(to mainViewModel: MainViewModel, in section: MealType) {
         let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FoodView: View {
-    @StateObject private var viewModel: FoodViewModel
+    @StateObject private var foodViewModel: FoodViewModel
     @ObservedObject private var mainViewModel: MainViewModel
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
@@ -28,7 +28,7 @@ struct FoodView: View {
         self.mealType = mealType
         self.isFromSearchView = isFromSearchView
         self.isFromFoodItemRow = isFromFoodItemRow
-        _viewModel = StateObject(wrappedValue: FoodViewModel(
+        _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             searchViewModel: searchViewModel,
             initialAmount: amount,
@@ -40,7 +40,7 @@ struct FoodView: View {
     var body: some View {
         ZStack {
             List {
-                if !viewModel.isLoading {
+                if !foodViewModel.isLoading {
                     servingSizeSection
                     nutrientActionSection
                     nutrientDetailSection
@@ -49,17 +49,17 @@ struct FoodView: View {
             .listSectionSpacing(10)
             .scrollDismissesKeyboard(.never)
             
-            if viewModel.isLoading {
+            if foodViewModel.isLoading {
                 LoadingView()
             }
         }
         .navigationBarTitle("Add to Diary", displayMode: .inline)
         .confirmationDialog(
             "Select Serving",
-            isPresented: $viewModel.showActionSheet,
+            isPresented: $foodViewModel.showActionSheet,
             titleVisibility: .visible
         ) {
-            if let servings = viewModel.foodDetail?.servings.serving {
+            if let servings = foodViewModel.foodDetail?.servings.serving {
                 servingButtons(servings: servings)
             }
         }
@@ -81,9 +81,9 @@ struct FoodView: View {
             }
         }
         .task {
-            await viewModel.fetchFoodDetails()
+            await foodViewModel.fetchFoodDetails()
         }
-        .alert(item: $viewModel.errorMessage) { error in
+        .alert(item: $foodViewModel.errorMessage) { error in
             Alert(
                 title: Text("Error"),
                 message: Text(error.errorDescription),
@@ -94,24 +94,24 @@ struct FoodView: View {
     
     private var servingSizeSection: some View {
         Section {
-            Text(viewModel.food.searchFoodName)
+            Text(foodViewModel.food.searchFoodName)
                 .font(.headline)
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
             VStack(spacing: 15) {
                 ServingTextFieldView(title: "Size",
-                                     text: $viewModel.amount)
+                                     text: $foodViewModel.amount)
                 .focused($isTextFieldFocused)
-                .disabled(viewModel.isError)
+                .disabled(foodViewModel.isError)
                 ServingButtonView(
                     title: "Serving",
-                    description: viewModel.servingDescription,
-                    showActionSheet: $viewModel.showActionSheet
+                    description: foodViewModel.servingDescription,
+                    showActionSheet: $foodViewModel.showActionSheet
                 ) {
-                    viewModel.showActionSheet.toggle()
+                    foodViewModel.showActionSheet.toggle()
                 }
-                .disabled(viewModel.isError)
+                .disabled(foodViewModel.isError)
             }
             .padding(.bottom, 10)
         }
@@ -121,7 +121,7 @@ struct FoodView: View {
         Section {
             VStack {
                 HStack {
-                    ForEach(viewModel.compactNutrientDetails) { nutrient in
+                    ForEach(foodViewModel.compactNutrientDetails) { nutrient in
                         CompactNutrientDetailRow(nutrient: nutrient)
                     }
                 }
@@ -133,12 +133,11 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
-                                viewModel.addFoodItem(to: mainViewModel,
-                                                      in: mealType)
+                                foodViewModel.addFoodItem(to: mainViewModel,
+                                                          in: mealType)
                             },
                             backgroundColor: .customGreen,
-                            isEnabled: viewModel.isAddButtonEnabled() &&
-                            !viewModel.isError
+                            isEnabled: foodViewModel.canAddFood
                         )
                     case false:
                         ActionButtonView(
@@ -162,10 +161,10 @@ struct FoodView: View {
                     
                     BookmarkButtonView(
                         action: {
-                            viewModel.toggleBookmark()
+                            foodViewModel.toggleBookmark()
                         },
-                        isFilled: viewModel.isBookmarkFilled,
-                        isEnabled: !viewModel.isError
+                        isFilled: foodViewModel.isBookmarkFilled,
+                        isEnabled: !foodViewModel.isError
                     )
                 }
                 .padding(.bottom, 10)
@@ -178,14 +177,14 @@ struct FoodView: View {
     private var nutrientDetailSection: some View {
         NutrientDetailSectionView(
             title: "Detailed Information",
-            nutrientDetails: viewModel.nutrientDetails
+            nutrientDetails: foodViewModel.nutrientDetails
         )
     }
     
     private func servingButtons(servings: [Serving]) -> some View {
         ForEach(servings, id: \.self) { serving in
-            Button(viewModel.servingDescription(for: serving)) {
-                viewModel.updateServing(serving)
+            Button(foodViewModel.servingDescription(for: serving)) {
+                foodViewModel.updateServing(serving)
             }
         }
     }

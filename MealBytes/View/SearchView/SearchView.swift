@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     private var mainViewModel: MainViewModel
-    @StateObject private var viewModel = SearchViewModel()
+    @StateObject private var searchViewModel = SearchViewModel()
     @State private var currentPage: Int = 0
     @Environment(\.dismiss) private var dismiss
     let mealType: MealType
@@ -23,18 +23,19 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.isLoading {
+                if searchViewModel.isLoading {
                     LoadingView()
-                } else if viewModel.errorMessage != nil {
-                    ContentUnavailableView.search(text: viewModel.query)
+                } else if searchViewModel.errorMessage != nil {
+                    ContentUnavailableView.search(text: searchViewModel.query)
                 } else {
                     List {
-                        ForEach(viewModel.foods, id: \.searchFoodId) { food in
+                        ForEach(searchViewModel.foods, id: \.searchFoodId) {
+                            food in
                             HStack {
                                 NavigationLink(
                                     destination: FoodView(
                                         food: food,
-                                        searchViewModel: viewModel,
+                                        searchViewModel: searchViewModel,
                                         mainViewModel: mainViewModel,
                                         mealType: mealType,
                                         isFromSearchView: true,
@@ -43,15 +44,19 @@ struct SearchView: View {
                                         measurementDescription: ""
                                     )
                                 ) {
-                                    FoodDetailView(food: food,
-                                                   viewModel: viewModel)
+                                    FoodDetailView(
+                                        food: food,
+                                        mainViewModel: searchViewModel
+                                    )
                                 }
                                 
                                 BookmarkButtonView(
                                     action: {
-                                        viewModel.toggleBookmark(for: food)
+                                        searchViewModel
+                                            .toggleBookmark(for: food)
                                     },
-                                    isFilled: viewModel.isBookmarked(food)
+                                    isFilled: searchViewModel
+                                        .isBookmarked(food)
                                 )
                             }
                         }
@@ -71,7 +76,7 @@ struct SearchView: View {
                     .foregroundStyle(.customGreen)
                 }
             }
-            .searchable(text: $viewModel.query)
+            .searchable(text: $searchViewModel.query)
         }
         .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
@@ -80,9 +85,9 @@ struct SearchView: View {
     @ViewBuilder
     private func pageButton(direction:
                             SearchViewModel.PageDirection) -> some View {
-        if viewModel.canLoadPage(direction: direction) {
+        if searchViewModel.canLoadPage(direction: direction) {
             Button(action: {
-                viewModel.loadPage(direction: direction)
+                searchViewModel.loadPage(direction: direction)
             }) {
                 switch direction {
                 case .next:

@@ -10,7 +10,7 @@ import SwiftUI
 struct MealSectionView: View {
     let mealType: MealType
     let mealItems: [MealItem]
-    let viewModel: MainViewModel
+    let mainViewModel: MainViewModel
     
     var body: some View {
         let model = MealSectionModel(
@@ -18,16 +18,16 @@ struct MealSectionView: View {
             title: mealType.rawValue,
             iconName: mealType.iconName,
             color: mealType.color,
-            calories: viewModel.totalNutrient(.calories, for: mealItems),
-            fats: viewModel.totalNutrient(.fat, for: mealItems),
-            proteins: viewModel.totalNutrient(.protein, for: mealItems),
-            carbohydrates: viewModel.totalNutrient(.carbohydrates, for: mealItems),
+            calories: mainViewModel.totalNutrient(.calories, for: mealItems),
+            fats: mainViewModel.totalNutrient(.fat, for: mealItems),
+            proteins: mainViewModel.totalNutrient(.protein, for: mealItems),
+            carbohydrates: mainViewModel.totalNutrient(.carbohydrates, for: mealItems),
             foodItems: mealItems
         )
         
         return MealSection(
             model: model,
-            mainViewModel: viewModel
+            mainViewModel: mainViewModel
         )
     }
 }

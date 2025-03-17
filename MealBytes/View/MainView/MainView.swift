@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var viewModel = MainViewModel()
+    @StateObject private var mainViewModel = MainViewModel()
     @State private var isExpanded: Bool = false
-    private let formatter = Formatter()
     
     var body: some View {
         NavigationStack {
@@ -31,9 +30,9 @@ struct MainView: View {
                 let daysBeforeAndAfter = 3
                 ForEach(-daysBeforeAndAfter...daysBeforeAndAfter, id: \.self) {
                     offset in
-                    let date = viewModel.date(for: offset)
+                    let date = mainViewModel.date(for: offset)
                     Button(action: {
-                        viewModel.selectedDate = date
+                        mainViewModel.selectedDate = date
                     }) {
                         dateView(for: date)
                     }
@@ -50,7 +49,7 @@ struct MainView: View {
         DateView(
             date: date,
             isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
-            isSelected: Calendar.current.isDate(date, inSameDayAs: viewModel.selectedDate)
+            isSelected: Calendar.current.isDate(date, inSameDayAs: mainViewModel.selectedDate)
         )
     }
     
@@ -58,23 +57,23 @@ struct MainView: View {
         ForEach(MealType.allCases) { mealType in
             MealSectionView(
                 mealType: mealType,
-                mealItems: viewModel.mealItems[mealType, default: []],
-                viewModel: viewModel
+                mealItems: mainViewModel.mealItems[mealType, default: []],
+                mainViewModel: mainViewModel
             )
         }
     }
     
     private var caloriesSection: some View {
         CaloriesSection(
-            summaries: viewModel.nutrientSummaries,
-            formatter: formatter
+            summaries: mainViewModel.nutrientSummaries,
+            formatter: mainViewModel.formatter
         )
     }
     
     private var detailedInformationSection: some View {
         DetailedInformationSection(
-            nutrients: viewModel.filteredNutrients,
-            isExpanded: $viewModel.isExpanded
+            nutrients: mainViewModel.filteredNutrients,
+            isExpanded: $mainViewModel.isExpanded
         )
     }
 }

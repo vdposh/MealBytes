@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FoodDetailView: View {
     let food: Food
-    let viewModel: SearchViewModel
+    let mainViewModel: SearchViewModel
     
     var body: some View {
         VStack(alignment: .leading) {
