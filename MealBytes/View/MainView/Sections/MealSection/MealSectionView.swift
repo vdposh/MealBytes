@@ -13,7 +13,7 @@ struct MealSectionView: View {
     let viewModel: MainViewModel
     
     var body: some View {
-        MealSection(
+        let model = MealSectionModel(
             mealType: mealType,
             title: mealType.rawValue,
             iconName: mealType.iconName,
@@ -22,7 +22,11 @@ struct MealSectionView: View {
             fats: viewModel.totalNutrient(.fat, for: mealItems),
             proteins: viewModel.totalNutrient(.protein, for: mealItems),
             carbohydrates: viewModel.totalNutrient(.carbohydrates, for: mealItems),
-            foodItems: mealItems,
+            foodItems: mealItems
+        )
+        
+        return MealSection(
+            model: model,
             mainViewModel: viewModel
         )
     }
