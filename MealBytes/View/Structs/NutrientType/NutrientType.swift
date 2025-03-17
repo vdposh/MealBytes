@@ -60,7 +60,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
     
     private var baseUnit: String {
         switch self {
-        case .calories: "kcal"
+        case .calories: ""
         case .servingSize: "g"
         case .fat,
                 .saturatedFat,

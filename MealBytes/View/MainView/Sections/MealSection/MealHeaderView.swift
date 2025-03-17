@@ -18,39 +18,51 @@ struct MealHeaderView: View {
     let carbohydrates: Double
     let foodItems: [MealItem]
     @ObservedObject var mainViewModel: MainViewModel
+    @State private var isPresentingSheet: Bool = false
     @State private var isExpanded: Bool = false
     
     private let formatter = Formatter()
     
     var body: some View {
         Section {
-            NavigationLink(
-                destination: SearchView(mainViewModel: mainViewModel,
-                                        mealType: mealType)
-            ) {
-                VStack(spacing: 15) {
-                    HStack {
-                        Image(systemName: iconName)
-                            .foregroundColor(color)
-                        Text(title)
+            Button(action: {
+                isPresentingSheet = true
+            }) {
+                HStack {
+                    VStack(spacing: 15) {
+                        HStack {
+                            Image(systemName: iconName)
+                                .foregroundColor(color)
+                            Text(title)
+                                .fontWeight(.medium)
+                                .foregroundColor(.black)
+                            Spacer()
+                            Text(formatter.formattedValue(
+                                calories,
+                                unit: .empty,
+                                alwaysRoundUp: true
+                            ))
                             .fontWeight(.medium)
-                        Spacer()
-                        Text(formatter.formattedValue(
-                            calories,
-                            unit: .empty,
-                            alwaysRoundUp: true
-                        ))
-                        .fontWeight(.medium)
+                            .foregroundColor(.black)
+                        }
+                        NutrientSummaryRow(
+                            fats: fats,
+                            carbs: carbohydrates,
+                            proteins: proteins,
+                            formatter: formatter
+                        )
                     }
-                    NutrientSummaryRow(
-                        fats: fats,
-                        carbs: carbohydrates,
-                        proteins: proteins,
-                        formatter: formatter
-                    )
+                    .padding(.vertical, 5)
+                    .padding(.trailing, 1)
+                    
+                    Text("+")
+                        .font(.title)
+                        .foregroundColor(.customGreen)
                 }
-                .padding(.vertical, 5)
-                .padding(.trailing, 5)
+            }
+            .sheet(isPresented: $isPresentingSheet) {
+                SearchView(mainViewModel: mainViewModel,
+                           mealType: mealType)
             }
             
             if isExpanded {
@@ -69,4 +81,8 @@ struct MealHeaderView: View {
             }
         }
     }
+}
+
+#Preview {
+    MainView()
 }

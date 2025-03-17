@@ -11,6 +11,7 @@ struct FoodView: View {
     @StateObject private var viewModel: FoodViewModel
     @ObservedObject private var mainViewModel: MainViewModel
     @FocusState private var isTextFieldFocused: Bool
+    @Environment(\.dismiss) private var dismiss
     let mealType: MealType
     let isFromSearchView: Bool
     let isFromFoodItemRow: Bool
@@ -37,52 +38,57 @@ struct FoodView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                List {
-                    if !viewModel.isLoading {
-                        servingSizeSection
-                        nutrientActionSection
-                        nutrientDetailSection
-                    }
-                }
-                .listSectionSpacing(10)
-                .scrollDismissesKeyboard(.never)
-                
-                if viewModel.isLoading {
-                    LoadingView()
+        ZStack {
+            List {
+                if !viewModel.isLoading {
+                    servingSizeSection
+                    nutrientActionSection
+                    nutrientDetailSection
                 }
             }
-            .navigationBarTitle("Add to Diary", displayMode: .inline)
-            .confirmationDialog(
-                "Select Serving",
-                isPresented: $viewModel.showActionSheet,
-                titleVisibility: .visible
-            ) {
-                if let servings = viewModel.foodDetail?.servings.serving {
-                    servingButtons(servings: servings)
+            .listSectionSpacing(10)
+            .scrollDismissesKeyboard(.never)
+            
+            if viewModel.isLoading {
+                LoadingView()
+            }
+        }
+        .navigationBarTitle("Add to Diary", displayMode: .inline)
+        .confirmationDialog(
+            "Select Serving",
+            isPresented: $viewModel.showActionSheet,
+            titleVisibility: .visible
+        ) {
+            if let servings = viewModel.foodDetail?.servings.serving {
+                servingButtons(servings: servings)
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Text("Enter serving size")
+                    .foregroundColor(.gray)
+                Spacer()
+                Button("Done") {
+                    isTextFieldFocused = false
                 }
+                .foregroundStyle(.customGreen)
             }
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Text("Enter serving size")
-                        .foregroundColor(.gray)
-                    Spacer()
-                    Button("Done") {
-                        isTextFieldFocused = false
-                    }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Done") {
+                    dismiss()
                 }
+                .foregroundStyle(.customGreen)
             }
-            .task {
-                await viewModel.fetchFoodDetails()
-            }
-            .alert(item: $viewModel.errorMessage) { error in
-                Alert(
-                    title: Text("Error"),
-                    message: Text(error.errorDescription),
-                    dismissButton: .default(Text("OK"))
-                )
-            }
+        }
+        .task {
+            await viewModel.fetchFoodDetails()
+        }
+        .alert(item: $viewModel.errorMessage) { error in
+            Alert(
+                title: Text("Error"),
+                message: Text(error.errorDescription),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
     

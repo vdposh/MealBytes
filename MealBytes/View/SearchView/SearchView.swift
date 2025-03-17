@@ -11,6 +11,7 @@ struct SearchView: View {
     @ObservedObject private var mainViewModel: MainViewModel
     @StateObject private var viewModel = SearchViewModel()
     @State private var currentPage: Int = 0
+    @Environment(\.dismiss) private var dismiss
     let mealType: MealType
     
     init(mainViewModel: MainViewModel,
@@ -62,6 +63,14 @@ struct SearchView: View {
                 }
             }
             .navigationBarTitle("Add to Diary", displayMode: .inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundStyle(.customGreen)
+                }
+            }
             .searchable(text: $viewModel.query)
         }
         .accentColor(.customGreen)
