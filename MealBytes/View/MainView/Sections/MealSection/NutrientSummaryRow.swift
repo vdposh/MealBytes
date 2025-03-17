@@ -11,13 +11,23 @@ struct NutrientSummaryRow: View {
     let fats: Double
     let carbs: Double
     let proteins: Double
-    let formatter: Formatter
+    let mainViewModel: MainViewModel
     
     var body: some View {
         HStack {
-            NutrientLabel(label: "F", value: fats, formatter: formatter)
-            NutrientLabel(label: "C", value: carbs, formatter: formatter)
-            NutrientLabel(label: "P", value: proteins, formatter: formatter)
+            let nutrientData: [(label: String, formattedValue: String)] = [
+                ("F", mainViewModel.formatter.formattedValue(fats,
+                                                             unit: .empty)),
+                ("C", mainViewModel.formatter.formattedValue(carbs,
+                                                             unit: .empty)),
+                ("P", mainViewModel.formatter.formattedValue(proteins,
+                                                             unit: .empty))
+            ]
+
+            ForEach(nutrientData, id: \.label) { nutrient in
+                NutrientLabel(label: nutrient.label,
+                              formattedValue: nutrient.formattedValue)
+            }
             Spacer()
         }
     }

@@ -45,7 +45,7 @@ struct MealHeaderView: View {
                             fats: fats,
                             carbs: carbohydrates,
                             proteins: proteins,
-                            formatter: mainViewModel.formatter
+                            mainViewModel: mainViewModel
                         )
                     }
                     .padding(.vertical, 5)

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CaloriesSection: View {
     let summaries: [NutrientType: Double]
-    let formatter: Formatter
-
+    let mainViewModel: MainViewModel
+    
     var body: some View {
         Section {
             VStack(spacing: 10) {
@@ -20,7 +20,7 @@ struct CaloriesSection: View {
                         .fontWeight(.medium)
                     Spacer()
                     Text(
-                        formatter.formattedValue(
+                        mainViewModel.formatter.formattedValue(
                             summaries[.calories] ?? 0.0,
                             unit: .empty,
                             alwaysRoundUp: true
@@ -29,17 +29,19 @@ struct CaloriesSection: View {
                     .fontWeight(.medium)
                 }
                 HStack {
-                    let nutrientTypes: [(label: String, type: NutrientType)] = [
-                        ("F", .fat),
-                        ("C", .carbohydrates),
-                        ("P", .protein)
+                    let nutrientTypes: [(label: String, value: String)] = [
+                        ("F", mainViewModel.formatter.formattedValue(
+                            summaries[.fat] ?? 0.0, unit: .empty)),
+                        ("C", mainViewModel.formatter.formattedValue(
+                            summaries[.carbohydrates] ?? 0.0, unit: .empty)),
+                        ("P", mainViewModel.formatter.formattedValue(
+                            summaries[.protein] ?? 0.0, unit: .empty))
                     ]
                     
                     ForEach(nutrientTypes, id: \.label) { nutrient in
                         NutrientLabel(
                             label: nutrient.label,
-                            value: summaries[nutrient.type] ?? 0.0,
-                            formatter: formatter
+                            formattedValue: nutrient.value
                         )
                     }
                     Spacer()

@@ -9,14 +9,13 @@ import SwiftUI
 
 struct NutrientLabel: View {
     let label: String
-    let value: Double
-    let formatter: Formatter
-    
+    let formattedValue: String
+
     var body: some View {
         Text(label)
             .foregroundColor(.gray)
             .font(.subheadline)
-        Text(formatter.formattedValue(value, unit: .empty))
+        Text(formattedValue)
             .foregroundColor(.gray)
             .font(.subheadline)
             .padding(.trailing, 5)
