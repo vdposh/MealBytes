@@ -38,11 +38,8 @@ struct FoodItemRow: View {
                         .lineLimit(1)
                         .fontWeight(.medium)
                         .frame(width: 120, alignment: .leading)
-                    Group {
-                        Text(formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty))
-                        Text(mealItem.portionUnit)
-                    }
-                    .foregroundColor(.gray)
+                    Text(mainViewModel.formattedServingSize(for: mealItem))
+                        .foregroundColor(.gray)
                     Spacer()
                     Text(formatter.formattedValue(
                         mealItem.nutrients.value(for: .calories),
@@ -74,6 +71,10 @@ struct FoodItemRow: View {
             .padding(.trailing, 5)
         }
     }
+}
+
+#Preview {
+    MainView()
 }
 
 //#Preview {

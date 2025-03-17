@@ -18,10 +18,9 @@ struct MealHeaderView: View {
     let carbohydrates: Double
     let foodItems: [MealItem]
     @ObservedObject var mainViewModel: MainViewModel
+    let searchViewModel = SearchViewModel()
     @State private var isPresentingSheet: Bool = false
     @State private var isExpanded: Bool = false
-    
-    private let formatter = Formatter()
     
     var body: some View {
         Section {
@@ -37,19 +36,17 @@ struct MealHeaderView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(.black)
                             Spacer()
-                            Text(formatter.formattedValue(
-                                calories,
-                                unit: .empty,
-                                alwaysRoundUp: true
-                            ))
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
+                            Text(mainViewModel.formattedCalories(calories))
+                                .fontWeight(.medium)
+                                .foregroundColor(.black)
+                                .fontWeight(.medium)
+                                .foregroundColor(.black)
                         }
                         NutrientSummaryRow(
                             fats: fats,
                             carbs: carbohydrates,
                             proteins: proteins,
-                            formatter: formatter
+                            formatter: mainViewModel.formatter
                         )
                     }
                     .padding(.vertical, 5)
@@ -69,7 +66,7 @@ struct MealHeaderView: View {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         mealItem: item,
-                        searchViewModel: SearchViewModel(),
+                        searchViewModel: searchViewModel,
                         mainViewModel: mainViewModel,
                         mealType: mealType
                     )
