@@ -18,7 +18,6 @@ struct MealHeaderView: View {
     let carbohydrates: Double
     let foodItems: [MealItem]
     @ObservedObject var mainViewModel: MainViewModel
-    let searchViewModel = SearchViewModel()
     @State private var isPresentingSheet: Bool = false
     @State private var isExpanded: Bool = false
     
@@ -66,7 +65,7 @@ struct MealHeaderView: View {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         mealItem: item,
-                        searchViewModel: searchViewModel,
+                        searchViewModel: mainViewModel.searchViewModel,
                         mainViewModel: mainViewModel,
                         mealType: mealType
                     )

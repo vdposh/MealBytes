@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FoodItemRow: View {
     let mealItem: MealItem
-    @ObservedObject var searchViewModel: SearchViewModel
+    var searchViewModel: SearchViewModel
     @ObservedObject var mainViewModel: MainViewModel
     let mealType: MealType
     
@@ -23,7 +23,7 @@ struct FoodItemRow: View {
                     searchFoodName: mealItem.foodName,
                     searchFoodDescription: ""
                 ),
-                searchViewModel: searchViewModel,
+                searchViewModel: mainViewModel.searchViewModel,
                 mainViewModel: mainViewModel,
                 mealType: mealType,
                 isFromSearchView: false,

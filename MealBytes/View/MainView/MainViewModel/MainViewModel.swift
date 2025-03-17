@@ -10,16 +10,22 @@ import Combine
 
 final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
-    @Published var mealItems: [MealType: [MealItem]] = {
+    @Published var mealItems: [MealType: [MealItem]]
+    @Published var nutrientSummaries: [NutrientType: Double]
+    let searchViewModel: SearchViewModel
+    let formatter = Formatter()
+
+    init(searchViewModel: SearchViewModel = SearchViewModel()) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
-        return items
-    }()
-    
-    @Published var nutrientSummaries: [NutrientType: Double] = NutrientType.allCases
-        .reduce(into: [NutrientType: Double]()) { $0[$1] = 0.0 }
-    
-    let formatter = Formatter()
+        self.mealItems = items
+        
+        var summaries = [NutrientType: Double]()
+        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
+        self.nutrientSummaries = summaries
+
+        self.searchViewModel = searchViewModel
+    }
     
     // MARK: - Format Serving Size
     func formattedServingSize(for mealItem: MealItem) -> String {
