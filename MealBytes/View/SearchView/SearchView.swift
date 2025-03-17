@@ -46,7 +46,7 @@ struct SearchView: View {
                                 ) {
                                     FoodDetailView(
                                         food: food,
-                                        mainViewModel: searchViewModel
+                                        searchViewModel: searchViewModel
                                     )
                                 }
                                 

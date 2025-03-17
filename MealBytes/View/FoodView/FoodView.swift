@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
-    @ObservedObject private var mainViewModel: MainViewModel
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
     let mealType: MealType
@@ -24,13 +23,13 @@ struct FoodView: View {
          isFromFoodItemRow: Bool,
          amount: String,
          measurementDescription: String) {
-        self.mainViewModel = mainViewModel
         self.mealType = mealType
         self.isFromSearchView = isFromSearchView
         self.isFromFoodItemRow = isFromFoodItemRow
         _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             searchViewModel: searchViewModel,
+            mainViewModel: mainViewModel,
             initialAmount: amount,
             initialMeasurementDescription: measurementDescription,
             isFromFoodItemRow: isFromFoodItemRow
@@ -133,8 +132,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
-                                foodViewModel.addFoodItem(to: mainViewModel,
-                                                          in: mealType)
+                                foodViewModel.addFoodItem(in: mealType)
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
@@ -197,7 +195,9 @@ struct FoodView: View {
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),
-        searchViewModel: SearchViewModel(networkManager: NetworkManager()),
+        searchViewModel: SearchViewModel(
+            networkManager: NetworkManager()
+        ),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
         isFromSearchView: true,

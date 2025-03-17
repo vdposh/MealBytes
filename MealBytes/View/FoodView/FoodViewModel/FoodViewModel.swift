@@ -24,12 +24,14 @@ final class FoodViewModel: ObservableObject {
     }
     private let networkManager: NetworkManagerProtocol
     private let searchViewModel: SearchViewModel
+    private let mainViewModel: MainViewModel
     private let initialMeasurementDescription: String
     private let isFromFoodItemRow: Bool
     let food: Food
     
     init(food: Food,
          searchViewModel: SearchViewModel,
+         mainViewModel: MainViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
@@ -41,6 +43,7 @@ final class FoodViewModel: ObservableObject {
         )
         
         self.food = food
+        self.mainViewModel = mainViewModel
         self.networkManager = networkManager
         self.searchViewModel = searchViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarked(food)
@@ -146,7 +149,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Adds a food item to MainView
-    func addFoodItem(to mainViewModel: MainViewModel, in section: MealType) {
+    func addFoodItem(in section: MealType) {
         let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
             result, detail in
             result[detail.type] = detail.value
@@ -232,7 +235,9 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),
-        searchViewModel: SearchViewModel(networkManager: NetworkManager()),
+        searchViewModel: SearchViewModel(
+            networkManager: NetworkManager()
+        ),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
         isFromSearchView: true,
