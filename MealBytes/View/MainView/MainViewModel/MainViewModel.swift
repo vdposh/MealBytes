@@ -15,7 +15,7 @@ final class MainViewModel: ObservableObject {
     @Published var isExpanded: Bool = false
     let searchViewModel: SearchViewModel
     let formatter = Formatter()
-
+    
     init(searchViewModel: SearchViewModel = SearchViewModel()) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
@@ -24,7 +24,7 @@ final class MainViewModel: ObservableObject {
         var summaries = [NutrientType: Double]()
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         self.nutrientSummaries = summaries
-
+        
         self.searchViewModel = searchViewModel
     }
     
@@ -52,10 +52,10 @@ final class MainViewModel: ObservableObject {
     func value(for type: NutrientType) -> Double {
         nutrientSummaries[type] ?? 0.0
     }
-
+    
     // MARK: - Format Serving Size
     func formattedServingSize(for mealItem: MealItem) -> String {
-        return formatter.formattedValue(mealItem.nutrients.value(for: .servingSize), unit: .empty)
+        return formatter.formattedValue(mealItem.nutrients[.servingSize] ?? 0.0, unit: .empty)
     }
     
     // MARK: - Format Calories
@@ -70,7 +70,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Calculate Totals for Nutrients
     func totalNutrient(_ nutrient: NutrientType, for mealItems: [MealItem]) -> Double {
-        mealItems.reduce(0) { $0 + $1.nutrients.value(for: nutrient) }
+        mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
     }
     
     // MARK: - Add Food Item

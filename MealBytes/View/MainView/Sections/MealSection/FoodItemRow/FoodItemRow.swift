@@ -37,14 +37,14 @@ struct FoodItemRow: View {
                         .lineLimit(1)
                         .fontWeight(.medium)
                         .frame(width: 120, alignment: .leading)
-                    Group{
+                    Group {
                         Text(mainViewModel.formattedServingSize(for: mealItem))
                         Text(mealItem.portionUnit)
                     }
                     .foregroundColor(.gray)
                     Spacer()
                     Text(formatter.formattedValue(
-                        mealItem.nutrients.value(for: .calories),
+                        mealItem.nutrients[.calories] ?? 0.0,
                         unit: .empty,
                         alwaysRoundUp: true
                     ))
@@ -53,17 +53,17 @@ struct FoodItemRow: View {
                 HStack {
                     NutrientLabel(
                         label: "F",
-                        value: mealItem.nutrients.value(for: .fat),
+                        value: mealItem.nutrients[.fat] ?? 0.0,
                         formatter: formatter
                     )
                     NutrientLabel(
                         label: "C",
-                        value: mealItem.nutrients.value(for: .carbohydrates),
+                        value: mealItem.nutrients[.carbohydrates] ?? 0.0,
                         formatter: formatter
                     )
                     NutrientLabel(
                         label: "P",
-                        value: mealItem.nutrients.value(for: .protein),
+                        value: mealItem.nutrients[.protein] ?? 0.0,
                         formatter: formatter
                     )
                     Spacer()

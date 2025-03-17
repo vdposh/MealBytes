@@ -13,62 +13,62 @@ struct DetailedNutrientProvider {
         [
             DetailedNutrient(
                 type: .calories,
-                value: nutrientSummaries.value(for: .calories),
+                value: nutrientSummaries[.calories] ?? 0.0,
                 isSubValue: false
             ),
             DetailedNutrient(
                 type: .fat,
-                value: nutrientSummaries.value(for: .fat),
+                value: nutrientSummaries[.fat] ?? 0.0,
                 isSubValue: false
             ),
             DetailedNutrient(
                 type: .saturatedFat,
-                value: nutrientSummaries.value(for: .saturatedFat),
+                value: nutrientSummaries[.saturatedFat] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .monounsaturatedFat,
-                value: nutrientSummaries.value(for: .monounsaturatedFat),
+                value: nutrientSummaries[.monounsaturatedFat] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .polyunsaturatedFat,
-                value: nutrientSummaries.value(for: .polyunsaturatedFat),
+                value: nutrientSummaries[.polyunsaturatedFat] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .carbohydrates,
-                value: nutrientSummaries.value(for: .carbohydrates),
+                value: nutrientSummaries[.carbohydrates] ?? 0.0,
                 isSubValue: false
             ),
             DetailedNutrient(
                 type: .sugar,
-                value: nutrientSummaries.value(for: .sugar),
+                value: nutrientSummaries[.sugar] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .fiber,
-                value: nutrientSummaries.value(for: .fiber),
+                value: nutrientSummaries[.fiber] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .protein,
-                value: nutrientSummaries.value(for: .protein),
+                value: nutrientSummaries[.protein] ?? 0.0,
                 isSubValue: false
             ),
             DetailedNutrient(
                 type: .potassium,
-                value: nutrientSummaries.value(for: .potassium),
+                value: nutrientSummaries[.potassium] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .sodium,
-                value: nutrientSummaries.value(for: .sodium),
+                value: nutrientSummaries[.sodium] ?? 0.0,
                 isSubValue: true
             ),
             DetailedNutrient(
                 type: .cholesterol,
-                value: nutrientSummaries.value(for: .cholesterol),
+                value: nutrientSummaries[.cholesterol] ?? 0.0,
                 isSubValue: true
             )
         ]

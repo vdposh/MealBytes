@@ -21,7 +21,7 @@ struct CaloriesSection: View {
                     Spacer()
                     Text(
                         formatter.formattedValue(
-                            summaries.value(for: .calories),
+                            summaries[.calories] ?? 0.0,
                             unit: .empty,
                             alwaysRoundUp: true
                         )
@@ -38,7 +38,7 @@ struct CaloriesSection: View {
                     ForEach(nutrientTypes, id: \.label) { nutrient in
                         NutrientLabel(
                             label: nutrient.label,
-                            value: summaries.value(for: nutrient.type),
+                            value: summaries[nutrient.type] ?? 0.0,
                             formatter: formatter
                         )
                     }
