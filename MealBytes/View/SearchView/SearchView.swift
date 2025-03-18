@@ -38,10 +38,10 @@ struct SearchView: View {
                                         searchViewModel: searchViewModel,
                                         mainViewModel: mainViewModel,
                                         mealType: mealType,
-                                        showAddButton: true,
-                                        showSaveRemoveButton: false,
                                         amount: "",
                                         measurementDescription: "",
+                                        showAddButton: true,
+                                        showSaveRemoveButton: false,
                                         showCloseButton: true
                                     )
                                 ) {

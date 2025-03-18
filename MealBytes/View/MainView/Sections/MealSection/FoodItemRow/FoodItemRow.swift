@@ -23,10 +23,10 @@ struct FoodItemRow: View {
                 searchViewModel: mainViewModel.searchViewModel,
                 mainViewModel: mainViewModel,
                 mealType: mealType,
-                showAddButton: false,
-                showSaveRemoveButton: true,
                 amount: String(mealItem.amount),
                 measurementDescription: mealItem.measurementDescription,
+                showAddButton: false,
+                showSaveRemoveButton: true,
                 showCloseButton: false
             )
         ) {

@@ -20,10 +20,10 @@ struct FoodView: View {
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          mealType: MealType,
-         showAddButton: Bool,
-         showSaveRemoveButton: Bool,
          amount: String,
          measurementDescription: String,
+         showAddButton: Bool,
+         showSaveRemoveButton: Bool,
          showCloseButton: Bool) {
         self.mealType = mealType
         self.showAddButton = showAddButton
@@ -142,6 +142,14 @@ struct FoodView: View {
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
                         )
+                        
+                        BookmarkButtonView(
+                            action: {
+                                foodViewModel.toggleBookmark()
+                            },
+                            isFilled: foodViewModel.isBookmarkFilled,
+                            isEnabled: !foodViewModel.isError
+                        )
                     case false:
                         ActionButtonView(
                             title: "Remove",
@@ -161,14 +169,6 @@ struct FoodView: View {
                             isEnabled: true
                         )
                     }
-                    
-                    BookmarkButtonView(
-                        action: {
-                            foodViewModel.toggleBookmark()
-                        },
-                        isFilled: foodViewModel.isBookmarkFilled,
-                        isEnabled: !foodViewModel.isError
-                    )
                 }
                 .padding(.bottom, 10)
             }
@@ -205,10 +205,10 @@ struct FoodView: View {
         ),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
-        showAddButton: true,
-        showSaveRemoveButton: true,
         amount: "",
         measurementDescription: "",
+        showAddButton: true,
+        showSaveRemoveButton: true,
         showCloseButton: true
     )
 }
