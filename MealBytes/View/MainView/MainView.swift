@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainView: View {
     @State private var isExpanded: Bool = false
-    
     @StateObject var mainViewModel: MainViewModel
     
     var body: some View {

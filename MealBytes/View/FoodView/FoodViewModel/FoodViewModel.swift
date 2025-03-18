@@ -24,11 +24,12 @@ final class FoodViewModel: ObservableObject {
     }
     private let networkManager: NetworkManagerProtocol
     private let searchViewModel: SearchViewModel
-    private let mainViewModel: MainViewModel
+    let mainViewModel: MainViewModel
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
     let food: Food
     let mealType: MealType
+    let originalMealItemId: UUID
     
     init(food: Food,
          mealType: MealType,
@@ -37,7 +38,8 @@ final class FoodViewModel: ObservableObject {
          networkManager: NetworkManagerProtocol = NetworkManager(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
-         showSaveRemoveButton: Bool = false) {
+         showSaveRemoveButton: Bool = false,
+         originalMealItemId: UUID? = nil) {
         let roundedAmount = Formatter().formattedValue(
             Double(initialAmount) ?? 0.0,
             unit: .empty,
@@ -53,6 +55,7 @@ final class FoodViewModel: ObservableObject {
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
         self.showSaveRemoveButton = showSaveRemoveButton
+        self.originalMealItemId = originalMealItemId ?? UUID()
     }
     
     // MARK: - Fetch Food Details
@@ -171,6 +174,27 @@ final class FoodViewModel: ObservableObject {
         )
         
         mainViewModel.addFoodItem(newItem, to: section)
+    }
+    
+    // MARK: - Save Logic
+    func saveMealItem() {
+        guard let selectedServing = selectedServing else { return }
+        
+        let updatedMealItem = MealItem(
+            id: originalMealItemId,
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            portionUnit: selectedServing.metricServingUnit,
+            nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
+                result, detail in
+                result[detail.type] = detail.value
+            },
+            measurementDescription: selectedServing.measurementDescription,
+            amount: Double(amount.replacingOccurrences(of: ",",
+                                                       with: ".")) ?? 0
+        )
+        
+        mainViewModel.updateMealItem(updatedMealItem, for: mealType)
     }
     
     // MARK: - Nutrient Calculation

@@ -14,6 +14,7 @@ struct FoodView: View {
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
     private let showCloseButton: Bool
+    @Environment(\.dismiss) private var dismiss
     
     init(isDismissed: Binding<Bool>,
          food: Food,
@@ -24,7 +25,8 @@ struct FoodView: View {
          measurementDescription: String,
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
-         showCloseButton: Bool) {
+         showCloseButton: Bool,
+         originalMealItemId: UUID? = nil) {
         self._isDismissed = isDismissed
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
@@ -36,7 +38,8 @@ struct FoodView: View {
             mainViewModel: mainViewModel,
             initialAmount: amount,
             initialMeasurementDescription: measurementDescription,
-            showSaveRemoveButton: showSaveRemoveButton
+            showSaveRemoveButton: showSaveRemoveButton,
+            originalMealItemId: originalMealItemId
         ))
     }
     
@@ -164,10 +167,11 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Save",
                             action: {
-                                // Save
+                                foodViewModel.saveMealItem()
+                                dismiss()
                             },
                             backgroundColor: .customGreen,
-                            isEnabled: true
+                            isEnabled: foodViewModel.canAddFood
                         )
                     }
                 }

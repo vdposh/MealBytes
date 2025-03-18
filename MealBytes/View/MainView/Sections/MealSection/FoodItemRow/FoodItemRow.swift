@@ -29,7 +29,8 @@ struct FoodItemRow: View {
                 measurementDescription: mealItem.measurementDescription,
                 showAddButton: false,
                 showSaveRemoveButton: true,
-                showCloseButton: false
+                showCloseButton: false,
+                originalMealItemId: mealItem.id
             )
         ) {
             VStack(spacing: 10) {

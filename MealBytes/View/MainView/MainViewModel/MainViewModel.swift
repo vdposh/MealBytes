@@ -90,6 +90,18 @@ final class MainViewModel: ObservableObject {
         recalculateNutrients()
     }
     
+    // MARK: - Update Meal Item
+    func updateMealItem(_ updatedItem: MealItem, for mealType: MealType) {
+        guard var items = mealItems[mealType] else { return }
+        
+        if let index = items.firstIndex(where: { $0.id == updatedItem.id }) {
+            items[index] = updatedItem
+        }
+        
+        mealItems[mealType] = items
+        recalculateNutrients()
+    }
+    
     // MARK: - Recalculate Nutrients
     func recalculateNutrients() {
         nutrientSummaries = NutrientType.allCases.reduce(
