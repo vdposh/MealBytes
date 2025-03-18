@@ -158,7 +158,8 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Remove",
                             action: {
-                                // Remove from Diary
+                                foodViewModel.deleteMealItem()
+                                dismiss()
                             },
                             backgroundColor: .customRed,
                             isEnabled: true

@@ -197,6 +197,11 @@ final class FoodViewModel: ObservableObject {
         mainViewModel.updateMealItem(updatedMealItem, for: mealType)
     }
     
+    // MARK: - Delete Logic
+    func deleteMealItem() {
+        mainViewModel.deleteMealItem(with: originalMealItemId, for: mealType)
+    }
+    
     // MARK: - Nutrient Calculation
     func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }
