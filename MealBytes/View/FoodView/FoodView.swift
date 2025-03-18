@@ -10,11 +10,11 @@ import SwiftUI
 struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
-    @Binding var isDismissed: Bool
-    let mealType: MealType
-    let showAddButton: Bool
-    let showSaveRemoveButton: Bool
-    let showCloseButton: Bool
+    @Binding private var isDismissed: Bool
+    private let mealType: MealType
+    private let showAddButton: Bool
+    private let showSaveRemoveButton: Bool
+    private let showCloseButton: Bool
     
     init(isDismissed: Binding<Bool>,
          food: Food,

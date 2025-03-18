@@ -25,6 +25,7 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             Button(action: {
+                mainViewModel.searchViewModel.query = ""
                 isPresentingSheet = true
             }) {
                 HStack {

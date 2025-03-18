@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var mainViewModel = MainViewModel()
     @State private var isExpanded: Bool = false
+    
+    @StateObject private var mainViewModel = MainViewModel()
     
     var body: some View {
         NavigationStack {

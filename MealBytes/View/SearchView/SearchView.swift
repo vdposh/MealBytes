@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct SearchView: View {
-    @Binding var isPresented: Bool
-    private var mainViewModel: MainViewModel
-    @ObservedObject var searchViewModel: SearchViewModel
+    @Binding private var isPresented: Bool
     @State private var currentPage: Int = 0
-    let mealType: MealType
+    private let mealType: MealType
+    
+    @ObservedObject private var searchViewModel: SearchViewModel
+    private var mainViewModel: MainViewModel
     
     init(isPresented: Binding<Bool>,
          searchViewModel: SearchViewModel,
