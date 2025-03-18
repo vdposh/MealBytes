@@ -10,14 +10,16 @@ import SwiftUI
 struct SearchView: View {
     @Binding var isPresented: Bool
     private var mainViewModel: MainViewModel
-    @StateObject private var searchViewModel = SearchViewModel()
+    @ObservedObject var searchViewModel: SearchViewModel
     @State private var currentPage: Int = 0
     let mealType: MealType
     
     init(isPresented: Binding<Bool>,
+         searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          mealType: MealType) {
         self._isPresented = isPresented
+        self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
         self.mealType = mealType
     }
@@ -77,7 +79,6 @@ struct SearchView: View {
                     Button("Close") {
                         isPresented = false
                     }
-                    .foregroundStyle(.customGreen)
                 }
             }
             .searchable(text: $searchViewModel.query)
@@ -111,6 +112,7 @@ struct SearchView: View {
 #Preview {
     SearchView(
         isPresented: .constant(true),
+        searchViewModel: SearchViewModel(),
         mainViewModel: MainViewModel(),
         mealType: .breakfast
     )

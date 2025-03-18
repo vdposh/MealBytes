@@ -75,14 +75,12 @@ struct FoodView: View {
                 Button("Done") {
                     isTextFieldFocused = false
                 }
-                .foregroundStyle(.customGreen)
             }
             if showCloseButton {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") {
                         isDismissed = false
                     }
-                    .foregroundStyle(.customGreen)
                 }
             }
         }
@@ -140,6 +138,7 @@ struct FoodView: View {
                             title: "Add",
                             action: {
                                 foodViewModel.addFoodItem(in: mealType)
+                                isDismissed = false
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood

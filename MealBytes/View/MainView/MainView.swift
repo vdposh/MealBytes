@@ -20,7 +20,6 @@ struct MainView: View {
                 detailedInformationSection
             }
         }
-        .accentColor(.customGreen)
         .listSectionSpacing(15)
     }
     

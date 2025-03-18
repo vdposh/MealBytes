@@ -58,9 +58,12 @@ struct MealHeaderView: View {
                 }
             }
             .sheet(isPresented: $isPresentingSheet) {
-                SearchView(isPresented: $isPresentingSheet,
-                           mainViewModel: mainViewModel,
-                           mealType: mealType)
+                SearchView(
+                    isPresented: $isPresentingSheet,
+                    searchViewModel: mainViewModel.searchViewModel,
+                    mainViewModel: mainViewModel,
+                    mealType: mealType
+                )
             }
             
             if isExpanded {

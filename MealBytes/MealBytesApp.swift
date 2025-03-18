@@ -14,6 +14,7 @@ struct MealBytesApp: App {
             NavigationStack {
                 MainView()
             }
+            .accentColor(.customGreen)
         }
     }
 }
