@@ -26,7 +26,7 @@ final class FoodViewModel: ObservableObject {
     private let searchViewModel: SearchViewModel
     private let mainViewModel: MainViewModel
     private let initialMeasurementDescription: String
-    private let isFromFoodItemRow: Bool
+    private let showSaveRemoveButton: Bool
     let food: Food
     
     init(food: Food,
@@ -35,7 +35,7 @@ final class FoodViewModel: ObservableObject {
          networkManager: NetworkManagerProtocol = NetworkManager(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
-         isFromFoodItemRow: Bool = false) {
+         showSaveRemoveButton: Bool = false) {
         let roundedAmount = Formatter().formattedValue(
             Double(initialAmount) ?? 0.0,
             unit: .empty,
@@ -49,7 +49,7 @@ final class FoodViewModel: ObservableObject {
         self.isBookmarkFilled = searchViewModel.isBookmarked(food)
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
-        self.isFromFoodItemRow = isFromFoodItemRow
+        self.showSaveRemoveButton = showSaveRemoveButton
     }
     
     // MARK: - Fetch Food Details
@@ -70,7 +70,7 @@ final class FoodViewModel: ObservableObject {
                 self.selectedServing = fetchedFoodDetail.servings.serving.first
             }
             
-            if !isFromFoodItemRow {
+            if !showSaveRemoveButton {
                 setAmount(for: selectedServing)
             }
         } catch {
@@ -240,9 +240,10 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
         ),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
-        isFromSearchView: true,
-        isFromFoodItemRow: true,
+        showAddButton: true,
+        showSaveRemoveButton: true,
         amount: "",
-        measurementDescription: ""
+        measurementDescription: "",
+        showCloseButton: true
     )
 }

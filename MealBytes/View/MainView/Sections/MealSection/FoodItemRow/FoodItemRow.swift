@@ -23,10 +23,11 @@ struct FoodItemRow: View {
                 searchViewModel: mainViewModel.searchViewModel,
                 mainViewModel: mainViewModel,
                 mealType: mealType,
-                isFromSearchView: false,
-                isFromFoodItemRow: true,
+                showAddButton: false,
+                showSaveRemoveButton: true,
                 amount: String(mealItem.amount),
-                measurementDescription: mealItem.measurementDescription
+                measurementDescription: mealItem.measurementDescription,
+                showCloseButton: false
             )
         ) {
             VStack(spacing: 10) {

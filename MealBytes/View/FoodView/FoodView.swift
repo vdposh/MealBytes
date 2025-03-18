@@ -12,27 +12,30 @@ struct FoodView: View {
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
     let mealType: MealType
-    let isFromSearchView: Bool
-    let isFromFoodItemRow: Bool
+    let showAddButton: Bool
+    let showSaveRemoveButton: Bool
+    let showCloseButton: Bool
     
     init(food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          mealType: MealType,
-         isFromSearchView: Bool,
-         isFromFoodItemRow: Bool,
+         showAddButton: Bool,
+         showSaveRemoveButton: Bool,
          amount: String,
-         measurementDescription: String) {
+         measurementDescription: String,
+         showCloseButton: Bool) {
         self.mealType = mealType
-        self.isFromSearchView = isFromSearchView
-        self.isFromFoodItemRow = isFromFoodItemRow
+        self.showAddButton = showAddButton
+        self.showSaveRemoveButton = showSaveRemoveButton
+        self.showCloseButton = showCloseButton
         _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             searchViewModel: searchViewModel,
             mainViewModel: mainViewModel,
             initialAmount: amount,
             initialMeasurementDescription: measurementDescription,
-            isFromFoodItemRow: isFromFoodItemRow
+            showSaveRemoveButton: showSaveRemoveButton
         ))
     }
     
@@ -72,11 +75,13 @@ struct FoodView: View {
                 }
                 .foregroundStyle(.customGreen)
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") {
-                    dismiss()
+            if showCloseButton {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                    .foregroundStyle(.customGreen)
                 }
-                .foregroundStyle(.customGreen)
             }
         }
         .task {
@@ -127,7 +132,7 @@ struct FoodView: View {
                 .padding(.vertical, 10)
                 
                 HStack {
-                    switch isFromSearchView {
+                    switch showAddButton {
                     case true:
                         ActionButtonView(
                             title: "Add",
@@ -200,9 +205,10 @@ struct FoodView: View {
         ),
         mainViewModel: MainViewModel(),
         mealType: .breakfast,
-        isFromSearchView: true,
-        isFromFoodItemRow: true,
+        showAddButton: true,
+        showSaveRemoveButton: true,
         amount: "",
-        measurementDescription: ""
+        measurementDescription: "",
+        showCloseButton: true
     )
 }

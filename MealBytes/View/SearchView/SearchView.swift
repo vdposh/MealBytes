@@ -38,10 +38,11 @@ struct SearchView: View {
                                         searchViewModel: searchViewModel,
                                         mainViewModel: mainViewModel,
                                         mealType: mealType,
-                                        isFromSearchView: true,
-                                        isFromFoodItemRow: false,
+                                        showAddButton: true,
+                                        showSaveRemoveButton: false,
                                         amount: "",
-                                        measurementDescription: ""
+                                        measurementDescription: "",
+                                        showCloseButton: true
                                     )
                                 ) {
                                     FoodDetailView(
@@ -70,7 +71,7 @@ struct SearchView: View {
             .navigationBarTitle("Add to Diary", displayMode: .inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button("Close") {
                         dismiss()
                     }
                     .foregroundStyle(.customGreen)
