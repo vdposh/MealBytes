@@ -11,10 +11,12 @@ struct FoodItemRow: View {
     let mealItem: MealItem
     let mainViewModel: MainViewModel
     let mealType: MealType
+    @Binding var isDismissed: Bool
     
     var body: some View {
         NavigationLink(
             destination: FoodView(
+                isDismissed: $isDismissed,
                 food: Food(
                     searchFoodId: mealItem.foodId,
                     searchFoodName: mealItem.foodName,

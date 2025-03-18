@@ -228,22 +228,23 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     var id: String { self.rawValue }
 }
 
-//#Preview {
-//    FoodView(
-//        food: Food(
-//            searchFoodId: 794,
-//            searchFoodName: "Whole Milk",
-//            searchFoodDescription: ""
-//        ),
-//        searchViewModel: SearchViewModel(
-//            networkManager: NetworkManager()
-//        ),
-//        mainViewModel: MainViewModel(),
-//        mealType: .breakfast,
-//        amount: "",
-//        measurementDescription: "",
-//        showAddButton: true,
-//        showSaveRemoveButton: true,
-//        showCloseButton: true
-//    )
-//}
+#Preview {
+    FoodView(
+        isDismissed: .constant(true),
+        food: Food(
+            searchFoodId: 794,
+            searchFoodName: "Whole Milk",
+            searchFoodDescription: ""
+        ),
+        searchViewModel: SearchViewModel(
+            networkManager: NetworkManager()
+        ),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "",
+        measurementDescription: "",
+        showAddButton: true,
+        showSaveRemoveButton: true,
+        showCloseButton: true
+    )
+}

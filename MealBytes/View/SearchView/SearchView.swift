@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct SearchView: View {
+    @Binding var isPresented: Bool
     private var mainViewModel: MainViewModel
     @StateObject private var searchViewModel = SearchViewModel()
     @State private var currentPage: Int = 0
-    @Environment(\.dismiss) private var dismiss
     let mealType: MealType
     
-    init(mainViewModel: MainViewModel,
+    init(isPresented: Binding<Bool>,
+         mainViewModel: MainViewModel,
          mealType: MealType) {
+        self._isPresented = isPresented
         self.mainViewModel = mainViewModel
         self.mealType = mealType
     }
@@ -34,6 +36,7 @@ struct SearchView: View {
                             HStack {
                                 NavigationLink(
                                     destination: FoodView(
+                                        isDismissed: $isPresented,
                                         food: food,
                                         searchViewModel: searchViewModel,
                                         mainViewModel: mainViewModel,
@@ -72,7 +75,7 @@ struct SearchView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") {
-                        dismiss()
+                        isPresented = false
                     }
                     .foregroundStyle(.customGreen)
                 }
@@ -107,6 +110,7 @@ struct SearchView: View {
 
 #Preview {
     SearchView(
+        isPresented: .constant(true),
         mainViewModel: MainViewModel(),
         mealType: .breakfast
     )

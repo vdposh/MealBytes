@@ -20,6 +20,7 @@ struct MealHeaderView: View {
     @ObservedObject var mainViewModel: MainViewModel
     @State private var isPresentingSheet: Bool = false
     @State private var isExpanded: Bool = false
+    @State private var isFoodViewPresented: Bool = false
     
     var body: some View {
         Section {
@@ -57,7 +58,8 @@ struct MealHeaderView: View {
                 }
             }
             .sheet(isPresented: $isPresentingSheet) {
-                SearchView(mainViewModel: mainViewModel,
+                SearchView(isPresented: $isPresentingSheet,
+                           mainViewModel: mainViewModel,
                            mealType: mealType)
             }
             
@@ -66,7 +68,8 @@ struct MealHeaderView: View {
                     FoodItemRow(
                         mealItem: item,
                         mainViewModel: mainViewModel,
-                        mealType: mealType
+                        mealType: mealType,
+                        isDismissed: $isFoodViewPresented
                     )
                 }
             }

@@ -10,13 +10,14 @@ import SwiftUI
 struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
-    @Environment(\.dismiss) private var dismiss
+    @Binding var isDismissed: Bool
     let mealType: MealType
     let showAddButton: Bool
     let showSaveRemoveButton: Bool
     let showCloseButton: Bool
     
-    init(food: Food,
+    init(isDismissed: Binding<Bool>,
+         food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          mealType: MealType,
@@ -25,6 +26,7 @@ struct FoodView: View {
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
          showCloseButton: Bool) {
+        self._isDismissed = isDismissed
         self.mealType = mealType
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
@@ -78,7 +80,7 @@ struct FoodView: View {
             if showCloseButton {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") {
-                        dismiss()
+                        isDismissed = false
                     }
                     .foregroundStyle(.customGreen)
                 }
@@ -195,6 +197,7 @@ struct FoodView: View {
 
 #Preview {
     FoodView(
+        isDismissed: .constant(true),
         food: Food(
             searchFoodId: 794,
             searchFoodName: "Whole Milk",
