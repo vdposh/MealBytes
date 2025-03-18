@@ -87,6 +87,13 @@ final class MainViewModel: ObservableObject {
                     .reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
             }
     }
+    
+    // MARK: - Delete Meal Item
+    func deleteMealItem(with id: UUID, for mealType: MealType) {
+        guard var items = mealItems[mealType] else { return }
+        items.removeAll { $0.id == id }
+        mealItems[mealType] = items
+    }
 }
 
 #Preview {

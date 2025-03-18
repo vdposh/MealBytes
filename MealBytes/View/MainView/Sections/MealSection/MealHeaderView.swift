@@ -35,13 +35,11 @@ struct MealHeaderView: View {
                                 .foregroundColor(color)
                             Text(title)
                                 .fontWeight(.medium)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                             Spacer()
                             Text(mainViewModel.formattedCalories(calories))
                                 .fontWeight(.medium)
-                                .foregroundColor(.black)
-                                .fontWeight(.medium)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                         }
                         NutrientSummaryRow(
                             fats: fats,
@@ -75,6 +73,18 @@ struct MealHeaderView: View {
                         mealType: mealType,
                         isDismissed: $isFoodViewPresented
                     )
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            mainViewModel.deleteMealItem(with: item.id,
+                                                         for: mealType)
+                            if mainViewModel.mealItems[mealType]?
+                                .isEmpty == true {
+                                isExpanded = false
+                            }
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                    }
                 }
             }
             
