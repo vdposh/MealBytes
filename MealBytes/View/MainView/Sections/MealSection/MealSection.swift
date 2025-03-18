@@ -28,5 +28,5 @@ struct MealSection: View {
 }
 
 #Preview {
-    MainView()
+    MainView(mainViewModel: MainViewModel())
 }

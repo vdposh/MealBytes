@@ -90,5 +90,5 @@ final class MainViewModel: ObservableObject {
 }
 
 #Preview {
-    MainView()
+    MainView(mainViewModel: MainViewModel())
 }

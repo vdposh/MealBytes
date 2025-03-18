@@ -10,7 +10,7 @@ import SwiftUI
 struct MainView: View {
     @State private var isExpanded: Bool = false
     
-    @StateObject private var mainViewModel = MainViewModel()
+    @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
         NavigationStack {
@@ -79,5 +79,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(mainViewModel: MainViewModel())
 }

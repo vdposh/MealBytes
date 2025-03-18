@@ -84,5 +84,5 @@ struct MealHeaderView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(mainViewModel: MainViewModel())
 }

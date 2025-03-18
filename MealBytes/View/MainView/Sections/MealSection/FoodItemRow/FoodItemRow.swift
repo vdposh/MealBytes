@@ -83,5 +83,5 @@ struct FoodItemRow: View {
 }
 
 #Preview {
-    MainView()
+    MainView(mainViewModel: MainViewModel())
 }

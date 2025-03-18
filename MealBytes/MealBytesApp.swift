@@ -12,7 +12,7 @@ struct MealBytesApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                MainView()
+                MainView(mainViewModel: MainViewModel())
             }
             .accentColor(.customGreen)
         }
