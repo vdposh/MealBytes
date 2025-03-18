@@ -19,7 +19,6 @@ struct MealHeaderView: View {
     let foodItems: [MealItem]
     @ObservedObject var mainViewModel: MainViewModel
     @State private var isPresentingSheet: Bool = false
-    @State private var isExpanded: Bool = false
     @State private var isFoodViewPresented: Bool = false
     
     var body: some View {
@@ -65,7 +64,7 @@ struct MealHeaderView: View {
                 )
             }
             
-            if isExpanded {
+            if mainViewModel.expandedSections[mealType] == true {
                 ForEach(foodItems) { item in
                     FoodItemRow(
                         mealItem: item,
@@ -75,11 +74,9 @@ struct MealHeaderView: View {
                     )
                     .swipeActions {
                         Button(role: .destructive) {
-                            mainViewModel.deleteMealItem(with: item.id,
-                                                         for: mealType)
-                            if mainViewModel.mealItems[mealType]?
-                                .isEmpty == true {
-                                isExpanded = false
+                            mainViewModel.deleteMealItem(with: item.id, for: mealType)
+                            if mainViewModel.mealItems[mealType]?.isEmpty == true {
+                                mainViewModel.expandedSections[mealType] = false
                             }
                         } label: {
                             Image(systemName: "trash")
@@ -88,7 +85,10 @@ struct MealHeaderView: View {
                 }
             }
             
-            ShowHideButtonView(isExpanded: $isExpanded)
+            ShowHideButtonView(isExpanded: Binding(
+                get: { mainViewModel.expandedSections[mealType] ?? false },
+                set: { mainViewModel.expandedSections[mealType] = $0 }
+            ))
         }
     }
 }

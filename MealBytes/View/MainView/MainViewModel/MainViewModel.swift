@@ -12,6 +12,7 @@ final class MainViewModel: ObservableObject {
     @Published var selectedDate = Date()
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
+    @Published var expandedSections: [MealType: Bool] = [:]
     @Published var isExpanded: Bool = false
     let searchViewModel: SearchViewModel
     let formatter = Formatter()
@@ -20,17 +21,20 @@ final class MainViewModel: ObservableObject {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
-        
         var summaries = [NutrientType: Double]()
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         self.nutrientSummaries = summaries
-        
         self.searchViewModel = searchViewModel
+        var sections = [MealType: Bool]()
+        MealType.allCases.forEach { sections[$0] = false }
+        self.expandedSections = sections
     }
     
     // MARK: - Calculate Date Offset
     func date(for offset: Int) -> Date {
-        Calendar.current.date(byAdding: .day, value: offset, to: Date()) ?? Date()
+        Calendar.current.date(byAdding: .day,
+                              value: offset,
+                              to: Date()) ?? Date()
     }
     
     // MARK: - Filtered Nutrients
@@ -55,27 +59,34 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Format Serving Size
     func formattedServingSize(for mealItem: MealItem) -> String {
-        return formatter.formattedValue(mealItem.nutrients[.servingSize] ?? 0.0, unit: .empty)
+        return formatter.formattedValue(mealItem.nutrients[.servingSize] ?? 0.0,
+                                        unit: .empty)
     }
     
     // MARK: - Format Calories
     func formattedCalories(_ calories: Double) -> String {
-        return formatter.formattedValue(calories, unit: .empty, alwaysRoundUp: true)
+        return formatter.formattedValue(calories,
+                                        unit: .empty,
+                                        alwaysRoundUp: true)
     }
     
     // MARK: - Format Value
-    func formattedValue(_ value: Double, unit: Formatter.Unit, alwaysRoundUp: Bool) -> String {
+    func formattedValue(_ value: Double,
+                        unit: Formatter.Unit,
+                        alwaysRoundUp: Bool) -> String {
         return formatter.formattedValue(value, unit: unit, alwaysRoundUp: alwaysRoundUp)
     }
     
     // MARK: - Calculate Totals for Nutrients
-    func totalNutrient(_ nutrient: NutrientType, for mealItems: [MealItem]) -> Double {
+    func totalNutrient(_ nutrient: NutrientType,
+                       for mealItems: [MealItem]) -> Double {
         mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
     }
     
     // MARK: - Add Food Item
     func addFoodItem(_ item: MealItem, to mealType: MealType) {
         mealItems[mealType]?.append(item)
+        expandedSections[mealType] = true
         recalculateNutrients()
     }
     
