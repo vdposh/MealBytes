@@ -11,7 +11,6 @@ struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
     @Binding private var isDismissed: Bool
-    private let mealType: MealType
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
     private let showCloseButton: Bool
@@ -27,12 +26,12 @@ struct FoodView: View {
          showSaveRemoveButton: Bool,
          showCloseButton: Bool) {
         self._isDismissed = isDismissed
-        self.mealType = mealType
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
         self.showCloseButton = showCloseButton
         _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
+            mealType: mealType,
             searchViewModel: searchViewModel,
             mainViewModel: mainViewModel,
             initialAmount: amount,
@@ -137,7 +136,8 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
-                                foodViewModel.addFoodItem(in: mealType)
+                                foodViewModel
+                                    .addFoodItem(in: foodViewModel.mealType)
                                 isDismissed = false
                             },
                             backgroundColor: .customGreen,

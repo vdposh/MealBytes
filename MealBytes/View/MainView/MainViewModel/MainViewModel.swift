@@ -104,7 +104,7 @@ final class MainViewModel: ObservableObject {
         guard var items = mealItems[mealType] else { return }
         items.removeAll { $0.id == id }
         mealItems[mealType] = items
-        
+        recalculateNutrients()
         if mealItems[mealType]?.isEmpty == true {
             expandedSections[mealType] = false
         }

@@ -28,8 +28,10 @@ final class FoodViewModel: ObservableObject {
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
     let food: Food
+    let mealType: MealType
     
     init(food: Food,
+         mealType: MealType,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager(),
@@ -43,6 +45,7 @@ final class FoodViewModel: ObservableObject {
         )
         
         self.food = food
+        self.mealType = mealType
         self.mainViewModel = mainViewModel
         self.networkManager = networkManager
         self.searchViewModel = searchViewModel
