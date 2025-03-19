@@ -28,15 +28,14 @@ struct CaloriesSection: View {
                     )
                     .fontWeight(.medium)
                 }
+                
                 HStack {
-                    let nutrientTypes = mainViewModel
-                        .formattedNutrientSummaries(from: summaries)
-                    ForEach(nutrientTypes, id: \.label) { nutrient in
-                        NutrientLabel(
-                            label: nutrient.label,
-                            formattedValue: nutrient.value
-                        )
-                    }
+                    let nutrients = mainViewModel.formattedNutrients(
+                        source: .summaries(summaries)
+                    )
+                    NutrientLabel(label: "F", formattedValue: nutrients.fat)
+                    NutrientLabel(label: "C", formattedValue: nutrients.carb)
+                    NutrientLabel(label: "P", formattedValue: nutrients.protein)
                     Spacer() //временно остается, справа будет еще одно значение
                 }
             }

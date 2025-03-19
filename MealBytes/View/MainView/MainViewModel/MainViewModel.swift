@@ -85,32 +85,28 @@ final class MainViewModel: ObservableObject {
         mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
     }
     
-    // MARK: - Formatting nutrient summaries
-    func formattedNutrientSummaries(
-        from summaries: [NutrientType: Double]
-    ) -> [(label: String, value: String)] {
-        [
-            ("F", formatter.formattedValue(
-                summaries[.fat] ?? 0.0, unit: .empty)
-            ),
-            ("C", formatter.formattedValue(
-                summaries[.carbohydrates] ?? 0.0, unit: .empty)
-            ),
-            ("P", formatter.formattedValue(
-                summaries[.protein] ?? 0.0, unit: .empty)
+    // MARK: - Formatting nutrients
+    func formattedNutrients(
+        source: NutrientSource
+    ) -> (fat: String, carb: String, protein: String) {
+        func format(_ value: Double?) -> String {
+            formatter.formattedValue(value ?? 0.0, unit: .empty)
+        }
+        
+        switch source {
+        case .summaries(let summaries):
+            return (
+                fat: format(summaries[.fat]),
+                carb: format(summaries[.carbohydrates]),
+                protein: format(summaries[.protein])
             )
-        ]
-    }
-    
-    // MARK: - Formatting nutrient data
-    func formattedNutrientData(
-        fats: Double, carbs: Double, proteins: Double
-    ) -> [(label: String, formattedValue: String)] {
-        [
-            ("F", formatter.formattedValue(fats, unit: .empty)),
-            ("C", formatter.formattedValue(carbs, unit: .empty)),
-            ("P", formatter.formattedValue(proteins, unit: .empty))
-        ]
+        case .details(let fats, let carbs, let proteins):
+            return (
+                fat: format(fats),
+                carb: format(carbs),
+                protein: format(proteins)
+            )
+        }
     }
     
     // MARK: - Recalculate Nutrients
@@ -151,6 +147,11 @@ final class MainViewModel: ObservableObject {
             expandedSections[mealType] = false
         }
     }
+}
+
+enum NutrientSource {
+    case summaries([NutrientType: Double])
+    case details(fats: Double, carbs: Double, proteins: Double)
 }
 
 #Preview {
