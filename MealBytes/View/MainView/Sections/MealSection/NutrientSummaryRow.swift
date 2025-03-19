@@ -28,7 +28,11 @@ struct NutrientSummaryRow: View {
                 NutrientLabel(label: nutrient.label,
                               formattedValue: nutrient.formattedValue)
             }
-            Spacer()
+            Spacer() //временно остается, справа будет еще одно значение
         }
     }
+}
+
+#Preview {
+    MainView(mainViewModel: MainViewModel())
 }

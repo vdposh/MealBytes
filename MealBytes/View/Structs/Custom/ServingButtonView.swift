@@ -17,11 +17,11 @@ struct ServingButtonView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
             Button(action: action) {
                 HStack {
                     Text(description)
-                    Spacer()
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Image(systemName: "chevron.down")
                         .resizable()
                         .frame(width: 10, height: 6)
@@ -30,11 +30,32 @@ struct ServingButtonView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .foregroundColor(.gray),
+                        .foregroundColor(.secondary),
                     alignment: .bottom
                 )
             }
             .buttonStyle(.plain)
         }
     }
+}
+
+#Preview {
+    FoodView(
+        isDismissed: .constant(true),
+        food: Food(
+            searchFoodId: 794,
+            searchFoodName: "Whole Milk",
+            searchFoodDescription: ""
+        ),
+        searchViewModel: SearchViewModel(
+            networkManager: NetworkManager()
+        ),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "",
+        measurementDescription: "",
+        showAddButton: true,
+        showSaveRemoveButton: true,
+        showCloseButton: true
+    )
 }

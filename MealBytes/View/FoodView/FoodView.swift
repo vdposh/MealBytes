@@ -52,7 +52,7 @@ struct FoodView: View {
                     nutrientDetailSection
                 }
             }
-            .listSectionSpacing(10)
+            .listSectionSpacing(15)
             .scrollDismissesKeyboard(.never)
             
             if foodViewModel.isLoading {
@@ -72,8 +72,8 @@ struct FoodView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Text("Enter serving size")
-                    .foregroundColor(.gray)
-                Spacer()
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Done") {
                     isTextFieldFocused = false
                 }
@@ -131,7 +131,7 @@ struct FoodView: View {
                         CompactNutrientDetailRow(nutrient: nutrient)
                     }
                 }
-                .padding(.vertical, 10)
+                .padding(.bottom, 10)
                 
                 HStack {
                     switch showAddButton {
@@ -176,7 +176,6 @@ struct FoodView: View {
                         )
                     }
                 }
-                .padding(.bottom, 10)
             }
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)

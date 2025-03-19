@@ -43,14 +43,15 @@ struct FoodItemRow: View {
                         Text(mainViewModel.formattedServingSize(for: mealItem))
                         Text(mealItem.portionUnit)
                     }
-                    .foregroundColor(.gray)
-                    Spacer()
+                    .foregroundColor(.secondary)
+                    
                     Text(mainViewModel.formatter.formattedValue(
                         mealItem.nutrients[.calories] ?? 0.0,
                         unit: .empty,
                         alwaysRoundUp: true
                     ))
                     .fontWeight(.medium)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 HStack {
                     NutrientLabel(
@@ -74,7 +75,7 @@ struct FoodItemRow: View {
                             unit: .empty
                         )
                     )
-                    Spacer()
+                    Spacer() //временно остается, справа будет еще одно значение
                 }
             }
             .padding(.vertical, 5)
@@ -84,5 +85,23 @@ struct FoodItemRow: View {
 }
 
 #Preview {
-    MainView(mainViewModel: MainViewModel())
+    FoodItemRow(
+        mealItem: MealItem(
+            id: UUID(),
+            foodId: 123,
+            foodName: "Banana",
+            portionUnit: "g",
+            nutrients: [
+                .calories: 89.0,
+                .carbohydrates: 22.8,
+                .fat: 0.3,
+                .protein: 1.1
+            ],
+            measurementDescription: "grams",
+            amount: 150.0
+        ),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        isDismissed: .constant(false)
+    )
 }

@@ -18,7 +18,7 @@ struct CaloriesSection: View {
                     Text("Calories")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    Spacer()
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Text(
                         mainViewModel.formatter.formattedValue(
                             summaries[.calories] ?? 0.0,
@@ -44,7 +44,7 @@ struct CaloriesSection: View {
                             formattedValue: nutrient.value
                         )
                     }
-                    Spacer()
+                    Spacer() //временно остается, справа будет еще одно значение
                 }
             }
             .padding(.vertical, 5)

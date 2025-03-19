@@ -44,7 +44,7 @@ struct DateView: View {
         case .day:
             return .primary
         case .weekday:
-            return .gray
+            return .secondary
         }
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
 struct DetailedInformationSection: View {
     let nutrients: [DetailedNutrient]
     @Binding var isExpanded: Bool
-
+    
     var body: some View {
         Section {
             Text("Detailed Information")
@@ -21,11 +21,15 @@ struct DetailedInformationSection: View {
             ForEach(nutrients, id: \.id) { nutrient in
                 HStack {
                     Text(nutrient.type.title)
-                        .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                        .foregroundColor(
+                            nutrient.isSubValue ? .secondary : .primary
+                        )
                         .font(.subheadline)
-                    Spacer()
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Text(nutrient.formattedValue)
-                        .foregroundColor(nutrient.isSubValue ? .gray : .primary)
+                        .foregroundColor(
+                            nutrient.isSubValue ? .secondary : .primary
+                        )
                         .font(.subheadline)
                         .lineLimit(1)
                 }

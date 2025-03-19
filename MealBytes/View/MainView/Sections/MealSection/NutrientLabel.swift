@@ -13,10 +13,10 @@ struct NutrientLabel: View {
 
     var body: some View {
         Text(label)
-            .foregroundColor(.gray)
+            .foregroundColor(.secondary)
             .font(.subheadline)
         Text(formattedValue)
-            .foregroundColor(.gray)
+            .foregroundColor(.secondary)
             .font(.subheadline)
             .padding(.trailing, 5)
     }

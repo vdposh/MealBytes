@@ -35,7 +35,7 @@ struct MealHeaderView: View {
                             Text(title)
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
-                            Spacer()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Text(mainViewModel.formattedCalories(calories))
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
