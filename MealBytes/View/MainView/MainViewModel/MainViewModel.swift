@@ -14,6 +14,7 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var isExpanded: Bool = false
+    let calendar = Calendar.current
     let searchViewModel: SearchViewModel
     let formatter = Formatter()
     
@@ -109,6 +110,49 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Color for Calendar
+    func color(for element: DisplayElement,
+               date: Date? = nil,
+               isSelected: Bool = false,
+               isToday: Bool = false,
+               forBackground: Bool = false) -> Color {
+        switch forBackground {
+        case true:
+            return isSelected ? .customGreen.opacity(0.2) : .clear
+        case false:
+            if isSelected {
+                return .customGreen
+            }
+            if isToday {
+                return .customGreen
+            }
+            if let date {
+                if !calendar.isDate(date, equalTo: self.date,
+                                    toGranularity: .month) {
+                    return .secondary
+                }
+            }
+            switch element {
+            case .day:
+                return .primary
+            case .weekday:
+                return .secondary
+            }
+        }
+    }
+    
+    // MARK: - Formatted year for Calendar
+    func formattedYearDisplay() -> String {
+        switch calendar.isDate(date,
+                               equalTo: Date(),
+                               toGranularity: .year) {
+        case true:
+            date.formatted(.dateTime.month(.wide))
+        case false:
+            date.formatted(.dateTime.month(.wide).year())
+        }
+    }
+    
     // MARK: - Recalculate Nutrients
     func recalculateNutrients() {
         nutrientSummaries = NutrientType.allCases.reduce(
@@ -152,6 +196,11 @@ final class MainViewModel: ObservableObject {
 enum NutrientSource {
     case summaries([NutrientType: Double])
     case details(fats: Double, carbs: Double, proteins: Double)
+}
+
+enum DisplayElement {
+    case day
+    case weekday
 }
 
 #Preview {

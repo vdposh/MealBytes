@@ -9,98 +9,113 @@ import SwiftUI
 
 struct DatePickerView: View {
     @Binding var selectedDate: Date
-    private let calendar = Calendar.current
+    let mainViewModel: MainViewModel
     
     var body: some View {
         VStack {
-            // Дни недели
             HStack {
-                ForEach(0..<7, id: \.self) { index in
-                    let weekdayDate = calendar.date(byAdding: .day, value: index, to: startOfWeek())!
-                    Text(weekdayDate.formatted(.dateTime.weekday(.short)))
-                        .font(.footnote)
-                        .foregroundColor(color(for: .weekday))
-                        .frame(maxWidth: .infinity)
+                if let startOfWeek = mainViewModel.calendar.date(
+                    from: mainViewModel.calendar.dateComponents(
+                        [.yearForWeekOfYear, .weekOfYear],
+                        from: Date()
+                    )
+                ) {
+                    ForEach(mainViewModel.calendar.weekdaySymbols.indices, id: \.self) { index in
+                        if let weekdayDate = mainViewModel.calendar.date(
+                            byAdding: .day, value: index, to: startOfWeek
+                        ) {
+                            Text(
+                                weekdayDate.formatted(.dateTime.weekday(.short))
+                            )
+                            .font(.footnote)
+                            .foregroundColor(
+                                mainViewModel.color(
+                                    for: .weekday, date: weekdayDate
+                                )
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
                 }
             }
             
-            // Даты текущего месяца
-            let daysInMonth = daysForCurrentMonth()
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
-                ForEach(daysInMonth, id: \.self) { date in
-                    Button(action: {
-                        selectedDate = date
-                    }) {
-                        Text("\(calendar.component(.day, from: date))")
-                            .foregroundColor(color(for: .day, date: date))
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()),
+                                     count: 7)) {
+                ForEach(daysForCurrentMonth(), id: \.self) { date in
+                    Button(action: { selectedDate = date }) {
+                        Text("\(mainViewModel.calendar.component(.day, from: date))")
+                            .foregroundColor(
+                                mainViewModel.color(
+                                    for: .day,
+                                    date: date,
+                                    isSelected: mainViewModel.calendar.isDate(
+                                        selectedDate,
+                                        inSameDayAs: date
+                                    ),
+                                    isToday: mainViewModel.calendar
+                                        .isDateInToday(date)
+                                )
+                            )
                             .frame(width: 40, height: 40)
-                            .background(isSelected(date) ? Color.customGreen.opacity(0.2) : .clear)
+                            .background(
+                                mainViewModel.color(
+                                    for: .day,
+                                    date: date,
+                                    isSelected: mainViewModel.calendar.isDate(
+                                        selectedDate,
+                                        inSameDayAs: date
+                                    ),
+                                    forBackground: true
+                                )
+                            )
                             .cornerRadius(12)
                             .font(.callout)
                     }
                 }
             }
         }
+        .padding()
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if !mainViewModel.calendar.isDate(selectedDate, inSameDayAs: Date()) {
+                    Button("Today") {
+                        selectedDate = Date()
+                    }
+                    .font(.headline)
+                }
+            }
+        }
     }
     
-    private func startOfWeek() -> Date {
-        calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date()))!
-    }
-
-    // Получение всех дат текущего месяца с пустыми днями в начале
     private func daysForCurrentMonth() -> [Date] {
-        let startOfMonth = calendar.date(
-            from: calendar.dateComponents([.year, .month], from: selectedDate)
-        )!
+        guard let startOfMonth = mainViewModel.calendar.date(
+            from: mainViewModel.calendar.dateComponents(
+                [.year, .month], from: selectedDate)
+        ),
+              let range = mainViewModel.calendar.range(
+                of: .day, in: .month, for: startOfMonth)
+        else { return [] }
         
-        let range = calendar.range(of: .day, in: .month, for: startOfMonth)!
-        let daysInMonth = range.compactMap { day -> Date? in
-            calendar.date(byAdding: .day, value: day - 1, to: startOfMonth)
+        let daysInMonth = range.compactMap {
+            mainViewModel.calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
         }
         
-        // Даты предыдущего месяца
-        let firstWeekday = calendar.component(.weekday, from: startOfMonth) - 1
-        let previousMonthDates = (0..<firstWeekday).compactMap { offset -> Date? in
-            calendar.date(byAdding: .day, value: -(firstWeekday - offset), to: startOfMonth)
+        let firstWeekday = mainViewModel.calendar.component(.weekday, from: startOfMonth) - 1
+        let previousMonthDates = (0..<firstWeekday).reversed().compactMap {
+            mainViewModel.calendar.date(byAdding: .day, value: -$0 - 1, to: startOfMonth)
         }
         
-        // Даты следующего месяца для завершения недели
-        let daysToCompleteWeek = 7 - ((daysInMonth.count + firstWeekday) % 7)
-        let nextMonthDates = (1...daysToCompleteWeek).compactMap { offset -> Date? in
-            calendar.date(byAdding: .day, value: offset, to: daysInMonth.last!)
+        let remainingDays = max(0, (7 - (daysInMonth.count + firstWeekday) % 7))
+        let nextMonthDates: [Date] = remainingDays > 0
+        ? (1...remainingDays).compactMap { offset in
+            guard let lastDay = daysInMonth.last else { return nil }
+            return mainViewModel.calendar.date(
+                byAdding: .day, value: offset, to: lastDay)
         }
+        : []
         
         return previousMonthDates + daysInMonth + nextMonthDates
     }
-    
-    // Проверка, является ли день выбранным
-    private func isSelected(_ date: Date) -> Bool {
-        calendar.isDate(selectedDate, inSameDayAs: date)
-    }
-    
-    // Определение цвета для элементов
-    private func color(for element: DisplayElement, date: Date? = nil) -> Color {
-        if let date = date {
-            if isSelected(date) || calendar.isDateInToday(date) {
-                return .customGreen
-            }
-            if calendar.component(.month, from: date) != calendar.component(.month, from: selectedDate) {
-                return .secondary // Цвет для дней из других месяцев
-            }
-        }
-        
-        switch element {
-        case .day:
-            return .primary
-        case .weekday:
-            return .secondary
-        }
-    }
-}
-
-enum DisplayElement {
-    case day
-    case weekday
 }
 
 #Preview {

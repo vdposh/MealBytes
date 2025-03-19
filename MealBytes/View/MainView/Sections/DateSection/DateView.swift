@@ -8,43 +8,44 @@
 import SwiftUI
 
 struct DateView: View {
+    let mainViewModel: MainViewModel
     let date: Date
     let isToday: Bool
     let isSelected: Bool
-    
+
     var body: some View {
         VStack {
             Text(date.formatted(.dateTime.day()))
-                .foregroundColor(color(for: .day))
+                .foregroundColor(
+                    mainViewModel.color(for: .day,
+                                        date: date,
+                                        isSelected: isSelected,
+                                        isToday: isToday)
+                )
             Text(date.formatted(.dateTime.weekday(.short)))
-                .foregroundColor(color(for: .weekday))
+                .foregroundColor(
+                    mainViewModel.color(for: .weekday,
+                                        date: date,
+                                        isSelected: isSelected,
+                                        isToday: isToday)
+                )
                 .font(.footnote)
         }
         .frame(maxWidth: .infinity)
         .padding(5)
         .background(
-            {
-                switch isSelected {
-                case true:
-                    Color.customGreen.opacity(0.2)
-                case false:
-                    Color.clear
-                }
-            }()
+            mainViewModel.color(for: .day,
+                                date: date,
+                                isSelected: isSelected,
+                                forBackground: true)
         )
         .cornerRadius(12)
     }
-    
-    private func color(for element: DisplayElement) -> Color {
-        if isSelected || isToday {
-            return .customGreen
-        }
+}
 
-        switch element {
-        case .day:
-            return .primary
-        case .weekday:
-            return .secondary
-        }
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
     }
+    .accentColor(.customGreen)
 }
