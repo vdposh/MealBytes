@@ -12,13 +12,11 @@ struct MainView: View {
     @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
-        NavigationStack {
-            List {
-                dateCarouselSection
-                caloriesSection
-                mealSections
-                detailedInformationSection
-            }
+        List {
+            dateCarouselSection
+            caloriesSection
+            mealSections
+            detailedInformationSection
         }
         .listSectionSpacing(15)
     }
