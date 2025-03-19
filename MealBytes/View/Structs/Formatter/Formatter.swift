@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct Formatter {
-    // MARK: - Formatting Values
     enum Unit: String {
         case empty
         case kcal

@@ -11,7 +11,10 @@ import SwiftUI
 struct MealBytesApp: App {
     var body: some Scene {
         WindowGroup {
-            SearchView()
+            NavigationStack {
+                MainView(mainViewModel: MainViewModel())
+            }
+            .accentColor(.customGreen)
         }
     }
 }

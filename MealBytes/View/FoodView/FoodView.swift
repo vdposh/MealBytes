@@ -8,84 +8,116 @@
 import SwiftUI
 
 struct FoodView: View {
-    @StateObject private var viewModel: FoodViewModel
+    @StateObject private var foodViewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
+    @Binding private var isDismissed: Bool
+    private let showAddButton: Bool
+    private let showSaveRemoveButton: Bool
+    private let showCloseButton: Bool
+    @Environment(\.dismiss) private var dismiss
     
-    init(food: Food, searchViewModel: SearchViewModel) {
-        _viewModel = StateObject(wrappedValue: FoodViewModel(
-            food: food, searchViewModel: searchViewModel))
+    init(isDismissed: Binding<Bool>,
+         food: Food,
+         searchViewModel: SearchViewModel,
+         mainViewModel: MainViewModel,
+         mealType: MealType,
+         amount: String,
+         measurementDescription: String,
+         showAddButton: Bool,
+         showSaveRemoveButton: Bool,
+         showCloseButton: Bool,
+         originalMealItemId: UUID? = nil) {
+        self._isDismissed = isDismissed
+        self.showAddButton = showAddButton
+        self.showSaveRemoveButton = showSaveRemoveButton
+        self.showCloseButton = showCloseButton
+        _foodViewModel = StateObject(wrappedValue: FoodViewModel(
+            food: food,
+            mealType: mealType,
+            searchViewModel: searchViewModel,
+            mainViewModel: mainViewModel,
+            initialAmount: amount,
+            initialMeasurementDescription: measurementDescription,
+            showSaveRemoveButton: showSaveRemoveButton,
+            originalMealItemId: originalMealItemId
+        ))
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                List {
-                    if !viewModel.isLoading {
-                        servingSizeSection
-                        nutrientActionSection
-                        nutrientDetailSection
+        ZStack {
+            List {
+                if !foodViewModel.isLoading {
+                    servingSizeSection
+                    nutrientActionSection
+                    nutrientDetailSection
+                }
+            }
+            .listSectionSpacing(15)
+            .scrollDismissesKeyboard(.never)
+            
+            if foodViewModel.isLoading {
+                LoadingView()
+            }
+        }
+        .navigationBarTitle("Add to Diary", displayMode: .inline)
+        .confirmationDialog(
+            "Select Serving",
+            isPresented: $foodViewModel.showActionSheet,
+            titleVisibility: .visible
+        ) {
+            if let servings = foodViewModel.foodDetail?.servings.serving {
+                servingButtons(servings: servings)
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Text("Enter serving size")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button("Done") {
+                    isTextFieldFocused = false
+                }
+            }
+            if showCloseButton {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close") {
+                        isDismissed = false
                     }
                 }
-                .listSectionSpacing(.compact)
-                .scrollDismissesKeyboard(.never)
-                
-                if viewModel.isLoading {
-                    LoadingView()
-                }
             }
-            .navigationBarTitle("Add to Diary", displayMode: .inline)
-            .confirmationDialog(
-                "Select Serving",
-                isPresented: $viewModel.showActionSheet,
-                titleVisibility: .visible
-            ) {
-                if let servings = viewModel.foodDetail?.servings.serving {
-                    servingButtons(servings: servings)
-                }
-            }
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Text("Enter serving size")
-                        .foregroundColor(.gray)
-                    Spacer()
-                    Button("Done") {
-                        isTextFieldFocused = false
-                    }
-                }
-            }
-            .task {
-                await viewModel.fetchFoodDetails()
-            }
-            .alert(item: $viewModel.errorMessage) { error in
-                Alert(
-                    title: Text("Error"),
-                    message: Text(error.errorDescription),
-                    dismissButton: .default(Text("OK"))
-                )
-            }
+        }
+        .task {
+            await foodViewModel.fetchFoodDetails()
+        }
+        .alert(item: $foodViewModel.errorMessage) { error in
+            Alert(
+                title: Text("Error"),
+                message: Text(error.errorDescription),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
     
     private var servingSizeSection: some View {
         Section {
-            Text(viewModel.food.searchFoodName)
+            Text(foodViewModel.food.searchFoodName)
                 .font(.headline)
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
             VStack(spacing: 15) {
                 ServingTextFieldView(title: "Size",
-                                     text: $viewModel.amount)
+                                     text: $foodViewModel.amount)
                 .focused($isTextFieldFocused)
-                .disabled(viewModel.isError)
+                .disabled(foodViewModel.isError)
                 ServingButtonView(
                     title: "Serving",
-                    description: viewModel.servingDescription,
-                    showActionSheet: $viewModel.showActionSheet
+                    description: foodViewModel.servingDescription,
+                    showActionSheet: $foodViewModel.showActionSheet
                 ) {
-                    viewModel.showActionSheet.toggle()
+                    foodViewModel.showActionSheet.toggle()
                 }
-                .disabled(viewModel.isError)
+                .disabled(foodViewModel.isError)
             }
             .padding(.bottom, 10)
         }
@@ -95,41 +127,55 @@ struct FoodView: View {
         Section {
             VStack {
                 HStack {
-                    ForEach(viewModel.compactNutrientDetails) { nutrient in
+                    ForEach(foodViewModel.compactNutrientDetails) { nutrient in
                         CompactNutrientDetailRow(nutrient: nutrient)
                     }
                 }
-                .padding(.vertical, 10)
+                .padding(.bottom, 10)
                 
                 HStack {
-                    ActionButtonView(
-                        title: "Remove",
-                        action: {
-                            // Remove from Diary
-                        },
-                        backgroundColor: .customRed,
-                        isEnabled: !viewModel.isError
-                    )
-                    
-                    ActionButtonView(
-                        title: "Add",
-                        action: {
-                            // Add to Diary
-                        },
-                        backgroundColor: .customGreen,
-                        isEnabled: viewModel.isAddButtonEnabled() &&
-                        !viewModel.isError
-                    )
-                    
-                    BookmarkButtonView(
-                        action: {
-                            viewModel.toggleBookmark()
-                        },
-                        isFilled: viewModel.isBookmarkFilled,
-                        isEnabled: !viewModel.isError
-                    )
+                    switch showAddButton {
+                    case true:
+                        ActionButtonView(
+                            title: "Add",
+                            action: {
+                                foodViewModel
+                                    .addFoodItem(in: foodViewModel.mealType)
+                                isDismissed = false
+                            },
+                            backgroundColor: .customGreen,
+                            isEnabled: foodViewModel.canAddFood
+                        )
+                        
+                        BookmarkButtonView(
+                            action: {
+                                foodViewModel.toggleBookmark()
+                            },
+                            isFilled: foodViewModel.isBookmarkFilled,
+                            isEnabled: !foodViewModel.isError
+                        )
+                    case false:
+                        ActionButtonView(
+                            title: "Remove",
+                            action: {
+                                foodViewModel.deleteMealItem()
+                                dismiss()
+                            },
+                            backgroundColor: .customRed,
+                            isEnabled: true
+                        )
+                        
+                        ActionButtonView(
+                            title: "Save",
+                            action: {
+                                foodViewModel.saveMealItem()
+                                dismiss()
+                            },
+                            backgroundColor: .customGreen,
+                            isEnabled: foodViewModel.canAddFood
+                        )
+                    }
                 }
-                .padding(.bottom, 10)
             }
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
@@ -137,22 +183,16 @@ struct FoodView: View {
     }
     
     private var nutrientDetailSection: some View {
-        Section {
-            Text("Detailed Information")
-                .font(.headline)
-                .listRowSeparator(.hidden)
-                .padding(.top, 10)
-            
-            ForEach(viewModel.nutrientDetails) { nutrient in
-                NutrientDetailRow(nutrient: nutrient)
-            }
-        }
+        NutrientDetailSectionView(
+            title: "Detailed Information",
+            nutrientDetails: foodViewModel.nutrientDetails
+        )
     }
     
     private func servingButtons(servings: [Serving]) -> some View {
         ForEach(servings, id: \.self) { serving in
-            Button(viewModel.servingDescription(for: serving)) {
-                viewModel.updateServing(serving)
+            Button(foodViewModel.servingDescription(for: serving)) {
+                foodViewModel.updateServing(serving)
             }
         }
     }
@@ -160,11 +200,21 @@ struct FoodView: View {
 
 #Preview {
     FoodView(
+        isDismissed: .constant(true),
         food: Food(
             searchFoodId: 794,
             searchFoodName: "Whole Milk",
             searchFoodDescription: ""
         ),
-        searchViewModel: SearchViewModel(networkManager: NetworkManager())
+        searchViewModel: SearchViewModel(
+            networkManager: NetworkManager()
+        ),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "",
+        measurementDescription: "",
+        showAddButton: true,
+        showSaveRemoveButton: true,
+        showCloseButton: true
     )
 }

@@ -5,7 +5,7 @@
 //  Created by Porshe on 08/03/2025.
 //
 
-enum NutrientType: String, Identifiable {
+enum NutrientType: String, Identifiable, CaseIterable {
     var id: String { self.rawValue }
     
     case calories,
@@ -42,15 +42,26 @@ enum NutrientType: String, Identifiable {
     
     var alternativeTitle: String {
         switch self {
-        case .carbohydrates: "Carb"
+        case .carbohydrates: 
+            "Carb"
+        default:
+            title
+        }
+    }
+    
+    var alternativeNutrientsTitle: String {
+        switch self {
+        case .fat: "F"
+        case .protein: "P"
+        case .carbohydrates: "C"
         default: title
         }
     }
     
-    func unit(for serving: Serving) -> String {
+    private var baseUnit: String {
         switch self {
         case .calories: "kcal"
-        case .servingSize: serving.metricServingUnit
+        case .servingSize: "g"
         case .fat,
                 .saturatedFat,
                 .monounsaturatedFat,
@@ -63,5 +74,22 @@ enum NutrientType: String, Identifiable {
                 .sodium,
                 .cholesterol: "mg"
         }
+    }
+    
+    func unit(for serving: Serving) -> String {
+        switch self {
+        case .servingSize:
+            serving.metricServingUnit
+        default:
+            baseUnit
+        }
+    }
+    
+    var alternativeUnit: String {
+        baseUnit
+    }
+    
+    var isServingSize: Bool {
+        self == .servingSize
     }
 }

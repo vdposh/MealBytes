@@ -1,42 +1,38 @@
 //
-//  NutrientDetail.swift
+//  DetailedNutrient.swift
 //  MealBytes
 //
-//  Created by Porshe on 09/03/2025.
+//  Created by Porshe on 15/03/2025.
 //
 
 import SwiftUI
 
-struct NutrientDetail: Identifiable {
+struct DetailedNutrient: Identifiable {
     var id: String {
         String(describing: type)
     }
     let type: NutrientType
     let value: Double
-    let serving: Serving
     let isSubValue: Bool
     
     init(type: NutrientType,
          value: Double,
-         serving: Serving,
          isSubValue: Bool) {
         self.type = type
         self.value = value
-        self.serving = serving
         self.isSubValue = isSubValue
     }
 }
 
-extension NutrientDetail {
+extension DetailedNutrient {
     var formattedValue: String {
         Formatter().formattedValue(
             value,
             unit: {
                 switch type {
-                case .calories:
+                case .calories: .empty
+                default: Formatter.Unit(rawValue: type.alternativeUnit) ??
                         .empty
-                default:
-                    Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
                 }
             }(),
             alwaysRoundUp: type == .calories

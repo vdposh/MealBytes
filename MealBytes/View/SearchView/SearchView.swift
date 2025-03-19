@@ -8,33 +8,62 @@
 import SwiftUI
 
 struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+    @Binding private var isPresented: Bool
     @State private var currentPage: Int = 0
+    private let mealType: MealType
+    
+    @ObservedObject private var searchViewModel: SearchViewModel
+    private var mainViewModel: MainViewModel
+    
+    init(isPresented: Binding<Bool>,
+         searchViewModel: SearchViewModel,
+         mainViewModel: MainViewModel,
+         mealType: MealType) {
+        self._isPresented = isPresented
+        self.searchViewModel = searchViewModel
+        self.mainViewModel = mainViewModel
+        self.mealType = mealType
+    }
     
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.isLoading {
+                if searchViewModel.isLoading {
                     LoadingView()
-                } else if viewModel.errorMessage != nil {
-                    ContentUnavailableView.search(text: viewModel.query)
+                } else if searchViewModel.errorMessage != nil {
+                    ContentUnavailableView.search(text: searchViewModel.query)
                 } else {
                     List {
-                        ForEach(viewModel.foods, id: \.searchFoodId) { food in
+                        ForEach(searchViewModel.foods, id: \.searchFoodId) {
+                            food in
                             HStack {
                                 NavigationLink(
                                     destination: FoodView(
+                                        isDismissed: $isPresented,
                                         food: food,
-                                        searchViewModel: viewModel)) {
-                                            FoodDetailView(food: food,
-                                                           viewModel: viewModel)
-                                        }
+                                        searchViewModel: searchViewModel,
+                                        mainViewModel: mainViewModel,
+                                        mealType: mealType,
+                                        amount: "",
+                                        measurementDescription: "",
+                                        showAddButton: true,
+                                        showSaveRemoveButton: false,
+                                        showCloseButton: true
+                                    )
+                                ) {
+                                    FoodDetailView(
+                                        food: food,
+                                        searchViewModel: searchViewModel
+                                    )
+                                }
                                 
                                 BookmarkButtonView(
                                     action: {
-                                        viewModel.toggleBookmark(for: food)
+                                        searchViewModel
+                                            .toggleBookmark(for: food)
                                     },
-                                    isFilled: viewModel.isBookmarked(food)
+                                    isFilled: searchViewModel
+                                        .isBookmarked(food)
                                 )
                             }
                         }
@@ -46,7 +75,14 @@ struct SearchView: View {
                 }
             }
             .navigationBarTitle("Add to Diary", displayMode: .inline)
-            .searchable(text: $viewModel.query)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close") {
+                        isPresented = false
+                    }
+                }
+            }
+            .searchable(text: $searchViewModel.query)
         }
         .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
@@ -55,9 +91,9 @@ struct SearchView: View {
     @ViewBuilder
     private func pageButton(direction:
                             SearchViewModel.PageDirection) -> some View {
-        if viewModel.canLoadPage(direction: direction) {
+        if searchViewModel.canLoadPage(direction: direction) {
             Button(action: {
-                viewModel.loadPage(direction: direction)
+                searchViewModel.loadPage(direction: direction)
             }) {
                 switch direction {
                 case .next:
@@ -75,5 +111,10 @@ struct SearchView: View {
 }
 
 #Preview {
-    SearchView()
+    SearchView(
+        isPresented: .constant(true),
+        searchViewModel: SearchViewModel(),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast
+    )
 }
