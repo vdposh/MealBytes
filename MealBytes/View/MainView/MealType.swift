@@ -25,11 +25,6 @@ enum MealType: String, CaseIterable, Identifiable {
     }
     
     var color: Color {
-        switch self {
-        case .breakfast: .customGreen.opacity(0.6)
-        case .lunch: .customGreen.opacity(0.6)
-        case .dinner: .customGreen.opacity(0.6)
-        case .other: .customGreen.opacity(0.6)
-        }
+        .customGreen.opacity(0.6)
     }
 }

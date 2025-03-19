@@ -74,13 +74,52 @@ final class MainViewModel: ObservableObject {
     func formattedValue(_ value: Double,
                         unit: Formatter.Unit,
                         alwaysRoundUp: Bool) -> String {
-        return formatter.formattedValue(value, unit: unit, alwaysRoundUp: alwaysRoundUp)
+        return formatter.formattedValue(value,
+                                        unit: unit,
+                                        alwaysRoundUp: alwaysRoundUp)
     }
     
     // MARK: - Calculate Totals for Nutrients
     func totalNutrient(_ nutrient: NutrientType,
                        for mealItems: [MealItem]) -> Double {
         mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
+    }
+    
+    // MARK: - Formatting nutrient summaries
+    func formattedNutrientSummaries(
+        from summaries: [NutrientType: Double]
+    ) -> [(label: String, value: String)] {
+        [
+            ("F", formatter.formattedValue(
+                summaries[.fat] ?? 0.0, unit: .empty)
+            ),
+            ("C", formatter.formattedValue(
+                summaries[.carbohydrates] ?? 0.0, unit: .empty)
+            ),
+            ("P", formatter.formattedValue(
+                summaries[.protein] ?? 0.0, unit: .empty)
+            )
+        ]
+    }
+    
+    // MARK: - Formatting nutrient data
+    func formattedNutrientData(
+        fats: Double, carbs: Double, proteins: Double
+    ) -> [(label: String, formattedValue: String)] {
+        [
+            ("F", formatter.formattedValue(fats, unit: .empty)),
+            ("C", formatter.formattedValue(carbs, unit: .empty)),
+            ("P", formatter.formattedValue(proteins, unit: .empty))
+        ]
+    }
+    
+    // MARK: - Recalculate Nutrients
+    func recalculateNutrients() {
+        nutrientSummaries = NutrientType.allCases.reduce(
+            into: [NutrientType: Double]()) { result, nutrient in
+                result[nutrient] = mealItems.values.flatMap { $0 }
+                    .reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
+            }
     }
     
     // MARK: - Add Food Item
@@ -100,15 +139,6 @@ final class MainViewModel: ObservableObject {
         
         mealItems[mealType] = items
         recalculateNutrients()
-    }
-    
-    // MARK: - Recalculate Nutrients
-    func recalculateNutrients() {
-        nutrientSummaries = NutrientType.allCases.reduce(
-            into: [NutrientType: Double]()) { result, nutrient in
-                result[nutrient] = mealItems.values.flatMap { $0 }
-                    .reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
-            }
     }
     
     // MARK: - Delete Meal Item
