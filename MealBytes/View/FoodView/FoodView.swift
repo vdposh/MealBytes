@@ -199,22 +199,25 @@ struct FoodView: View {
 }
 
 #Preview {
-    FoodView(
-        isDismissed: .constant(true),
-        food: Food(
-            searchFoodId: 794,
-            searchFoodName: "Whole Milk",
-            searchFoodDescription: ""
-        ),
-        searchViewModel: SearchViewModel(
-            networkManager: NetworkManager()
-        ),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        amount: "",
-        measurementDescription: "",
-        showAddButton: true,
-        showSaveRemoveButton: true,
-        showCloseButton: true
-    )
+    NavigationStack {
+        FoodView(
+            isDismissed: .constant(true),
+            food: Food(
+                searchFoodId: 794,
+                searchFoodName: "Whole Milk",
+                searchFoodDescription: ""
+            ),
+            searchViewModel: SearchViewModel(
+                networkManager: NetworkManager()
+            ),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "",
+            measurementDescription: "",
+            showAddButton: true,
+            showSaveRemoveButton: true,
+            showCloseButton: true
+        )
+    }
+    .accentColor(.customGreen)
 }

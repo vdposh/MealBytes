@@ -85,23 +85,26 @@ struct FoodItemRow: View {
 }
 
 #Preview {
-    FoodItemRow(
-        mealItem: MealItem(
-            id: UUID(),
-            foodId: 123,
-            foodName: "Banana",
-            portionUnit: "g",
-            nutrients: [
-                .calories: 89.0,
-                .carbohydrates: 22.8,
-                .fat: 0.3,
-                .protein: 1.1
-            ],
-            measurementDescription: "grams",
-            amount: 150.0
-        ),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        isDismissed: .constant(false)
-    )
+    NavigationStack {
+        FoodItemRow(
+            mealItem: MealItem(
+                id: UUID(),
+                foodId: 123,
+                foodName: "Banana",
+                portionUnit: "g",
+                nutrients: [
+                    .calories: 89.0,
+                    .carbohydrates: 22.8,
+                    .fat: 0.3,
+                    .protein: 1.1
+                ],
+                measurementDescription: "grams",
+                amount: 150.0
+            ),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            isDismissed: .constant(false)
+        )
+    }
+    .accentColor(.primary)
 }

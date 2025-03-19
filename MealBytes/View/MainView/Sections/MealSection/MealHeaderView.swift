@@ -90,7 +90,3 @@ struct MealHeaderView: View {
         }
     }
 }
-
-#Preview {
-    MainView(mainViewModel: MainViewModel())
-}

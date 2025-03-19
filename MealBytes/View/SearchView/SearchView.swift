@@ -111,10 +111,13 @@ struct SearchView: View {
 }
 
 #Preview {
-    SearchView(
-        isPresented: .constant(true),
-        searchViewModel: SearchViewModel(),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast
-    )
+    NavigationStack {
+        SearchView(
+            isPresented: .constant(true),
+            searchViewModel: SearchViewModel(),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast
+        )
+    }
+    .accentColor(.customGreen)
 }

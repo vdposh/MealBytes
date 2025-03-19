@@ -26,7 +26,3 @@ struct MealSection: View {
         )
     }
 }
-
-#Preview {
-    MainView(mainViewModel: MainViewModel())
-}

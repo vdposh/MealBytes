@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 final class MainViewModel: ObservableObject {
-    @Published var selectedDate = Date()
+    @Published var date = Date()
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
@@ -155,5 +155,8 @@ enum NutrientSource {
 }
 
 #Preview {
-    MainView(mainViewModel: MainViewModel())
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }

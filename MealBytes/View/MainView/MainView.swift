@@ -12,13 +12,39 @@ struct MainView: View {
     @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
-        List {
-            dateCarouselSection
-            caloriesSection
-            mealSections
-            detailedInformationSection
+        VStack {
+            if isExpanded {
+                datePickerView
+            }
+            
+            List {
+                dateCarouselSection
+                caloriesSection
+                mealSections
+                detailedInformationSection
+            }
+            .listSectionSpacing(15)
         }
-        .listSectionSpacing(15)
+        .animation(.easeInOut, value: isExpanded)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text(mainViewModel.date.formatted(.dateTime.month(.wide)))
+                    .fontWeight(.medium)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: {
+                    isExpanded.toggle()
+                }) {
+                    Image(systemName: "calendar")
+                }
+            }
+        }
+    }
+    
+    private var datePickerView: some View {
+        VStack {
+            DatePickerView(selectedDate: $mainViewModel.date)
+        }
     }
     
     private var dateCarouselSection: some View {
@@ -29,7 +55,7 @@ struct MainView: View {
                     offset in
                     let date = mainViewModel.date(for: offset)
                     Button(action: {
-                        mainViewModel.selectedDate = date
+                        mainViewModel.date = date
                     }) {
                         dateView(for: date)
                     }
@@ -39,14 +65,16 @@ struct MainView: View {
         }
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
-        .padding(.bottom, 5)
     }
     
     private func dateView(for date: Date) -> some View {
         DateView(
             date: date,
             isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
-            isSelected: Calendar.current.isDate(date, inSameDayAs: mainViewModel.selectedDate)
+            isSelected: Calendar.current.isDate(
+                date,
+                inSameDayAs: mainViewModel.date
+            )
         )
     }
     
@@ -76,5 +104,8 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView(mainViewModel: MainViewModel())
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }
