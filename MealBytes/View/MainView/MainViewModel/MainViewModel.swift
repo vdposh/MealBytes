@@ -147,7 +147,7 @@ final class MainViewModel: ObservableObject {
                                equalTo: Date(),
                                toGranularity: .year) {
         case true:
-            date.formatted(.dateTime.month(.wide))
+            date.formatted(.dateTime.month(.wide).day().weekday(.wide))
         case false:
             date.formatted(.dateTime.month(.wide).year())
         }

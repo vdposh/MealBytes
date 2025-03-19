@@ -9,10 +9,34 @@ import SwiftUI
 
 struct DatePickerView: View {
     @Binding var selectedDate: Date
+    @Binding var isPresented: Bool
     let mainViewModel: MainViewModel
     
     var body: some View {
         VStack {
+            HStack {
+                Button("Today") {
+                    selectDate(Date())
+                }
+                
+                Button(action: {
+                    changeMonth(by: -1)
+                }) {
+                    Image(systemName: "chevron.left")
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.trailing)
+                
+                Button(action: {
+                    changeMonth(by: 1)
+                }) {
+                    Image(systemName: "chevron.right")
+                }
+            }
+            .font(.headline)
+            .padding(.bottom)
+            .padding(.horizontal)
+            
             HStack {
                 if let startOfWeek = mainViewModel.calendar.date(
                     from: mainViewModel.calendar.dateComponents(
@@ -20,13 +44,13 @@ struct DatePickerView: View {
                         from: Date()
                     )
                 ) {
-                    ForEach(mainViewModel.calendar.weekdaySymbols.indices, id: \.self) { index in
+                    ForEach(mainViewModel.calendar.weekdaySymbols.indices,
+                            id: \.self) { index in
                         if let weekdayDate = mainViewModel.calendar.date(
                             byAdding: .day, value: index, to: startOfWeek
                         ) {
-                            Text(
-                                weekdayDate.formatted(.dateTime.weekday(.short))
-                            )
+                            Text(weekdayDate.formatted(
+                                .dateTime.weekday(.short)))
                             .font(.footnote)
                             .foregroundColor(
                                 mainViewModel.color(
@@ -42,7 +66,7 @@ struct DatePickerView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()),
                                      count: 7)) {
                 ForEach(daysForCurrentMonth(), id: \.self) { date in
-                    Button(action: { selectedDate = date }) {
+                    Button(action: { selectDate(date) }) {
                         Text("\(mainViewModel.calendar.component(.day, from: date))")
                             .foregroundColor(
                                 mainViewModel.color(
@@ -75,15 +99,17 @@ struct DatePickerView: View {
             }
         }
         .padding()
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                if !mainViewModel.calendar.isDate(selectedDate, inSameDayAs: Date()) {
-                    Button("Today") {
-                        selectedDate = Date()
-                    }
-                    .font(.headline)
-                }
-            }
+    }
+    
+    private func selectDate(_ date: Date) {
+        selectedDate = date
+        isPresented = false
+    }
+    
+    private func changeMonth(by value: Int) {
+        if let newDate = mainViewModel.calendar.date(
+            byAdding: .month, value: value, to: selectedDate) {
+            selectedDate = newDate
         }
     }
     

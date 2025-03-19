@@ -34,6 +34,7 @@ struct MainView: View {
             .listSectionSpacing(15)
         }
         .animation(.easeInOut, value: isExpanded)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Button(action: {
@@ -41,6 +42,7 @@ struct MainView: View {
                 }) {
                     HStack(spacing: 4) {
                         Text(mainViewModel.formattedYearDisplay())
+                            .font(.headline)
                         Image(systemName: {
                             switch isExpanded {
                             case true:
@@ -50,8 +52,8 @@ struct MainView: View {
                             }
                         }())
                         .font(.caption)
+                        .fontWeight(.semibold)
                     }
-                    .fontWeight(.semibold)
                 }
                 .foregroundStyle(.customGreen)
                 .buttonStyle(.plain)
@@ -62,6 +64,7 @@ struct MainView: View {
     private var datePickerView: some View {
         VStack {
             DatePickerView(selectedDate: $mainViewModel.date,
+                           isPresented: $isExpanded,
                            mainViewModel: mainViewModel)
         }
     }

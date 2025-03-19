@@ -20,9 +20,9 @@ struct ShowHideButtonView: View {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .foregroundColor(.customGreen)
                 Text(isExpanded ? "Hide" : "Show")
-                    .font(.footnote)
                     .foregroundColor(.customGreen)
             }
+            .font(.footnote)
             .frame(maxWidth: .infinity)
         }
         .listRowSeparator(.hidden)
