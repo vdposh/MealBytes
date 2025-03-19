@@ -18,9 +18,12 @@ struct NutrientSummaryRow: View {
             let nutrients = mainViewModel.formattedNutrients(
                 source: .details(fats: fats, carbs: carbs, proteins: proteins)
             )
-            NutrientLabel(label: "F", formattedValue: nutrients.fat)
-            NutrientLabel(label: "C", formattedValue: nutrients.carb)
-            NutrientLabel(label: "P", formattedValue: nutrients.protein)
+            ForEach(["F", "C", "P"], id: \.self) { label in
+                NutrientLabel(
+                    label: label,
+                    formattedValue: nutrients[label] ?? ""
+                )
+            }
             Spacer() //временно остается, справа будет еще одно значение
         }
     }

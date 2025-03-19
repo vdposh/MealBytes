@@ -33,10 +33,13 @@ struct CaloriesSection: View {
                     let nutrients = mainViewModel.formattedNutrients(
                         source: .summaries(summaries)
                     )
-                    NutrientLabel(label: "F", formattedValue: nutrients.fat)
-                    NutrientLabel(label: "C", formattedValue: nutrients.carb)
-                    NutrientLabel(label: "P", formattedValue: nutrients.protein)
-                    Spacer() //временно остается, справа будет еще одно значение
+                    ForEach(["Fat", "Carbs", "Protein"], id: \.self) { key in
+                        NutrientLabel(
+                            label: String(key.prefix(1)),
+                            formattedValue: nutrients[key] ?? ""
+                        )
+                    }
+                    Spacer() // временно остается, справа будет еще одно значение
                 }
             }
             .padding(.vertical, 5)

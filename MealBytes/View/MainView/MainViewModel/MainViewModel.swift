@@ -88,24 +88,24 @@ final class MainViewModel: ObservableObject {
     // MARK: - Formatting nutrients
     func formattedNutrients(
         source: NutrientSource
-    ) -> (fat: String, carb: String, protein: String) {
+    ) -> [String: String] {
         func format(_ value: Double?) -> String {
             formatter.formattedValue(value ?? 0.0, unit: .empty)
         }
         
         switch source {
         case .summaries(let summaries):
-            return (
-                fat: format(summaries[.fat]),
-                carb: format(summaries[.carbohydrates]),
-                protein: format(summaries[.protein])
-            )
+            return [
+                "Fat": format(summaries[.fat]),
+                "Carbs": format(summaries[.carbohydrates]),
+                "Protein": format(summaries[.protein])
+            ]
         case .details(let fats, let carbs, let proteins):
-            return (
-                fat: format(fats),
-                carb: format(carbs),
-                protein: format(proteins)
-            )
+            return [
+                "F": format(fats),
+                "C": format(carbs),
+                "P": format(proteins)
+            ]
         }
     }
     
