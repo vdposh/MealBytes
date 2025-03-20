@@ -149,7 +149,7 @@ final class MainViewModel: ObservableObject {
         case true:
             date.formatted(.dateTime.month(.wide).day().weekday(.wide))
         case false:
-            date.formatted(.dateTime.month(.wide).year())
+            date.formatted(.dateTime.month(.wide).day().weekday(.wide).year())
         }
     }
     

@@ -24,7 +24,6 @@ struct DatePickerView: View {
                 }) {
                     Image(systemName: "chevron.left")
                 }
-                .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing)
                 
@@ -33,8 +32,8 @@ struct DatePickerView: View {
                 }) {
                     Image(systemName: "chevron.right")
                 }
-                .font(.headline)
             }
+            .font(.headline)
             .padding(.bottom)
             .padding(.horizontal)
             
