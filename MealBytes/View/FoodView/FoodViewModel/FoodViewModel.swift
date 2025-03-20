@@ -142,16 +142,10 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Button States
-    func isAddButtonEnabled() -> Bool {
-        let amountValue = Double(amount.replacingOccurrences(of: ",",
-                                                             with: ".")) ?? 0
-        return amountValue > 0
-    }
-    
     var canAddFood: Bool {
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
-        return amountValue > 0 && !isError
+        return amountValue > 0
     }
     
     // MARK: - Adds a food item to MainView

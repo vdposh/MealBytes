@@ -45,18 +45,27 @@ struct FoodView: View {
     
     var body: some View {
         ZStack {
-            List {
-                if !foodViewModel.isLoading {
-                    servingSizeSection
-                    nutrientActionSection
-                    nutrientDetailSection
+            if let error = foodViewModel.errorMessage {
+                error.contentUnavailableView {
+                    Task {
+                        foodViewModel.errorMessage = nil
+                        await foodViewModel.fetchFoodDetails()
+                    }
                 }
-            }
-            .listSectionSpacing(15)
-            .scrollDismissesKeyboard(.never)
-            
-            if foodViewModel.isLoading {
-                LoadingView()
+            } else {
+                List {
+                    if !foodViewModel.isLoading {
+                        servingSizeSection
+                        nutrientActionSection
+                        nutrientDetailSection
+                    }
+                }
+                .listSectionSpacing(15)
+                .scrollDismissesKeyboard(.never)
+                
+                if foodViewModel.isLoading {
+                    LoadingView()
+                }
             }
         }
         .navigationBarTitle("Add to Diary", displayMode: .inline)
@@ -89,13 +98,6 @@ struct FoodView: View {
         .task {
             await foodViewModel.fetchFoodDetails()
         }
-        .alert(item: $foodViewModel.errorMessage) { error in
-            Alert(
-                title: Text("Error"),
-                message: Text(error.errorDescription),
-                dismissButton: .default(Text("OK"))
-            )
-        }
     }
     
     private var servingSizeSection: some View {
@@ -109,7 +111,6 @@ struct FoodView: View {
                 ServingTextFieldView(title: "Size",
                                      text: $foodViewModel.amount)
                 .focused($isTextFieldFocused)
-                .disabled(foodViewModel.isError)
                 ServingButtonView(
                     title: "Serving",
                     description: foodViewModel.servingDescription,
@@ -117,7 +118,6 @@ struct FoodView: View {
                 ) {
                     foodViewModel.showActionSheet.toggle()
                 }
-                .disabled(foodViewModel.isError)
             }
             .padding(.bottom, 10)
         }
@@ -151,8 +151,7 @@ struct FoodView: View {
                             action: {
                                 foodViewModel.toggleBookmark()
                             },
-                            isFilled: foodViewModel.isBookmarkFilled,
-                            isEnabled: !foodViewModel.isError
+                            isFilled: foodViewModel.isBookmarkFilled
                         )
                     case false:
                         ActionButtonView(
@@ -161,8 +160,7 @@ struct FoodView: View {
                                 foodViewModel.deleteMealItem()
                                 dismiss()
                             },
-                            backgroundColor: .customRed,
-                            isEnabled: true
+                            backgroundColor: .customRed
                         )
                         
                         ActionButtonView(

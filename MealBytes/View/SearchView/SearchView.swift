@@ -32,6 +32,12 @@ struct SearchView: View {
                     LoadingView()
                 } else if searchViewModel.errorMessage != nil {
                     ContentUnavailableView.search(text: searchViewModel.query)
+                } else if searchViewModel.foods.isEmpty {
+                    ContentUnavailableView(
+                        "No bookmarks yet",
+                        systemImage: "bookmark",
+                        description: Text("Add your favorite dishes to bookmarks, and they'll appear here.")
+                    )
                 } else {
                     List {
                         ForEach(searchViewModel.foods, id: \.searchFoodId) {

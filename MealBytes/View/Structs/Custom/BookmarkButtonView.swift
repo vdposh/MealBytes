@@ -15,8 +15,6 @@ struct BookmarkButtonView: View {
     var systemNameEmpty: String = "bookmark"
     var width: CGFloat = 52
     var height: CGFloat = 53
-    var cornerRadius: CGFloat? = nil
-    var lineWidth: CGFloat? = nil
     
     var body: some View {
         Button(action: action) {
@@ -25,14 +23,6 @@ struct BookmarkButtonView: View {
                 .imageScale(.large)
                 .scaleEffect(x: 1.3, y: 1.0)
                 .frame(width: width, height: height)
-                .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius ?? 0)
-                        .stroke(isEnabled ? .customGreen :
-                                .customGreen.opacity(0.5),
-                                lineWidth: lineWidth ?? 0)
-                        .padding(1)
-                )
-                .opacity(isEnabled ? 1.0 : 0.5)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
