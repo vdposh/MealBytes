@@ -15,6 +15,7 @@ struct MealItem: Identifiable {
     let nutrients: [NutrientType: Double]
     let measurementDescription: String
     let amount: Double
+    let date: Date
     
     init(id: UUID = UUID(),
          foodId: Int,
@@ -22,7 +23,8 @@ struct MealItem: Identifiable {
          portionUnit: String,
          nutrients: [NutrientType: Double],
          measurementDescription: String,
-         amount: Double) {
+         amount: Double,
+         date: Date = Date()) {
         self.id = id
         self.foodId = foodId
         self.foodName = foodName
@@ -30,5 +32,6 @@ struct MealItem: Identifiable {
         self.nutrients = nutrients
         self.measurementDescription = measurementDescription
         self.amount = amount
+        self.date = date
     }
 }

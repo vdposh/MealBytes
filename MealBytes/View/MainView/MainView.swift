@@ -26,7 +26,7 @@ struct MainView: View {
             }
             
             List {
-                dateCarouselSection
+                dateSection
                 caloriesSection
                 mealSections
                 detailedInformationSection
@@ -69,7 +69,7 @@ struct MainView: View {
         }
     }
     
-    private var dateCarouselSection: some View {
+    private var dateSection: some View {
         Section {
             HStack {
                 let daysBeforeAndAfter = 3
@@ -101,21 +101,29 @@ struct MainView: View {
         )
     }
     
+    private var caloriesSection: some View {
+        CaloriesSection(
+            summaries: mainViewModel.summariesForCaloriesSection(),
+            mainViewModel: mainViewModel
+        )
+    }
+    
     private var mealSections: some View {
         ForEach(MealType.allCases) { mealType in
+            let filteredItems = mainViewModel.mealItems[mealType, default: []]
+                .filter {
+                    mainViewModel.calendar.isDate(
+                        $0.date,
+                        inSameDayAs: mainViewModel.date
+                    )
+                }
+            
             MealSectionView(
                 mealType: mealType,
-                mealItems: mainViewModel.mealItems[mealType, default: []],
+                mealItems: filteredItems,
                 mainViewModel: mainViewModel
             )
         }
-    }
-    
-    private var caloriesSection: some View {
-        CaloriesSection(
-            summaries: mainViewModel.nutrientSummaries,
-            mainViewModel: mainViewModel
-        )
     }
     
     private var detailedInformationSection: some View {

@@ -154,31 +154,51 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Recalculate Nutrients
-    func recalculateNutrients() {
-        nutrientSummaries = NutrientType.allCases.reduce(
-            into: [NutrientType: Double]()) { result, nutrient in
-                result[nutrient] = mealItems.values.flatMap { $0 }
-                    .reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
+    func recalculateNutrients(for date: Date) {
+        nutrientSummaries = NutrientType.allCases
+            .reduce(into: [NutrientType: Double]()) {
+                result, nutrient in
+                let relevantItems = mealItems.values.flatMap { $0 }
+                    .filter { calendar.isDate($0.date, inSameDayAs: date) }
+                
+                result[nutrient] = relevantItems.reduce(0) {
+                    $0 + ($1.nutrients[nutrient] ?? 0.0) }
             }
     }
     
+    func summariesForCaloriesSection() -> [NutrientType: Double] {
+        let relevantItems = mealItems.values.flatMap { $0 }
+            .filter { calendar.isDate($0.date, inSameDayAs: date) }
+        
+        return NutrientType.allCases.reduce(into: [NutrientType: Double]()) {
+            result, nutrient in
+            result[nutrient] = relevantItems.reduce(0) {
+                $0 + ($1.nutrients[nutrient] ?? 0.0) }
+        }
+    }
+    
     // MARK: - Add Food Item
-    func addFoodItem(_ item: MealItem, to mealType: MealType) {
-        mealItems[mealType]?.append(item)
+    func addFoodItem(_ item: MealItem, to mealType: MealType, for date: Date) {
+        mealItems[mealType, default: []].append(item)
         expandedSections[mealType] = true
-        recalculateNutrients()
+        recalculateNutrients(for: date)
     }
     
     // MARK: - Update Meal Item
-    func updateMealItem(_ updatedItem: MealItem, for mealType: MealType) {
+    func updateMealItem(_ updatedItem: MealItem,
+                        for mealType: MealType,
+                        on date: Date) {
         guard var items = mealItems[mealType] else { return }
         
-        if let index = items.firstIndex(where: { $0.id == updatedItem.id }) {
+        if let index = items.firstIndex(where: {
+            $0.id == updatedItem.id &&
+            calendar.isDate($0.date, inSameDayAs: date)
+        }) {
             items[index] = updatedItem
         }
         
         mealItems[mealType] = items
-        recalculateNutrients()
+        recalculateNutrients(for: date)
     }
     
     // MARK: - Delete Meal Item
@@ -186,7 +206,7 @@ final class MainViewModel: ObservableObject {
         guard var items = mealItems[mealType] else { return }
         items.removeAll { $0.id == id }
         mealItems[mealType] = items
-        recalculateNutrients()
+        recalculateNutrients(for: date)
         if mealItems[mealType]?.isEmpty == true {
             expandedSections[mealType] = false
         }

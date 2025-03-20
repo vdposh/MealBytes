@@ -149,12 +149,11 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Adds a food item to MainView
-    func addFoodItem(in section: MealType) {
+    func addFoodItem(in section: MealType, for date: Date) {
         let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
             result, detail in
             result[detail.type] = detail.value
         }
-        
         let newItem = MealItem(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
@@ -164,14 +163,14 @@ final class FoodViewModel: ObservableObject {
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
             amount: Double(amount.replacingOccurrences(of: ",",
-                                                       with: ".")) ?? 0
+                                                       with: ".")) ?? 0,
+            date: date
         )
-        
-        mainViewModel.addFoodItem(newItem, to: section)
+        mainViewModel.addFoodItem(newItem, to: section, for: date)
     }
     
-    // MARK: - Save Logic
-    func saveMealItem() {
+    // MARK: - Resave food
+    func saveMealItem(for date: Date) {
         guard let selectedServing = selectedServing else { return }
         
         let updatedMealItem = MealItem(
@@ -185,10 +184,11 @@ final class FoodViewModel: ObservableObject {
             },
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.replacingOccurrences(of: ",",
-                                                       with: ".")) ?? 0
+                                                       with: ".")) ?? 0,
+            date: date
         )
         
-        mainViewModel.updateMealItem(updatedMealItem, for: mealType)
+        mainViewModel.updateMealItem(updatedMealItem, for: mealType, on: date)
     }
     
     // MARK: - Delete Logic
