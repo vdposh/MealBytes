@@ -124,12 +124,15 @@ struct DatePickerView: View {
         else { return [] }
         
         let daysInMonth = range.compactMap {
-            mainViewModel.calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
+            mainViewModel.calendar.date(
+                byAdding: .day, value: $0 - 1, to: startOfMonth)
         }
         
-        let firstWeekday = mainViewModel.calendar.component(.weekday, from: startOfMonth) - 1
+        let firstWeekday = max(mainViewModel.calendar.component(
+            .weekday, from: startOfMonth) - 2, 0)
         let previousMonthDates = (0..<firstWeekday).reversed().compactMap {
-            mainViewModel.calendar.date(byAdding: .day, value: -$0 - 1, to: startOfMonth)
+            mainViewModel.calendar.date(
+                byAdding: .day, value: -$0 - 1, to: startOfMonth)
         }
         
         let remainingDays = max(0, (7 - (daysInMonth.count + firstWeekday) % 7))

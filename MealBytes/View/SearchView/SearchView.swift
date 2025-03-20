@@ -33,11 +33,7 @@ struct SearchView: View {
                 } else if searchViewModel.errorMessage != nil {
                     ContentUnavailableView.search(text: searchViewModel.query)
                 } else if searchViewModel.foods.isEmpty {
-                    ContentUnavailableView(
-                        "No bookmarks yet",
-                        systemImage: "bookmark",
-                        description: Text("Add your favorite dishes to bookmarks, and they'll appear here.")
-                    )
+                    noBookmarksView()
                 } else {
                     List {
                         ForEach(searchViewModel.foods, id: \.searchFoodId) {
@@ -92,6 +88,19 @@ struct SearchView: View {
         }
         .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
+    }
+    
+    private func noBookmarksView() -> some View {
+        ContentUnavailableView {
+            Label {
+                Text("No bookmarks yet")
+            } icon: {
+                Image(systemName: "bookmark")
+                    .foregroundColor(.customGreen.opacity(0.6))
+            }
+        } description: {
+            Text("Add your favorite dishes to bookmarks, and they'll appear here.")
+        }
     }
     
     @ViewBuilder
