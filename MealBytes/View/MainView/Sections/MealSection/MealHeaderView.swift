@@ -65,7 +65,7 @@ struct MealHeaderView: View {
             }
             
             if mainViewModel.expandedSections[mealType] == true {
-                ForEach(foodItems) { item in
+                ForEach(foodItems, id: \.id) { item in
                     FoodItemRow(
                         mealItem: item,
                         mainViewModel: mainViewModel,

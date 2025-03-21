@@ -16,7 +16,6 @@ struct MainView: View {
             if isExpanded {
                 VStack {
                     datePickerView
-                        .background(Color(.systemBackground))
                 }
                 .zIndex(2)
                 Color.primary
@@ -42,7 +41,7 @@ struct MainView: View {
                 }) {
                     HStack(spacing: 4) {
                         Text(mainViewModel.formattedYearDisplay())
-                            .font(.headline)
+                            .fontWeight(.medium)
                         Image(systemName: {
                             switch isExpanded {
                             case true:
@@ -67,6 +66,7 @@ struct MainView: View {
                            isPresented: $isExpanded,
                            mainViewModel: mainViewModel)
         }
+        .background(Color(.systemBackground))
     }
     
     private var dateSection: some View {
@@ -109,7 +109,7 @@ struct MainView: View {
     }
     
     private var mealSections: some View {
-        ForEach(MealType.allCases) { mealType in
+        ForEach(MealType.allCases, id: \.self) { mealType in
             let filteredItems = mainViewModel.mealItems[mealType, default: []]
                 .filter {
                     mainViewModel.calendar.isDate(

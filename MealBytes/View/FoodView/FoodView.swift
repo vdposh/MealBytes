@@ -46,7 +46,7 @@ struct FoodView: View {
     var body: some View {
         ZStack {
             if let error = foodViewModel.errorMessage {
-                error.contentUnavailableView {
+                error.contentUnavailableView(query: "") {
                     Task {
                         foodViewModel.errorMessage = nil
                         await foodViewModel.fetchFoodDetails()
@@ -127,7 +127,8 @@ struct FoodView: View {
         Section {
             VStack {
                 HStack {
-                    ForEach(foodViewModel.compactNutrientDetails) { nutrient in
+                    ForEach(foodViewModel.compactNutrientDetails, id: \.id) {
+                        nutrient in
                         CompactNutrientDetailRow(nutrient: nutrient)
                     }
                 }
@@ -213,9 +214,9 @@ struct FoodView: View {
             ),
             mainViewModel: MainViewModel(),
             mealType: .breakfast,
-            amount: "",
+            amount: "1",
             measurementDescription: "",
-            showAddButton: true,
+            showAddButton: false,
             showSaveRemoveButton: true,
             showCloseButton: true
         )

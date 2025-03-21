@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F22D8C7611006FCC12 /* FirebaseCore */; };
+		FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F42D8C7611006FCC12 /* FirebaseFirestore */; };
+		FBA176F72D8C7611006FCC12 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F62D8C7611006FCC12 /* FirebaseStorage */; };
 		FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = FBD6B6C32D79AFC000AE0FDC /* Moya */; };
 /* End PBXBuildFile section */
 
@@ -27,7 +30,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */,
+				FBA176F72D8C7611006FCC12 /* FirebaseStorage in Frameworks */,
 				FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */,
+				FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +77,9 @@
 			name = MealBytes;
 			packageProductDependencies = (
 				FBD6B6C32D79AFC000AE0FDC /* Moya */,
+				FBA176F22D8C7611006FCC12 /* FirebaseCore */,
+				FBA176F42D8C7611006FCC12 /* FirebaseFirestore */,
+				FBA176F62D8C7611006FCC12 /* FirebaseStorage */,
 			);
 			productName = MealBytes;
 			productReference = FBD6B6862D79AF0700AE0FDC /* MealBytes.app */;
@@ -102,6 +111,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */,
+				FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FBD6B6872D79AF0700AE0FDC /* Products */;
@@ -263,6 +273,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MealBytes/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MealBytes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -291,6 +302,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MealBytes/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MealBytes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -333,6 +345,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.10.0;
+			};
+		};
 		FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Moya/Moya";
@@ -344,6 +364,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		FBA176F22D8C7611006FCC12 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		FBA176F42D8C7611006FCC12 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		FBA176F62D8C7611006FCC12 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		FBD6B6C32D79AFC000AE0FDC /* Moya */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */;

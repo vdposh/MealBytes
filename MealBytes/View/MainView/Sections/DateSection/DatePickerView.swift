@@ -33,7 +33,7 @@ struct DatePickerView: View {
                     Image(systemName: "chevron.right")
                 }
             }
-            .font(.headline)
+            .fontWeight(.medium)
             .padding(.bottom)
             .padding(.horizontal)
             

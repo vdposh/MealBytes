@@ -30,8 +30,10 @@ struct SearchView: View {
             VStack {
                 if searchViewModel.isLoading {
                     LoadingView()
-                } else if searchViewModel.errorMessage != nil {
-                    ContentUnavailableView.search(text: searchViewModel.query)
+                } else if let errorMessage = searchViewModel.errorMessage {
+                    errorMessage.contentUnavailableView(query: "") {
+                        searchViewModel.debounceSearch(searchViewModel.query)
+                    }
                 } else if searchViewModel.foods.isEmpty {
                     noBookmarksView()
                 } else {
@@ -76,7 +78,7 @@ struct SearchView: View {
                     .listStyle(.plain)
                 }
             }
-            .navigationBarTitle("Add to Diary", displayMode: .inline)
+            .navigationBarTitle("Search", displayMode: .large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") {
@@ -84,7 +86,11 @@ struct SearchView: View {
                     }
                 }
             }
-            .searchable(text: $searchViewModel.query)
+            .searchable(
+                text: $searchViewModel.query,
+                prompt: "Enter a food name"
+            )
+            
         }
         .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
@@ -112,13 +118,19 @@ struct SearchView: View {
             }) {
                 switch direction {
                 case .next:
-                    Text("> Next Page")
-                        .foregroundColor(.customGreen)
+                    HStack {
+                        Image(systemName: "chevron.right")
+                        Text("Next Page")
+                    }
                 case .previous:
-                    Text("< Previous Page")
-                        .foregroundColor(.customGreen)
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("Previous Page")
+                    }
                 }
             }
+            .foregroundColor(.customGreen)
+            .fontWeight(.medium)
         } else {
             EmptyView()
         }

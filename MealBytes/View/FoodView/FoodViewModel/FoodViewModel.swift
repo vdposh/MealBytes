@@ -268,9 +268,9 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
             ),
             mainViewModel: MainViewModel(),
             mealType: .breakfast,
-            amount: "",
+            amount: "1",
             measurementDescription: "",
-            showAddButton: true,
+            showAddButton: false,
             showSaveRemoveButton: true,
             showCloseButton: true
         )
