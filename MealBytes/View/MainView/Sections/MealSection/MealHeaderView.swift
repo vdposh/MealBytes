@@ -59,7 +59,6 @@ struct MealHeaderView: View {
                 SearchView(
                     isPresented: $isPresentingSheet,
                     searchViewModel: mainViewModel.searchViewModel,
-                    mainViewModel: mainViewModel,
                     mealType: mealType
                 )
             }

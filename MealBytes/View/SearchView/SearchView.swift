@@ -13,15 +13,12 @@ struct SearchView: View {
     private let mealType: MealType
     
     @ObservedObject private var searchViewModel: SearchViewModel
-    private var mainViewModel: MainViewModel
     
     init(isPresented: Binding<Bool>,
          searchViewModel: SearchViewModel,
-         mainViewModel: MainViewModel,
          mealType: MealType) {
         self._isPresented = isPresented
         self.searchViewModel = searchViewModel
-        self.mainViewModel = mainViewModel
         self.mealType = mealType
     }
     
@@ -45,7 +42,8 @@ struct SearchView: View {
                                             isDismissed: $isPresented,
                                             food: food,
                                             searchViewModel: searchViewModel,
-                                            mainViewModel: mainViewModel,
+                                            mainViewModel: searchViewModel
+                                                .mainViewModel,
                                             mealType: mealType,
                                             amount: "",
                                             measurementDescription: "",
@@ -151,8 +149,7 @@ struct SearchView: View {
     NavigationStack {
         SearchView(
             isPresented: .constant(true),
-            searchViewModel: SearchViewModel(),
-            mainViewModel: MainViewModel(),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
             mealType: .breakfast
         )
     }

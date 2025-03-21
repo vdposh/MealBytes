@@ -212,7 +212,8 @@ struct FoodView: View {
                 searchFoodDescription: ""
             ),
             searchViewModel: SearchViewModel(
-                networkManager: NetworkManager()
+                networkManager: NetworkManager(),
+                mainViewModel: MainViewModel()
             ),
             mainViewModel: MainViewModel(),
             mealType: .breakfast,

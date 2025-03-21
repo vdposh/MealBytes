@@ -29,9 +29,12 @@ final class SearchViewModel: ObservableObject {
     
     private let networkManager: NetworkManagerProtocol
     private var searchCancellable: AnyCancellable?
+    var mainViewModel: MainViewModel
     
-    init(networkManager: NetworkManagerProtocol = NetworkManager()) {
+    init(networkManager: NetworkManagerProtocol = NetworkManager(),
+         mainViewModel: MainViewModel) {
         self.networkManager = networkManager
+        self.mainViewModel = mainViewModel
     }
     
     deinit {
@@ -136,8 +139,7 @@ final class SearchViewModel: ObservableObject {
     NavigationStack {
         SearchView(
             isPresented: .constant(true),
-            searchViewModel: SearchViewModel(),
-            mainViewModel: MainViewModel(),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
             mealType: .breakfast
         )
     }

@@ -17,19 +17,18 @@ final class MainViewModel: ObservableObject {
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var isExpanded: Bool = false
     let calendar = Calendar.current
-    let searchViewModel: SearchViewModel
+    lazy var searchViewModel: SearchViewModel = SearchViewModel(
+        mainViewModel: self)
     let firestoreService: FirestoreManagerProtocol
     let formatter = Formatter()
     
-    init(searchViewModel: SearchViewModel = SearchViewModel(),
-         firestoreService: FirestoreManagerProtocol = FirestoreManager()) {
+    init(firestoreService: FirestoreManagerProtocol = FirestoreManager()) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
         var summaries = [NutrientType: Double]()
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         self.nutrientSummaries = summaries
-        self.searchViewModel = searchViewModel
         self.firestoreService = firestoreService
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
