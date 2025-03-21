@@ -34,48 +34,55 @@ struct SearchView: View {
                     errorMessage.contentUnavailableView(query: "") {
                         searchViewModel.debounceSearch(searchViewModel.query)
                     }
-                } else if searchViewModel.foods.isEmpty {
-                    noBookmarksView()
                 } else {
                     List {
-                        ForEach(searchViewModel.foods, id: \.searchFoodId) {
-                            food in
-                            HStack {
-                                NavigationLink(
-                                    destination: FoodView(
-                                        isDismissed: $isPresented,
-                                        food: food,
-                                        searchViewModel: searchViewModel,
-                                        mainViewModel: mainViewModel,
-                                        mealType: mealType,
-                                        amount: "",
-                                        measurementDescription: "",
-                                        showAddButton: true,
-                                        showSaveRemoveButton: false,
-                                        showCloseButton: true
-                                    )
-                                ) {
-                                    FoodDetailView(
-                                        food: food,
-                                        searchViewModel: searchViewModel
+                        if !searchViewModel.foods.isEmpty {
+                            ForEach(searchViewModel.foods, id: \.searchFoodId) {
+                                food in
+                                HStack {
+                                    NavigationLink(
+                                        destination: FoodView(
+                                            isDismissed: $isPresented,
+                                            food: food,
+                                            searchViewModel: searchViewModel,
+                                            mainViewModel: mainViewModel,
+                                            mealType: mealType,
+                                            amount: "",
+                                            measurementDescription: "",
+                                            showAddButton: true,
+                                            showSaveRemoveButton: false,
+                                            showCloseButton: true
+                                        )
+                                    ) {
+                                        FoodDetailView(
+                                            food: food,
+                                            searchViewModel: searchViewModel
+                                        )
+                                    }
+                                    BookmarkButtonView(
+                                        action: {
+                                            searchViewModel
+                                                .toggleBookmark(for: food)
+                                        },
+                                        isFilled: searchViewModel
+                                            .isBookmarked(food)
                                     )
                                 }
-                                
-                                BookmarkButtonView(
-                                    action: {
-                                        searchViewModel
-                                            .toggleBookmark(for: food)
-                                    },
-                                    isFilled: searchViewModel
-                                        .isBookmarked(food)
-                                )
                             }
+                            pageButton(direction: .next)
+                            pageButton(direction: .previous)
                         }
-                        
-                        pageButton(direction: .next)
-                        pageButton(direction: .previous)
                     }
                     .listStyle(.plain)
+                    .background(
+                        Group {
+                            if searchViewModel.foods.isEmpty {
+                                noBookmarksView()
+                            } else {
+                                EmptyView()
+                            }
+                        }
+                    )
                 }
             }
             .navigationBarTitle("Search", displayMode: .large)
