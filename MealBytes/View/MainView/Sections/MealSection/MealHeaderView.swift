@@ -74,7 +74,7 @@ struct MealHeaderView: View {
                     )
                     .swipeActions {
                         Button(role: .destructive) {
-                            mainViewModel.deleteMealItem(with: item.id,
+                            mainViewModel.deleteMealItemMainView(with: item.id,
                                                          for: mealType)
                         } label: {
                             Image(systemName: "trash")

@@ -25,7 +25,7 @@ final class FoodViewModel: ObservableObject {
         }
     }
     private let networkManager: NetworkManagerProtocol
-    private let firestoreService: FirestoreServiceProtocol
+    private let firestoreService: FirestoreManagerProtocol
     private let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     private let initialMeasurementDescription: String
@@ -39,7 +39,7 @@ final class FoodViewModel: ObservableObject {
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager(),
-         firestoreService: FirestoreServiceProtocol = FirestoreService(),
+         firestoreService: FirestoreManagerProtocol = FirestoreManager(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,
@@ -94,6 +94,57 @@ final class FoodViewModel: ObservableObject {
             isError = true
         }
         isLoading = false
+    }
+    
+    // MARK: - Add a food item
+    func addMealItemFoodView(in section: MealType, for date: Date) {
+        let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
+            result, detail in
+            result[detail.type] = detail.value
+        }
+        let newItem = MealItem(
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            portionUnit: nutrientDetails.first(where: {
+                $0.type == .servingSize })?.serving.metricServingUnit ?? "",
+            nutrients: nutrients,
+            measurementDescription:
+                selectedServing?.measurementDescription ?? "",
+            amount: Double(amount.replacingOccurrences(of: ",",
+                                                       with: ".")) ?? 0,
+            date: date, mealType: mealType
+        )
+        mainViewModel.addMealItemMainView(newItem, to: section, for: date)
+        Task {
+            try? await firestoreService.addMealItemFirebase(newItem)
+        }
+    }
+    
+    // MARK: - Resave food
+    func updateMealItemFoodView(for date: Date) {
+        guard let selectedServing = selectedServing else { return }
+        
+        let updatedMealItem = MealItem(
+            id: originalMealItemId,
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            portionUnit: selectedServing.metricServingUnit,
+            nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
+                result, detail in
+                result[detail.type] = detail.value
+            },
+            measurementDescription: selectedServing.measurementDescription,
+            amount: Double(amount.replacingOccurrences(of: ",",
+                                                       with: ".")) ?? 0,
+            date: date, mealType: mealType
+        )
+        
+        mainViewModel.updateMealItemMainView(updatedMealItem, for: mealType, on: date)
+    }
+    
+    // MARK: - Delete food
+    func deleteMealItemFoodView() {
+        mainViewModel.deleteMealItemMainView(with: originalMealItemId, for: mealType)
     }
     
     // MARK: - Bookmark Management
@@ -151,55 +202,6 @@ final class FoodViewModel: ObservableObject {
         let amountValue = Double(amount.replacingOccurrences(of: ",",
                                                              with: ".")) ?? 0
         return amountValue > 0
-    }
-    
-    // MARK: - Adds a food item to MainView
-    func addFoodItem(in section: MealType, for date: Date) {
-        let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
-            result, detail in
-            result[detail.type] = detail.value
-        }
-        let newItem = MealItem(
-            foodId: food.searchFoodId,
-            foodName: food.searchFoodName,
-            portionUnit: nutrientDetails.first(where: {
-                $0.type == .servingSize })?.serving.metricServingUnit ?? "",
-            nutrients: nutrients,
-            measurementDescription:
-                selectedServing?.measurementDescription ?? "",
-            amount: Double(amount.replacingOccurrences(of: ",",
-                                                       with: ".")) ?? 0,
-            date: date, mealType: mealType
-        )
-        mainViewModel.addFoodItem(newItem, to: section, for: date)
-        firestoreService.saveMealItem(newItem) { _ in }
-    }
-    
-    // MARK: - Resave food
-    func saveMealItem(for date: Date) {
-        guard let selectedServing = selectedServing else { return }
-        
-        let updatedMealItem = MealItem(
-            id: originalMealItemId,
-            foodId: food.searchFoodId,
-            foodName: food.searchFoodName,
-            portionUnit: selectedServing.metricServingUnit,
-            nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
-                result, detail in
-                result[detail.type] = detail.value
-            },
-            measurementDescription: selectedServing.measurementDescription,
-            amount: Double(amount.replacingOccurrences(of: ",",
-                                                       with: ".")) ?? 0,
-            date: date, mealType: mealType
-        )
-        
-        mainViewModel.updateMealItem(updatedMealItem, for: mealType, on: date)
-    }
-    
-    // MARK: - Delete Logic
-    func deleteMealItem() {
-        mainViewModel.deleteMealItem(with: originalMealItemId, for: mealType)
     }
     
     // MARK: - Nutrient Calculation

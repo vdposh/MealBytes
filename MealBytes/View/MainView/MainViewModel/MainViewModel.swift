@@ -18,11 +18,11 @@ final class MainViewModel: ObservableObject {
     @Published var isExpanded: Bool = false
     let calendar = Calendar.current
     let searchViewModel: SearchViewModel
-    let firestoreService: FirestoreServiceProtocol
+    let firestoreService: FirestoreManagerProtocol
     let formatter = Formatter()
     
     init(searchViewModel: SearchViewModel = SearchViewModel(),
-         firestoreService: FirestoreServiceProtocol = FirestoreService()) {
+         firestoreService: FirestoreManagerProtocol = FirestoreManager()) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
@@ -36,11 +36,51 @@ final class MainViewModel: ObservableObject {
         self.expandedSections = sections
     }
     
-    // MARK: - Calculate Date Offset
-    func date(for offset: Int) -> Date {
-        Calendar.current.date(byAdding: .day,
-                              value: offset,
-                              to: Date()) ?? Date()
+    // MARK: - Load Meal Item
+    func loadMealItemsMainView() async {
+        let mealItems = try? await firestoreService.loadMealItemsFirebase()
+        await MainActor.run {
+            self.mealItems = Dictionary(
+                grouping: mealItems ?? [],
+                by: { $0.mealType }
+            )
+            self.recalculateNutrients(for: self.date)
+        }
+    }
+    
+    // MARK: - Add Food Item
+    func addMealItemMainView(_ item: MealItem, to mealType: MealType, for date: Date) {
+        mealItems[mealType, default: []].append(item)
+        expandedSections[mealType] = true
+        recalculateNutrients(for: date)
+    }
+    
+    // MARK: - Update Meal Item
+    func updateMealItemMainView(_ updatedItem: MealItem,
+                        for mealType: MealType,
+                        on date: Date) {
+        guard var items = mealItems[mealType] else { return }
+        
+        if let index = items.firstIndex(where: {
+            $0.id == updatedItem.id &&
+            calendar.isDate($0.date, inSameDayAs: date)
+        }) {
+            items[index] = updatedItem
+        }
+        
+        mealItems[mealType] = items
+        recalculateNutrients(for: date)
+    }
+    
+    // MARK: - Delete Meal Item
+    func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
+        guard var items = mealItems[mealType] else { return }
+        items.removeAll { $0.id == id }
+        mealItems[mealType] = items
+        recalculateNutrients(for: date)
+        if mealItems[mealType]?.isEmpty == true {
+            expandedSections[mealType] = false
+        }
     }
     
     // MARK: - Filtered Nutrients
@@ -146,6 +186,13 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Calculate Date Offset
+    func date(for offset: Int) -> Date {
+        Calendar.current.date(byAdding: .day,
+                              value: offset,
+                              to: Date()) ?? Date()
+    }
+    
     // MARK: - Formatted year for Calendar
     func formattedYearDisplay() -> String {
         switch calendar.isDate(date,
@@ -179,41 +226,6 @@ final class MainViewModel: ObservableObject {
             result, nutrient in
             result[nutrient] = relevantItems.reduce(0) {
                 $0 + ($1.nutrients[nutrient] ?? 0.0) }
-        }
-    }
-    
-    // MARK: - Add Food Item
-    func addFoodItem(_ item: MealItem, to mealType: MealType, for date: Date) {
-        mealItems[mealType, default: []].append(item)
-        expandedSections[mealType] = true
-        recalculateNutrients(for: date)
-    }
-    
-    // MARK: - Update Meal Item
-    func updateMealItem(_ updatedItem: MealItem,
-                        for mealType: MealType,
-                        on date: Date) {
-        guard var items = mealItems[mealType] else { return }
-        
-        if let index = items.firstIndex(where: {
-            $0.id == updatedItem.id &&
-            calendar.isDate($0.date, inSameDayAs: date)
-        }) {
-            items[index] = updatedItem
-        }
-        
-        mealItems[mealType] = items
-        recalculateNutrients(for: date)
-    }
-    
-    // MARK: - Delete Meal Item
-    func deleteMealItem(with id: UUID, for mealType: MealType) {
-        guard var items = mealItems[mealType] else { return }
-        items.removeAll { $0.id == id }
-        mealItems[mealType] = items
-        recalculateNutrients(for: date)
-        if mealItems[mealType]?.isEmpty == true {
-            expandedSections[mealType] = false
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum MealType: String, CaseIterable, Identifiable {
+enum MealType: String, Codable, CaseIterable, Identifiable {
     case breakfast = "Breakfast"
     case lunch = "Lunch"
     case dinner = "Dinner"

@@ -140,7 +140,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
-                                foodViewModel.addFoodItem(
+                                foodViewModel.addMealItemFoodView(
                                     in: foodViewModel.mealType,
                                     for: foodViewModel.mainViewModel.date
                                 )
@@ -162,7 +162,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Remove",
                             action: {
-                                foodViewModel.deleteMealItem()
+                                foodViewModel.deleteMealItemFoodView()
                                 dismiss()
                             },
                             backgroundColor: .customRed
@@ -171,7 +171,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Save",
                             action: {
-                                foodViewModel.saveMealItem(
+                                foodViewModel.updateMealItemFoodView(
                                     for: foodViewModel.mainViewModel.date)
                                 dismiss()
                             },
