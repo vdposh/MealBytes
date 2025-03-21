@@ -89,7 +89,7 @@ struct FoodItemRow: View {
         FoodItemRow(
             mealItem: MealItem(
                 id: UUID(),
-                foodId: 123,
+                foodId: 724,
                 foodName: "Banana",
                 portionUnit: "g",
                 nutrients: [

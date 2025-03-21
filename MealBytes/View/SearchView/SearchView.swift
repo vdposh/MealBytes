@@ -65,7 +65,9 @@ struct SearchView: View {
                                                 .toggleBookmark(for: food)
                                         },
                                         isFilled: searchViewModel
-                                            .isBookmarked(food)
+                                            .isBookmarked(food),
+                                        width: 45,
+                                        height: 24
                                     )
                                 }
                             }
@@ -108,8 +110,10 @@ struct SearchView: View {
             Label {
                 Text("No bookmarks yet")
             } icon: {
-                Image(systemName: "bookmark")
-                    .foregroundColor(.customGreen.opacity(0.6))
+                Image("bookEmptyOpacity")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 50, height: 50)
             }
         } description: {
             Text("Add your favorite dishes to bookmarks, and they'll appear here.")
@@ -137,7 +141,6 @@ struct SearchView: View {
                 }
             }
             .foregroundColor(.customGreen)
-            .fontWeight(.medium)
         } else {
             EmptyView()
         }

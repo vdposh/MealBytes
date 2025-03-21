@@ -154,7 +154,9 @@ struct FoodView: View {
                             action: {
                                 foodViewModel.toggleBookmark()
                             },
-                            isFilled: foodViewModel.isBookmarkFilled
+                            isFilled: foodViewModel.isBookmarkFilled,
+                            width: 55,
+                            height: 30
                         )
                     case false:
                         ActionButtonView(
