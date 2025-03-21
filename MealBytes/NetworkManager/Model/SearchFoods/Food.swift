@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Food: Decodable {
+struct Food: Codable {
     let searchFoodId: Int
     let searchFoodName: String
     let searchFoodDescription: String

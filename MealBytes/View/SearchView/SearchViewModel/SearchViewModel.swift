@@ -22,18 +22,21 @@ final class SearchViewModel: ObservableObject {
             case true:
                 resetSearch()
             case false:
-                debounceSearch(query)
+                queueSearch(query)
             }
         }
     }
     
     private let networkManager: NetworkManagerProtocol
+    private let firestoreManager: FirestoreManagerProtocol
     private var searchCancellable: AnyCancellable?
-    var mainViewModel: MainViewModel
+    let mainViewModel: MainViewModel
     
     init(networkManager: NetworkManagerProtocol = NetworkManager(),
+         firestoreManager: FirestoreManagerProtocol = FirestoreManager(),
          mainViewModel: MainViewModel) {
         self.networkManager = networkManager
+        self.firestoreManager = firestoreManager
         self.mainViewModel = mainViewModel
     }
     
@@ -42,7 +45,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Search
-    func debounceSearch(_ query: String) {
+    func queueSearch(_ query: String) {
         searchCancellable?.cancel()
         searchCancellable = $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
@@ -82,15 +85,42 @@ final class SearchViewModel: ObservableObject {
             }
     }
     
+    // MARK: - Delete Meal Item
+    func loadBookmarksSearchView() {
+        Task {
+            do {
+                let bookmarkedIds = try await firestoreManager
+                    .loadBookmarksFirebase()
+                await MainActor.run {
+                    bookmarkedFoods = Set(bookmarkedIds)
+                }
+            }
+        }
+    }
+    
     // MARK: - Bookmark fill
     func toggleBookmarkSearchView(for food: Food) {
-        switch bookmarkedFoods.contains(food.searchFoodId) {
-        case true:
-            bookmarkedFoods.remove(food.searchFoodId)
-            favoriteFoods.removeAll { $0.searchFoodId == food.searchFoodId }
-        case false:
-            bookmarkedFoods.insert(food.searchFoodId)
-            favoriteFoods.append(food)
+        Task {
+            do {
+                switch bookmarkedFoods.contains(food.searchFoodId) {
+                case true:
+                    await MainActor.run {
+                        bookmarkedFoods.remove(food.searchFoodId)
+                        favoriteFoods.removeAll {
+                            $0.searchFoodId == food.searchFoodId
+                        }
+                    }
+                    try await firestoreManager
+                        .removeBookmarkFirebase(food: food)
+                case false:
+                    await MainActor.run {
+                        bookmarkedFoods.insert(food.searchFoodId)
+                        favoriteFoods.append(food)
+                    }
+                    try await firestoreManager
+                        .saveBookmarkFirebase(food: food)
+                }
+            }
         }
     }
     
@@ -123,7 +153,7 @@ final class SearchViewModel: ObservableObject {
                 currentPage -= 1
             }
         }
-        debounceSearch(query)
+        queueSearch(query)
     }
     
     // MARK: - Reset Search

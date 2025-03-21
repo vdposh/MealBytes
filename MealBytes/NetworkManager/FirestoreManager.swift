@@ -10,12 +10,13 @@ import FirebaseCore
 import FirebaseFirestore
 
 protocol FirestoreManagerProtocol {
-    func addMealItemFirebase(_ mealItem: MealItem) async throws
     func loadMealItemsFirebase() async throws -> [MealItem]
-    func deleteMealItemFirebase(_ mealItem: MealItem) async throws
+    func loadBookmarksFirebase() async throws -> [Int]
+    func addMealItemFirebase(_ mealItem: MealItem) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
-    func saveBookmark(foodId: Int) async throws
-    func removeBookmark(foodId: Int) async throws
+    func deleteMealItemFirebase(_ mealItem: MealItem) async throws
+    func saveBookmarkFirebase(food: Food) async throws
+    func removeBookmarkFirebase(food: Food) async throws
 }
 
 final class FirestoreManager: FirestoreManagerProtocol {
@@ -54,13 +55,26 @@ final class FirestoreManager: FirestoreManagerProtocol {
         try await documentReference.delete()
     }
     
-    func saveBookmark(foodId: Int) async throws {
-        let documentReference = firestore.collection("bookmarks").document("\(foodId)")
-        try await documentReference.setData(["timestamp": Timestamp()])
+    // MARK: - Load bookmarks
+    func loadBookmarksFirebase() async throws -> [Int] {
+        let snapshot = try await firestore.collection("bookmarks")
+            .getDocuments()
+        return snapshot.documents.compactMap { document in
+            Int(document.documentID)
+        }
     }
     
-    func removeBookmark(foodId: Int) async throws {
-        let documentReference = firestore.collection("bookmarks").document("\(foodId)")
+    // MARK: - Save bookmark
+    func saveBookmarkFirebase(food: Food) async throws {
+        let documentReference = firestore.collection("bookmarks")
+            .document("\(food.searchFoodId)")
+        try documentReference.setData(from: food)
+    }
+    
+    // MARK: - Remove bookmark
+    func removeBookmarkFirebase(food: Food) async throws {
+        let documentReference = firestore.collection("bookmarks")
+            .document("\(food.searchFoodId)")
         try await documentReference.delete()
     }
 }

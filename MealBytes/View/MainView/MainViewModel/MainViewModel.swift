@@ -103,6 +103,37 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Recalculate Nutrients
+    func recalculateNutrients(for date: Date) {
+        Task {
+            let relevantItems = mealItems.values
+                .flatMap { $0 }
+                .filter { calendar.isDate($0.date, inSameDayAs: date) }
+            
+            let newSummaries = NutrientType.allCases.reduce(
+                into: [NutrientType: Double]()) { result, nutrient in
+                    result[nutrient] = relevantItems.reduce(0) {
+                        $0 + ($1.nutrients[nutrient] ?? 0.0)
+                    }
+                }
+            
+            await MainActor.run {
+                nutrientSummaries = newSummaries
+            }
+        }
+    }
+    
+    func summariesForCaloriesSection() -> [NutrientType: Double] {
+        let relevantItems = mealItems.values.flatMap { $0 }
+            .filter { calendar.isDate($0.date, inSameDayAs: date) }
+        
+        return NutrientType.allCases.reduce(into: [NutrientType: Double]()) {
+            result, nutrient in
+            result[nutrient] = relevantItems.reduce(0) {
+                $0 + ($1.nutrients[nutrient] ?? 0.0) }
+        }
+    }
+    
     // MARK: - Filtered Nutrients
     var filteredNutrients: [DetailedNutrient] {
         let allNutrients = DetailedNutrientProvider()
@@ -222,37 +253,6 @@ final class MainViewModel: ObservableObject {
             date.formatted(.dateTime.month(.wide).day().weekday(.wide))
         case false:
             date.formatted(.dateTime.month(.wide).day().weekday(.wide).year())
-        }
-    }
-    
-    // MARK: - Recalculate Nutrients
-    func recalculateNutrients(for date: Date) {
-        Task {
-            let relevantItems = mealItems.values
-                .flatMap { $0 }
-                .filter { calendar.isDate($0.date, inSameDayAs: date) }
-            
-            let newSummaries = NutrientType.allCases.reduce(
-                into: [NutrientType: Double]()) { result, nutrient in
-                    result[nutrient] = relevantItems.reduce(0) {
-                        $0 + ($1.nutrients[nutrient] ?? 0.0)
-                    }
-                }
-            
-            await MainActor.run {
-                nutrientSummaries = newSummaries
-            }
-        }
-    }
-    
-    func summariesForCaloriesSection() -> [NutrientType: Double] {
-        let relevantItems = mealItems.values.flatMap { $0 }
-            .filter { calendar.isDate($0.date, inSameDayAs: date) }
-        
-        return NutrientType.allCases.reduce(into: [NutrientType: Double]()) {
-            result, nutrient in
-            result[nutrient] = relevantItems.reduce(0) {
-                $0 + ($1.nutrients[nutrient] ?? 0.0) }
         }
     }
 }

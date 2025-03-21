@@ -28,7 +28,7 @@ struct SearchView: View {
                     LoadingView()
                 } else if let errorMessage = searchViewModel.errorMessage {
                     errorMessage.contentUnavailableView(query: "") {
-                        searchViewModel.debounceSearch(searchViewModel.query)
+                        searchViewModel.queueSearch(searchViewModel.query)
                     }
                 } else {
                     List {

@@ -36,6 +36,7 @@ struct MainView: View {
         }
         .task {
             await mainViewModel.loadMealItemsMainView()
+            mainViewModel.searchViewModel.loadBookmarksSearchView()
         }
         .animation(.easeInOut, value: isExpanded)
         .navigationBarTitleDisplayMode(.inline)
