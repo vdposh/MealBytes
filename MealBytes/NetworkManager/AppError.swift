@@ -12,17 +12,17 @@ enum AppError: Error, Identifiable, LocalizedError {
         UUID()
     }
     
-    case networkError
-    case decodingError
-    case noResults
+    case network
+    case decoding
+    case results
     
     var errorDescription: String {
         switch self {
-        case .networkError:
+        case .network:
             "There was a problem connecting to the network. Please check your internet connection and try again."
-        case .decodingError:
+        case .decoding:
             "There was a problem decoding the data. Please ensure the data format is correct and try again."
-        case .noResults:
+        case .results:
             ""
         }
     }
@@ -32,7 +32,7 @@ enum AppError: Error, Identifiable, LocalizedError {
                                 -> Void) -> some View {
         ContentUnavailableView {
             switch self {
-            case .networkError:
+            case .network:
                 Label {
                     Text("Network Error")
                 } icon: {
@@ -40,7 +40,7 @@ enum AppError: Error, Identifiable, LocalizedError {
                         .foregroundColor(.customGreen.opacity(0.6))
                 }
                 .symbolEffect(.pulse)
-            case .decodingError:
+            case .decoding:
                 Label {
                     Text("Decoding Error")
                 } icon: {
@@ -48,13 +48,13 @@ enum AppError: Error, Identifiable, LocalizedError {
                         .foregroundColor(.customGreen.opacity(0.6))
                 }
                 .symbolEffect(.rotate, options: .nonRepeating)
-            case .noResults:
+            case .results:
                 ContentUnavailableView.search(text: query)
             }
         } description: {
             Text(errorDescription)
         } actions: {
-            if case .networkError = self {
+            if case .network = self {
                 Button("Refresh", action: action)
             }
         }

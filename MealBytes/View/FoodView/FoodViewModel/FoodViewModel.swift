@@ -24,22 +24,24 @@ final class FoodViewModel: ObservableObject {
             self.selectedServing = nil
         }
     }
-    private let networkManager: NetworkManagerProtocol
-    private let firestoreService: FirestoreManagerProtocol
-    private let searchViewModel: SearchViewModel
-    let mainViewModel: MainViewModel
+    
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
     let food: Food
     let mealType: MealType
     let originalMealItemId: UUID
     
+    private let networkManager: NetworkManagerProtocol
+    private let firestoreManager: FirestoreManagerProtocol
+    private let searchViewModel: SearchViewModel
+    let mainViewModel: MainViewModel
+    
     init(food: Food,
          mealType: MealType,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager(),
-         firestoreService: FirestoreManagerProtocol = FirestoreManager(),
+         firestoreManager: FirestoreManagerProtocol = FirestoreManager(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,
@@ -54,7 +56,7 @@ final class FoodViewModel: ObservableObject {
         self.mealType = mealType
         self.mainViewModel = mainViewModel
         self.networkManager = networkManager
-        self.firestoreService = firestoreService
+        self.firestoreManager = firestoreManager
         self.searchViewModel = searchViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarked(food)
         self.amount = roundedAmount
@@ -89,7 +91,7 @@ final class FoodViewModel: ObservableObject {
             case let appError as AppError:
                 self.errorMessage = appError
             default:
-                self.errorMessage = .networkError
+                self.errorMessage = .network
             }
             isError = true
         }
@@ -116,7 +118,7 @@ final class FoodViewModel: ObservableObject {
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         Task {
-            try? await firestoreService.addMealItemFirebase(newItem)
+            try? await firestoreManager.addMealItemFirebase(newItem)
         }
     }
     
@@ -139,12 +141,21 @@ final class FoodViewModel: ObservableObject {
             date: date, mealType: mealType
         )
         
-        mainViewModel.updateMealItemMainView(updatedMealItem, for: mealType, on: date)
+        Task {
+            mainViewModel.updateMealItemMainView(updatedMealItem,
+                                                 for: mealType,
+                                                 on: date)
+            try? await mainViewModel
+                .firestoreManager.updateMealItemFirebase(updatedMealItem)
+        }
     }
     
     // MARK: - Delete food
     func deleteMealItemFoodView() {
-        mainViewModel.deleteMealItemMainView(with: originalMealItemId, for: mealType)
+        Task {
+            mainViewModel.deleteMealItemMainView(with: originalMealItemId,
+                                                 for: mealType)
+        }
     }
     
     // MARK: - Bookmark Management

@@ -12,6 +12,10 @@ final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
+    @Published var errorMessage: AppError?
+    @Published var currentPage: Int = 0
+    @Published var maxResultsPerPage: Int = 20
+    @Published var isLoading = false
     @Published var query: String = "" {
         didSet {
             switch query.isEmpty {
@@ -22,10 +26,6 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
-    @Published var errorMessage: AppError?
-    @Published var currentPage: Int = 0
-    @Published var maxResultsPerPage: Int = 20
-    @Published var isLoading = false
     
     private let networkManager: NetworkManagerProtocol
     private var searchCancellable: AnyCancellable?
@@ -73,13 +73,29 @@ final class SearchViewModel: ObservableObject {
                             case let appError as AppError:
                                 self.errorMessage = appError
                             default:
-                                self.errorMessage = .networkError
+                                self.errorMessage = .network
                             }
                             self.isLoading = false
                         }
                     }
                 }
             }
+    }
+    
+    // MARK: - Bookmark fill
+    func toggleBookmark(for food: Food) {
+        switch bookmarkedFoods.contains(food.searchFoodId) {
+        case true:
+            bookmarkedFoods.remove(food.searchFoodId)
+            favoriteFoods.removeAll { $0.searchFoodId == food.searchFoodId }
+        case false:
+            bookmarkedFoods.insert(food.searchFoodId)
+            favoriteFoods.append(food)
+        }
+    }
+    
+    func isBookmarked(_ food: Food) -> Bool {
+        bookmarkedFoods.contains(food.searchFoodId)
     }
     
     // MARK: - Pagination
@@ -116,22 +132,6 @@ final class SearchViewModel: ObservableObject {
         foods = favoriteFoods
         errorMessage = nil
         isLoading = false
-    }
-    
-    // MARK: - Bookmark fill
-    func toggleBookmark(for food: Food) {
-        switch bookmarkedFoods.contains(food.searchFoodId) {
-        case true:
-            bookmarkedFoods.remove(food.searchFoodId)
-            favoriteFoods.removeAll { $0.searchFoodId == food.searchFoodId }
-        case false:
-            bookmarkedFoods.insert(food.searchFoodId)
-            favoriteFoods.append(food)
-        }
-    }
-    
-    func isBookmarked(_ food: Food) -> Bool {
-        bookmarkedFoods.contains(food.searchFoodId)
     }
 }
 

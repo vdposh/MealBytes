@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct DateView: View {
-    let mainViewModel: MainViewModel
     let date: Date
     let isToday: Bool
     let isSelected: Bool
-
+    let mainViewModel: MainViewModel
+    
     var body: some View {
         VStack {
             Text(date.formatted(.dateTime.day()))

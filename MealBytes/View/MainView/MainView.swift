@@ -96,13 +96,13 @@ struct MainView: View {
     
     private func dateView(for date: Date) -> some View {
         DateView(
-            mainViewModel: mainViewModel,
             date: date,
             isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
             isSelected: Calendar.current.isDate(
                 date,
                 inSameDayAs: mainViewModel.date
-            )
+            ),
+            mainViewModel: mainViewModel
         )
     }
     
@@ -133,8 +133,8 @@ struct MainView: View {
     
     private var detailedInformationSection: some View {
         DetailedInformationSection(
-            nutrients: mainViewModel.filteredNutrients,
-            isExpanded: $mainViewModel.isExpanded
+            isExpanded: $mainViewModel.isExpanded,
+            nutrients: mainViewModel.filteredNutrients
         )
     }
 }

@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct FoodItemRow: View {
-    let mealItem: MealItem
-    let mainViewModel: MainViewModel
-    let mealType: MealType
     @Binding var isDismissed: Bool
+    let mealItem: MealItem
+    let mealType: MealType
+    let mainViewModel: MainViewModel
     
     var body: some View {
         NavigationLink(
@@ -87,6 +87,7 @@ struct FoodItemRow: View {
 #Preview {
     NavigationStack {
         FoodItemRow(
+            isDismissed: .constant(false),
             mealItem: MealItem(
                 id: UUID(),
                 foodId: 724,
@@ -102,9 +103,8 @@ struct FoodItemRow: View {
                 amount: 150.0,
                 mealType: .breakfast
             ),
-            mainViewModel: MainViewModel(),
             mealType: .breakfast,
-            isDismissed: .constant(false)
+            mainViewModel: MainViewModel()
         )
     }
     .accentColor(.primary)

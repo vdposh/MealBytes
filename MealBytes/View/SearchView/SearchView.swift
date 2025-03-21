@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct SearchView: View {
+    @ObservedObject private var searchViewModel: SearchViewModel
     @Binding private var isPresented: Bool
     @State private var currentPage: Int = 0
     private let mealType: MealType
-    
-    @ObservedObject private var searchViewModel: SearchViewModel
     
     init(isPresented: Binding<Bool>,
          searchViewModel: SearchViewModel,

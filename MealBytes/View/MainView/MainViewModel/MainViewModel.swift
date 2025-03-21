@@ -16,20 +16,22 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var isExpanded: Bool = false
+    
     let calendar = Calendar.current
-    lazy var searchViewModel: SearchViewModel = SearchViewModel(
-        mainViewModel: self)
-    let firestoreService: FirestoreManagerProtocol
     let formatter = Formatter()
     
-    init(firestoreService: FirestoreManagerProtocol = FirestoreManager()) {
+    let firestoreManager: FirestoreManagerProtocol
+    lazy var searchViewModel: SearchViewModel = SearchViewModel(
+        mainViewModel: self)
+    
+    init(firestoreManager: FirestoreManagerProtocol = FirestoreManager()) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
         var summaries = [NutrientType: Double]()
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         self.nutrientSummaries = summaries
-        self.firestoreService = firestoreService
+        self.firestoreManager = firestoreManager
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
         self.expandedSections = sections
@@ -37,7 +39,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Meal Item
     func loadMealItemsMainView() async {
-        let mealItems = try? await firestoreService.loadMealItemsFirebase()
+        let mealItems = try? await firestoreManager.loadMealItemsFirebase()
         await MainActor.run {
             self.mealItems = Dictionary(
                 grouping: mealItems ?? [],
@@ -48,7 +50,9 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Add Food Item
-    func addMealItemMainView(_ item: MealItem, to mealType: MealType, for date: Date) {
+    func addMealItemMainView(_ item: MealItem,
+                             to mealType: MealType,
+                             for date: Date) {
         mealItems[mealType, default: []].append(item)
         expandedSections[mealType] = true
         recalculateNutrients(for: date)
@@ -56,8 +60,8 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Update Meal Item
     func updateMealItemMainView(_ updatedItem: MealItem,
-                        for mealType: MealType,
-                        on date: Date) {
+                                for mealType: MealType,
+                                on date: Date) {
         guard var items = mealItems[mealType] else { return }
         
         if let index = items.firstIndex(where: {
@@ -69,16 +73,25 @@ final class MainViewModel: ObservableObject {
         
         mealItems[mealType] = items
         recalculateNutrients(for: date)
+        
+        Task {
+            try? await firestoreManager.updateMealItemFirebase(updatedItem)
+        }
     }
     
     // MARK: - Delete Meal Item
     func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
-        guard var items = mealItems[mealType] else { return }
-        items.removeAll { $0.id == id }
-        mealItems[mealType] = items
-        recalculateNutrients(for: date)
-        if mealItems[mealType]?.isEmpty == true {
-            expandedSections[mealType] = false
+        var items = mealItems[mealType] ?? []
+        if let itemToDelete = items.first(where: { $0.id == id }) {
+            items.removeAll { $0.id == id }
+            mealItems[mealType] = items
+            recalculateNutrients(for: date)
+            if items.isEmpty {
+                expandedSections[mealType] = false
+            }
+            Task {
+                try? await firestoreManager.deleteMealItemFirebase(itemToDelete)
+            }
         }
     }
     

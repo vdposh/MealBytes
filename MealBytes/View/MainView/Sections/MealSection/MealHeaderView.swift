@@ -66,15 +66,19 @@ struct MealHeaderView: View {
             if mainViewModel.expandedSections[mealType] == true {
                 ForEach(foodItems, id: \.id) { item in
                     FoodItemRow(
+                        isDismissed: $isFoodViewPresented,
                         mealItem: item,
-                        mainViewModel: mainViewModel,
                         mealType: mealType,
-                        isDismissed: $isFoodViewPresented
+                        mainViewModel: mainViewModel
                     )
                     .swipeActions {
                         Button(role: .destructive) {
-                            mainViewModel.deleteMealItemMainView(with: item.id,
-                                                         for: mealType)
+                            Task {
+                                mainViewModel.deleteMealItemMainView(
+                                    with: item.id,
+                                    for: mealType
+                                )
+                            }
                         } label: {
                             Image(systemName: "trash")
                         }

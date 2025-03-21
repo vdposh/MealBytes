@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct FoodView: View {
-    @StateObject private var foodViewModel: FoodViewModel
     @FocusState private var isTextFieldFocused: Bool
+    @Environment(\.dismiss) private var dismiss
     @Binding private var isDismissed: Bool
+    
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
     private let showCloseButton: Bool
-    @Environment(\.dismiss) private var dismiss
+    
+    @StateObject private var foodViewModel: FoodViewModel
     
     init(isDismissed: Binding<Bool>,
          food: Food,
@@ -162,8 +164,10 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Remove",
                             action: {
-                                foodViewModel.deleteMealItemFoodView()
-                                dismiss()
+                                Task {
+                                    foodViewModel.deleteMealItemFoodView()
+                                    dismiss()
+                                }
                             },
                             backgroundColor: .customRed
                         )
@@ -171,9 +175,11 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Save",
                             action: {
-                                foodViewModel.updateMealItemFoodView(
-                                    for: foodViewModel.mainViewModel.date)
-                                dismiss()
+                                Task {
+                                    foodViewModel.updateMealItemFoodView(
+                                        for: foodViewModel.mainViewModel.date)
+                                    dismiss()
+                                }
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood

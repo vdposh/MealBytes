@@ -34,13 +34,13 @@ final class NetworkManager: NetworkManagerProtocol {
                     } catch {
                         switch target {
                         case .searchFoods:
-                            continuation.resume(throwing: AppError.noResults)
+                            continuation.resume(throwing: AppError.results)
                         case .getFoodDetails:
-                            continuation.resume(throwing: AppError.decodingError)
+                            continuation.resume(throwing: AppError.decoding)
                         }
                     }
                 case .failure:
-                    continuation.resume(throwing: AppError.networkError)
+                    continuation.resume(throwing: AppError.network)
                 }
             }
         }

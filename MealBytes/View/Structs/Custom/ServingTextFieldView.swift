@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ServingTextFieldView: View {
-    let title: String
     @Binding var text: String
+    let title: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

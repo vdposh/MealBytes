@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct DetailedInformationSection: View {
-    let nutrients: [DetailedNutrient]
     @Binding var isExpanded: Bool
+    let nutrients: [DetailedNutrient]
     
     var body: some View {
         Section {

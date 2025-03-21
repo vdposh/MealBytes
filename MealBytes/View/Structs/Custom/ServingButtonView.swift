@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ServingButtonView: View {
+    @Binding var showActionSheet: Bool
     let title: String
     let description: String
-    @Binding var showActionSheet: Bool
     let action: () -> Void
     
     var body: some View {
