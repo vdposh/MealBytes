@@ -59,7 +59,7 @@ struct SearchView: View {
                                     BookmarkButtonView(
                                         action: {
                                             searchViewModel
-                                                .toggleBookmark(for: food)
+                                                .toggleBookmarkSearchView(for: food)
                                         },
                                         isFilled: searchViewModel
                                             .isBookmarked(food),

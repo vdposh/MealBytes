@@ -83,7 +83,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Bookmark fill
-    func toggleBookmark(for food: Food) {
+    func toggleBookmarkSearchView(for food: Food) {
         switch bookmarkedFoods.contains(food.searchFoodId) {
         case true:
             bookmarkedFoods.remove(food.searchFoodId)

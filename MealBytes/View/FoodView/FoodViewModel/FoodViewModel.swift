@@ -159,9 +159,9 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Bookmark Management
-    func toggleBookmark() {
+    func toggleBookmarkFoodView() {
         isBookmarkFilled.toggle()
-        searchViewModel.toggleBookmark(for: food)
+        searchViewModel.toggleBookmarkSearchView(for: food)
     }
     
     // MARK: - Serving Selection and Amount Setting

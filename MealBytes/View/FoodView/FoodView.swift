@@ -110,13 +110,13 @@ struct FoodView: View {
                 .padding(.top, 10)
             
             VStack(spacing: 15) {
-                ServingTextFieldView(title: "Size",
-                                     text: $foodViewModel.amount)
+                ServingTextFieldView(text: $foodViewModel.amount,
+                                     title: "Size")
                 .focused($isTextFieldFocused)
                 ServingButtonView(
+                    showActionSheet: $foodViewModel.showActionSheet,
                     title: "Serving",
-                    description: foodViewModel.servingDescription,
-                    showActionSheet: $foodViewModel.showActionSheet
+                    description: foodViewModel.servingDescription
                 ) {
                     foodViewModel.showActionSheet.toggle()
                 }
@@ -154,7 +154,7 @@ struct FoodView: View {
                         
                         BookmarkButtonView(
                             action: {
-                                foodViewModel.toggleBookmark()
+                                foodViewModel.toggleBookmarkFoodView()
                             },
                             isFilled: foodViewModel.isBookmarkFilled,
                             width: 55,
