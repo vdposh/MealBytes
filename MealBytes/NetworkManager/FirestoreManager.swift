@@ -11,12 +11,11 @@ import FirebaseFirestore
 
 protocol FirestoreManagerProtocol {
     func loadMealItemsFirebase() async throws -> [MealItem]
-    func loadBookmarksFirebase() async throws -> [Int]
+    func loadBookmarksFirebase() async throws -> [Food]
     func addMealItemFirebase(_ mealItem: MealItem) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
-    func saveBookmarkFirebase(food: Food) async throws
-    func removeBookmarkFirebase(food: Food) async throws
+    func addBookmarkFirebase(_ foods: [Food]) async throws
 }
 
 final class FirestoreManager: FirestoreManagerProtocol {
@@ -56,25 +55,32 @@ final class FirestoreManager: FirestoreManagerProtocol {
     }
     
     // MARK: - Load bookmarks
-    func loadBookmarksFirebase() async throws -> [Int] {
-        let snapshot = try await firestore.collection("bookmarks")
-            .getDocuments()
-        return snapshot.documents.compactMap { document in
-            Int(document.documentID)
+    func loadBookmarksFirebase() async throws -> [Food] {
+        let snapshot = try await firestore.collection("favoriteFoods")
+            .document("favorites").getDocument()
+        
+        guard let data = snapshot.data(),
+              let foodsArray = data["foods"] as? [[String: Any]] else {
+            return []
+        }
+        
+        return foodsArray.compactMap { foodData in
+            Food(
+                searchFoodId: foodData["food_id"] as? Int ?? 0,
+                searchFoodName: foodData["food_name"] as? String ?? "",
+                searchFoodDescription: foodData[
+                    "food_description"] as? String ?? ""
+            )
         }
     }
     
-    // MARK: - Save bookmark
-    func saveBookmarkFirebase(food: Food) async throws {
-        let documentReference = firestore.collection("bookmarks")
-            .document("\(food.searchFoodId)")
-        try documentReference.setData(from: food)
-    }
-    
-    // MARK: - Remove bookmark
-    func removeBookmarkFirebase(food: Food) async throws {
-        let documentReference = firestore.collection("bookmarks")
-            .document("\(food.searchFoodId)")
-        try await documentReference.delete()
+    // MARK: - Add bookmarks
+    func addBookmarkFirebase(_ foods: [Food]) async throws {
+        let data = try foods.map { food in
+            try Firestore.Encoder().encode(food)
+        }
+        try await firestore.collection("favoriteFoods")
+            .document("favorites")
+            .setData(["foods": data])
     }
 }

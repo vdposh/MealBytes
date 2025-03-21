@@ -89,10 +89,13 @@ final class SearchViewModel: ObservableObject {
     func loadBookmarksSearchView() {
         Task {
             do {
-                let bookmarkedIds = try await firestoreManager
-                    .loadBookmarksFirebase()
+                let favoriteFoods = try await firestoreManager.loadBookmarksFirebase()
+                
                 await MainActor.run {
-                    bookmarkedFoods = Set(bookmarkedIds)
+                    self.favoriteFoods = favoriteFoods
+                    self.foods = favoriteFoods
+                    self.bookmarkedFoods = Set(favoriteFoods.map
+                                               { $0.searchFoodId })
                 }
             }
         }
@@ -102,23 +105,26 @@ final class SearchViewModel: ObservableObject {
     func toggleBookmarkSearchView(for food: Food) {
         Task {
             do {
-                switch bookmarkedFoods.contains(food.searchFoodId) {
-                case true:
+                if !bookmarkedFoods.contains(food.searchFoodId) {
+                    await MainActor.run {
+                        bookmarkedFoods.insert(food.searchFoodId)
+                        if !favoriteFoods.contains(where: {
+                            $0.searchFoodId == food.searchFoodId }) {
+                            favoriteFoods.append(food)
+                        }
+                    }
+                    
+                    try await firestoreManager
+                        .addBookmarkFirebase(favoriteFoods)
+                } else {
                     await MainActor.run {
                         bookmarkedFoods.remove(food.searchFoodId)
                         favoriteFoods.removeAll {
-                            $0.searchFoodId == food.searchFoodId
-                        }
+                            $0.searchFoodId == food.searchFoodId }
                     }
+                    
                     try await firestoreManager
-                        .removeBookmarkFirebase(food: food)
-                case false:
-                    await MainActor.run {
-                        bookmarkedFoods.insert(food.searchFoodId)
-                        favoriteFoods.append(food)
-                    }
-                    try await firestoreManager
-                        .saveBookmarkFirebase(food: food)
+                        .addBookmarkFirebase(favoriteFoods)
                 }
             }
         }
