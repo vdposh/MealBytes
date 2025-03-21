@@ -58,7 +58,7 @@ final class FoodViewModel: ObservableObject {
         self.networkManager = networkManager
         self.firestoreManager = firestoreManager
         self.searchViewModel = searchViewModel
-        self.isBookmarkFilled = searchViewModel.isBookmarked(food)
+        self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
         self.showSaveRemoveButton = showSaveRemoveButton

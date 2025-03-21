@@ -14,6 +14,8 @@ protocol FirestoreManagerProtocol {
     func loadMealItemsFirebase() async throws -> [MealItem]
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
+    func saveBookmark(foodId: Int) async throws
+    func removeBookmark(foodId: Int) async throws
 }
 
 final class FirestoreManager: FirestoreManagerProtocol {
@@ -49,6 +51,16 @@ final class FirestoreManager: FirestoreManagerProtocol {
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws {
         let documentReference = firestore.collection("meals")
             .document(mealItem.id.uuidString)
+        try await documentReference.delete()
+    }
+    
+    func saveBookmark(foodId: Int) async throws {
+        let documentReference = firestore.collection("bookmarks").document("\(foodId)")
+        try await documentReference.setData(["timestamp": Timestamp()])
+    }
+    
+    func removeBookmark(foodId: Int) async throws {
+        let documentReference = firestore.collection("bookmarks").document("\(foodId)")
         try await documentReference.delete()
     }
 }

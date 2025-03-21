@@ -94,7 +94,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    func isBookmarked(_ food: Food) -> Bool {
+    func isBookmarkedSearchView(_ food: Food) -> Bool {
         bookmarkedFoods.contains(food.searchFoodId)
     }
     
