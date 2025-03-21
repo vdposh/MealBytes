@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 struct MealItem: Identifiable {
     let id: UUID
@@ -33,5 +34,18 @@ struct MealItem: Identifiable {
         self.measurementDescription = measurementDescription
         self.amount = amount
         self.date = date
+    }
+    
+    func toDictionary() -> [String: Any] {
+        [
+            "id": id.uuidString,
+            "foodId": foodId,
+            "foodName": foodName,
+            "portionUnit": portionUnit,
+            "nutrients": nutrients.mapKeys { $0.rawValue },
+            "measurementDescription": measurementDescription,
+            "amount": amount,
+            "date": Timestamp(date: date)
+        ]
     }
 }

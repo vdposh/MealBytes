@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Combine
+import FirebaseCore
+import FirebaseFirestore
 
 final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?
@@ -23,6 +25,7 @@ final class FoodViewModel: ObservableObject {
         }
     }
     private let networkManager: NetworkManagerProtocol
+    private let firestoreService: FirestoreServiceProtocol
     private let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     private let initialMeasurementDescription: String
@@ -36,6 +39,7 @@ final class FoodViewModel: ObservableObject {
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
          networkManager: NetworkManagerProtocol = NetworkManager(),
+         firestoreService: FirestoreServiceProtocol = FirestoreService(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,
@@ -50,6 +54,7 @@ final class FoodViewModel: ObservableObject {
         self.mealType = mealType
         self.mainViewModel = mainViewModel
         self.networkManager = networkManager
+        self.firestoreService = firestoreService
         self.searchViewModel = searchViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarked(food)
         self.amount = roundedAmount
@@ -167,6 +172,7 @@ final class FoodViewModel: ObservableObject {
             date: date
         )
         mainViewModel.addFoodItem(newItem, to: section, for: date)
+        firestoreService.saveMealItem(newItem) { _ in }
     }
     
     // MARK: - Resave food

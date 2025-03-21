@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F22D8C7611006FCC12 /* FirebaseCore */; };
 		FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F42D8C7611006FCC12 /* FirebaseFirestore */; };
-		FBA176F72D8C7611006FCC12 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F62D8C7611006FCC12 /* FirebaseStorage */; };
 		FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = FBD6B6C32D79AFC000AE0FDC /* Moya */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */,
-				FBA176F72D8C7611006FCC12 /* FirebaseStorage in Frameworks */,
 				FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */,
 				FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */,
 			);
@@ -79,7 +77,6 @@
 				FBD6B6C32D79AFC000AE0FDC /* Moya */,
 				FBA176F22D8C7611006FCC12 /* FirebaseCore */,
 				FBA176F42D8C7611006FCC12 /* FirebaseFirestore */,
-				FBA176F62D8C7611006FCC12 /* FirebaseStorage */,
 			);
 			productName = MealBytes;
 			productReference = FBD6B6862D79AF0700AE0FDC /* MealBytes.app */;
@@ -373,11 +370,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
-		};
-		FBA176F62D8C7611006FCC12 /* FirebaseStorage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseStorage;
 		};
 		FBD6B6C32D79AFC000AE0FDC /* Moya */ = {
 			isa = XCSwiftPackageProductDependency;

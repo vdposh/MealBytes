@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseCore
+import FirebaseFirestore
 
 struct MainView: View {
     @State private var isExpanded: Bool = false
@@ -31,6 +33,9 @@ struct MainView: View {
                 detailedInformationSection
             }
             .listSectionSpacing(15)
+        }
+        .task {
+            mainViewModel.firestoreService.fetchMealItems() { _ in }
         }
         .animation(.easeInOut, value: isExpanded)
         .navigationBarTitleDisplayMode(.inline)

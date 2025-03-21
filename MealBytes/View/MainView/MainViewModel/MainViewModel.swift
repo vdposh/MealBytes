@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Combine
+import FirebaseCore
+import FirebaseFirestore
 
 final class MainViewModel: ObservableObject {
     @Published var date = Date()
@@ -16,9 +18,11 @@ final class MainViewModel: ObservableObject {
     @Published var isExpanded: Bool = false
     let calendar = Calendar.current
     let searchViewModel: SearchViewModel
+    let firestoreService: FirestoreServiceProtocol
     let formatter = Formatter()
     
-    init(searchViewModel: SearchViewModel = SearchViewModel()) {
+    init(searchViewModel: SearchViewModel = SearchViewModel(),
+         firestoreService: FirestoreServiceProtocol = FirestoreService()) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
@@ -26,6 +30,7 @@ final class MainViewModel: ObservableObject {
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         self.nutrientSummaries = summaries
         self.searchViewModel = searchViewModel
+        self.firestoreService = firestoreService
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
         self.expandedSections = sections
