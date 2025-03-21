@@ -99,7 +99,8 @@ struct FoodItemRow: View {
                     .protein: 1.1
                 ],
                 measurementDescription: "grams",
-                amount: 150.0
+                amount: 150.0,
+                mealType: .breakfast
             ),
             mainViewModel: MainViewModel(),
             mealType: .breakfast,

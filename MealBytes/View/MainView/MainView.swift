@@ -35,7 +35,13 @@ struct MainView: View {
             .listSectionSpacing(15)
         }
         .task {
-            mainViewModel.firestoreService.fetchMealItems() { _ in }
+            mainViewModel.firestoreService.fetchMealItems { mealItems in
+                mainViewModel.mealItems = Dictionary(
+                    grouping: mealItems,
+                    by: { $0.mealType }
+                )
+                mainViewModel.recalculateNutrients(for: mainViewModel.date)
+            }
         }
         .animation(.easeInOut, value: isExpanded)
         .navigationBarTitleDisplayMode(.inline)

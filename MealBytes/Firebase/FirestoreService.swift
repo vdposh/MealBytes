@@ -24,11 +24,6 @@ final class FirestoreService: FirestoreServiceProtocol {
     // MARK: - Save Data
     func saveMealItem(_ mealItem: MealItem, completion: ((Error?) -> Void)? = nil) {
         firestore.collection("meals").addDocument(data: mealItem.toDictionary()) { error in
-            if let error = error {
-                print("❌ Ошибка при сохранении: \(error.localizedDescription)")
-            } else {
-                print("✅ MealItem успешно сохранён!")
-            }
             completion?(error)
         }
     }
@@ -37,8 +32,7 @@ final class FirestoreService: FirestoreServiceProtocol {
     func fetchMealItems(completion: @escaping ([MealItem]) -> Void) {
         firestore.collection("meals").getDocuments { snapshot, error in
             guard let documents = snapshot?.documents, error == nil else {
-                print("❌ Ошибка при загрузке: \(String(describing: error))")
-                completion([]) // Передача пустого массива в случае ошибки
+                completion([])
                 return
             }
             
@@ -52,7 +46,9 @@ final class FirestoreService: FirestoreServiceProtocol {
                       let nutrients = data["nutrients"] as? [String: Double],
                       let measurementDescription = data["measurementDescription"] as? String,
                       let amount = data["amount"] as? Double,
-                      let date = (data["date"] as? Timestamp)?.dateValue() else {
+                      let date = (data["date"] as? Timestamp)?.dateValue(),
+                      let mealTypeString = data["mealType"] as? String,
+                      let mealType = MealType(rawValue: mealTypeString) else {
                     return nil
                 }
                 
@@ -68,18 +64,12 @@ final class FirestoreService: FirestoreServiceProtocol {
                     },
                     measurementDescription: measurementDescription,
                     amount: amount,
-                    date: date
+                    date: date,
+                    mealType: mealType
                 )
             }
             
-            // Проверка результата и вызов completion
-            if mealItems.isEmpty {
-                print("⚠️ Данные отсутствуют или пустой результат.")
-            } else {
-                print("✅ Данные успешно загружены: \(mealItems.count) элементов.")
-            }
             completion(mealItems)
         }
     }
-
 }

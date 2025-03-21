@@ -169,7 +169,7 @@ final class FoodViewModel: ObservableObject {
                 selectedServing?.measurementDescription ?? "",
             amount: Double(amount.replacingOccurrences(of: ",",
                                                        with: ".")) ?? 0,
-            date: date
+            date: date, mealType: mealType
         )
         mainViewModel.addFoodItem(newItem, to: section, for: date)
         firestoreService.saveMealItem(newItem) { _ in }
@@ -191,7 +191,7 @@ final class FoodViewModel: ObservableObject {
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.replacingOccurrences(of: ",",
                                                        with: ".")) ?? 0,
-            date: date
+            date: date, mealType: mealType
         )
         
         mainViewModel.updateMealItem(updatedMealItem, for: mealType, on: date)

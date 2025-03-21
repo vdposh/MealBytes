@@ -17,6 +17,7 @@ struct MealItem: Identifiable {
     let measurementDescription: String
     let amount: Double
     let date: Date
+    let mealType: MealType // Новое свойство
     
     init(id: UUID = UUID(),
          foodId: Int,
@@ -25,7 +26,8 @@ struct MealItem: Identifiable {
          nutrients: [NutrientType: Double],
          measurementDescription: String,
          amount: Double,
-         date: Date = Date()) {
+         date: Date = Date(),
+         mealType: MealType) { // Добавлен параметр mealType
         self.id = id
         self.foodId = foodId
         self.foodName = foodName
@@ -34,6 +36,7 @@ struct MealItem: Identifiable {
         self.measurementDescription = measurementDescription
         self.amount = amount
         self.date = date
+        self.mealType = mealType
     }
     
     func toDictionary() -> [String: Any] {
@@ -45,7 +48,8 @@ struct MealItem: Identifiable {
             "nutrients": nutrients.mapKeys { $0.rawValue },
             "measurementDescription": measurementDescription,
             "amount": amount,
-            "date": Timestamp(date: date)
+            "date": Timestamp(date: date),
+            "mealType": mealType.rawValue // Сохраняем MealType как строку
         ]
     }
 }
