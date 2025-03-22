@@ -48,25 +48,23 @@ struct FoodView: View {
     var body: some View {
         ZStack {
             if let error = foodViewModel.errorMessage {
-                error.contentUnavailableView(query: "") {
+                contentUnavailableView(for: error, query: "") {
                     Task {
                         foodViewModel.errorMessage = nil
                         await foodViewModel.fetchFoodDetails()
                     }
                 }
             } else {
-                List {
-                    if !foodViewModel.isLoading {
+                if foodViewModel.isLoading {
+                    LoadingView()
+                } else {
+                    List {
                         servingSizeSection
                         nutrientActionSection
                         nutrientDetailSection
                     }
-                }
-                .listSectionSpacing(15)
-                .scrollDismissesKeyboard(.never)
-                
-                if foodViewModel.isLoading {
-                    LoadingView()
+                    .listSectionSpacing(15)
+                    .scrollDismissesKeyboard(.never)
                 }
             }
         }
@@ -167,7 +165,7 @@ struct FoodView: View {
                             title: "Remove",
                             action: {
                                 Task {
-                                    foodViewModel.deleteMealItemFoodView()
+                                    await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
                                 }
                             },
@@ -178,7 +176,7 @@ struct FoodView: View {
                             title: "Save",
                             action: {
                                 Task {
-                                    foodViewModel.updateMealItemFoodView(
+                                    await foodViewModel.updateMealItemFoodView(
                                         for: foodViewModel.mainViewModel.date)
                                     dismiss()
                                 }

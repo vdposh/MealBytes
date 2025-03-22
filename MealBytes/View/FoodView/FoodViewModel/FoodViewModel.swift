@@ -122,8 +122,8 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Resave food
-    func updateMealItemFoodView(for date: Date) {
-        guard let selectedServing = selectedServing else { return }
+    func updateMealItemFoodView(for date: Date) async {
+        guard let selectedServing else { return }
         
         let updatedMealItem = MealItem(
             id: originalMealItemId,
@@ -150,11 +150,9 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Delete food
-    func deleteMealItemFoodView() {
-        Task {
-            mainViewModel.deleteMealItemMainView(with: originalMealItemId,
-                                                 for: mealType)
-        }
+    func deleteMealItemFoodView() async {
+        mainViewModel.deleteMealItemMainView(with: originalMealItemId,
+                                                   for: mealType)
     }
     
     // MARK: - Bookmark Management

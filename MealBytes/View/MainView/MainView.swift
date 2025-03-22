@@ -9,8 +9,11 @@ import SwiftUI
 import FirebaseCore
 
 struct MainView: View {
-    @State private var isExpanded: Bool = false
-    @StateObject var mainViewModel: MainViewModel
+    @StateObject private var mainViewModel: MainViewModel
+    
+    init(mainViewModel: MainViewModel) {
+        self._mainViewModel = StateObject(wrappedValue: mainViewModel)
+    }
     
     var body: some View {
         ZStack {
@@ -18,7 +21,7 @@ struct MainView: View {
                 LoadingView()
             } else {
                 ZStack(alignment: .top) {
-                    if isExpanded {
+                    if mainViewModel.isExpandedCalendar {
                         VStack {
                             datePickerView
                         }
@@ -46,19 +49,19 @@ struct MainView: View {
                 mainViewModel.isLoading = false
             }
         }
-        .animation(.easeInOut, value: isExpanded)
+        .animation(.easeInOut, value: mainViewModel.isExpandedCalendar)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if !mainViewModel.isLoading {
                 ToolbarItem(placement: .principal) {
                     Button(action: {
-                        isExpanded.toggle()
+                        mainViewModel.isExpandedCalendar.toggle()
                     }) {
                         HStack(spacing: 4) {
                             Text(mainViewModel.formattedYearDisplay())
                                 .fontWeight(.medium)
                             Image(systemName: {
-                                switch isExpanded {
+                                switch mainViewModel.isExpandedCalendar {
                                 case true:
                                     "chevron.up"
                                 case false:
@@ -79,7 +82,7 @@ struct MainView: View {
     private var datePickerView: some View {
         VStack {
             DatePickerView(selectedDate: $mainViewModel.date,
-                           isPresented: $isExpanded,
+                           isPresented: $mainViewModel.isExpandedCalendar,
                            mainViewModel: mainViewModel)
         }
         .background(Color(.systemBackground))

@@ -29,46 +29,46 @@ enum AppError: Error, Identifiable, LocalizedError {
             "No bookmarks yet"
         }
     }
-    
-    @ViewBuilder
-    func contentUnavailableView(query: String, action: @escaping ()
-                                -> Void) -> some View {
-        ContentUnavailableView {
-            switch self {
-            case .network:
-                Label {
-                    Text("Network error")
-                } icon: {
-                    Image(systemName: "wifi.slash")
-                }
-                .symbolEffect(.pulse)
-            case .decoding:
-                Label {
-                    Text("Data processing issue")
-                } icon: {
-                    Image(systemName: "exclamationmark.triangle")
-                }
-                .symbolEffect(.rotate, options: .nonRepeating)
-            case .results:
-                ContentUnavailableView.search(text: query)
-            case .noBookmarks:
-                Label {
-                    Text("No bookmarks yet")
-                } icon: {
-                    Image(systemName: "bookmark")
-                }
-            }
-        } description: {
-            switch self {
-            case .noBookmarks:
-                Text("Add your favorite dishes to bookmarks, and they'll appear here.")
-            default:
-                Text(errorDescription)
-            }
-        } actions: {
-            if case .network = self {
-                Button("Refresh", action: action)
-            }
-        }
-    }
+//    
+//    @ViewBuilder
+//    func contentUnavailableView(query: String, action: @escaping ()
+//                                -> Void) -> some View {
+//        ContentUnavailableView {
+//            switch self {
+//            case .network:
+//                Label {
+//                    Text("Network error")
+//                } icon: {
+//                    Image(systemName: "wifi.slash")
+//                }
+//                .symbolEffect(.pulse)
+//            case .decoding:
+//                Label {
+//                    Text("Data processing issue")
+//                } icon: {
+//                    Image(systemName: "exclamationmark.triangle")
+//                }
+//                .symbolEffect(.rotate, options: .nonRepeating)
+//            case .results:
+//                ContentUnavailableView.search(text: query)
+//            case .noBookmarks:
+//                Label {
+//                    Text("No bookmarks yet")
+//                } icon: {
+//                    Image(systemName: "bookmark")
+//                }
+//            }
+//        } description: {
+//            switch self {
+//            case .noBookmarks:
+//                Text("Add your favorite dishes to bookmarks, and they'll appear here.")
+//            default:
+//                Text(errorDescription)
+//            }
+//        } actions: {
+//            if case .network = self {
+//                Button("Refresh", action: action)
+//            }
+//        }
+//    }
 }

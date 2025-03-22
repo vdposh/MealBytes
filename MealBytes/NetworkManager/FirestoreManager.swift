@@ -34,14 +34,14 @@ final class FirestoreManager: FirestoreManagerProtocol {
     }
     
     // MARK: - Save Data
-    func addMealItemFirebase(_ mealItem: MealItem) async throws {
+    func addMealItemFirebase(_ mealItem: MealItem) throws {
         let documentReference = firestore.collection("meals")
             .document(mealItem.id.uuidString)
         try documentReference.setData(from: mealItem)
     }
     
     // MARK: - Update Data
-    func updateMealItemFirebase(_ mealItem: MealItem) async throws {
+    func updateMealItemFirebase(_ mealItem: MealItem) throws {
         let documentReference = firestore.collection("meals")
             .document(mealItem.id.uuidString)
         try documentReference.setData(from: mealItem, merge: true)

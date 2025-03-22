@@ -26,8 +26,8 @@ struct SearchView: View {
             VStack {
                 if searchViewModel.isLoading {
                     LoadingView()
-                } else if let errorMessage = searchViewModel.errorMessage {
-                    errorMessage.contentUnavailableView(query: "") {
+                } else if let error = searchViewModel.errorMessage {
+                    contentUnavailableView(for: error, query: "") {
                         searchViewModel.queueSearch(searchViewModel.query)
                     }
                 } else {
@@ -77,8 +77,8 @@ struct SearchView: View {
                     .background(
                         Group {
                             if searchViewModel.foods.isEmpty {
-                                AppError.noBookmarks
-                                    .contentUnavailableView(query: "") { }
+                                contentUnavailableView(for: .noBookmarks,
+                                                       query: "") { }
                             } else {
                                 EmptyView()
                             }
