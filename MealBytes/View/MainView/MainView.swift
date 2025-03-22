@@ -10,12 +10,11 @@ import FirebaseCore
 
 struct MainView: View {
     @State private var isExpanded: Bool = false
-    @State private var isLoading: Bool = true
     @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
         ZStack {
-            if isLoading {
+            if mainViewModel.isLoading {
                 LoadingView()
             } else {
                 ZStack(alignment: .top) {
@@ -43,15 +42,14 @@ struct MainView: View {
         .task {
             await mainViewModel.loadMealItemsMainView()
             await mainViewModel.searchViewModel.loadBookmarksSearchView()
-            
             await MainActor.run {
-                isLoading = false
+                mainViewModel.isLoading = false
             }
         }
         .animation(.easeInOut, value: isExpanded)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if !isLoading {
+            if !mainViewModel.isLoading {
                 ToolbarItem(placement: .principal) {
                     Button(action: {
                         isExpanded.toggle()
@@ -90,14 +88,13 @@ struct MainView: View {
     private var dateSection: some View {
         Section {
             HStack {
-                let daysBeforeAndAfter = 3
-                ForEach(-daysBeforeAndAfter...daysBeforeAndAfter,
-                         id: \.self) { offset in
-                    let date = mainViewModel.date(for: offset)
+                ForEach(-3...3, id: \.self) { offset in
                     Button(action: {
-                        mainViewModel.date = date
+                        mainViewModel.date = mainViewModel
+                            .dateByAddingOffset(for: offset)
                     }) {
-                        dateView(for: date)
+                        dateView(for: mainViewModel
+                            .dateByAddingOffset(for: offset))
                     }
                     .buttonStyle(.plain)
                 }
@@ -128,13 +125,10 @@ struct MainView: View {
     
     private var mealSections: some View {
         ForEach(MealType.allCases, id: \.self) { mealType in
-            let filteredItems = mainViewModel.mealItems[mealType, default: []]
-                .filter {
-                    mainViewModel.calendar.isDate(
-                        $0.date,
-                        inSameDayAs: mainViewModel.date
-                    )
-                }
+            let filteredItems = mainViewModel.filteredMealItems(
+                for: mealType,
+                on: mainViewModel.date
+            )
             
             MealSectionView(
                 mealType: mealType,

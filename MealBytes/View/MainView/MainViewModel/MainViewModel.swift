@@ -14,7 +14,9 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
+    @Published var errorMessage: AppError?
     @Published var isExpanded: Bool = false
+    @Published var isLoading: Bool = true
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -97,39 +99,55 @@ final class MainViewModel: ObservableObject {
                         expandedSections[mealType] = false
                     }
                 }
-                try? await firestoreManager.deleteMealItemFirebase(itemToDelete)
+                do {
+                    try await firestoreManager
+                        .deleteMealItemFirebase(itemToDelete)
+                } catch {
+                    await MainActor.run {
+                        self.errorMessage = error as? AppError ?? .network
+                    }
+                }
             }
         }
     }
     
     // MARK: - Recalculate Nutrients
     func recalculateNutrients(for date: Date) {
-        Task {
-            let relevantItems = mealItems.values
-                .flatMap { $0 }
-                .filter { calendar.isDate($0.date, inSameDayAs: date) }
-            
-            let newSummaries = NutrientType.allCases.reduce(
-                into: [NutrientType: Double]()) { result, nutrient in
-                    result[nutrient] = relevantItems.reduce(0) {
-                        $0 + ($1.nutrients[nutrient] ?? 0.0)
-                    }
+        let newSummaries = mealItems.values.reduce(
+            into: [NutrientType: Double]()
+        ) { result, items in
+            items.forEach { item in
+                guard calendar.isDate(item.date,
+                                      inSameDayAs: date) else { return }
+                NutrientType.allCases.forEach { nutrient in
+                    result[nutrient,
+                           default: 0.0] += item.nutrients[nutrient] ?? 0.0
                 }
-            
-            await MainActor.run {
-                nutrientSummaries = newSummaries
             }
         }
+        nutrientSummaries = newSummaries
     }
     
+    // MARK: - Summary Calories
     func summariesForCaloriesSection() -> [NutrientType: Double] {
-        let relevantItems = mealItems.values.flatMap { $0 }
-            .filter { calendar.isDate($0.date, inSameDayAs: date) }
-        
-        return NutrientType.allCases.reduce(into: [NutrientType: Double]()) {
-            result, nutrient in
-            result[nutrient] = relevantItems.reduce(0) {
-                $0 + ($1.nutrients[nutrient] ?? 0.0) }
+        return mealItems.values
+            .flatMap { $0 }
+            .reduce(into: [NutrientType: Double]()) { result, item in
+                guard calendar.isDate(item.date,
+                                      inSameDayAs: date) else { return }
+                
+                NutrientType.allCases.forEach { nutrient in
+                    result[nutrient,
+                           default: 0.0] += item.nutrients[nutrient] ?? 0.0
+                }
+            }
+    }
+    
+    // MARK: - Filter Meal Items
+    func filteredMealItems(for mealType: MealType,
+                           on date: Date) -> [MealItem] {
+        return mealItems[mealType, default: []].filter {
+            calendar.isDate($0.date, inSameDayAs: date)
         }
     }
     
@@ -205,42 +223,16 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Color for Calendar
-    func color(for element: DisplayElement,
-               date: Date? = nil,
-               isSelected: Bool = false,
-               isToday: Bool = false,
-               forBackground: Bool = false) -> Color {
-        switch forBackground {
-        case true:
-            return isSelected ? .customGreen.opacity(0.2) : .clear
-        case false:
-            if isSelected {
-                return .customGreen
-            }
-            if isToday {
-                return .customGreen
-            }
-            if let date {
-                if !calendar.isDate(date, equalTo: self.date,
-                                    toGranularity: .month) {
-                    return .secondary
-                }
-            }
-            switch element {
-            case .day:
-                return .primary
-            case .weekday:
-                return .secondary
-            }
-        }
-    }
-    
     // MARK: - Calculate Date Offset
-    func date(for offset: Int) -> Date {
+    func dateByAddingOffset(for offset: Int) -> Date {
         Calendar.current.date(byAdding: .day,
                               value: offset,
                               to: Date()) ?? Date()
+    }
+    
+    
+    func dayComponent(for date: Date) -> Int {
+        calendar.component(.day, from: date)
     }
     
     // MARK: - Formatted year for Calendar
@@ -253,6 +245,72 @@ final class MainViewModel: ObservableObject {
         case false:
             date.formatted(.dateTime.month(.wide).day().weekday(.wide).year())
         }
+    }
+    
+    // MARK: - Color for Calendar
+    func color(for element: DisplayElement,
+               date: Date? = nil,
+               isSelected: Bool = false,
+               isToday: Bool = false,
+               forBackground: Bool = false) -> Color {
+        if forBackground {
+            return isSelected ? .customGreen.opacity(0.2) : .clear
+        }
+        if isSelected || isToday {
+            return .customGreen
+        }
+        if let date, !calendar.isDate(date,
+                                      equalTo: self.date,
+                                      toGranularity: .month) {
+            return .secondary
+        }
+        return element == .day ? .primary : .secondary
+    }
+    
+    // MARK: - Date (calendar) Management Methods
+    func selectDate(_ date: Date,
+                    selectedDate: inout Date,
+                    isPresented: inout Bool) {
+        selectedDate = date
+        isPresented = false
+    }
+    
+    func changeMonth(by value: Int, selectedDate: inout Date) {
+        if let newDate = calendar.date(byAdding: .month,
+                                       value: value,
+                                       to: selectedDate) {
+            selectedDate = newDate
+        }
+    }
+    
+    func daysForCurrentMonth(selectedDate: Date) -> [Date] {
+        guard let startOfMonth = calendar.date(
+            from: calendar.dateComponents([.year, .month], from: selectedDate)
+        ),
+              let range = calendar.range(of: .day,
+                                         in: .month,
+                                         for: startOfMonth)
+        else { return [] }
+        
+        let daysInMonth = range.compactMap {
+            calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
+        }
+        
+        let firstWeekday = max(calendar.component(.weekday,
+                                                  from: startOfMonth) - 2, 0)
+        let previousMonthDates = (0..<firstWeekday).reversed().compactMap {
+            calendar.date(byAdding: .day, value: -$0 - 1, to: startOfMonth)
+        }
+        
+        let remainingDays = max(0, (7 - (daysInMonth.count + firstWeekday) % 7))
+        let nextMonthDates: [Date] = remainingDays > 0
+        ? (1...remainingDays).compactMap { offset in
+            guard let lastDay = daysInMonth.last else { return nil }
+            return calendar.date(byAdding: .day, value: offset, to: lastDay)
+        }
+        : []
+        
+        return previousMonthDates + daysInMonth + nextMonthDates
     }
 }
 
