@@ -42,7 +42,7 @@ struct MainView: View {
         }
         .task {
             await mainViewModel.loadMealItemsMainView()
-            mainViewModel.searchViewModel.loadBookmarksSearchView()
+            await mainViewModel.searchViewModel.loadBookmarksSearchView()
             
             await MainActor.run {
                 isLoading = false
@@ -91,8 +91,8 @@ struct MainView: View {
         Section {
             HStack {
                 let daysBeforeAndAfter = 3
-                ForEach(-daysBeforeAndAfter...daysBeforeAndAfter, id: \.self) {
-                    offset in
+                ForEach(-daysBeforeAndAfter...daysBeforeAndAfter,
+                         id: \.self) { offset in
                     let date = mainViewModel.date(for: offset)
                     Button(action: {
                         mainViewModel.date = date

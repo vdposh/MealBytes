@@ -13,8 +13,6 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var errorMessage: AppError?
-    @Published var currentPage: Int = 0
-    @Published var maxResultsPerPage: Int = 20
     @Published var isLoading = false
     @Published var query: String = "" {
         didSet {
@@ -26,6 +24,8 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
+    private var maxResultsPerPage: Int = 20
+    var currentPage: Int = 0
     
     private let networkManager: NetworkManagerProtocol
     private let firestoreManager: FirestoreManagerProtocol
@@ -86,18 +86,21 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Delete Meal Item
-    func loadBookmarksSearchView() {
-        Task {
-            do {
-                let favoriteFoods = try await firestoreManager
-                    .loadBookmarksFirebase()
-                
-                await MainActor.run {
-                    self.favoriteFoods = favoriteFoods
-                    self.foods = favoriteFoods
-                    self.bookmarkedFoods = Set(favoriteFoods.map
-                                               { $0.searchFoodId })
-                }
+    func loadBookmarksSearchView() async {
+        do {
+            let favoriteFoods = try await firestoreManager
+                .loadBookmarksFirebase()
+            
+            await MainActor.run {
+                self.favoriteFoods = favoriteFoods
+                self.foods = favoriteFoods
+                self.bookmarkedFoods = Set(favoriteFoods.map {
+                    $0.searchFoodId
+                })
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = error as? AppError ?? .network
             }
         }
     }
@@ -105,29 +108,21 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Bookmark fill
     func toggleBookmarkSearchView(for food: Food) {
         Task {
-            do {
+            await MainActor.run {
                 if !bookmarkedFoods.contains(food.searchFoodId) {
-                    await MainActor.run {
-                        bookmarkedFoods.insert(food.searchFoodId)
-                        if !favoriteFoods.contains(where: {
-                            $0.searchFoodId == food.searchFoodId }) {
-                            favoriteFoods.append(food)
-                        }
+                    bookmarkedFoods.insert(food.searchFoodId)
+                    if !favoriteFoods.contains(where: {
+                        $0.searchFoodId == food.searchFoodId }) {
+                        favoriteFoods.append(food)
                     }
-                    
-                    try await firestoreManager
-                        .addBookmarkFirebase(favoriteFoods)
                 } else {
-                    await MainActor.run {
-                        bookmarkedFoods.remove(food.searchFoodId)
-                        favoriteFoods.removeAll {
-                            $0.searchFoodId == food.searchFoodId }
-                    }
-                    
-                    try await firestoreManager
-                        .addBookmarkFirebase(favoriteFoods)
+                    bookmarkedFoods.remove(food.searchFoodId)
+                    favoriteFoods.removeAll {
+                        $0.searchFoodId == food.searchFoodId }
                 }
             }
+            
+            try await firestoreManager.addBookmarkFirebase(favoriteFoods)
         }
     }
     

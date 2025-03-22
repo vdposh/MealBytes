@@ -21,14 +21,13 @@ struct GoalsView: View {
                 VStack {
                     HStack(alignment: .bottom) {
                         ServingTextFieldView(text: $calories, title: "Calories")
-                        .padding(.trailing, 5)
+                            .padding(.trailing, 5)
                         Text("kcal")
                             .font(.callout)
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 5)
-                    
                     
                     Text("MealBytes calculates your Recommended Daily Intake (RDI) to provide you with a daily calorie target tailored to help you achieve your desired weight.")
                         .font(.footnote)
@@ -64,7 +63,6 @@ struct GoalsView: View {
                         .frame(width: 20, alignment: .trailing)
                         .multilineTextAlignment(.trailing)
                 }
-
                 
                 HStack(alignment: .bottom) {
                     ServingTextFieldView(text: $carbohydrate, title: "Carbohydrate")

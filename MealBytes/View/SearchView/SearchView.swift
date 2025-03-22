@@ -33,8 +33,8 @@ struct SearchView: View {
                 } else {
                     List {
                         if !searchViewModel.foods.isEmpty {
-                            ForEach(searchViewModel.foods, id: \.searchFoodId) {
-                                food in
+                            ForEach(searchViewModel.foods,
+                                    id: \.searchFoodId) { food in
                                 HStack {
                                     NavigationLink(
                                         destination: FoodView(

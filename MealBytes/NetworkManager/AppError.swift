@@ -24,7 +24,7 @@ enum AppError: Error, Identifiable, LocalizedError {
         case .decoding:
             "There was a problem reading the data. Please ensure everything is correct and try again."
         case .results:
-            "No results found. Please try a different query."
+            ""
         case .noBookmarks:
             "No bookmarks yet"
         }

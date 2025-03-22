@@ -131,8 +131,8 @@ struct FoodView: View {
         Section {
             VStack {
                 HStack {
-                    ForEach(foodViewModel.compactNutrientDetails, id: \.id) {
-                        nutrient in
+                    ForEach(foodViewModel.compactNutrientDetails,
+                            id: \.id) { nutrient in
                         CompactNutrientDetailRow(nutrient: nutrient)
                     }
                 }
