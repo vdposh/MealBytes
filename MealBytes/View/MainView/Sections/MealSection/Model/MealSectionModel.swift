@@ -13,8 +13,8 @@ struct MealSectionModel {
     let iconName: String
     let color: Color
     let calories: Double
-    let fats: Double
-    let proteins: Double
-    let carbohydrates: Double
+    let fat: Double
+    let protein: Double
+    let carbohydrate: Double
     let foodItems: [MealItem]
 }

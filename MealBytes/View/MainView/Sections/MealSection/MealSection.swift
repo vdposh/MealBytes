@@ -18,9 +18,9 @@ struct MealSection: View {
             iconName: model.iconName,
             color: model.color,
             calories: model.calories,
-            fats: model.fats,
-            proteins: model.proteins,
-            carbohydrates: model.carbohydrates,
+            fat: model.fat,
+            protein: model.protein,
+            carbohydrate: model.carbohydrate,
             foodItems: model.foodItems,
             mainViewModel: mainViewModel
         )

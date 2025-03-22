@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 import FirebaseCore
-import FirebaseFirestore
 
 final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?

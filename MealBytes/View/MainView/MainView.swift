@@ -7,7 +7,6 @@
 
 import SwiftUI
 import FirebaseCore
-import FirebaseFirestore
 
 struct MainView: View {
     @State private var isExpanded: Bool = false

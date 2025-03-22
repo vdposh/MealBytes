@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 import FirebaseCore
-import FirebaseFirestore
 
 final class MainViewModel: ObservableObject {
     @Published var date = Date()
@@ -144,7 +143,7 @@ final class MainViewModel: ObservableObject {
             return allNutrients
         case false:
             return allNutrients.filter {
-                [.calories, .fat, .protein, .carbohydrates].contains($0.type)
+                [.calories, .fat, .protein, .carbohydrate].contains($0.type)
             }
         }
     }
@@ -194,14 +193,14 @@ final class MainViewModel: ObservableObject {
         case .summaries(let summaries):
             return [
                 "Fat": format(summaries[.fat]),
-                "Carbs": format(summaries[.carbohydrates]),
+                "Carbs": format(summaries[.carbohydrate]),
                 "Protein": format(summaries[.protein])
             ]
-        case .details(let fats, let carbs, let proteins):
+        case .details(let fat, let carbohydrate, let protein):
             return [
-                "F": format(fats),
-                "C": format(carbs),
-                "P": format(proteins)
+                "F": format(fat),
+                "C": format(carbohydrate),
+                "P": format(protein)
             ]
         }
     }
@@ -259,7 +258,7 @@ final class MainViewModel: ObservableObject {
 
 enum NutrientSource {
     case summaries([NutrientType: Double])
-    case details(fats: Double, carbs: Double, proteins: Double)
+    case details(fat: Double, carbohydrate: Double, protein: Double)
 }
 
 enum DisplayElement {

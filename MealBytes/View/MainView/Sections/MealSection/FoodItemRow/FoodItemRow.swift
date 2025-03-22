@@ -64,7 +64,7 @@ struct FoodItemRow: View {
                     NutrientLabel(
                         label: "C",
                         formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.carbohydrates] ?? 0.0,
+                            mealItem.nutrients[.carbohydrate] ?? 0.0,
                             unit: .empty
                         )
                     )
@@ -95,7 +95,7 @@ struct FoodItemRow: View {
                 portionUnit: "g",
                 nutrients: [
                     .calories: 89.0,
-                    .carbohydrates: 22.8,
+                    .carbohydrate: 22.8,
                     .fat: 0.3,
                     .protein: 1.1
                 ],

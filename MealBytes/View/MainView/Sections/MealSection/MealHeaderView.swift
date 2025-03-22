@@ -13,9 +13,9 @@ struct MealHeaderView: View {
     let iconName: String
     let color: Color
     let calories: Double
-    let fats: Double
-    let proteins: Double
-    let carbohydrates: Double
+    let fat: Double
+    let protein: Double
+    let carbohydrate: Double
     let foodItems: [MealItem]
     @State private var isPresentingSheet: Bool = false
     @State private var isFoodViewPresented: Bool = false
@@ -41,9 +41,9 @@ struct MealHeaderView: View {
                                 .foregroundColor(.primary)
                         }
                         NutrientSummaryRow(
-                            fats: fats,
-                            carbs: carbohydrates,
-                            proteins: proteins,
+                            fat: fat,
+                            carbohydrate: carbohydrate,
+                            protein: protein,
                             mainViewModel: mainViewModel
                         )
                     }

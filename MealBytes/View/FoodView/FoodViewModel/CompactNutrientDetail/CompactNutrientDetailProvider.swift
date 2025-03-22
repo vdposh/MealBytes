@@ -22,7 +22,7 @@ struct CompactNutrientDetailProvider {
                 serving: serving
             ),
             CompactNutrientDetail(
-                type: .carbohydrates,
+                type: .carbohydrate,
                 value: serving.carbohydrate,
                 serving: serving
             ),

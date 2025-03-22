@@ -8,15 +8,19 @@
 import SwiftUI
 
 struct NutrientSummaryRow: View {
-    let fats: Double
-    let carbs: Double
-    let proteins: Double
+    let fat: Double
+    let carbohydrate: Double
+    let protein: Double
     let mainViewModel: MainViewModel
     
     var body: some View {
         HStack {
             let nutrients = mainViewModel.formattedNutrients(
-                source: .details(fats: fats, carbs: carbs, proteins: proteins)
+                source: .details(
+                    fat: fat,
+                    carbohydrate: carbohydrate,
+                    protein: protein
+                )
             )
             ForEach(["F", "C", "P"], id: \.self) { label in
                 NutrientLabel(

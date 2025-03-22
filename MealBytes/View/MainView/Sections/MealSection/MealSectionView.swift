@@ -19,9 +19,9 @@ struct MealSectionView: View {
             iconName: mealType.iconName,
             color: mealType.color,
             calories: mainViewModel.totalNutrient(.calories, for: mealItems),
-            fats: mainViewModel.totalNutrient(.fat, for: mealItems),
-            proteins: mainViewModel.totalNutrient(.protein, for: mealItems),
-            carbohydrates: mainViewModel.totalNutrient(.carbohydrates,
+            fat: mainViewModel.totalNutrient(.fat, for: mealItems),
+            protein: mainViewModel.totalNutrient(.protein, for: mealItems),
+            carbohydrate: mainViewModel.totalNutrient(.carbohydrate,
                                                        for: mealItems),
             foodItems: mealItems
         )

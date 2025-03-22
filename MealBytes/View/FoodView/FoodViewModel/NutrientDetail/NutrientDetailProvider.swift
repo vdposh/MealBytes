@@ -48,7 +48,7 @@ struct NutrientDetailProvider {
                 isSubValue: true
             ),
             NutrientDetail(
-                type: .carbohydrates,
+                type: .carbohydrate,
                 value: serving.carbohydrate,
                 serving: serving,
                 isSubValue: false

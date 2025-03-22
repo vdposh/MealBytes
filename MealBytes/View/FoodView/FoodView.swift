@@ -111,7 +111,9 @@ struct FoodView: View {
             
             VStack(spacing: 15) {
                 ServingTextFieldView(text: $foodViewModel.amount,
-                                     title: "Size")
+                                     title: "Size",
+                                     placeholder: "Enter serving size",
+                                     keyboardType: .decimalPad)
                 .focused($isTextFieldFocused)
                 ServingButtonView(
                     showActionSheet: $foodViewModel.showActionSheet,

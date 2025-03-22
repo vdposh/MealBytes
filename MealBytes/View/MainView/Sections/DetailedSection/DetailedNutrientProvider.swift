@@ -37,8 +37,8 @@ struct DetailedNutrientProvider {
                 isSubValue: true
             ),
             DetailedNutrient(
-                type: .carbohydrates,
-                value: nutrientSummaries[.carbohydrates] ?? 0.0,
+                type: .carbohydrate,
+                value: nutrientSummaries[.carbohydrate] ?? 0.0,
                 isSubValue: false
             ),
             DetailedNutrient(
