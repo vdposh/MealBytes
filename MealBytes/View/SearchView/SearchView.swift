@@ -77,7 +77,8 @@ struct SearchView: View {
                     .background(
                         Group {
                             if searchViewModel.foods.isEmpty {
-                                noBookmarksView()
+                                AppError.noBookmarks
+                                    .contentUnavailableView(query: "") { }
                             } else {
                                 EmptyView()
                             }
@@ -87,8 +88,8 @@ struct SearchView: View {
             }
             .navigationBarTitle("Search", displayMode: .large)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
                         isPresented = false
                     }
                 }
@@ -101,21 +102,6 @@ struct SearchView: View {
         }
         .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
-    }
-    
-    private func noBookmarksView() -> some View {
-        ContentUnavailableView {
-            Label {
-                Text("No bookmarks yet")
-            } icon: {
-                Image("bookEmptyOpacity")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
-            }
-        } description: {
-            Text("Add your favorite dishes to bookmarks, and they'll appear here.")
-        }
     }
     
     @ViewBuilder

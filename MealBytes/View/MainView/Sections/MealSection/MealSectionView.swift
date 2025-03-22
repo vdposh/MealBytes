@@ -21,7 +21,8 @@ struct MealSectionView: View {
             calories: mainViewModel.totalNutrient(.calories, for: mealItems),
             fats: mainViewModel.totalNutrient(.fat, for: mealItems),
             proteins: mainViewModel.totalNutrient(.protein, for: mealItems),
-            carbohydrates: mainViewModel.totalNutrient(.carbohydrates, for: mealItems),
+            carbohydrates: mainViewModel.totalNutrient(.carbohydrates,
+                                                       for: mealItems),
             foodItems: mealItems
         )
         

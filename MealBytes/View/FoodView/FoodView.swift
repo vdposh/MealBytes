@@ -90,8 +90,8 @@ struct FoodView: View {
                 }
             }
             if showCloseButton {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
                         isDismissed = false
                     }
                 }

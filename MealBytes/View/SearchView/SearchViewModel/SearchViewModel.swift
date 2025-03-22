@@ -89,7 +89,8 @@ final class SearchViewModel: ObservableObject {
     func loadBookmarksSearchView() {
         Task {
             do {
-                let favoriteFoods = try await firestoreManager.loadBookmarksFirebase()
+                let favoriteFoods = try await firestoreManager
+                    .loadBookmarksFirebase()
                 
                 await MainActor.run {
                     self.favoriteFoods = favoriteFoods

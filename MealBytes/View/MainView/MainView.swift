@@ -11,57 +11,70 @@ import FirebaseFirestore
 
 struct MainView: View {
     @State private var isExpanded: Bool = false
+    @State private var isLoading: Bool = true
     @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
-        ZStack(alignment: .top) {
-            if isExpanded {
-                VStack {
-                    datePickerView
+        ZStack {
+            if isLoading {
+                LoadingView()
+            } else {
+                ZStack(alignment: .top) {
+                    if isExpanded {
+                        VStack {
+                            datePickerView
+                        }
+                        .zIndex(2)
+                        Color.primary
+                            .opacity(0.4)
+                            .ignoresSafeArea()
+                            .zIndex(1)
+                    }
+                    
+                    List {
+                        dateSection
+                        caloriesSection
+                        mealSections
+                        detailedInformationSection
+                    }
+                    .listSectionSpacing(15)
                 }
-                .zIndex(2)
-                Color.primary
-                    .opacity(0.4)
-                    .ignoresSafeArea()
-                    .zIndex(1)
             }
-            
-            List {
-                dateSection
-                caloriesSection
-                mealSections
-                detailedInformationSection
-            }
-            .listSectionSpacing(15)
         }
         .task {
             await mainViewModel.loadMealItemsMainView()
             mainViewModel.searchViewModel.loadBookmarksSearchView()
+            
+            await MainActor.run {
+                isLoading = false
+            }
         }
         .animation(.easeInOut, value: isExpanded)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Button(action: {
-                    isExpanded.toggle()
-                }) {
-                    HStack(spacing: 4) {
-                        Text(mainViewModel.formattedYearDisplay())
-                            .fontWeight(.medium)
-                        Image(systemName: {
-                            switch isExpanded {
-                            case true:
-                                "chevron.up"
-                            case false:
-                                "chevron.down"
-                            }
-                        }())
-                        .font(.caption)
-                        .fontWeight(.semibold)
+            if !isLoading {
+                ToolbarItem(placement: .principal) {
+                    Button(action: {
+                        isExpanded.toggle()
+                    }) {
+                        HStack(spacing: 4) {
+                            Text(mainViewModel.formattedYearDisplay())
+                                .fontWeight(.medium)
+                            Image(systemName: {
+                                switch isExpanded {
+                                case true:
+                                    "chevron.up"
+                                case false:
+                                    "chevron.down"
+                                }
+                            }())
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                        }
                     }
+                    .foregroundStyle(.customGreen)
+                    .buttonStyle(.plain)
                 }
-                .foregroundStyle(.customGreen)
-                .buttonStyle(.plain)
             }
         }
     }

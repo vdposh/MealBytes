@@ -17,9 +17,9 @@ struct MealHeaderView: View {
     let proteins: Double
     let carbohydrates: Double
     let foodItems: [MealItem]
-    @ObservedObject var mainViewModel: MainViewModel
     @State private var isPresentingSheet: Bool = false
     @State private var isFoodViewPresented: Bool = false
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {

@@ -15,15 +15,18 @@ enum AppError: Error, Identifiable, LocalizedError {
     case network
     case decoding
     case results
+    case noBookmarks
     
     var errorDescription: String {
         switch self {
         case .network:
             "There was a problem connecting to the network. Please check your internet connection and try again."
         case .decoding:
-            "There was a problem decoding the data. Please ensure the data format is correct and try again."
+            "There was a problem reading the data. Please ensure everything is correct and try again."
         case .results:
-            ""
+            "No results found. Please try a different query."
+        case .noBookmarks:
+            "No bookmarks yet"
         }
     }
     
@@ -34,25 +37,34 @@ enum AppError: Error, Identifiable, LocalizedError {
             switch self {
             case .network:
                 Label {
-                    Text("Network Error")
+                    Text("Network error")
                 } icon: {
                     Image(systemName: "wifi.slash")
-                        .foregroundColor(.customGreen.opacity(0.6))
                 }
                 .symbolEffect(.pulse)
             case .decoding:
                 Label {
-                    Text("Decoding Error")
+                    Text("Data processing issue")
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(.customGreen.opacity(0.6))
                 }
                 .symbolEffect(.rotate, options: .nonRepeating)
             case .results:
                 ContentUnavailableView.search(text: query)
+            case .noBookmarks:
+                Label {
+                    Text("No bookmarks yet")
+                } icon: {
+                    Image(systemName: "bookmark")
+                }
             }
         } description: {
-            Text(errorDescription)
+            switch self {
+            case .noBookmarks:
+                Text("Add your favorite dishes to bookmarks, and they'll appear here.")
+            default:
+                Text(errorDescription)
+            }
         } actions: {
             if case .network = self {
                 Button("Refresh", action: action)
