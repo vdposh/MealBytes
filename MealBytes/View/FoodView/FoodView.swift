@@ -82,7 +82,6 @@ struct FoodView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Text("Enter serving size")
                     .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 Button("Done") {
                     isTextFieldFocused = false
                 }

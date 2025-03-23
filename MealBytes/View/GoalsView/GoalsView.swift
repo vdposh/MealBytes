@@ -30,16 +30,15 @@ struct GoalsView: View {
                             text: $viewModel.calories,
                             title: "Calories",
                             titleColor: viewModel.caloriesTextColor,
-                            textColor: viewModel.isCaloriesTextFieldActive ?
-                                .secondary : .primary
+                            textColor: viewModel.caloriesTextColor
                         )
+                        .focused($isTextFieldFocused)
                         .disabled(viewModel.isCaloriesTextFieldActive)
                         .padding(.trailing, 5)
                         Text("kcal")
                             .font(.callout)
                             .foregroundColor(viewModel.caloriesTextColor)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 5)
                     Text("MealBytes calculates your Recommended Daily Intake (RDI) to provide you with a daily calorie target tailored to help you achieve your desired weight.")
                         .font(.footnote)
@@ -48,7 +47,7 @@ struct GoalsView: View {
                     
                     HStack {
                         Button(action: {
-                            print("Calculate RDI pressed")
+                            //link RDI
                         }) {
                             Text("Calculate My RDI")
                                 .font(.headline)
@@ -72,47 +71,85 @@ struct GoalsView: View {
                         .foregroundColor(.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 5)
-                    HStack(alignment: .bottom) {
-                        ServingTextFieldView(
-                            text: $viewModel.fat,
-                            title: "Fat",
-                            titleColor: viewModel.titleColor(for: viewModel.fat)
-                        )
-                        .padding(.top, 5)
-                        Text(viewModel.isUsingPercentage ? "%" : "g")
-                            .font(.callout)
-                            .foregroundColor(.primary)
-                            .frame(width: 20, alignment: .trailing)
+                    VStack(spacing: 15) {
+                        HStack(alignment: .bottom) {
+                            HStack(spacing: 2) {
+                                Text("2221")
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                Text(viewModel.unitSymbol(inverted: true))
+                                    .font(.callout)
+                                    .foregroundColor(.secondary)
+                                    .frame(width: 20, alignment: .leading)
+                            }
+                            .frame(width: 120, alignment: .leading)
+                            ServingTextFieldView(
+                                text: $viewModel.fat,
+                                title: "Fat",
+                                titleColor: viewModel.titleColor(for: viewModel.fat)
+                            )
+                            .focused($isTextFieldFocused)
+                            
+                            Text(viewModel.unitSymbol(inverted: false))
+                                .font(.callout)
+                                .foregroundColor(.primary)
+                                .frame(width: 20, alignment: .trailing)
+                        }
+                        
+                        HStack(alignment: .bottom) {
+                            HStack(spacing: 2) {
+                                Text("221")
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                Text(viewModel.unitSymbol(inverted: true))
+                                    .font(.callout)
+                                    .foregroundColor(.secondary)
+                                    .frame(width: 20, alignment: .leading)
+                            }
+                            .frame(width: 120, alignment: .leading)
+                            ServingTextFieldView(
+                                text: $viewModel.carbohydrate,
+                                title: "Carbohydrate",
+                                titleColor: viewModel.titleColor(for: viewModel.carbohydrate)
+                            )
+                            .focused($isTextFieldFocused)
+                            Text(viewModel.unitSymbol(inverted: false))
+                                .font(.callout)
+                                .foregroundColor(.primary)
+                                .frame(width: 20, alignment: .trailing)
+                        }
+                        
+                        HStack(alignment: .bottom) {
+                            HStack(spacing: 2) {
+                                Text("22121")
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                Text(viewModel.unitSymbol(inverted: true))
+                                    .font(.callout)
+                                    .foregroundColor(.secondary)
+                                    .frame(width: 20, alignment: .leading)
+                            }
+                            .frame(width: 120, alignment: .leading)
+                            ServingTextFieldView(
+                                text: $viewModel.protein,
+                                title: "Protein",
+                                titleColor: viewModel.titleColor(for: viewModel.protein)
+                            )
+                            .focused($isTextFieldFocused)
+                            Text(viewModel.unitSymbol(inverted: false))
+                                .font(.callout)
+                                .foregroundColor(.primary)
+                                .frame(width: 20, alignment: .trailing)
+                        }
                     }
-                    HStack(alignment: .bottom) {
-                        ServingTextFieldView(
-                            text: $viewModel.carbohydrate,
-                            title: "Carbohydrate",
-                            titleColor: viewModel.titleColor(for: viewModel.carbohydrate)
-                        )
-                        Text(viewModel.isUsingPercentage ? "%" : "g")
-                            .font(.callout)
-                            .foregroundColor(.primary)
-                            .frame(width: 20, alignment: .trailing)
-                    }
-                    HStack(alignment: .bottom) {
-                        ServingTextFieldView(
-                            text: $viewModel.protein,
-                            title: "Protein",
-                            titleColor: viewModel.titleColor(for: viewModel.protein)
-                        )
-                        Text(viewModel.isUsingPercentage ? "%" : "g")
-                            .font(.callout)
-                            .foregroundColor(.primary)
-                            .frame(width: 20, alignment: .trailing)
-                    }
+                    .padding(.top, 5)
                     .padding(.bottom, 10)
+                    
                     HStack {
                         Button(action: { viewModel.togglePercentageMode() }) {
-                            Text(viewModel.isUsingPercentage ?
-                                 "Use gramms" : "Use %")
-                            .font(.headline)
-                            .foregroundColor(.customGreen)
+                            Text(viewModel.toggleButtonText)
+                                .font(.headline)
+                                .foregroundColor(.customGreen)
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -120,8 +157,8 @@ struct GoalsView: View {
                     }
                 }
             }
-            .listRowSeparator(.hidden)
         }
+        .listRowSeparator(.hidden)
         .listSectionSpacing(15)
         .scrollDismissesKeyboard(.never)
         .navigationBarTitle("Your Goal", displayMode: .inline)
@@ -129,8 +166,9 @@ struct GoalsView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Text("Enter value")
                     .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Button("Done") { isTextFieldFocused = false }
+                Button("Done") {
+                    isTextFieldFocused = false
+                }
             }
         }
     }
