@@ -8,43 +8,94 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @State private var calories: String = ""
-    @State private var fat: String = ""
-    @State private var carbohydrate: String = ""
-    @State private var protein: String = ""
-    @State private var isUsingPercentage: Bool = true
     @FocusState private var isTextFieldFocused: Bool
+    @StateObject private var viewModel: GoalsViewModel
+    
+    init(viewModel: GoalsViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         List {
             Section {
                 VStack {
+                    Text("Required Calorie Metrics")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 5)
                     HStack(alignment: .bottom) {
-                        ServingTextFieldView(text: $calories, title: "Calories")
-                            .padding(.trailing, 5)
+                        ServingTextFieldView(
+                            text: $viewModel.calories,
+                            title: "Calories",
+                            titleColor: viewModel.caloriesTextColor,
+                            textColor: viewModel.isCaloriesTextFieldActive ?
+                                .secondary : .primary
+                        )
+                        .disabled(viewModel.isCaloriesTextFieldActive)
+                        .padding(.trailing, 5)
                         Text("kcal")
                             .font(.callout)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(viewModel.caloriesTextColor)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 5)
-                    
                     Text("MealBytes calculates your Recommended Daily Intake (RDI) to provide you with a daily calorie target tailored to help you achieve your desired weight.")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                         .padding(.vertical, 10)
-                    
+                }
+            }
+            Section {
+                VStack {
+                    Text("Required Macronutrient Metrics")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 5)
+                    HStack(alignment: .bottom) {
+                        ServingTextFieldView(
+                            text: $viewModel.fat,
+                            title: "Fat",
+                            titleColor: viewModel.titleColor(for: viewModel.fat)
+                        )
+                        .padding(.top, 5)
+                        Text(viewModel.isUsingPercentage ? "%" : "g")
+                            .font(.callout)
+                            .foregroundColor(.secondary)
+                            .frame(width: 20, alignment: .trailing)
+                    }
+                    HStack(alignment: .bottom) {
+                        ServingTextFieldView(
+                            text: $viewModel.carbohydrate,
+                            title: "Carbohydrate",
+                            titleColor: viewModel.titleColor(for: viewModel.carbohydrate)
+                        )
+                        Text(viewModel.isUsingPercentage ? "%" : "g")
+                            .font(.callout)
+                            .foregroundColor(.secondary)
+                            .frame(width: 20, alignment: .trailing)
+                    }
+                    HStack(alignment: .bottom) {
+                        ServingTextFieldView(
+                            text: $viewModel.protein,
+                            title: "Protein",
+                            titleColor: viewModel.titleColor(for: viewModel.protein)
+                        )
+                        Text(viewModel.isUsingPercentage ? "%" : "g")
+                            .font(.callout)
+                            .foregroundColor(.secondary)
+                            .frame(width: 20, alignment: .trailing)
+                    }
+                    .padding(.bottom, 10)
                     HStack {
-                        Button(action: {
-                            //переход к анкете
-                        }) {
-                            Text("Calculate My RDI")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 10)
-                                .background(Color.customGreen)
-                                .cornerRadius(12)
+                        Button(action: { viewModel.togglePercentageMode() }) {
+                            Text(viewModel.isUsingPercentage ?
+                                 "Use gramms" : "Use %")
+                            .font(.headline)
+                            .foregroundColor(.customGreen)
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -52,67 +103,25 @@ struct GoalsView: View {
                     }
                 }
             }
-            
-            Section {
-                HStack(alignment: .bottom) {
-                    ServingTextFieldView(text: $fat, title: "Fat")
-                        .padding(.top, 5)
-                    Text(isUsingPercentage ? "g" : "%")
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .frame(width: 20, alignment: .trailing)
-                        .multilineTextAlignment(.trailing)
-                }
-                
-                HStack(alignment: .bottom) {
-                    ServingTextFieldView(text: $carbohydrate, title: "Carbohydrate")
-                    Text(isUsingPercentage ? "g" : "%")
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .frame(width: 20, alignment: .trailing)
-                        .multilineTextAlignment(.trailing)
-                }
-                
-                HStack(alignment: .bottom) {
-                    ServingTextFieldView(text: $protein, title: "Protein")
-                    Text(isUsingPercentage ? "g" : "%")
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .frame(width: 20, alignment: .trailing)
-                        .multilineTextAlignment(.trailing)
-                }
-                
-                HStack {
-                    Button(action: {
-                        isUsingPercentage.toggle()
-                    }) {
-                        Text(isUsingPercentage ? "Use %" : "Use grams")
-                            .font(.headline)
-                            .foregroundColor(.customGreen)
-                    }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.bottom, 10)
-                }
-            }
             .listRowSeparator(.hidden)
         }
         .listSectionSpacing(15)
         .scrollDismissesKeyboard(.never)
-        .navigationBarTitle("Search", displayMode: .large)
+        .navigationBarTitle("Your Goal", displayMode: .inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Text("Enter value")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button("Done") {
-                    isTextFieldFocused = false
-                }
+                Button("Done") { isTextFieldFocused = false }
             }
         }
     }
 }
 
 #Preview {
-    GoalsView()
+    NavigationStack {
+        GoalsView(viewModel: GoalsViewModel())
+    }
+    .accentColor(.customGreen)
 }

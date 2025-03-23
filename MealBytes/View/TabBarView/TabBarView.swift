@@ -8,28 +8,39 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @StateObject var mainViewModel = MainViewModel()
-    
+    @StateObject var mainViewModel: MainViewModel
+    @StateObject var goalsViewModel: GoalsViewModel
+
+    init(mainViewModel: MainViewModel, goalsViewModel: GoalsViewModel) {
+        _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
+    }
+
     var body: some View {
         TabView {
-            MainView(mainViewModel: mainViewModel)
-                .tabItem {
-                    Image(systemName: "fork.knife")
-                    Text("Diary")
-                }
+            NavigationStack {
+                MainView(mainViewModel: mainViewModel)
+            }
+            .tabItem {
+                Image(systemName: "fork.knife")
+                Text("Diary")
+            }
             
-            GoalsView()
-                .tabItem {
-                    Image(systemName: "chart.bar")
-                    Text("Goals")
-                }
+            NavigationStack {
+                GoalsView(viewModel: goalsViewModel)
+            }
+            .tabItem {
+                Image(systemName: "chart.bar")
+                Text("Goals")
+            }
         }
     }
 }
 
 #Preview {
-    NavigationStack {
-        TabBarView()
-    }
+    TabBarView(
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
     .accentColor(.customGreen)
 }

@@ -12,16 +12,20 @@ struct ServingTextFieldView: View {
     let title: String
     var placeholder: String = "Enter value"
     var keyboardType: UIKeyboardType = .numberPad
-
+    var titleColor: Color = .primary
+    var textColor: Color = .primary
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary) + Text("*")
+                .foregroundColor(titleColor) + Text("*")
                 .foregroundColor(.customRed)
+            
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
                 .padding(.vertical, 5)
+                .foregroundColor(textColor)
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
