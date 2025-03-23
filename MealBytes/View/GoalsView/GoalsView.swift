@@ -45,6 +45,23 @@ struct GoalsView: View {
                         .font(.footnote)
                         .foregroundColor(.secondary)
                         .padding(.vertical, 10)
+                    
+                    HStack {
+                        Button(action: {
+                            print("Calculate RDI pressed")
+                        }) {
+                            Text("Calculate My RDI")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(Color.customGreen)
+                                .cornerRadius(12)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.bottom, 5)
+                    }
                 }
             }
             Section {
@@ -64,7 +81,7 @@ struct GoalsView: View {
                         .padding(.top, 5)
                         Text(viewModel.isUsingPercentage ? "%" : "g")
                             .font(.callout)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .frame(width: 20, alignment: .trailing)
                     }
                     HStack(alignment: .bottom) {
@@ -75,7 +92,7 @@ struct GoalsView: View {
                         )
                         Text(viewModel.isUsingPercentage ? "%" : "g")
                             .font(.callout)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .frame(width: 20, alignment: .trailing)
                     }
                     HStack(alignment: .bottom) {
@@ -86,7 +103,7 @@ struct GoalsView: View {
                         )
                         Text(viewModel.isUsingPercentage ? "%" : "g")
                             .font(.callout)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .frame(width: 20, alignment: .trailing)
                     }
                     .padding(.bottom, 10)

@@ -13,10 +13,15 @@ final class GoalsViewModel: ObservableObject {
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
-    @Published var isUsingPercentage: Bool = false
+    @Published var isUsingPercentage: Bool = true
+    
+    private let formatter: Formatter
     private var cancellables = Set<AnyCancellable>()
     
-    init() { setupBindings() }
+    init(formatter: Formatter = Formatter()) {
+        self.formatter = formatter
+        setupBindings()
+    }
     
     private func setupBindings() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)
@@ -28,13 +33,14 @@ final class GoalsViewModel: ObservableObject {
     
     private func calculateCalories(fat: String, carbohydrate: String, protein: String) {
         guard !isUsingPercentage else {
-            calories = "0"
+            calories = formatter.formattedValue(0.0, unit: .empty)
             return
         }
         let fatValue = Double(fat) ?? 0
         let carbValue = Double(carbohydrate) ?? 0
         let proteinValue = Double(protein) ?? 0
-        calories = String(format: "%.0f", (fatValue * 9) + (carbValue * 4) + (proteinValue * 4))
+        let totalCalories = (fatValue * 9) + (carbValue * 4) + (proteinValue * 4)
+        calories = formatter.formattedValue(totalCalories, unit: .empty)
     }
     
     func togglePercentageMode() {
