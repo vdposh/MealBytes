@@ -31,7 +31,7 @@ struct MacronutrientRow: View {
                 .foregroundColor(.primary)
                 .frame(width: 15, alignment: .leading)
             
-            HStack (spacing: 1) {
+            HStack (spacing: 5) {
                 Text(value)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
@@ -43,4 +43,11 @@ struct MacronutrientRow: View {
             .frame(width: 90, alignment: .trailing)
         }
     }
+}
+
+#Preview {
+    NavigationStack {
+        GoalsView(viewModel: GoalsViewModel())
+    }
+    .accentColor(.customGreen)
 }

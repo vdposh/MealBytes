@@ -64,23 +64,24 @@ final class GoalsViewModel: ObservableObject {
             showAlert(message: "Invalid calorie input")
             return
         }
-
+        
         switch isUsingPercentage {
         case true: // % -> Gramms
             let fatP = Double(fat) ?? 0
             let carbP = Double(carbohydrate) ?? 0
             let protP = Double(protein) ?? 0
             let totalP = fatP + carbP + protP
-
+            
             if totalP != 100 {
                 showAlert(message: "Macronutrient percentages must sum up to 100%")
                 return
             }
-
+            
             fat = formatter.roundedValue(currentCalories * fatP / 100 / 9)
-            carbohydrate = formatter.roundedValue(currentCalories * carbP / 100 / 4)
+            carbohydrate = formatter.roundedValue(
+                currentCalories * carbP / 100 / 4)
             protein = formatter.roundedValue(currentCalories * protP / 100 / 4)
-
+            
         case false: // Gramms -> %
             let fatG = Double(fat) ?? 0
             let carbG = Double(carbohydrate) ?? 0
@@ -89,7 +90,7 @@ final class GoalsViewModel: ObservableObject {
             var carbP = max(floor((carbG * 4) / currentCalories * 100), 1)
             var protP = max(floor((protG * 4) / currentCalories * 100), 1)
             let totalP = fatP + carbP + protP
-
+            
             if totalP > 100 {
                 let excess = totalP - 100
                 if protP >= fatP && protP >= carbP {
@@ -100,7 +101,7 @@ final class GoalsViewModel: ObservableObject {
                     fatP -= excess
                 }
             }
-
+            
             if totalP < 100 {
                 let deficit = 100 - totalP
                 if protP >= fatP && protP >= carbP {
@@ -111,20 +112,58 @@ final class GoalsViewModel: ObservableObject {
                     fatP += deficit
                 }
             }
-
+            
             fat = formatter.roundedValue(fatP)
             carbohydrate = formatter.roundedValue(carbP)
             protein = formatter.roundedValue(protP)
         }
-
+        
         calories = formatter.roundedValue(currentCalories)
         isUsingPercentage.toggle()
     }
-
+    
     func showAlert(message: String) {
         print(message)
     }
-
+    
+    // MARK: - For Text
+    func oppositeValue(for value: String, factor: Double) -> String {
+        guard
+            let currCal = Double(calories),
+            let numVal = Double(value),
+            currCal > 0
+        else { return "0" }
+        
+        switch isUsingPercentage {
+        case true: // % -> Gramms
+            let grams = currCal * numVal / 100 / factor
+            return max(formatter.roundedValue(grams), "1")
+            
+        case false: // Gramms -> %
+            let perc = (numVal * factor) / currCal * 100
+            let roundedPerc = max(floor(perc), 1)
+            
+            let fatPerc = (Double(fat) ?? 0) * 9 / currCal * 100
+            let carbPerc = (Double(carbohydrate) ?? 0) * 4 / currCal * 100
+            let protPerc = (Double(protein) ?? 0) * 4 / currCal * 100
+            let totalPerc = fatPerc + carbPerc + protPerc
+            
+            if totalPerc > 100 {
+                let excess = totalPerc - 100
+                if roundedPerc >= excess {
+                    return formatter.roundedValue(roundedPerc - excess)
+                }
+            }
+            
+            if totalPerc < 100 {
+                let deficit = 100 - totalPerc
+                return formatter.roundedValue(roundedPerc + deficit)
+            }
+            
+            return formatter.roundedValue(roundedPerc)
+        }
+    }
+    
     // MARK: - UI Helpers
     func titleColor(for value: String) -> Color {
         switch value.isEmpty {

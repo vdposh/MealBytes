@@ -26,31 +26,37 @@ struct MacronutrientMetricsSection: View {
                 VStack(spacing: 15) {
                     MacronutrientRow(
                         textFieldBinding: $viewModel.fat,
-                        value: "2221",
+                        value: viewModel.oppositeValue(
+                            for: viewModel.fat, factor: 9),
                         unitRight: viewModel.unitSymbol(inverted: true),
                         unitLeft: viewModel.unitSymbol(inverted: false),
                         title: "Fat",
-                        titleColor: viewModel.titleColor(for: viewModel.fat),
+                        titleColor: viewModel.titleColor(
+                            for: viewModel.fat),
                         focusedField: isFatFocused
                     )
                     
                     MacronutrientRow(
                         textFieldBinding: $viewModel.carbohydrate,
-                        value: "221",
+                        value: viewModel.oppositeValue(
+                            for: viewModel.carbohydrate, factor: 4),
                         unitRight: viewModel.unitSymbol(inverted: true),
                         unitLeft: viewModel.unitSymbol(inverted: false),
                         title: "Carbohydrate",
-                        titleColor: viewModel.titleColor(for: viewModel.carbohydrate),
+                        titleColor: viewModel.titleColor(
+                            for: viewModel.carbohydrate),
                         focusedField: isCarbohydrateFocused
                     )
                     
                     MacronutrientRow(
                         textFieldBinding: $viewModel.protein,
-                        value: "122",
+                        value: viewModel.oppositeValue(
+                            for: viewModel.protein, factor: 4),
                         unitRight: viewModel.unitSymbol(inverted: true),
                         unitLeft: viewModel.unitSymbol(inverted: false),
                         title: "Protein",
-                        titleColor: viewModel.titleColor(for: viewModel.protein),
+                        titleColor: viewModel.titleColor(
+                            for: viewModel.protein),
                         focusedField: isProteinFocused
                     )
                 }
