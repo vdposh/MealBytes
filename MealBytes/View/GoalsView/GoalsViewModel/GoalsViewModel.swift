@@ -14,6 +14,7 @@ final class GoalsViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var isUsingPercentage: Bool = true
+    private var isInitialized = false
     
     private let formatter: Formatter
     private var cancellables = Set<AnyCancellable>()
@@ -21,6 +22,11 @@ final class GoalsViewModel: ObservableObject {
     // MARK: - Initializer
     init(formatter: Formatter = Formatter()) {
         self.formatter = formatter
+        calories = "2000"
+        fat = "30"
+        carbohydrate = "50"
+        protein = "20"
+        isInitialized = true
         setupBindings()
     }
     
@@ -39,8 +45,10 @@ final class GoalsViewModel: ObservableObject {
     private func calculateCalories(fat: String,
                                    carbohydrate: String,
                                    protein: String) {
-        guard !isUsingPercentage else {
-            calories = formatter.formattedValue(0.0, unit: .empty)
+        guard isInitialized && !isUsingPercentage else {
+            if calories.isEmpty || calories == "0" {
+                calories = "2000"
+            }
             return
         }
         let fatValue = Double(fat) ?? 0
@@ -52,15 +60,69 @@ final class GoalsViewModel: ObservableObject {
     
     // MARK: - Actions
     func togglePercentageMode() {
-        isUsingPercentage.toggle()
-        if isUsingPercentage {
-            fat = ""
-            carbohydrate = ""
-            protein = ""
-            calories = "0"
+        guard let currentCalories = Double(calories), currentCalories > 0 else {
+            showAlert(message: "Invalid calorie input")
+            return
         }
+
+        if isUsingPercentage {
+            let fatP = Double(fat) ?? 0
+            let carbP = Double(carbohydrate) ?? 0
+            let protP = Double(protein) ?? 0
+            let totalP = fatP + carbP + protP
+
+            if totalP != 100 {
+                showAlert(message: "Macronutrient percentages must sum up to 100%")
+                return
+            }
+
+            fat = formatter.roundedValue(currentCalories * fatP / 100 / 9)
+            carbohydrate = formatter.roundedValue(currentCalories * carbP / 100 / 4)
+            protein = formatter.roundedValue(currentCalories * protP / 100 / 4)
+        } else {
+            let fatG = Double(fat) ?? 0
+            let carbG = Double(carbohydrate) ?? 0
+            let protG = Double(protein) ?? 0
+            var fatP = max(floor((fatG * 9) / currentCalories * 100), 1)
+            var carbP = max(floor((carbG * 4) / currentCalories * 100), 1)
+            var protP = max(floor((protG * 4) / currentCalories * 100), 1)
+            let totalP = fatP + carbP + protP
+
+            if totalP > 100 {
+                let excess = totalP - 100
+                if protP >= fatP && protP >= carbP {
+                    protP -= excess
+                } else if carbP >= fatP {
+                    carbP -= excess
+                } else {
+                    fatP -= excess
+                }
+            }
+
+            if totalP < 100 {
+                let deficit = 100 - totalP
+                if protP >= fatP && protP >= carbP {
+                    protP += deficit
+                } else if carbP >= fatP {
+                    carbP += deficit
+                } else {
+                    fatP += deficit
+                }
+            }
+
+            fat = formatter.roundedValue(fatP)
+            carbohydrate = formatter.roundedValue(carbP)
+            protein = formatter.roundedValue(protP)
+        }
+
+        calories = formatter.roundedValue(currentCalories)
+        isUsingPercentage.toggle()
     }
-    
+
+    func showAlert(message: String) {
+        print(message)
+    }
+
     // MARK: - UI Helpers
     func titleColor(for value: String) -> Color {
         switch value.isEmpty {

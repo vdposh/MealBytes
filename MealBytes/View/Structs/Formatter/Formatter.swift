@@ -54,4 +54,14 @@ struct Formatter {
             return "\(finalValue) \(unit.description)"
         }
     }
+    
+    func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
+           let roundedValue = floor(value)
+           switch unit {
+           case .empty:
+               return String(format: "%.0f", roundedValue)
+           default:
+               return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
+           }
+       }
 }
