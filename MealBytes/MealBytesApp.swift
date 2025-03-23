@@ -25,7 +25,9 @@ struct MealBytesApp: App {
         WindowGroup {
             TabBarView(
                 mainViewModel: MainViewModel(),
-                goalsViewModel: GoalsViewModel()
+                goalsViewModel: GoalsViewModel(
+                    firestoreManager: FirestoreManager()
+                )
             )
             .accentColor(.customGreen)
         }

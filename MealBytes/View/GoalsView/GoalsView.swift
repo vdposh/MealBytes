@@ -51,13 +51,32 @@ struct GoalsView: View {
                     dismissAllFocuses()
                 }
             }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    if let errorMessage = viewModel.validateInputs(includePercentageCheck: true) {
+                        viewModel.showAlert(message: errorMessage)
+                    } else {
+                        Task {
+                            await viewModel.saveGoalsViewModel()
+                        }
+                    }
+                }
+            }
+        }
+        .alert(viewModel.alertMessage, isPresented: $viewModel.isShowingAlert) {
+            Button("OK", role: .none) {
+                viewModel.isShowingAlert = false
+            }
         }
     }
 }
 
 #Preview {
-    NavigationStack {
-        GoalsView(viewModel: GoalsViewModel())
-    }
+    TabBarView(
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel(
+            firestoreManager: FirestoreManager()
+        )
+    )
     .accentColor(.customGreen)
 }

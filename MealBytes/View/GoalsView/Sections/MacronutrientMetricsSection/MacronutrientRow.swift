@@ -46,8 +46,11 @@ struct MacronutrientRow: View {
 }
 
 #Preview {
-    NavigationStack {
-        GoalsView(viewModel: GoalsViewModel())
-    }
+    TabBarView(
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel(
+            firestoreManager: FirestoreManager()
+        )
+    )
     .accentColor(.customGreen)
 }

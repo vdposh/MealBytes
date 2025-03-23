@@ -13,21 +13,42 @@ final class GoalsViewModel: ObservableObject {
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
+    @Published var alertMessage: String = ""
     @Published var isUsingPercentage: Bool = true
+    @Published var isShowingAlert: Bool = false
     private var isInitialized = false
     
     private let formatter: Formatter
+    private let firestoreManager: FirestoreManagerProtocol
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
-    init(formatter: Formatter = Formatter()) {
+    init(formatter: Formatter = Formatter(),
+         firestoreManager: FirestoreManagerProtocol) {
         self.formatter = formatter
+        self.firestoreManager = firestoreManager
         calories = ""
         fat = "30"
         carbohydrate = "50"
         protein = "20"
         isInitialized = true
         setupBindings()
+    }
+    
+    // MARK: - Save Texfields info
+    func saveGoalsViewModel() async {
+        let goalsData = GoalsData(
+            calories: calories,
+            fat: fat,
+            carbohydrate: carbohydrate,
+            protein: protein,
+            isUsingPercentage: isUsingPercentage
+        )
+        do {
+            try await firestoreManager.saveGoalsDataFirebase(goalsData)
+        } catch {
+            showAlert(message: "Failed to save nutrients: \(error.localizedDescription)")
+        }
     }
     
     // MARK: - Setup Bindings
@@ -60,29 +81,24 @@ final class GoalsViewModel: ObservableObject {
     
     // MARK: - Calculate Action
     func togglePercentageMode() {
-        guard let currentCalories = Double(calories), currentCalories > 0 else {
-            showAlert(message: "Invalid calorie input")
+        if let errorMessage = validateInputs(includePercentageCheck: true) {
+            showAlert(message: errorMessage)
             return
         }
         
+        let currentCalories = Double(calories) ?? 0
+        
         switch isUsingPercentage {
-        case true: // % -> Gramms
+        case true:
             let fatP = Double(fat) ?? 0
             let carbP = Double(carbohydrate) ?? 0
             let protP = Double(protein) ?? 0
-            let totalP = fatP + carbP + protP
-            
-            if totalP != 100 {
-                showAlert(message: "Macronutrient percentages must sum up to 100%")
-                return
-            }
-            
+
             fat = formatter.roundedValue(currentCalories * fatP / 100 / 9)
-            carbohydrate = formatter.roundedValue(
-                currentCalories * carbP / 100 / 4)
+            carbohydrate = formatter.roundedValue(currentCalories * carbP / 100 / 4)
             protein = formatter.roundedValue(currentCalories * protP / 100 / 4)
             
-        case false: // Gramms -> %
+        case false:
             let fatG = Double(fat) ?? 0
             let carbG = Double(carbohydrate) ?? 0
             let protG = Double(protein) ?? 0
@@ -93,23 +109,19 @@ final class GoalsViewModel: ObservableObject {
             
             if totalP > 100 {
                 let excess = totalP - 100
-                if protP >= fatP && protP >= carbP {
-                    protP -= excess
-                } else if carbP >= fatP {
-                    carbP -= excess
-                } else {
-                    fatP -= excess
+                switch true {
+                case protP >= fatP && protP >= carbP: protP -= excess
+                case carbP >= fatP: carbP -= excess
+                default: fatP -= excess
                 }
             }
             
             if totalP < 100 {
                 let deficit = 100 - totalP
-                if protP >= fatP && protP >= carbP {
-                    protP += deficit
-                } else if carbP >= fatP {
-                    carbP += deficit
-                } else {
-                    fatP += deficit
+                switch true {
+                case protP >= fatP && protP >= carbP: protP += deficit
+                case carbP >= fatP: carbP += deficit
+                default: fatP += deficit
                 }
             }
             
@@ -121,9 +133,50 @@ final class GoalsViewModel: ObservableObject {
         calories = formatter.roundedValue(currentCalories)
         isUsingPercentage.toggle()
     }
+
+    
+    func validateInputs(includePercentageCheck: Bool = false) -> String? {
+        var errorMessages: [String] = []
+        let inputs: [(String, String)] = [
+            (calories, "Invalid calorie input"),
+            (fat, "Enter Fat"),
+            (carbohydrate, "Enter Carbohydrate"),
+            (protein, "Enter Protein")
+        ]
+        
+        for (value, errorMessage) in inputs {
+            switch true {
+            case value.isEmpty,
+                 Double(value) == nil,
+                 Double(value) == 0:
+                errorMessages.append(errorMessage)
+            default:
+                break
+            }
+        }
+        
+        if includePercentageCheck && isUsingPercentage {
+            let fatP = Double(fat) ?? 0
+            let carbP = Double(carbohydrate) ?? 0
+            let protP = Double(protein) ?? 0
+            let totalP = fatP + carbP + protP
+            
+            if totalP != 100 {
+                errorMessages.append("Macronutrient percentages must sum up to 100%")
+            }
+        }
+
+        switch errorMessages.isEmpty {
+        case true:
+            return nil
+        case false:
+            return errorMessages.joined(separator: "\n")
+        }
+    }
     
     func showAlert(message: String) {
-        print(message)
+        alertMessage = message
+        isShowingAlert = true
     }
     
     // MARK: - For Text
@@ -205,8 +258,11 @@ final class GoalsViewModel: ObservableObject {
 }
 
 #Preview {
-    NavigationStack {
-        GoalsView(viewModel: GoalsViewModel())
-    }
+    TabBarView(
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel(
+            firestoreManager: FirestoreManager()
+        )
+    )
     .accentColor(.customGreen)
 }

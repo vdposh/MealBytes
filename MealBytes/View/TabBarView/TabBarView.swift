@@ -40,7 +40,9 @@ struct TabBarView: View {
 #Preview {
     TabBarView(
         mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        goalsViewModel: GoalsViewModel(
+            firestoreManager: FirestoreManager()
+        )
     )
     .accentColor(.customGreen)
 }
