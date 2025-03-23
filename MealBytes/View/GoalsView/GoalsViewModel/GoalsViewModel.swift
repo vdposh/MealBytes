@@ -22,7 +22,7 @@ final class GoalsViewModel: ObservableObject {
     // MARK: - Initializer
     init(formatter: Formatter = Formatter()) {
         self.formatter = formatter
-        calories = "2000"
+        calories = ""
         fat = "30"
         carbohydrate = "50"
         protein = "20"
@@ -58,14 +58,15 @@ final class GoalsViewModel: ObservableObject {
         calories = formatter.formattedValue(totalCalories, unit: .empty)
     }
     
-    // MARK: - Actions
+    // MARK: - Calculate Action
     func togglePercentageMode() {
         guard let currentCalories = Double(calories), currentCalories > 0 else {
             showAlert(message: "Invalid calorie input")
             return
         }
 
-        if isUsingPercentage {
+        switch isUsingPercentage {
+        case true: // % -> Gramms
             let fatP = Double(fat) ?? 0
             let carbP = Double(carbohydrate) ?? 0
             let protP = Double(protein) ?? 0
@@ -79,7 +80,8 @@ final class GoalsViewModel: ObservableObject {
             fat = formatter.roundedValue(currentCalories * fatP / 100 / 9)
             carbohydrate = formatter.roundedValue(currentCalories * carbP / 100 / 4)
             protein = formatter.roundedValue(currentCalories * protP / 100 / 4)
-        } else {
+
+        case false: // Gramms -> %
             let fatG = Double(fat) ?? 0
             let carbG = Double(carbohydrate) ?? 0
             let protG = Double(protein) ?? 0
@@ -151,7 +153,7 @@ final class GoalsViewModel: ObservableObject {
     var toggleButtonText: String {
         switch isUsingPercentage {
         case true: "Use gramms"
-        case false: "Use %"
+        case false: "Use percents"
         }
     }
     

@@ -56,12 +56,12 @@ struct Formatter {
     }
     
     func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
-           let roundedValue = floor(value)
-           switch unit {
-           case .empty:
-               return String(format: "%.0f", roundedValue)
-           default:
-               return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
-           }
-       }
+        let roundedValue = ceil(value)
+        switch unit {
+        case .empty:
+            return String(format: "%.0f", roundedValue)
+        default:
+            return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
+        }
+    }
 }
