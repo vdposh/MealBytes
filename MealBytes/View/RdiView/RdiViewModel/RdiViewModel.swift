@@ -12,7 +12,7 @@ class RdiViewModel: ObservableObject {
     @Published var weight: String = ""
     @Published var age: String = ""
     @Published var selectedGender: String? = nil
-    @Published var selectedActivityLevel: String? = nil
+    @Published var selectedActivity: String? = nil
     @Published var selectedWeightUnit: String = "kg"
     @Published var selectedHeightUnit: String = "cm"
     @Published var calculatedRdi: String = ""
@@ -53,7 +53,7 @@ class RdiViewModel: ObservableObject {
             errorMessages.append("Select a Gender.")
         }
         
-        if selectedActivityLevel == nil {
+        if selectedActivity == nil {
             errorMessages.append("Select an Activity Level.")
         }
         
@@ -108,7 +108,7 @@ class RdiViewModel: ObservableObject {
               let heightValue = Double(sanitizedHeight),
               let ageValue = Double(sanitizedAge),
               let gender = selectedGender,
-              let activityLevel = selectedActivityLevel else {
+              let activityLevel = selectedActivity else {
             alertMessage = "There was an error processing the input values."
             showAlert = true
             return
@@ -135,5 +135,8 @@ class RdiViewModel: ObservableObject {
 }
 
 #Preview {
-    RdiView()
+    NavigationStack {
+        RdiView(viewModel: RdiViewModel())
+    }
+    .accentColor(.customGreen)
 }

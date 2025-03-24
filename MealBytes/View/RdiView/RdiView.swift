@@ -8,7 +8,15 @@
 import SwiftUI
 
 struct RdiView: View {
-    @StateObject private var viewModel = RdiViewModel()
+    @FocusState private var isAgeFocused: Bool
+    @FocusState private var isWeightFocused: Bool
+    @FocusState private var isHeightFocused: Bool
+    
+    @StateObject private var viewModel: RdiViewModel
+    
+    init (viewModel: RdiViewModel) {
+        _viewModel = .init(wrappedValue: viewModel)
+    }
     
     var body: some View {
         List {
@@ -28,6 +36,7 @@ struct RdiView: View {
                         }
                         
                         Button(action: {
+                            dismissAllFocuses()
                             viewModel.calculateRdi()
                         }) {
                             Text("Calculate RDI")
@@ -51,13 +60,16 @@ struct RdiView: View {
                         text: $viewModel.age,
                         title: "Age",
                         keyboardType: .decimalPad,
-                        titleColor: viewModel.fieldTitleColor(for: viewModel.age)
+                        titleColor: viewModel.fieldTitleColor(
+                            for: viewModel.age)
                     )
+                    .focused($isAgeFocused)
                     
                     HStack {
                         Text("Gender")
                         Picker("", selection: $viewModel.selectedGender) {
-                            ForEach(viewModel.genders, id: \.self) { gender in
+                            ForEach(viewModel.genders,
+                                    id: \.self) { gender in
                                 Text(gender).tag(gender as String?)
                             }
                         }
@@ -66,8 +78,9 @@ struct RdiView: View {
                     
                     HStack {
                         Text("Activity Level")
-                        Picker("", selection: $viewModel.selectedActivityLevel) {
-                            ForEach(viewModel.activityLevels, id: \.self) { level in
+                        Picker("", selection: $viewModel.selectedActivity) {
+                            ForEach(viewModel.activityLevels,
+                                    id: \.self) { level in
                                 Text(level).tag(level as String?)
                             }
                         }
@@ -82,10 +95,14 @@ struct RdiView: View {
                         text: $viewModel.weight,
                         title: "Weight",
                         keyboardType: .decimalPad,
-                        titleColor: viewModel.fieldTitleColor(for: viewModel.weight)
+                        titleColor: viewModel.fieldTitleColor(
+                            for: viewModel.weight)
                     )
+                    .focused($isWeightFocused)
+                    
                     Picker("Unit", selection: $viewModel.selectedWeightUnit) {
-                        ForEach(viewModel.weightUnits, id: \.self) { unit in
+                        ForEach(viewModel.weightUnits,
+                                id: \.self) { unit in
                             Text(unit).tag(unit)
                         }
                     }
@@ -98,8 +115,11 @@ struct RdiView: View {
                         text: $viewModel.height,
                         title: "Height",
                         keyboardType: .decimalPad,
-                        titleColor: viewModel.fieldTitleColor(for: viewModel.height)
+                        titleColor: viewModel.fieldTitleColor(
+                            for: viewModel.height)
                     )
+                    .focused($isHeightFocused)
+                    
                     Picker("Unit", selection: $viewModel.selectedHeightUnit) {
                         ForEach(viewModel.heightUnits, id: \.self) { unit in
                             Text(unit).tag(unit)
@@ -110,14 +130,32 @@ struct RdiView: View {
         }
         .navigationBarTitle("RDI Calculator", displayMode: .inline)
         .scrollDismissesKeyboard(.never)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Text("Enter value")
+                    .foregroundColor(.secondary)
+                Button("Done") {
+                    dismissAllFocuses()
+                }
+            }
+        }
         .alert("Error", isPresented: $viewModel.showAlert) {
             Button("OK", role: .none) { viewModel.showAlert = false }
         } message: {
             Text(viewModel.alertMessage)
         }
     }
+    
+    private func dismissAllFocuses() {
+        isAgeFocused = false
+        isWeightFocused = false
+        isHeightFocused = false
+    }
 }
 
 #Preview {
-    RdiView()
+    NavigationStack {
+        RdiView(viewModel: RdiViewModel())
+    }
+    .accentColor(.customGreen)
 }

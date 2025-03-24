@@ -23,13 +23,15 @@ struct MealBytesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TabBarView(
-                mainViewModel: MainViewModel(),
-                goalsViewModel: GoalsViewModel(
-                    firestoreManager: FirestoreManager()
-                )
-            )
-            .accentColor(.customGreen)
+//            TabBarView(
+//                mainViewModel: MainViewModel(),
+//                goalsViewModel: GoalsViewModel(
+//                    firestoreManager: FirestoreManager()
+//                )
+//            )
+//            .accentColor(.customGreen)
+
+            RdiView(viewModel: RdiViewModel())
         }
     }
 }

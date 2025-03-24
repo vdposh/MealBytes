@@ -43,19 +43,30 @@ struct CalorieMetricsSection: View {
                     .foregroundColor(.secondary)
                     .padding(.vertical, 10)
                 
+                Text("You can also calculate your Recommended Daily Intake (RDI) manually by entering calories and macronutrient values such as fats, carbohydrates and proteins.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .padding(.vertical, 10)
+                
+                
                 HStack {
-                    Button(action: {
-                        // link RDI
-                    }) {
-                        Text("Calculate My RDI")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(Color.customGreen)
-                            .cornerRadius(12)
-                    }
-                    .buttonStyle(.plain)
+                    RdiButtonView(
+                        title: "Custom RDI",
+                        backgroundColor: .customGreen,
+                        action: {
+                            // action
+                        }
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 5)
+                    
+                    RdiButtonView(
+                        title: "Calculate RDI",
+                        backgroundColor: .customGreen,
+                        action: {
+                            // action
+                        }
+                    )
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.bottom, 5)
                 }
