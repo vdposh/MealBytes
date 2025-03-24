@@ -14,6 +14,7 @@ final class GoalsViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
+    @Published var errorMessage: AppError?
     @Published var isUsingPercentage: Bool = true
     @Published var isShowingAlert: Bool = false
     private var isInitialized = false
@@ -47,7 +48,7 @@ final class GoalsViewModel: ObservableObject {
         do {
             try await firestoreManager.saveGoalsDataFirebase(goalsData)
         } catch {
-            showAlert(message: "Failed to save nutrients: \(error.localizedDescription)")
+            errorMessage = error as? AppError ?? .network
         }
     }
     
@@ -134,7 +135,6 @@ final class GoalsViewModel: ObservableObject {
         isUsingPercentage.toggle()
     }
 
-    
     func validateInputs(includePercentageCheck: Bool = false) -> String? {
         var errorMessages: [String] = []
         let inputs: [(String, String)] = [
@@ -144,6 +144,17 @@ final class GoalsViewModel: ObservableObject {
             (protein, "Enter Protein")
         ]
         
+        if includePercentageCheck && isUsingPercentage {
+            let fatP = Double(fat) ?? 0
+            let carbP = Double(carbohydrate) ?? 0
+            let protP = Double(protein) ?? 0
+            let totalP = fatP + carbP + protP
+            
+            if totalP != 100 {
+                return "Macronutrient percentages must sum up to 100%"
+            }
+        }
+        
         for (value, errorMessage) in inputs {
             switch true {
             case value.isEmpty,
@@ -152,17 +163,6 @@ final class GoalsViewModel: ObservableObject {
                 errorMessages.append(errorMessage)
             default:
                 break
-            }
-        }
-        
-        if includePercentageCheck && isUsingPercentage {
-            let fatP = Double(fat) ?? 0
-            let carbP = Double(carbohydrate) ?? 0
-            let protP = Double(protein) ?? 0
-            let totalP = fatP + carbP + protP
-            
-            if totalP != 100 {
-                errorMessages.append("Macronutrient percentages must sum up to 100%")
             }
         }
 

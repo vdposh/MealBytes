@@ -12,18 +12,12 @@ struct GoalsView: View {
     @FocusState private var isFatFocused: Bool
     @FocusState private var isCarbohydrateFocused: Bool
     @FocusState private var isProteinFocused: Bool
+    @State private var isSaveSuccessAlertPresented: Bool = false
     
     @StateObject private var viewModel: GoalsViewModel
     
     init(viewModel: GoalsViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
-    }
-    
-    private func dismissAllFocuses() {
-        isCaloriesFocused = false
-        isFatFocused = false
-        isCarbohydrateFocused = false
-        isProteinFocused = false
     }
     
     var body: some View {
@@ -58,16 +52,34 @@ struct GoalsView: View {
                     } else {
                         Task {
                             await viewModel.saveGoalsViewModel()
+                            dismissAllFocuses()
+                            isSaveSuccessAlertPresented = true
                         }
                     }
                 }
             }
         }
-        .alert(viewModel.alertMessage, isPresented: $viewModel.isShowingAlert) {
+        .alert("Invalid value", isPresented: $viewModel.isShowingAlert) {
             Button("OK", role: .none) {
                 viewModel.isShowingAlert = false
             }
+        } message: {
+            Text(viewModel.alertMessage)
         }
+        .alert("Done", isPresented: $isSaveSuccessAlertPresented) {
+            Button("OK", role: .none) {
+                isSaveSuccessAlertPresented = false
+            }
+        } message: {
+            Text("Your goals have been saved successfully!")
+        }
+    }
+    
+    private func dismissAllFocuses() {
+        isCaloriesFocused = false
+        isFatFocused = false
+        isCarbohydrateFocused = false
+        isProteinFocused = false
     }
 }
 
