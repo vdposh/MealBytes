@@ -63,3 +63,10 @@ struct CalorieMetricsSection: View {
         }
     }
 }
+
+#Preview {
+    GoalsView(viewModel: GoalsViewModel(
+        firestoreManager: FirestoreManager())
+    )
+    .accentColor(.customGreen)
+}

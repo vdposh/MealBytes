@@ -111,8 +111,7 @@ final class FoodViewModel: ObservableObject {
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
-            amount: Double(amount.replacingOccurrences(of: ",",
-                                                       with: ".")) ?? 0,
+            amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date, mealType: mealType
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
@@ -135,8 +134,7 @@ final class FoodViewModel: ObservableObject {
                 result[detail.type] = detail.value
             },
             measurementDescription: selectedServing.measurementDescription,
-            amount: Double(amount.replacingOccurrences(of: ",",
-                                                       with: ".")) ?? 0,
+            amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date, mealType: mealType
         )
         
@@ -207,16 +205,14 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Button States
     var canAddFood: Bool {
-        let amountValue = Double(amount.replacingOccurrences(of: ",",
-                                                             with: ".")) ?? 0
+        let amountValue = Double(amount.sanitizedForDouble) ?? 0
         return amountValue > 0
     }
     
     // MARK: - Nutrient Calculation
     func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }
-        let amountValue = Double(amount.replacingOccurrences(of: ",",
-                                                             with: ".")) ?? 0
+        let amountValue = Double(amount.sanitizedForDouble) ?? 0
         return calculateBaseAmountValue(amountValue,
                                         serving: selectedServing)
     }
