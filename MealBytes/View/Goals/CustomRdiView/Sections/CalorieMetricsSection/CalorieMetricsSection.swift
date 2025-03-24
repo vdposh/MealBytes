@@ -37,40 +37,8 @@ struct CalorieMetricsSection: View {
                         .foregroundColor(viewModel.caloriesTextColor)
                 }
                 .padding(.top, 5)
-                
-                Text("MealBytes calculates your Recommended Daily Intake (RDI) to provide you with a daily calorie target tailored to help you achieve your desired weight.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .padding(.vertical, 10)
-                
-                Text("You can also calculate your Recommended Daily Intake (RDI) manually by entering calories and macronutrient values such as fats, carbohydrates and proteins.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .padding(.vertical, 10)
-                
-                
-                HStack {
-                    RdiButtonView(
-                        title: "Custom RDI",
-                        backgroundColor: .customGreen,
-                        action: {
-                            // action
-                        }
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, 5)
-                    
-                    RdiButtonView(
-                        title: "Calculate RDI",
-                        backgroundColor: .customGreen,
-                        action: {
-                            // action
-                        }
-                    )
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.bottom, 5)
-                }
             }
+            .padding(.bottom, 5)
         }
     }
 }
