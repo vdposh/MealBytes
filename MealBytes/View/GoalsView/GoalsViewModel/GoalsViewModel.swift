@@ -17,6 +17,7 @@ final class GoalsViewModel: ObservableObject {
     @Published var errorMessage: AppError?
     @Published var isUsingPercentage: Bool = true
     @Published var isShowingAlert: Bool = false
+    @Published var isLoading: Bool = true
     private var isInitialized = false
     
     private let formatter: Formatter
@@ -36,6 +37,24 @@ final class GoalsViewModel: ObservableObject {
         setupBindings()
     }
     
+    // MARK: - Load Goals Data
+    func loadGoalsView() async {
+        do {
+            let goalsData = try await firestoreManager.loadGoalsFirebase()
+            await MainActor.run {
+                calories = goalsData.calories
+                fat = goalsData.fat
+                carbohydrate = goalsData.carbohydrate
+                protein = goalsData.protein
+                isUsingPercentage = goalsData.isUsingPercentage
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error as? AppError ?? .network
+            }
+        }
+    }
+    
     // MARK: - Save Texfields info
     func saveGoalsViewModel() async {
         let goalsData = GoalsData(
@@ -46,7 +65,7 @@ final class GoalsViewModel: ObservableObject {
             isUsingPercentage: isUsingPercentage
         )
         do {
-            try await firestoreManager.saveGoalsDataFirebase(goalsData)
+            try await firestoreManager.saveGoalsFirebase(goalsData)
         } catch {
             errorMessage = error as? AppError ?? .network
         }

@@ -12,8 +12,8 @@ import FirebaseFirestore
 protocol FirestoreManagerProtocol {
     func loadMealItemsFirebase() async throws -> [MealItem]
     func loadBookmarksFirebase() async throws -> [Food]
-    func loadGoalsDataFirebase() async throws -> GoalsData
-    func saveGoalsDataFirebase(_ goalsData: GoalsData) async throws
+    func loadGoalsFirebase() async throws -> GoalsData
+    func saveGoalsFirebase(_ goalsData: GoalsData) async throws
     func addMealItemFirebase(_ mealItem: MealItem) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
@@ -87,14 +87,14 @@ final class FirestoreManager: FirestoreManagerProtocol {
     }
     
     // MARK: - Save Goals Data
-    func saveGoalsDataFirebase(_ goalsData: GoalsData) throws {
+    func saveGoalsFirebase(_ goalsData: GoalsData) throws {
         let documentReference = firestore.collection("userGoals")
             .document("currentGoals")
         try documentReference.setData(from: goalsData)
     }
     
     // MARK: - Load Goals Data
-    func loadGoalsDataFirebase() async throws -> GoalsData {
+    func loadGoalsFirebase() async throws -> GoalsData {
         let snapshot = try await firestore.collection("userGoals")
             .document("currentGoals").getDocument()
         guard let data = snapshot.data() else {

@@ -21,57 +21,71 @@ struct GoalsView: View {
     }
     
     var body: some View {
-        List {
-            CalorieMetricsSection(
-                isCaloriesFocused: $isCaloriesFocused,
-                viewModel: viewModel
-            )
-            MacronutrientMetricsSection(
-                isFatFocused: $isFatFocused,
-                isCarbohydrateFocused: $isCarbohydrateFocused,
-                isProteinFocused: $isProteinFocused,
-                viewModel: viewModel
-            )
-        }
-        .listRowSeparator(.hidden)
-        .listSectionSpacing(15)
-        .scrollDismissesKeyboard(.never)
-        .navigationBarTitle("Your Goal", displayMode: .inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Text("Enter value")
-                    .foregroundColor(.secondary)
-                Button("Done") {
-                    dismissAllFocuses()
+        ZStack {
+            if viewModel.isLoading {
+                LoadingView()
+            } else {
+                List {
+                    CalorieMetricsSection(
+                        isCaloriesFocused: $isCaloriesFocused,
+                        viewModel: viewModel
+                    )
+                    MacronutrientMetricsSection(
+                        isFatFocused: $isFatFocused,
+                        isCarbohydrateFocused: $isCarbohydrateFocused,
+                        isProteinFocused: $isProteinFocused,
+                        viewModel: viewModel
+                    )
                 }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    if let errorMessage = viewModel.validateInputs(includePercentageCheck: true) {
-                        viewModel.showAlert(message: errorMessage)
-                    } else {
-                        Task {
-                            await viewModel.saveGoalsViewModel()
+                .listRowSeparator(.hidden)
+                .listSectionSpacing(15)
+                .scrollDismissesKeyboard(.never)
+                .navigationBarTitle("Your Goal", displayMode: .inline)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Text("Enter value")
+                            .foregroundColor(.secondary)
+                        Button("Done") {
                             dismissAllFocuses()
-                            isSaveSuccessAlertPresented = true
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            if let errorMessage = viewModel.validateInputs(
+                                includePercentageCheck: true) {
+                                viewModel.showAlert(message: errorMessage)
+                            } else {
+                                Task {
+                                    await viewModel.saveGoalsViewModel()
+                                    dismissAllFocuses()
+                                    isSaveSuccessAlertPresented = true
+                                }
+                            }
                         }
                     }
                 }
+                .alert("Invalid value",
+                       isPresented: $viewModel.isShowingAlert) {
+                    Button("OK", role: .none) {
+                        viewModel.isShowingAlert = false
+                    }
+                } message: {
+                    Text(viewModel.alertMessage)
+                }
+                .alert("Done", isPresented: $isSaveSuccessAlertPresented) {
+                    Button("OK", role: .none) {
+                        isSaveSuccessAlertPresented = false
+                    }
+                } message: {
+                    Text("Your goals have been saved successfully!")
+                }
             }
         }
-        .alert("Invalid value", isPresented: $viewModel.isShowingAlert) {
-            Button("OK", role: .none) {
-                viewModel.isShowingAlert = false
+        .task {
+            await viewModel.loadGoalsView()
+            await MainActor.run {
+                viewModel.isLoading = false
             }
-        } message: {
-            Text(viewModel.alertMessage)
-        }
-        .alert("Done", isPresented: $isSaveSuccessAlertPresented) {
-            Button("OK", role: .none) {
-                isSaveSuccessAlertPresented = false
-            }
-        } message: {
-            Text("Your goals have been saved successfully!")
         }
     }
     
