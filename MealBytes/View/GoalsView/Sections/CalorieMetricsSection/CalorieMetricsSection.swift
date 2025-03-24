@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CalorieMetricsSection: View {
     var isCaloriesFocused: FocusState<Bool>.Binding
-    @ObservedObject var viewModel: GoalsViewModel
+    @ObservedObject var viewModel: CustomRdiViewModel
     
     var body: some View {
         Section {
@@ -76,7 +76,7 @@ struct CalorieMetricsSection: View {
 }
 
 #Preview {
-    GoalsView(viewModel: GoalsViewModel(
+    CustomRdiView(viewModel: CustomRdiViewModel(
         firestoreManager: FirestoreManager())
     )
     .accentColor(.customGreen)

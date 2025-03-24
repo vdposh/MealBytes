@@ -12,8 +12,8 @@ import FirebaseFirestore
 protocol FirestoreManagerProtocol {
     func loadMealItemsFirebase() async throws -> [MealItem]
     func loadBookmarksFirebase() async throws -> [Food]
-    func loadGoalsFirebase() async throws -> GoalsData
-    func saveGoalsFirebase(_ goalsData: GoalsData) async throws
+    func loadCustomRdiFirebase() async throws -> CustomRdiData
+    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) async throws
     func addMealItemFirebase(_ mealItem: MealItem) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
@@ -86,20 +86,20 @@ final class FirestoreManager: FirestoreManagerProtocol {
             .setData(["foods": data])
     }
     
-    // MARK: - Save Goals Data
-    func saveGoalsFirebase(_ goalsData: GoalsData) throws {
-        let documentReference = firestore.collection("userGoals")
-            .document("currentGoals")
-        try documentReference.setData(from: goalsData)
+    // MARK: - Save customRDI Data
+    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) throws {
+        let documentReference = firestore.collection("userCustomGoals")
+            .document("currentCustomGoals")
+        try documentReference.setData(from: customGoalsData)
     }
     
-    // MARK: - Load Goals Data
-    func loadGoalsFirebase() async throws -> GoalsData {
-        let snapshot = try await firestore.collection("userGoals")
-            .document("currentGoals").getDocument()
+    // MARK: - Load customRDI Data
+    func loadCustomRdiFirebase() async throws -> CustomRdiData {
+        let snapshot = try await firestore.collection("userCustomGoals")
+            .document("currentCustomGoals").getDocument()
         guard let data = snapshot.data() else {
             throw AppError.decoding
         }
-        return try GoalsData(data: data)
+        return try CustomRdiData(data: data)
     }
 }

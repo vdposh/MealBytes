@@ -9,13 +9,13 @@ import SwiftUI
 
 struct TabBarView: View {
     @StateObject var mainViewModel: MainViewModel
-    @StateObject var goalsViewModel: GoalsViewModel
-
-    init(mainViewModel: MainViewModel, goalsViewModel: GoalsViewModel) {
+    @StateObject var customRdiViewModel: CustomRdiViewModel
+    
+    init(mainViewModel: MainViewModel, customRdiViewModel: CustomRdiViewModel) {
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
-        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
+        _customRdiViewModel = StateObject(wrappedValue: customRdiViewModel)
     }
-
+    
     var body: some View {
         TabView {
             NavigationStack {
@@ -27,7 +27,7 @@ struct TabBarView: View {
             }
             
             NavigationStack {
-                GoalsView(viewModel: goalsViewModel)
+                CustomRdiView(viewModel: customRdiViewModel)
             }
             .tabItem {
                 Image(systemName: "chart.bar")
@@ -40,7 +40,7 @@ struct TabBarView: View {
 #Preview {
     TabBarView(
         mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel(
+        customRdiViewModel: CustomRdiViewModel(
             firestoreManager: FirestoreManager()
         )
     )

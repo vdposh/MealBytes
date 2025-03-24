@@ -1,5 +1,5 @@
 //
-//  GoalsViewModel.swift
+//  CustomRdiViewModel.swift
 //  MealBytes
 //
 //  Created by Porshe on 23/03/2025.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-final class GoalsViewModel: ObservableObject {
+final class CustomRdiViewModel: ObservableObject {
     @Published var calories: String = ""
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
@@ -37,16 +37,17 @@ final class GoalsViewModel: ObservableObject {
         setupBindings()
     }
     
-    // MARK: - Load Goals Data
-    func loadGoalsView() async {
+    // MARK: - Load CustomGoals Data
+    func loadCustomRdiView() async {
         do {
-            let goalsData = try await firestoreManager.loadGoalsFirebase()
+            let customGoalsData = try await firestoreManager
+                .loadCustomRdiFirebase()
             await MainActor.run {
-                calories = goalsData.calories
-                fat = goalsData.fat
-                carbohydrate = goalsData.carbohydrate
-                protein = goalsData.protein
-                isUsingPercentage = goalsData.isUsingPercentage
+                calories = customGoalsData.calories
+                fat = customGoalsData.fat
+                carbohydrate = customGoalsData.carbohydrate
+                protein = customGoalsData.protein
+                isUsingPercentage = customGoalsData.isUsingPercentage
             }
         } catch {
             await MainActor.run {
@@ -56,8 +57,8 @@ final class GoalsViewModel: ObservableObject {
     }
     
     // MARK: - Save Texfields info
-    func saveGoalsViewModel() async {
-        let goalsData = GoalsData(
+    func saveCustomRdiView() async {
+        let customGoalsData = CustomRdiData(
             calories: calories,
             fat: fat,
             carbohydrate: carbohydrate,
@@ -65,7 +66,7 @@ final class GoalsViewModel: ObservableObject {
             isUsingPercentage: isUsingPercentage
         )
         do {
-            try await firestoreManager.saveGoalsFirebase(goalsData)
+            try await firestoreManager.saveCustomRdiFirebase(customGoalsData)
         } catch {
             errorMessage = error as? AppError ?? .network
         }
@@ -279,7 +280,7 @@ final class GoalsViewModel: ObservableObject {
 #Preview {
     TabBarView(
         mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel(
+        customRdiViewModel: CustomRdiViewModel(
             firestoreManager: FirestoreManager()
         )
     )

@@ -11,7 +11,7 @@ struct MacronutrientMetricsSection: View {
     var isFatFocused: FocusState<Bool>.Binding
     var isCarbohydrateFocused: FocusState<Bool>.Binding
     var isProteinFocused: FocusState<Bool>.Binding
-    @ObservedObject var viewModel: GoalsViewModel
+    @ObservedObject var viewModel: CustomRdiViewModel
     
     var body: some View {
         Section {

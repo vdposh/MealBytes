@@ -46,7 +46,7 @@ struct MacronutrientRow: View {
 }
 
 #Preview {
-    GoalsView(viewModel: GoalsViewModel(
+    CustomRdiView(viewModel: CustomRdiViewModel(
         firestoreManager: FirestoreManager())
     )
     .accentColor(.customGreen)

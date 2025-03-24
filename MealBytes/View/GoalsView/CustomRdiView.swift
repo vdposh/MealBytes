@@ -1,5 +1,5 @@
 //
-//  GoalsView.swift
+//  CustomRdiView.swift
 //  MealBytes
 //
 //  Created by Porshe on 22/03/2025.
@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-struct GoalsView: View {
+struct CustomRdiView: View {
     @FocusState private var isCaloriesFocused: Bool
     @FocusState private var isFatFocused: Bool
     @FocusState private var isCarbohydrateFocused: Bool
     @FocusState private var isProteinFocused: Bool
     @State private var isSaveSuccessAlertPresented: Bool = false
     
-    @StateObject private var viewModel: GoalsViewModel
+    @StateObject private var viewModel: CustomRdiViewModel
     
-    init(viewModel: GoalsViewModel) {
+    init(viewModel: CustomRdiViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
@@ -56,7 +56,7 @@ struct GoalsView: View {
                                 viewModel.showAlert(message: errorMessage)
                             } else {
                                 Task {
-                                    await viewModel.saveGoalsViewModel()
+                                    await viewModel.saveCustomRdiView()
                                     dismissAllFocuses()
                                     isSaveSuccessAlertPresented = true
                                 }
@@ -82,7 +82,7 @@ struct GoalsView: View {
             }
         }
         .task {
-            await viewModel.loadGoalsView()
+            await viewModel.loadCustomRdiView()
             await MainActor.run {
                 viewModel.isLoading = false
             }
@@ -100,7 +100,7 @@ struct GoalsView: View {
 #Preview {
     TabBarView(
         mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel(
+        customRdiViewModel: CustomRdiViewModel(
             firestoreManager: FirestoreManager()
         )
     )
