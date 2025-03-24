@@ -22,6 +22,7 @@ struct ShowHideButtonView: View {
                 Text(isExpanded ? "Hide" : "Show")
                     .foregroundColor(.customGreen)
             }
+            .lineLimit(1)
             .font(.footnote)
             .frame(maxWidth: .infinity)
         }

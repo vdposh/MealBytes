@@ -12,10 +12,10 @@ struct RdiView: View {
     @FocusState private var isWeightFocused: Bool
     @FocusState private var isHeightFocused: Bool
     
-    @StateObject private var viewModel: RdiViewModel
+    @StateObject private var rdiViewModel: RdiViewModel
     
-    init (viewModel: RdiViewModel) {
-        _viewModel = .init(wrappedValue: viewModel)
+    init (rdiViewModel: RdiViewModel) {
+        _rdiViewModel = .init(wrappedValue: rdiViewModel)
     }
     
     var body: some View {
@@ -28,47 +28,48 @@ struct RdiView: View {
                         .padding(.vertical, 5)
                     
                     HStack {
-                        if !viewModel.calculatedRdi.isEmpty {
-                            Text("\(viewModel.calculatedRdi) calories")
-                                .lineLimit(1)
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
+                        Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
+                            .lineLimit(1)
+                            .font(rdiViewModel.font(
+                                for: rdiViewModel.calculatedRdi))
+                            .foregroundColor(rdiViewModel.color(
+                                for: rdiViewModel.calculatedRdi))
+                            .fontWeight(rdiViewModel.weight(
+                                for: rdiViewModel.calculatedRdi))
                         
-                        Button(action: {
-                            dismissAllFocuses()
-                            viewModel.calculateRdi()
-                        }) {
-                            Text("Calculate RDI")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 10)
-                                .background(Color.customGreen)
-                                .cornerRadius(12)
-                        }
-                        .buttonStyle(.plain)
+                        RdiButtonView(
+                            title: "Calculate RDI",
+                            backgroundColor: .customGreen,
+                            action: {
+                                dismissAllFocuses()
+                                rdiViewModel.calculateRdi()
+                            }
+                        )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                    .padding(.bottom, 5)
                 }
             }
+            .padding(.horizontal)
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
             
             Section(header: Text("Basic Information")) {
                 VStack(alignment: .leading, spacing: 15) {
                     ServingTextFieldView(
-                        text: $viewModel.age,
+                        text: $rdiViewModel.age,
                         title: "Age",
                         keyboardType: .decimalPad,
-                        titleColor: viewModel.fieldTitleColor(
-                            for: viewModel.age)
+                        titleColor: rdiViewModel.fieldTitleColor(
+                            for: rdiViewModel.age)
                     )
                     .focused($isAgeFocused)
                     
                     HStack {
                         Text("Gender")
-                        Picker("", selection: $viewModel.selectedGender) {
-                            ForEach(viewModel.genders,
+                            .font(.callout)
+                        Picker("",
+                               selection: $rdiViewModel.selectedGender) {
+                            ForEach(rdiViewModel.genders,
                                     id: \.self) { gender in
                                 Text(gender).tag(gender as String?)
                             }
@@ -78,8 +79,10 @@ struct RdiView: View {
                     
                     HStack {
                         Text("Activity Level")
-                        Picker("", selection: $viewModel.selectedActivity) {
-                            ForEach(viewModel.activityLevels,
+                            .font(.callout)
+                        Picker("",
+                               selection: $rdiViewModel.selectedActivity) {
+                            ForEach(rdiViewModel.activityLevels,
                                     id: \.self) { level in
                                 Text(level).tag(level as String?)
                             }
@@ -92,43 +95,48 @@ struct RdiView: View {
             Section(header: Text("Weight")) {
                 VStack(alignment: .leading, spacing: 15) {
                     ServingTextFieldView(
-                        text: $viewModel.weight,
+                        text: $rdiViewModel.weight,
                         title: "Weight",
                         keyboardType: .decimalPad,
-                        titleColor: viewModel.fieldTitleColor(
-                            for: viewModel.weight)
+                        titleColor: rdiViewModel.fieldTitleColor(
+                            for: rdiViewModel.weight)
                     )
                     .focused($isWeightFocused)
                     
-                    Picker("Unit", selection: $viewModel.selectedWeightUnit) {
-                        ForEach(viewModel.weightUnits,
+                    Picker("Unit",
+                           selection: $rdiViewModel.selectedWeightUnit) {
+                        ForEach(rdiViewModel.weightUnits,
                                 id: \.self) { unit in
                             Text(unit).tag(unit)
                         }
                     }
+                    .font(.callout)
                 }
             }
             
             Section(header: Text("Height")) {
                 VStack(alignment: .leading, spacing: 15) {
                     ServingTextFieldView(
-                        text: $viewModel.height,
+                        text: $rdiViewModel.height,
                         title: "Height",
                         keyboardType: .decimalPad,
-                        titleColor: viewModel.fieldTitleColor(
-                            for: viewModel.height)
+                        titleColor: rdiViewModel.fieldTitleColor(
+                            for: rdiViewModel.height)
                     )
                     .focused($isHeightFocused)
                     
-                    Picker("Unit", selection: $viewModel.selectedHeightUnit) {
-                        ForEach(viewModel.heightUnits, id: \.self) { unit in
+                    Picker("Unit",
+                           selection: $rdiViewModel.selectedHeightUnit) {
+                        ForEach(rdiViewModel.heightUnits,
+                                id: \.self) { unit in
                             Text(unit).tag(unit)
                         }
                     }
+                    .font(.callout)
                 }
             }
         }
-        .navigationBarTitle("RDI Calculator", displayMode: .inline)
+        .navigationBarTitle("RDI", displayMode: .inline)
         .scrollDismissesKeyboard(.never)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
@@ -138,11 +146,20 @@ struct RdiView: View {
                     dismissAllFocuses()
                 }
             }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    dismissAllFocuses()
+                    rdiViewModel.saveGoalsAlert()
+                }
+            }
         }
-        .alert("Error", isPresented: $viewModel.showAlert) {
-            Button("OK", role: .none) { viewModel.showAlert = false }
+        .alert(rdiViewModel.alertTitle(),
+               isPresented: $rdiViewModel.showAlert) {
+            Button("OK", role: .none) {
+                rdiViewModel.showAlert = false
+            }
         } message: {
-            Text(viewModel.alertMessage)
+            Text(rdiViewModel.alertMessage)
         }
     }
     
@@ -155,7 +172,7 @@ struct RdiView: View {
 
 #Preview {
     NavigationStack {
-        RdiView(viewModel: RdiViewModel())
+        RdiView(rdiViewModel: RdiViewModel())
     }
     .accentColor(.customGreen)
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CalorieMetricsSection: View {
     var isCaloriesFocused: FocusState<Bool>.Binding
-    @ObservedObject var viewModel: CustomRdiViewModel
+    @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
         Section {
@@ -23,29 +23,22 @@ struct CalorieMetricsSection: View {
                 
                 HStack(alignment: .bottom) {
                     ServingTextFieldView(
-                        text: $viewModel.calories,
+                        text: $customRdiViewModel.calories,
                         title: "Calories",
-                        titleColor: viewModel.caloriesTextColor,
-                        textColor: viewModel.caloriesTextColor
+                        titleColor: customRdiViewModel.caloriesTextColor,
+                        textColor: customRdiViewModel.caloriesTextColor
                     )
                     .focused(isCaloriesFocused)
-                    .disabled(viewModel.isCaloriesTextFieldActive)
+                    .disabled(customRdiViewModel.isCaloriesTextFieldActive)
                     .padding(.trailing, 5)
                     
                     Text("kcal")
                         .font(.callout)
-                        .foregroundColor(viewModel.caloriesTextColor)
+                        .foregroundColor(customRdiViewModel.caloriesTextColor)
                 }
                 .padding(.top, 5)
             }
             .padding(.bottom, 5)
         }
     }
-}
-
-#Preview {
-    CustomRdiView(viewModel: CustomRdiViewModel(
-        firestoreManager: FirestoreManager())
-    )
-    .accentColor(.customGreen)
 }

@@ -44,10 +44,3 @@ struct MacronutrientRow: View {
         }
     }
 }
-
-#Preview {
-    CustomRdiView(viewModel: CustomRdiViewModel(
-        firestoreManager: FirestoreManager())
-    )
-    .accentColor(.customGreen)
-}

@@ -21,6 +21,8 @@ struct RdiButtonView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
+                .frame(width: 150)
+                .lineLimit(1)
                 .background(backgroundColor)
                 .cornerRadius(12)
         }

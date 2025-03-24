@@ -24,10 +24,7 @@ struct MealBytesApp: App {
     var body: some Scene {
         WindowGroup {
             TabBarView(
-                mainViewModel: MainViewModel(),
-                customRdiViewModel: CustomRdiViewModel(
-                    firestoreManager: FirestoreManager()
-                )
+                mainViewModel: MainViewModel()
             )
             .accentColor(.customGreen)
         }

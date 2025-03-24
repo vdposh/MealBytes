@@ -114,7 +114,7 @@ final class CustomRdiViewModel: ObservableObject {
             let fatP = Double(fat) ?? 0
             let carbP = Double(carbohydrate) ?? 0
             let protP = Double(protein) ?? 0
-
+            
             fat = formatter.roundedValue(currentCalories * fatP / 100 / 9)
             carbohydrate = formatter.roundedValue(currentCalories * carbP / 100 / 4)
             protein = formatter.roundedValue(currentCalories * protP / 100 / 4)
@@ -154,7 +154,7 @@ final class CustomRdiViewModel: ObservableObject {
         calories = formatter.roundedValue(currentCalories)
         isUsingPercentage.toggle()
     }
-
+    
     func validateInputs(includePercentageCheck: Bool = false) -> String? {
         var errorMessages: [String] = []
         let inputs: [(String, String)] = [
@@ -178,14 +178,14 @@ final class CustomRdiViewModel: ObservableObject {
         for (value, errorMessage) in inputs {
             switch true {
             case value.isEmpty,
-                 Double(value) == nil,
-                 Double(value) == 0:
+                Double(value) == nil,
+                Double(value) == 0:
                 errorMessages.append(errorMessage)
             default:
                 break
             }
         }
-
+        
         switch errorMessages.isEmpty {
         case true:
             return nil
@@ -278,11 +278,8 @@ final class CustomRdiViewModel: ObservableObject {
 }
 
 #Preview {
-    TabBarView(
-        mainViewModel: MainViewModel(),
-        customRdiViewModel: CustomRdiViewModel(
-            firestoreManager: FirestoreManager()
-        )
+    CustomRdiView(customRdiViewModel: CustomRdiViewModel(
+        firestoreManager: FirestoreManager())
     )
     .accentColor(.customGreen)
 }

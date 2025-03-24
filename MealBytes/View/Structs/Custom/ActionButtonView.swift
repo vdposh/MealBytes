@@ -21,6 +21,7 @@ struct ActionButtonView: View {
                 .background(backgroundColor)
                 .foregroundColor(.white)
                 .font(.headline)
+                .lineLimit(1)
                 .cornerRadius(12)
         }
         .buttonStyle(.plain)

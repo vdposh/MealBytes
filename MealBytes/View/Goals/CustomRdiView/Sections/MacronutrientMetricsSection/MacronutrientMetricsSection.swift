@@ -11,7 +11,7 @@ struct MacronutrientMetricsSection: View {
     var isFatFocused: FocusState<Bool>.Binding
     var isCarbohydrateFocused: FocusState<Bool>.Binding
     var isProteinFocused: FocusState<Bool>.Binding
-    @ObservedObject var viewModel: CustomRdiViewModel
+    @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
         Section {
@@ -25,38 +25,44 @@ struct MacronutrientMetricsSection: View {
                 
                 VStack(spacing: 15) {
                     MacronutrientRow(
-                        textFieldBinding: $viewModel.fat,
-                        value: viewModel.oppositeValue(
-                            for: viewModel.fat, factor: 9),
-                        unitRight: viewModel.unitSymbol(inverted: true),
-                        unitLeft: viewModel.unitSymbol(inverted: false),
+                        textFieldBinding: $customRdiViewModel.fat,
+                        value: customRdiViewModel.oppositeValue(
+                            for: customRdiViewModel.fat, factor: 9),
+                        unitRight: customRdiViewModel.unitSymbol(
+                            inverted: true),
+                        unitLeft: customRdiViewModel.unitSymbol(
+                            inverted: false),
                         title: "Fat",
-                        titleColor: viewModel.titleColor(
-                            for: viewModel.fat),
+                        titleColor: customRdiViewModel.titleColor(
+                            for: customRdiViewModel.fat),
                         focusedField: isFatFocused
                     )
                     
                     MacronutrientRow(
-                        textFieldBinding: $viewModel.carbohydrate,
-                        value: viewModel.oppositeValue(
-                            for: viewModel.carbohydrate, factor: 4),
-                        unitRight: viewModel.unitSymbol(inverted: true),
-                        unitLeft: viewModel.unitSymbol(inverted: false),
+                        textFieldBinding: $customRdiViewModel.carbohydrate,
+                        value: customRdiViewModel.oppositeValue(
+                            for: customRdiViewModel.carbohydrate, factor: 4),
+                        unitRight: customRdiViewModel.unitSymbol(
+                            inverted: true),
+                        unitLeft: customRdiViewModel.unitSymbol(
+                            inverted: false),
                         title: "Carbohydrate",
-                        titleColor: viewModel.titleColor(
-                            for: viewModel.carbohydrate),
+                        titleColor: customRdiViewModel.titleColor(
+                            for: customRdiViewModel.carbohydrate),
                         focusedField: isCarbohydrateFocused
                     )
                     
                     MacronutrientRow(
-                        textFieldBinding: $viewModel.protein,
-                        value: viewModel.oppositeValue(
-                            for: viewModel.protein, factor: 4),
-                        unitRight: viewModel.unitSymbol(inverted: true),
-                        unitLeft: viewModel.unitSymbol(inverted: false),
+                        textFieldBinding: $customRdiViewModel.protein,
+                        value: customRdiViewModel.oppositeValue(
+                            for: customRdiViewModel.protein, factor: 4),
+                        unitRight: customRdiViewModel.unitSymbol(
+                            inverted: true),
+                        unitLeft: customRdiViewModel.unitSymbol(
+                            inverted: false),
                         title: "Protein",
-                        titleColor: viewModel.titleColor(
-                            for: viewModel.protein),
+                        titleColor: customRdiViewModel.titleColor(
+                            for: customRdiViewModel.protein),
                         focusedField: isProteinFocused
                     )
                 }
@@ -64,8 +70,10 @@ struct MacronutrientMetricsSection: View {
                 .padding(.bottom, 10)
                 
                 HStack {
-                    Button(action: { viewModel.togglePercentageMode() }) {
-                        Text(viewModel.toggleButtonText)
+                    Button(action: {
+                        customRdiViewModel.togglePercentageMode()
+                    }) {
+                        Text(customRdiViewModel.toggleButtonText)
                             .font(.callout)
                             .fontWeight(.medium)
                             .foregroundColor(.customGreen)

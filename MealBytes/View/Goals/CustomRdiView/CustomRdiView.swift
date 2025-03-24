@@ -14,15 +14,15 @@ struct CustomRdiView: View {
     @FocusState private var isProteinFocused: Bool
     @State private var isSaveSuccessAlertPresented: Bool = false
     
-    @StateObject private var viewModel: CustomRdiViewModel
+    @StateObject private var customRdiViewModel: CustomRdiViewModel
     
-    init(viewModel: CustomRdiViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(customRdiViewModel: CustomRdiViewModel) {
+        _customRdiViewModel = StateObject(wrappedValue: customRdiViewModel)
     }
     
     var body: some View {
         ZStack {
-            if viewModel.isLoading {
+            if customRdiViewModel.isLoading {
                 LoadingView()
             } else {
                 List {
@@ -30,13 +30,13 @@ struct CustomRdiView: View {
                     
                     CalorieMetricsSection(
                         isCaloriesFocused: $isCaloriesFocused,
-                        viewModel: viewModel
+                        customRdiViewModel: customRdiViewModel
                     )
                     MacronutrientMetricsSection(
                         isFatFocused: $isFatFocused,
                         isCarbohydrateFocused: $isCarbohydrateFocused,
                         isProteinFocused: $isProteinFocused,
-                        viewModel: viewModel
+                        customRdiViewModel: customRdiViewModel
                     )
                     
                     Section {
@@ -44,15 +44,20 @@ struct CustomRdiView: View {
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Text("Fill in the data and press Save")
+                            .lineLimit(1)
+                            .font(.callout)
+                            .foregroundColor(.secondary)
                     }
                     .padding(.horizontal)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
-                .listRowSeparator(.hidden)
                 .listSectionSpacing(15)
                 .scrollDismissesKeyboard(.never)
-                .navigationBarTitle("Your Goal", displayMode: .inline)
+                .navigationBarTitle("Custom RDI", displayMode: .inline)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
                         Text("Enter value")
@@ -63,12 +68,13 @@ struct CustomRdiView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
-                            if let errorMessage = viewModel.validateInputs(
-                                includePercentageCheck: true) {
-                                viewModel.showAlert(message: errorMessage)
+                            if let errorMessage = customRdiViewModel
+                                .validateInputs(includePercentageCheck: true) {
+                                customRdiViewModel.showAlert(
+                                    message: errorMessage)
                             } else {
                                 Task {
-                                    await viewModel.saveCustomRdiView()
+                                    await customRdiViewModel.saveCustomRdiView()
                                     dismissAllFocuses()
                                     isSaveSuccessAlertPresented = true
                                 }
@@ -77,12 +83,12 @@ struct CustomRdiView: View {
                     }
                 }
                 .alert("Invalid value",
-                       isPresented: $viewModel.isShowingAlert) {
+                       isPresented: $customRdiViewModel.isShowingAlert) {
                     Button("OK", role: .none) {
-                        viewModel.isShowingAlert = false
+                        customRdiViewModel.isShowingAlert = false
                     }
                 } message: {
-                    Text(viewModel.alertMessage)
+                    Text(customRdiViewModel.alertMessage)
                 }
                 .alert("Done", isPresented: $isSaveSuccessAlertPresented) {
                     Button("OK", role: .none) {
@@ -94,9 +100,9 @@ struct CustomRdiView: View {
             }
         }
         .task {
-            await viewModel.loadCustomRdiView()
+            await customRdiViewModel.loadCustomRdiView()
             await MainActor.run {
-                viewModel.isLoading = false
+                customRdiViewModel.isLoading = false
             }
         }
     }
@@ -110,11 +116,8 @@ struct CustomRdiView: View {
 }
 
 #Preview {
-    TabBarView(
-        mainViewModel: MainViewModel(),
-        customRdiViewModel: CustomRdiViewModel(
-            firestoreManager: FirestoreManager()
-        )
+    CustomRdiView(customRdiViewModel: CustomRdiViewModel(
+        firestoreManager: FirestoreManager())
     )
     .accentColor(.customGreen)
 }

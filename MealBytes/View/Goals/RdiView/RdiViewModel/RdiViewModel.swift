@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class RdiViewModel: ObservableObject {
+final class RdiViewModel: ObservableObject {
     @Published var height: String = ""
     @Published var weight: String = ""
     @Published var age: String = ""
@@ -30,6 +30,7 @@ class RdiViewModel: ObservableObject {
     let weightUnits = ["kg", "lbs"]
     let heightUnits = ["cm", "inches"]
     
+    // MARK: - Input Validation
     func validateInputs() -> String? {
         var errorMessages: [String] = []
         let inputs: [(String, String)] = [
@@ -65,6 +66,7 @@ class RdiViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Internal Calculation
     private func calculateRdiInternal(weightValue: Double,
                                       heightValue: Double,
                                       ageValue: Double,
@@ -93,6 +95,7 @@ class RdiViewModel: ObservableObject {
         calculatedRdi = String(format: "%.0f", bmr * activityFactor)
     }
     
+    // MARK: - RDI Calculation
     func calculateRdi() {
         if let errors = validateInputs() {
             alertMessage = errors
@@ -121,6 +124,7 @@ class RdiViewModel: ObservableObject {
                              activityLevel: activityLevel)
     }
     
+    // MARK: - Field Title Styling
     func fieldTitleColor(for field: String) -> Color {
         let sanitizedField = field.sanitizedForDouble
         switch true {
@@ -132,11 +136,78 @@ class RdiViewModel: ObservableObject {
             return .primary
         }
     }
+    
+    // MARK: - Save Goals
+    func validateBeforeSave() -> String? {
+        switch calculatedRdi.isEmpty {
+        case true:
+            return "Calculate RDI first"
+        case false:
+            return nil
+        }
+    }
+    
+    func saveGoalsAlert() {
+        switch validateBeforeSave() {
+        case let error?:
+            alertMessage = error
+            showAlert = true
+        case nil:
+            alertMessage = "Your goals have been saved successfully!"
+            showAlert = true
+        }
+    }
+    
+    func alertTitle() -> String {
+        switch alertMessage.contains("Error") {
+        case true:
+            "Error"
+        case false:
+            "Done"
+        }
+    }
+    
+    // MARK: - Text Style
+    func text(for calculatedRdi: String) -> String {
+        switch calculatedRdi.isEmpty {
+        case true:
+            return "Fill in the data"
+        case false:
+            return "\(calculatedRdi) calories"
+        }
+    }
+    
+    func font(for calculatedRdi: String) -> Font {
+        switch calculatedRdi.isEmpty {
+        case true:
+            return .callout
+        case false:
+            return .callout
+        }
+    }
+    
+    func color(for calculatedRdi: String) -> Color {
+        switch calculatedRdi.isEmpty {
+        case true:
+            return .secondary
+        case false:
+            return .primary
+        }
+    }
+    
+    func weight(for calculatedRdi: String) -> Font.Weight {
+        switch calculatedRdi.isEmpty {
+        case true:
+            return .regular
+        case false:
+            return .semibold
+        }
+    }
 }
 
 #Preview {
     NavigationStack {
-        RdiView(viewModel: RdiViewModel())
+        RdiView(rdiViewModel: RdiViewModel())
     }
     .accentColor(.customGreen)
 }

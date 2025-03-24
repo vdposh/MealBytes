@@ -25,6 +25,8 @@ struct ServingTextFieldView: View {
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
                 .padding(.vertical, 5)
+                .lineLimit(1)
+                .font(.callout)
                 .foregroundColor(textColor)
                 .overlay(
                     Rectangle()

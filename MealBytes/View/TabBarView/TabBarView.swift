@@ -9,11 +9,9 @@ import SwiftUI
 
 struct TabBarView: View {
     @StateObject var mainViewModel: MainViewModel
-    @StateObject var customRdiViewModel: CustomRdiViewModel
     
-    init(mainViewModel: MainViewModel, customRdiViewModel: CustomRdiViewModel) {
+    init(mainViewModel: MainViewModel) {
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
-        _customRdiViewModel = StateObject(wrappedValue: customRdiViewModel)
     }
     
     var body: some View {
@@ -27,7 +25,7 @@ struct TabBarView: View {
             }
             
             NavigationStack {
-                CustomRdiView(viewModel: customRdiViewModel)
+                GoalsView()
             }
             .tabItem {
                 Image(systemName: "chart.bar")
@@ -39,10 +37,7 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView(
-        mainViewModel: MainViewModel(),
-        customRdiViewModel: CustomRdiViewModel(
-            firestoreManager: FirestoreManager()
-        )
+        mainViewModel: MainViewModel()
     )
     .accentColor(.customGreen)
 }
