@@ -16,8 +16,9 @@ final class RdiViewModel: ObservableObject {
     @Published var selectedWeightUnit: String = "kg"
     @Published var selectedHeightUnit: String = "cm"
     @Published var calculatedRdi: String = ""
-    @Published var showAlert: Bool = false
     @Published var alertMessage: String = ""
+    @Published var showAlert: Bool = false
+    @Published var isLoading: Bool = true
     
     let genders = ["Male", "Female"]
     let activityLevels = [
@@ -29,6 +30,55 @@ final class RdiViewModel: ObservableObject {
     ]
     let weightUnits = ["kg", "lbs"]
     let heightUnits = ["cm", "inches"]
+    
+    private let firestoreManager: FirestoreManagerProtocol
+    
+    init(firestoreManager: FirestoreManagerProtocol = FirestoreManager()) {
+        self.firestoreManager = firestoreManager
+    }
+    
+    // MARK: - Save RDI Data
+    func saveRdiView() async {
+        let rdiData = RdiData(
+            calculatedRdi: calculatedRdi,
+            age: age,
+            selectedGender: selectedGender ?? "",
+            selectedActivity: selectedActivity ?? "",
+            weight: weight,
+            selectedWeightUnit: selectedWeightUnit,
+            height: height,
+            selectedHeightUnit: selectedHeightUnit
+        )
+        
+        do {
+            try await firestoreManager.saveRdiFirebase(rdiData)
+        } catch {
+            alertMessage = "Failed to save RDI data. Please try again."
+            showAlert = true
+        }
+    }
+    
+    // MARK: - Load RDI Data
+    func loadRdiView() async {
+        do {
+            let rdiData = try await firestoreManager.loadRdiFirebase()
+            await MainActor.run {
+                self.calculatedRdi = rdiData.calculatedRdi
+                self.age = rdiData.age
+                self.selectedGender = rdiData.selectedGender
+                self.selectedActivity = rdiData.selectedActivity
+                self.weight = rdiData.weight
+                self.selectedWeightUnit = rdiData.selectedWeightUnit
+                self.height = rdiData.height
+                self.selectedHeightUnit = rdiData.selectedHeightUnit
+            }
+        } catch {
+            await MainActor.run {
+                alertMessage = "Failed to load RDI data. Please try again."
+                showAlert = true
+            }
+        }
+    }
     
     // MARK: - Input Validation
     func validateInputs() -> String? {

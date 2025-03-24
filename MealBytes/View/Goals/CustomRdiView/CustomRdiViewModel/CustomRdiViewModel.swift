@@ -14,7 +14,6 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
-    @Published var errorMessage: AppError?
     @Published var isUsingPercentage: Bool = true
     @Published var isShowingAlert: Bool = false
     @Published var isLoading: Bool = true
@@ -51,7 +50,8 @@ final class CustomRdiViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                errorMessage = error as? AppError ?? .network
+                alertMessage = "Failed to load Custom RDI data. Please try again."
+                isShowingAlert = true
             }
         }
     }
@@ -68,10 +68,13 @@ final class CustomRdiViewModel: ObservableObject {
         do {
             try await firestoreManager.saveCustomRdiFirebase(customGoalsData)
         } catch {
-            errorMessage = error as? AppError ?? .network
+            await MainActor.run {
+                alertMessage = "Failed to save Custom RDI data. Please try again."
+                isShowingAlert = true
+            }
         }
     }
-    
+        
     // MARK: - Setup Bindings
     private func setupBindings() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)

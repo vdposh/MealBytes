@@ -13,11 +13,13 @@ protocol FirestoreManagerProtocol {
     func loadMealItemsFirebase() async throws -> [MealItem]
     func loadBookmarksFirebase() async throws -> [Food]
     func loadCustomRdiFirebase() async throws -> CustomRdiData
-    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) async throws
+    func loadRdiFirebase() async throws -> RdiData
     func addMealItemFirebase(_ mealItem: MealItem) async throws
+    func addBookmarkFirebase(_ foods: [Food]) async throws
+    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) async throws
+    func saveRdiFirebase(_ rdiData: RdiData) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
-    func addBookmarkFirebase(_ foods: [Food]) async throws
 }
 
 final class FirestoreManager: FirestoreManagerProtocol {
@@ -86,13 +88,6 @@ final class FirestoreManager: FirestoreManagerProtocol {
             .setData(["foods": data])
     }
     
-    // MARK: - Save customRDI Data
-    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) throws {
-        let documentReference = firestore.collection("userCustomGoals")
-            .document("currentCustomGoals")
-        try documentReference.setData(from: customGoalsData)
-    }
-    
     // MARK: - Load customRDI Data
     func loadCustomRdiFirebase() async throws -> CustomRdiData {
         let snapshot = try await firestore.collection("userCustomGoals")
@@ -101,5 +96,30 @@ final class FirestoreManager: FirestoreManagerProtocol {
             throw AppError.decoding
         }
         return try CustomRdiData(data: data)
+    }
+    
+    // MARK: - Save customRDI Data
+    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) throws {
+        let documentReference = firestore.collection("userCustomGoals")
+            .document("currentCustomGoals")
+        try documentReference.setData(from: customGoalsData)
+    }
+    
+    // MARK: - Load RDI Data
+    func loadRdiFirebase() async throws -> RdiData {
+        let documentReference = firestore.collection("userRdiGoals")
+            .document("currentRdiGoals")
+        let snapshot = try await documentReference.getDocument()
+        guard let data = snapshot.data() else {
+            throw AppError.decoding
+        }
+        return try Firestore.Decoder().decode(RdiData.self, from: data)
+    }
+    
+    // MARK: - Save RDI Data
+    func saveRdiFirebase(_ rdiData: RdiData) async throws {
+        let documentReference = firestore.collection("userRdiGoals")
+            .document("currentRdiGoals")
+        try documentReference.setData(from: rdiData)
     }
 }

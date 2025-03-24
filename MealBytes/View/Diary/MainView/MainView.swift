@@ -49,7 +49,6 @@ struct MainView: View {
                 mainViewModel.isLoading = false
             }
         }
-        .animation(.easeInOut, value: mainViewModel.isExpandedCalendar)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if !mainViewModel.isLoading {
