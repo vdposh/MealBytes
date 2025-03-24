@@ -14,15 +14,13 @@ struct RdiView: View {
     
     @StateObject private var rdiViewModel: RdiViewModel
     
-    init (rdiViewModel: RdiViewModel) {
+    init(rdiViewModel: RdiViewModel) {
         _rdiViewModel = .init(wrappedValue: rdiViewModel)
     }
     
     var body: some View {
         ZStack {
-            if rdiViewModel.isLoading {
-                LoadingView()
-            } else {
+            if rdiViewModel.isDataLoaded {
                 List {
                     Section {
                         VStack(alignment: .leading, spacing: 10) {
@@ -114,7 +112,7 @@ struct RdiView: View {
                                     Text(unit).tag(unit)
                                 }
                             }
-                            .font(.callout)
+                                   .font(.callout)
                         }
                     }
                     
@@ -136,7 +134,7 @@ struct RdiView: View {
                                     Text(unit).tag(unit)
                                 }
                             }
-                            .font(.callout)
+                                   .font(.callout)
                         }
                     }
                 }
@@ -170,10 +168,15 @@ struct RdiView: View {
                 }
                 .task {
                     await rdiViewModel.loadRdiView()
-                    await MainActor.run {
-                        rdiViewModel.isLoading = false
-                    }
                 }
+            } else {
+                LoadingView()
+                    .task {
+                        await rdiViewModel.loadRdiView()
+                        await MainActor.run {
+                            rdiViewModel.isDataLoaded = true
+                        }
+                    }
             }
         }
     }

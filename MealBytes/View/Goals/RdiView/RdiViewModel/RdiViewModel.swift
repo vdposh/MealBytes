@@ -18,7 +18,7 @@ final class RdiViewModel: ObservableObject {
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isLoading: Bool = true
+    @Published var isDataLoaded = false
     
     let genders = ["Male", "Female"]
     let activityLevels = [
