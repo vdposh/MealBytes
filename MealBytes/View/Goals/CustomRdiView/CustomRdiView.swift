@@ -26,8 +26,6 @@ struct CustomRdiView: View {
                 LoadingView()
             } else {
                 List {
-                    
-                    
                     CalorieMetricsSection(
                         isCaloriesFocused: $isCaloriesFocused,
                         customRdiViewModel: customRdiViewModel
@@ -40,7 +38,7 @@ struct CustomRdiView: View {
                     )
                     
                     Section {
-                        Text("You can calculate your daily calorie intake by entering the total number of calories and distributing macronutrients such as fats, carbohydrates, and proteins in percentages. Alternatively, you can switch to grams and specify the required amounts for each macronutrient to calculate the total calorie amount.")
+                        Text("Calculate your daily calorie intake by entering the total number of calories and distributing macronutrients such as fats, carbohydrates, and proteins in percentages. Alternatively, you can switch to grams and specify the required amounts for each macronutrient to calculate the total calorie amount.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)

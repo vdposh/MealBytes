@@ -38,7 +38,7 @@ struct RdiView: View {
                                 for: rdiViewModel.calculatedRdi))
                         
                         RdiButtonView(
-                            title: "Calculate RDI",
+                            title: "Calculate",
                             backgroundColor: .customGreen,
                             action: {
                                 dismissAllFocuses()
