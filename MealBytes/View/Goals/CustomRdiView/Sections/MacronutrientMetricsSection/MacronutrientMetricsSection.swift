@@ -19,7 +19,6 @@ struct MacronutrientMetricsSection: View {
                 Text("Required Macronutrient Metrics")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 5)
                 

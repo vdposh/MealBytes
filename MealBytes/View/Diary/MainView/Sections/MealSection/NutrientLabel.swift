@@ -16,8 +16,16 @@ struct NutrientLabel: View {
             .foregroundColor(.secondary)
             .font(.subheadline)
         Text(formattedValue)
+            .lineLimit(1)
             .foregroundColor(.secondary)
             .font(.subheadline)
             .padding(.trailing, 5)
     }
+}
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }

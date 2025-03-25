@@ -25,7 +25,6 @@ struct CalorieMetricsSection: View {
         Text("Required Calorie Metrics")
             .font(.subheadline)
             .fontWeight(.medium)
-            .foregroundColor(.primary)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 5)
     }

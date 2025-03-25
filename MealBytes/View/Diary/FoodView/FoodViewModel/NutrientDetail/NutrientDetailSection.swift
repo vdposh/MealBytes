@@ -14,7 +14,7 @@ struct NutrientDetailSectionView: View {
     var body: some View {
         Section {
             Text(title)
-                .font(.subheadline)
+                .font(.callout)
                 .fontWeight(.medium)
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)

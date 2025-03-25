@@ -17,7 +17,6 @@ struct CaloriesSection: View {
                 HStack {
                     Text("Calories")
                         .font(.subheadline)
-                        .fontWeight(.medium)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text(
                         mainViewModel.formatter.formattedValue(
@@ -26,6 +25,8 @@ struct CaloriesSection: View {
                             alwaysRoundUp: true
                         )
                     )
+                    .lineLimit(1)
+                    .font(.callout)
                     .fontWeight(.medium)
                 }
                 
@@ -45,4 +46,11 @@ struct CaloriesSection: View {
             .padding(.vertical, 5)
         }
     }
+}
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }

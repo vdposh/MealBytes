@@ -28,7 +28,6 @@ struct MacronutrientRow: View {
             
             Text(unitLeft)
                 .font(.callout)
-                .foregroundColor(.primary)
                 .frame(width: 15, alignment: .leading)
             
             HStack (spacing: 5) {

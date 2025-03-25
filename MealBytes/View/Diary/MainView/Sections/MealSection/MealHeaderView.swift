@@ -37,6 +37,8 @@ struct MealHeaderView: View {
                                 .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text(mainViewModel.formattedCalories(calories))
+                                .lineLimit(1)
+                                .font(.callout)
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
                         }
@@ -92,4 +94,11 @@ struct MealHeaderView: View {
             ))
         }
     }
+}
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }

@@ -37,12 +37,14 @@ struct FoodItemRow: View {
                 HStack {
                     Text(mealItem.foodName)
                         .lineLimit(1)
+                        .font(.callout)
                         .fontWeight(.medium)
-                        .frame(width: 120, alignment: .leading)
-                    Group {
+                    HStack(spacing: 2) {
                         Text(mainViewModel.formattedServingSize(for: mealItem))
                         Text(mealItem.portionUnit)
                     }
+                    .lineLimit(1)
+                    .font(.callout)
                     .foregroundColor(.secondary)
                     
                     Text(mainViewModel.formatter.formattedValue(
@@ -50,6 +52,8 @@ struct FoodItemRow: View {
                         unit: .empty,
                         alwaysRoundUp: true
                     ))
+                    .lineLimit(1)
+                    .font(.callout)
                     .fontWeight(.medium)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
