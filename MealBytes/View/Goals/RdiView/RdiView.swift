@@ -96,8 +96,7 @@ struct RdiView: View {
                             rdiViewModel.calculateRdi()
                         }
                     )
-                    .frame(maxWidth: .infinity,
-                           alignment: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
         }
@@ -198,7 +197,9 @@ struct RdiView: View {
 
 #Preview {
     NavigationStack {
-        RdiView(rdiViewModel: RdiViewModel())
+        RdiView(rdiViewModel: RdiViewModel(
+            mainViewModel: MainViewModel())
+        )
     }
     .accentColor(.customGreen)
 }

@@ -17,9 +17,9 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-//            if mainViewModel.isLoading {
-//                LoadingView()
-//            } else {
+            if mainViewModel.isLoading {
+                LoadingView()
+            } else {
                 ZStack(alignment: .top) {
                     if mainViewModel.isExpandedCalendar {
                         VStack {
@@ -40,14 +40,14 @@ struct MainView: View {
                     }
                     .listSectionSpacing(15)
                 }
-//            }
+            }
         }
         .task {
             await mainViewModel.loadMealItemsMainView()
             await mainViewModel.searchViewModel.loadBookmarksSearchView()
-//            await MainActor.run {
-//                mainViewModel.isLoading = false
-//            }
+            await MainActor.run {
+                mainViewModel.isLoading = false
+            }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

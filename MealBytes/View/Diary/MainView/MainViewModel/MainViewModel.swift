@@ -15,6 +15,7 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var errorMessage: AppError?
+    @Published var rdiProgress: Double = 0.0
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var isLoading: Bool = true

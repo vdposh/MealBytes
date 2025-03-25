@@ -25,6 +25,7 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var isUsingPercentage: Bool = true
     @Published var isShowingAlert: Bool = false
     @Published var isLoading: Bool = true
+    
     private var isInitialized = false
     
     private let formatter: Formatter

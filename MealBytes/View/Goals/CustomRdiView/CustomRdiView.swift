@@ -42,11 +42,6 @@ struct CustomRdiView: View {
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Text("Fill in the data and press Save")
-                            .lineLimit(1)
-                            .font(.callout)
-                            .foregroundColor(.secondary)
                     }
                     .padding(.horizontal)
                     .listRowInsets(EdgeInsets())

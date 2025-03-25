@@ -20,7 +20,7 @@ final class RdiViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var isDataLoaded = false
-    
+
     let genders = ["Male", "Female"]
     let activityLevels = [
         "Sedentary",
@@ -32,10 +32,16 @@ final class RdiViewModel: ObservableObject {
     let weightUnits = ["kg", "lbs"]
     let heightUnits = ["cm", "inches"]
     
+    private let formatter: Formatter
     private let firestoreManager: FirestoreManagerProtocol
+    let mainViewModel: MainViewModel
     
-    init(firestoreManager: FirestoreManagerProtocol = FirestoreManager()) {
+    init(formatter: Formatter = Formatter(),
+         firestoreManager: FirestoreManagerProtocol = FirestoreManager(),
+         mainViewModel: MainViewModel) {
+        self.formatter = formatter
         self.firestoreManager = firestoreManager
+        self.mainViewModel = mainViewModel
     }
     
     // MARK: - Save RDI Data
@@ -141,7 +147,7 @@ final class RdiViewModel: ObservableObject {
         default: activityFactor = 1.2
         }
         
-        calculatedRdi = String(format: "%.0f", bmr * activityFactor)
+        calculatedRdi = formatter.roundedValue(bmr * activityFactor)
     }
     
     // MARK: - RDI Calculation
@@ -256,7 +262,9 @@ final class RdiViewModel: ObservableObject {
 
 #Preview {
     NavigationStack {
-        RdiView(rdiViewModel: RdiViewModel())
+        RdiView(rdiViewModel: RdiViewModel(
+            mainViewModel: MainViewModel())
+        )
     }
     .accentColor(.customGreen)
 }

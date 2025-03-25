@@ -62,13 +62,11 @@ struct GoalsView: View {
             }
             .navigationBarTitle("Your Goals", displayMode: .inline)
             .navigationDestination(isPresented: $isNavigatingToRdiView) {
-                RdiView(rdiViewModel: RdiViewModel())
+                RdiView(rdiViewModel: goalsViewModel.rdiViewModel)
             }
             .navigationDestination(isPresented: $isNavigatingToCustomRdiView) {
                 CustomRdiView(
-                    customRdiViewModel: CustomRdiViewModel(
-                        firestoreManager: FirestoreManager()
-                    )
+                    customRdiViewModel: goalsViewModel.customRdiViewModel
                 )
             }
         }

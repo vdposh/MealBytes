@@ -13,23 +13,38 @@ struct CaloriesSection: View {
     
     var body: some View {
         Section {
-            VStack(spacing: 10) {
-                HStack {
-                    Text("Calories")
-                        .font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(
-                        mainViewModel.formatter.formattedValue(
-                            summaries[.calories] ?? 0.0,
-                            unit: .empty,
-                            alwaysRoundUp: true
-                        )
-                    )
-                    .lineLimit(1)
-                    .font(.callout)
-                    .fontWeight(.medium)
+            VStack(spacing: 20) {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Calories")
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack {
+                            Text(
+                                mainViewModel.formatter.formattedValue(
+                                    summaries[.calories] ?? 0.0,
+                                    unit: .empty,
+                                    alwaysRoundUp: true
+                                )
+                            )
+                            .lineLimit(1)
+                            Text("/")
+                                .foregroundStyle(.secondary)
+                            Text("")
+                                .foregroundStyle(.secondary)
+                        }
+                        .font(.callout)
+                        .fontWeight(.medium)
+                    }
+                    
+                    ProgressView(value: mainViewModel.rdiProgress)
+                        .progressViewStyle(.linear)
+                        .tint(.customGreen)
+                        .background(Color.customGreen.opacity(0.2))
+                        .scaleEffect(x: 1, y: 2, anchor: .center)
+                        .frame(height: 6)
+                        .cornerRadius(4)
                 }
-                
                 HStack {
                     let nutrients = mainViewModel.formattedNutrients(
                         source: .summaries(summaries)
@@ -40,7 +55,11 @@ struct CaloriesSection: View {
                             formattedValue: nutrients[key] ?? ""
                         )
                     }
-                    Spacer() // временно остается, справа будет еще одно значение
+                    Text("RDI 80%")
+                        .lineLimit(1)
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding(.vertical, 5)

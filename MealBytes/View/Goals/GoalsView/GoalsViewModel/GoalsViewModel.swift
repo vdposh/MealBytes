@@ -10,12 +10,14 @@ import SwiftUI
 final class GoalsViewModel: ObservableObject {
     let customRdiViewModel: CustomRdiViewModel
     let rdiViewModel: RdiViewModel
-    let firestoreManager: FirestoreManager
     
-    init() {
-        self.firestoreManager = FirestoreManager()
-        self.customRdiViewModel = CustomRdiViewModel(
-            firestoreManager: firestoreManager)
-        self.rdiViewModel = RdiViewModel()
+    init(
+        customRdiViewModel: CustomRdiViewModel = CustomRdiViewModel(
+            firestoreManager: FirestoreManager()),
+        rdiViewModel: RdiViewModel = RdiViewModel(
+            mainViewModel: MainViewModel())
+    ) {
+        self.customRdiViewModel = customRdiViewModel
+        self.rdiViewModel = rdiViewModel
     }
 }

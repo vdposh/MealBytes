@@ -22,10 +22,3 @@ struct NutrientLabel: View {
             .padding(.trailing, 5)
     }
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
-    .accentColor(.customGreen)
-}
