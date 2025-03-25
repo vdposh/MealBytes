@@ -114,34 +114,28 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Recalculate Nutrients
     func recalculateNutrients(for date: Date) {
-        let newSummaries = mealItems.values.reduce(
-            into: [NutrientType: Double]()
-        ) { result, items in
-            items.forEach { item in
-                guard calendar.isDate(item.date,
-                                      inSameDayAs: date) else { return }
-                NutrientType.allCases.forEach { nutrient in
-                    result[nutrient,
-                           default: 0.0] += item.nutrients[nutrient] ?? 0.0
+        let newSummaries = mealItems.values.flatMap { $0 }
+            .filter { calendar.isDate($0.date, inSameDayAs: date) }
+            .reduce(into: [NutrientType: Double]()) { result, item in
+                item.nutrients.forEach { nutrient, value in
+                    result[nutrient, default: 0.0] += value
                 }
             }
-        }
+        
         nutrientSummaries = newSummaries
     }
     
     // MARK: - Summary Calories
     func summariesForCaloriesSection() -> [NutrientType: Double] {
-        return mealItems.values
-            .flatMap { $0 }
-            .reduce(into: [NutrientType: Double]()) { result, item in
-                guard calendar.isDate(item.date,
-                                      inSameDayAs: date) else { return }
-                
-                NutrientType.allCases.forEach { nutrient in
-                    result[nutrient,
-                           default: 0.0] += item.nutrients[nutrient] ?? 0.0
-                }
-            }
+        mealItems.values.reduce(into: [NutrientType: Double]()) {
+            result, items in
+            items.filter { calendar.isDate($0.date, inSameDayAs: date) }
+                 .forEach { item in
+                     item.nutrients.forEach { nutrient, value in
+                         result[nutrient, default: 0.0] += value
+                     }
+                 }
+        }
     }
     
     // MARK: - Filter Meal Items

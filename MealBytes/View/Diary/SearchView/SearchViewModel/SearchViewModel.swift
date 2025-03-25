@@ -90,13 +90,13 @@ final class SearchViewModel: ObservableObject {
         do {
             let favoriteFoods = try await firestoreManager
                 .loadBookmarksFirebase()
-            
+
+            let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
+
             await MainActor.run {
                 self.favoriteFoods = favoriteFoods
                 self.foods = favoriteFoods
-                self.bookmarkedFoods = Set(favoriteFoods.map {
-                    $0.searchFoodId
-                })
+                self.bookmarkedFoods = bookmarked
             }
         } catch {
             await MainActor.run {
@@ -108,21 +108,23 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Bookmark fill
     func toggleBookmarkSearchView(for food: Food) {
         Task {
+            let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
+            
+            let updatedBookmarkedFoods = isAdding
+            ? bookmarkedFoods.union([food.searchFoodId])
+            : bookmarkedFoods.subtracting([food.searchFoodId])
+            
+            let updatedFavorites: [Food] = isAdding
+            ? favoriteFoods + (favoriteFoods.contains {
+                $0.searchFoodId == food.searchFoodId } ? [] : [food])
+            : favoriteFoods.filter { $0.searchFoodId != food.searchFoodId }
+            
             await MainActor.run {
-                if !bookmarkedFoods.contains(food.searchFoodId) {
-                    bookmarkedFoods.insert(food.searchFoodId)
-                    if !favoriteFoods.contains(where: {
-                        $0.searchFoodId == food.searchFoodId }) {
-                        favoriteFoods.append(food)
-                    }
-                } else {
-                    bookmarkedFoods.remove(food.searchFoodId)
-                    favoriteFoods.removeAll {
-                        $0.searchFoodId == food.searchFoodId }
-                }
+                self.favoriteFoods = updatedFavorites
+                self.bookmarkedFoods = updatedBookmarkedFoods
             }
             
-            try await firestoreManager.addBookmarkFirebase(favoriteFoods)
+            try await firestoreManager.addBookmarkFirebase(updatedFavorites)
         }
     }
     

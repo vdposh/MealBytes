@@ -30,8 +30,7 @@ struct MacronutrientMetricsSection: View {
                             for: customRdiViewModel.fat, factor: 9),
                         unitRight: customRdiViewModel.unitSymbol(
                             inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(
-                            inverted: false),
+                        unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Fat",
                         titleColor: customRdiViewModel.titleColor(
                             for: customRdiViewModel.fat),
@@ -44,8 +43,7 @@ struct MacronutrientMetricsSection: View {
                             for: customRdiViewModel.carbohydrate, factor: 4),
                         unitRight: customRdiViewModel.unitSymbol(
                             inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(
-                            inverted: false),
+                        unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Carbohydrate",
                         titleColor: customRdiViewModel.titleColor(
                             for: customRdiViewModel.carbohydrate),
@@ -58,8 +56,7 @@ struct MacronutrientMetricsSection: View {
                             for: customRdiViewModel.protein, factor: 4),
                         unitRight: customRdiViewModel.unitSymbol(
                             inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(
-                            inverted: false),
+                        unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Protein",
                         titleColor: customRdiViewModel.titleColor(
                             for: customRdiViewModel.protein),

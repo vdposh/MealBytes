@@ -264,8 +264,10 @@ final class CustomRdiViewModel: ObservableObject {
 }
 
 #Preview {
-    CustomRdiView(customRdiViewModel: CustomRdiViewModel(
-        firestoreManager: FirestoreManager())
-    )
+    NavigationStack {
+        CustomRdiView(customRdiViewModel: CustomRdiViewModel(
+            firestoreManager: FirestoreManager())
+        )
+    }
     .accentColor(.customGreen)
 }
