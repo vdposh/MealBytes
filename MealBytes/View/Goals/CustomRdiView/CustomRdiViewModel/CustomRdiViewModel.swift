@@ -9,7 +9,15 @@ import SwiftUI
 import Combine
 
 final class CustomRdiViewModel: ObservableObject {
-    @Published var calories: String = ""
+    @Published var appError: AppError?
+    @Published var calories: String = "" {
+        didSet {
+            guard let calorieValue = Double(calories), calorieValue >= 17 else {
+                calories = "17"
+                return
+            }
+        }
+    }
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
@@ -28,7 +36,7 @@ final class CustomRdiViewModel: ObservableObject {
          firestoreManager: FirestoreManagerProtocol) {
         self.formatter = formatter
         self.firestoreManager = firestoreManager
-        calories = ""
+        calories = "2000"
         fat = "30"
         carbohydrate = "50"
         protein = "20"
@@ -50,8 +58,7 @@ final class CustomRdiViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                alertMessage = "Failed to load Custom RDI data. Please try again."
-                isShowingAlert = true
+                appError = .decoding
             }
         }
     }
@@ -69,8 +76,7 @@ final class CustomRdiViewModel: ObservableObject {
             try await firestoreManager.saveCustomRdiFirebase(customGoalsData)
         } catch {
             await MainActor.run {
-                alertMessage = "Failed to save Custom RDI data. Please try again."
-                isShowingAlert = true
+                appError = .decoding
             }
         }
     }
@@ -90,12 +96,10 @@ final class CustomRdiViewModel: ObservableObject {
     private func calculateCalories(fat: String,
                                    carbohydrate: String,
                                    protein: String) {
-        guard isInitialized && !isUsingPercentage else {
-            if calories.isEmpty || calories == "0" {
-                calories = "2000"
-            }
+        guard isInitialized && !isUsingPercentage && !calories.isEmpty else {
             return
         }
+        
         let fatValue = Double(fat) ?? 0
         let carbValue = Double(carbohydrate) ?? 0
         let protValue = Double(protein) ?? 0
@@ -110,42 +114,30 @@ final class CustomRdiViewModel: ObservableObject {
             return
         }
         
-        let currentCalories = Double(calories) ?? 0
+        guard let currentCalories = Double(calories) else { return }
+        let fatValue = Double(fat) ?? 0
+        let carbValue = Double(carbohydrate) ?? 0
+        let protValue = Double(protein) ?? 0
         
-        switch isUsingPercentage {
-        case true:
-            let fatP = Double(fat) ?? 0
-            let carbP = Double(carbohydrate) ?? 0
-            let protP = Double(protein) ?? 0
+        if isUsingPercentage { // % -> Gramms
+            fat = formatter.roundedValue(currentCalories * fatValue / 100 / 9)
+            carbohydrate = formatter.roundedValue(currentCalories * carbValue / 100 / 4)
+            protein = formatter.roundedValue(currentCalories * protValue / 100 / 4)
+        } else { // Gramms -> %
+            var fatP = max(floor((fatValue * 9) / currentCalories * 100), 1)
+            var carbP = max(floor((carbValue * 4) / currentCalories * 100), 1)
+            var protP = max(floor((protValue * 4) / currentCalories * 100), 1)
             
-            fat = formatter.roundedValue(currentCalories * fatP / 100 / 9)
-            carbohydrate = formatter.roundedValue(currentCalories * carbP / 100 / 4)
-            protein = formatter.roundedValue(currentCalories * protP / 100 / 4)
-            
-        case false:
-            let fatG = Double(fat) ?? 0
-            let carbG = Double(carbohydrate) ?? 0
-            let protG = Double(protein) ?? 0
-            var fatP = max(floor((fatG * 9) / currentCalories * 100), 1)
-            var carbP = max(floor((carbG * 4) / currentCalories * 100), 1)
-            var protP = max(floor((protG * 4) / currentCalories * 100), 1)
             let totalP = fatP + carbP + protP
             
-            if totalP > 100 {
-                let excess = totalP - 100
-                switch true {
-                case protP >= fatP && protP >= carbP: protP -= excess
-                case carbP >= fatP: carbP -= excess
-                default: fatP -= excess
-                }
-            }
-            
-            if totalP < 100 {
-                let deficit = 100 - totalP
-                switch true {
-                case protP >= fatP && protP >= carbP: protP += deficit
-                case carbP >= fatP: carbP += deficit
-                default: fatP += deficit
+            if totalP != 100 {
+                let adjustment = totalP > 100 ? totalP - 100 : 100 - totalP
+                if protP >= carbP && protP >= fatP {
+                    protP = totalP > 100 ? protP - adjustment : protP + adjustment
+                } else if carbP >= fatP {
+                    carbP = totalP > 100 ? carbP - adjustment : carbP + adjustment
+                } else {
+                    fatP = totalP > 100 ? fatP - adjustment : fatP + adjustment
                 }
             }
             
@@ -189,10 +181,9 @@ final class CustomRdiViewModel: ObservableObject {
             }
         }
         
-        switch errorMessages.isEmpty {
-        case true:
+        if errorMessages.isEmpty {
             return nil
-        case false:
+        } else {
             return errorMessages.joined(separator: "\n")
         }
     }
@@ -229,13 +220,10 @@ final class CustomRdiViewModel: ObservableObject {
                 if roundedPerc >= excess {
                     return formatter.roundedValue(roundedPerc - excess)
                 }
-            }
-            
-            if totalPerc < 100 {
+            } else if totalPerc < 100 {
                 let deficit = 100 - totalPerc
                 return formatter.roundedValue(roundedPerc + deficit)
             }
-            
             return formatter.roundedValue(roundedPerc)
         }
     }
@@ -257,11 +245,9 @@ final class CustomRdiViewModel: ObservableObject {
     
     // MARK: - Unit Helpers
     func unitSymbol(inverted: Bool = false) -> String {
-        switch (isUsingPercentage, inverted) {
-        case (true, false): "%"
-        case (true, true): "g"
-        case (false, false): "g"
-        case (false, true): "%"
+        switch (inverted, isUsingPercentage) {
+        case (false, true), (true, false): "%"
+        default: "g"
         }
     }
     
@@ -273,10 +259,7 @@ final class CustomRdiViewModel: ObservableObject {
     }
     
     var isCaloriesTextFieldActive: Bool {
-        switch isUsingPercentage {
-        case true: false
-        case false: true
-        }
+        !isUsingPercentage
     }
 }
 

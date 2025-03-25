@@ -14,31 +14,40 @@ struct CalorieMetricsSection: View {
     var body: some View {
         Section {
             VStack {
-                Text("Required Calorie Metrics")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 5)
-                
-                HStack(alignment: .bottom) {
-                    ServingTextFieldView(
-                        text: $customRdiViewModel.calories,
-                        title: "Calories",
-                        titleColor: customRdiViewModel.caloriesTextColor,
-                        textColor: customRdiViewModel.caloriesTextColor
-                    )
-                    .focused(isCaloriesFocused)
-                    .disabled(customRdiViewModel.isCaloriesTextFieldActive)
-                    .padding(.trailing, 5)
-                    
-                    Text("kcal")
-                        .font(.callout)
-                        .foregroundColor(customRdiViewModel.caloriesTextColor)
-                }
-                .padding(.top, 5)
+                sectionTitle
+                calorieInputRow
             }
             .padding(.bottom, 5)
         }
     }
+    
+    private var sectionTitle: some View {
+        Text("Required Calorie Metrics")
+            .font(.subheadline)
+            .fontWeight(.medium)
+            .foregroundColor(.primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 5)
+    }
+    
+    private var calorieInputRow: some View {
+        HStack(alignment: .bottom) {
+            ServingTextFieldView(
+                text: $customRdiViewModel.calories,
+                title: "Calories",
+                titleColor: customRdiViewModel.titleColor(
+                    for: customRdiViewModel.calories),
+                textColor: customRdiViewModel.caloriesTextColor
+            )
+            .focused(isCaloriesFocused)
+            .disabled(customRdiViewModel.isCaloriesTextFieldActive)
+            .padding(.trailing, 5)
+            
+            Text("kcal")
+                .font(.callout)
+                .foregroundColor(customRdiViewModel.caloriesTextColor)
+        }
+        .padding(.top, 5)
+    }
+
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 final class RdiViewModel: ObservableObject {
+    @Published var appError: AppError?
     @Published var height: String = ""
     @Published var weight: String = ""
     @Published var age: String = ""
@@ -53,8 +54,7 @@ final class RdiViewModel: ObservableObject {
         do {
             try await firestoreManager.saveRdiFirebase(rdiData)
         } catch {
-            alertMessage = "Failed to save RDI data. Please try again."
-            showAlert = true
+            appError = .decoding
         }
     }
     
@@ -74,8 +74,7 @@ final class RdiViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                alertMessage = "Failed to load RDI data. Please try again."
-                showAlert = true
+                appError = .decoding
             }
         }
     }
