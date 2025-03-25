@@ -75,7 +75,22 @@ struct GoalsView: View {
 
 #Preview {
     NavigationStack {
-        GoalsView(goalsViewModel: GoalsViewModel())
+        GoalsView(
+            goalsViewModel: GoalsViewModel(
+                customRdiViewModel: CustomRdiViewModel(
+                    firestoreManager: FirestoreManager(),
+                    mainViewModel: MainViewModel(
+                        firestoreManager: FirestoreManager()
+                    )
+                ),
+                rdiViewModel: RdiViewModel(
+                    firestoreManager: FirestoreManager(),
+                    mainViewModel: MainViewModel(
+                        firestoreManager: FirestoreManager()
+                    )
+                )
+            )
+        )
     }
     .accentColor(.customGreen)
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CaloriesSection: View {
     let summaries: [NutrientType: Double]
-    let mainViewModel: MainViewModel
+    @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
@@ -19,7 +19,7 @@ struct CaloriesSection: View {
                         Text("Calories")
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        HStack {
+                        HStack(spacing: 5) {
                             Text(
                                 mainViewModel.formatter.formattedValue(
                                     summaries[.calories] ?? 0.0,
@@ -30,7 +30,8 @@ struct CaloriesSection: View {
                             .lineLimit(1)
                             Text("/")
                                 .foregroundStyle(.secondary)
-                            Text("")
+                            Text(mainViewModel.rdi)
+                                .lineLimit(1)
                                 .foregroundStyle(.secondary)
                         }
                         .font(.callout)
@@ -55,7 +56,8 @@ struct CaloriesSection: View {
                             formattedValue: nutrients[key] ?? ""
                         )
                     }
-                    Text("RDI 80%")
+                    Text(mainViewModel.calculateRdiPercentage(
+                        from: summaries[.calories] ?? 0.0))
                         .lineLimit(1)
                         .foregroundColor(.secondary)
                         .font(.subheadline)
@@ -69,7 +71,9 @@ struct CaloriesSection: View {
 
 #Preview {
     NavigationStack {
-        MainView(mainViewModel: MainViewModel())
+        MainView(mainViewModel: MainViewModel(
+            firestoreManager: FirestoreManager())
+        )
     }
     .accentColor(.customGreen)
 }

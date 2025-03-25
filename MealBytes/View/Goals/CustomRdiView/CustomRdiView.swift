@@ -111,7 +111,8 @@ struct CustomRdiView: View {
 #Preview {
     NavigationStack {
         CustomRdiView(customRdiViewModel: CustomRdiViewModel(
-            firestoreManager: FirestoreManager())
+            firestoreManager: FirestoreManager(),
+            mainViewModel: MainViewModel(firestoreManager: FirestoreManager()))
         )
     }
     .accentColor(.customGreen)

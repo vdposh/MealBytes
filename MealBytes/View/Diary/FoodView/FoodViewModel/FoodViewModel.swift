@@ -277,9 +277,13 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
             ),
             searchViewModel: SearchViewModel(
                 networkManager: NetworkManager(),
-                mainViewModel: MainViewModel()
+                mainViewModel: MainViewModel(
+                    firestoreManager: FirestoreManager()
+                )
             ),
-            mainViewModel: MainViewModel(),
+            mainViewModel: MainViewModel(
+                firestoreManager: FirestoreManager()
+            ),
             mealType: .breakfast,
             amount: "1",
             measurementDescription: "",

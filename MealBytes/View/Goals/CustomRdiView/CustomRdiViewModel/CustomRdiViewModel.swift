@@ -30,13 +30,16 @@ final class CustomRdiViewModel: ObservableObject {
     
     private let formatter: Formatter
     private let firestoreManager: FirestoreManagerProtocol
+    private let mainViewModel: MainViewModel
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
     init(formatter: Formatter = Formatter(),
-         firestoreManager: FirestoreManagerProtocol) {
+         firestoreManager: FirestoreManagerProtocol,
+         mainViewModel: MainViewModel){
         self.formatter = formatter
         self.firestoreManager = firestoreManager
+        self.mainViewModel = mainViewModel
         calories = "2000"
         fat = "30"
         carbohydrate = "50"
@@ -266,8 +269,13 @@ final class CustomRdiViewModel: ObservableObject {
 
 #Preview {
     NavigationStack {
-        CustomRdiView(customRdiViewModel: CustomRdiViewModel(
-            firestoreManager: FirestoreManager())
+        CustomRdiView(
+            customRdiViewModel: CustomRdiViewModel(
+                firestoreManager: FirestoreManager(),
+                mainViewModel: MainViewModel(
+                    firestoreManager: FirestoreManager()
+                )
+            )
         )
     }
     .accentColor(.customGreen)

@@ -135,7 +135,11 @@ struct SearchView: View {
     NavigationStack {
         SearchView(
             isPresented: .constant(true),
-            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            searchViewModel: SearchViewModel(
+                mainViewModel: MainViewModel(
+                    firestoreManager: FirestoreManager()
+                )
+            ),
             mealType: .breakfast
         )
     }

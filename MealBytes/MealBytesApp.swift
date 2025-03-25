@@ -22,10 +22,25 @@ struct MealBytesApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
+        let firestoreManager = FirestoreManager()
+        let mainViewModel = MainViewModel(firestoreManager: firestoreManager)
+        let customRdiViewModel = CustomRdiViewModel(
+            firestoreManager: firestoreManager,
+            mainViewModel: mainViewModel
+        )
+        let rdiViewModel = RdiViewModel(
+            firestoreManager: firestoreManager,
+            mainViewModel: mainViewModel
+        )
+        let goalsViewModel = GoalsViewModel(
+            customRdiViewModel: customRdiViewModel,
+            rdiViewModel: rdiViewModel
+        )
+        
         WindowGroup {
             TabBarView(
-                mainViewModel: MainViewModel(),
-                goalsViewModel: GoalsViewModel()
+                mainViewModel: mainViewModel,
+                goalsViewModel: goalsViewModel
             )
             .accentColor(.customGreen)
         }

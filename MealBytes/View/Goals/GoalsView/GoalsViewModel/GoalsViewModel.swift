@@ -12,10 +12,8 @@ final class GoalsViewModel: ObservableObject {
     let rdiViewModel: RdiViewModel
     
     init(
-        customRdiViewModel: CustomRdiViewModel = CustomRdiViewModel(
-            firestoreManager: FirestoreManager()),
-        rdiViewModel: RdiViewModel = RdiViewModel(
-            mainViewModel: MainViewModel())
+        customRdiViewModel: CustomRdiViewModel,
+        rdiViewModel: RdiViewModel
     ) {
         self.customRdiViewModel = customRdiViewModel
         self.rdiViewModel = rdiViewModel

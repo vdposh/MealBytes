@@ -34,34 +34,14 @@ final class RdiViewModel: ObservableObject {
     
     private let formatter: Formatter
     private let firestoreManager: FirestoreManagerProtocol
-    let mainViewModel: MainViewModel
+    private let mainViewModel: MainViewModel
     
     init(formatter: Formatter = Formatter(),
-         firestoreManager: FirestoreManagerProtocol = FirestoreManager(),
+         firestoreManager: FirestoreManagerProtocol,
          mainViewModel: MainViewModel) {
         self.formatter = formatter
         self.firestoreManager = firestoreManager
         self.mainViewModel = mainViewModel
-    }
-    
-    // MARK: - Save RDI Data
-    func saveRdiView() async {
-        let rdiData = RdiData(
-            calculatedRdi: calculatedRdi,
-            age: age,
-            selectedGender: selectedGender ?? "",
-            selectedActivity: selectedActivity ?? "",
-            weight: weight,
-            selectedWeightUnit: selectedWeightUnit,
-            height: height,
-            selectedHeightUnit: selectedHeightUnit
-        )
-        
-        do {
-            try await firestoreManager.saveRdiFirebase(rdiData)
-        } catch {
-            appError = .decoding
-        }
     }
     
     // MARK: - Load RDI Data
@@ -82,6 +62,29 @@ final class RdiViewModel: ObservableObject {
             await MainActor.run {
                 appError = .decoding
             }
+        }
+    }
+    
+    // MARK: - Save RDI Data
+    func saveRdiView() async {
+        let rdiData = RdiData(
+            calculatedRdi: calculatedRdi,
+            age: age,
+            selectedGender: selectedGender ?? "",
+            selectedActivity: selectedActivity ?? "",
+            weight: weight,
+            selectedWeightUnit: selectedWeightUnit,
+            height: height,
+            selectedHeightUnit: selectedHeightUnit
+        )
+        
+        do {
+            try await firestoreManager.saveRdiFirebase(rdiData)
+            await MainActor.run {
+                mainViewModel.rdi = calculatedRdi
+            }
+        } catch {
+            appError = .decoding
         }
     }
     
@@ -262,8 +265,13 @@ final class RdiViewModel: ObservableObject {
 
 #Preview {
     NavigationStack {
-        RdiView(rdiViewModel: RdiViewModel(
-            mainViewModel: MainViewModel())
+        RdiView(
+            rdiViewModel: RdiViewModel(
+                firestoreManager: FirestoreManager(),
+                mainViewModel: MainViewModel(
+                    firestoreManager: FirestoreManager()
+                )
+            )
         )
     }
     .accentColor(.customGreen)

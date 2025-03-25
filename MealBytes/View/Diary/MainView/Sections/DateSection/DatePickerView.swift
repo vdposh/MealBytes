@@ -95,7 +95,9 @@ struct DatePickerView: View {
 
 #Preview {
     NavigationStack {
-        MainView(mainViewModel: MainViewModel())
+        MainView(mainViewModel: MainViewModel(
+            firestoreManager: FirestoreManager())
+        )
     }
     .accentColor(.customGreen)
 }

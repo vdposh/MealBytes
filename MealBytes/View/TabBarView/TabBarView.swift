@@ -39,9 +39,24 @@ struct TabBarView: View {
 }
 
 #Preview {
+    let firestoreManager = FirestoreManager()
+    let mainViewModel = MainViewModel(firestoreManager: firestoreManager)
+    let customRdiViewModel = CustomRdiViewModel(
+        firestoreManager: firestoreManager,
+        mainViewModel: mainViewModel
+    )
+    let rdiViewModel = RdiViewModel(
+        firestoreManager: firestoreManager,
+        mainViewModel: mainViewModel
+    )
+    let goalsViewModel = GoalsViewModel(
+        customRdiViewModel: customRdiViewModel,
+        rdiViewModel: rdiViewModel
+    )
+    
     TabBarView(
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .accentColor(.customGreen)
 }

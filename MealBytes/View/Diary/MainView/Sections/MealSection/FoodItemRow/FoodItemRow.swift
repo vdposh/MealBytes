@@ -108,7 +108,7 @@ struct FoodItemRow: View {
                 mealType: .breakfast
             ),
             mealType: .breakfast,
-            mainViewModel: MainViewModel()
+            mainViewModel: MainViewModel(firestoreManager: FirestoreManager())
         )
     }
     .accentColor(.primary)

@@ -218,9 +218,13 @@ struct FoodView: View {
             ),
             searchViewModel: SearchViewModel(
                 networkManager: NetworkManager(),
-                mainViewModel: MainViewModel()
+                mainViewModel: MainViewModel(
+                    firestoreManager: FirestoreManager()
+                )
             ),
-            mainViewModel: MainViewModel(),
+            mainViewModel: MainViewModel(
+                firestoreManager: FirestoreManager()
+            ),
             mealType: .breakfast,
             amount: "1",
             measurementDescription: "",

@@ -16,6 +16,7 @@ final class MainViewModel: ObservableObject {
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var errorMessage: AppError?
     @Published var rdiProgress: Double = 0.0
+    @Published var rdi: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var isLoading: Bool = true
@@ -27,7 +28,7 @@ final class MainViewModel: ObservableObject {
     lazy var searchViewModel: SearchViewModel = SearchViewModel(
         mainViewModel: self)
     
-    init(firestoreManager: FirestoreManagerProtocol = FirestoreManager()) {
+    init(firestoreManager: FirestoreManagerProtocol) {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
@@ -111,6 +112,13 @@ final class MainViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    //MARK: - RDI % calculation 
+    func calculateRdiPercentage(from calories: Double) -> String {
+        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
+        let percentage = (calories / rdiValue) * 100
+        return "RDI \(Int(percentage))%"
     }
     
     // MARK: - Recalculate Nutrients
@@ -322,7 +330,9 @@ enum DisplayElement {
 
 #Preview {
     NavigationStack {
-        MainView(mainViewModel: MainViewModel())
+        MainView(
+            mainViewModel: MainViewModel(firestoreManager: FirestoreManager())
+        )
     }
     .accentColor(.customGreen)
 }
