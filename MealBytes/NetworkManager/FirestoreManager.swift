@@ -95,7 +95,7 @@ final class FirestoreManager: FirestoreManagerProtocol {
         guard let data = snapshot.data() else {
             throw AppError.decoding
         }
-        return try CustomRdiData(data: data)
+        return try Firestore.Decoder().decode(CustomRdiData.self, from: data)
     }
     
     // MARK: - Save customRDI Data

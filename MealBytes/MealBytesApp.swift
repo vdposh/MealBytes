@@ -24,7 +24,8 @@ struct MealBytesApp: App {
     var body: some Scene {
         WindowGroup {
             TabBarView(
-                mainViewModel: MainViewModel()
+                mainViewModel: MainViewModel(),
+                goalsViewModel: GoalsViewModel()
             )
             .accentColor(.customGreen)
         }

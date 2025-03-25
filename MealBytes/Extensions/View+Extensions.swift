@@ -11,7 +11,7 @@ extension View {
     @ViewBuilder
     func contentUnavailableView(
         for error: AppError,
-        query: String,
+        query: String = "",
         action: @escaping () -> Void
     ) -> some View {
         ContentUnavailableView {
@@ -47,8 +47,11 @@ extension View {
                 Text(error.errorDescription)
             }
         } actions: {
-            if case .network = error {
+            switch error {
+            case .network:
                 Button("Refresh", action: action)
+            default:
+                EmptyView()
             }
         }
     }

@@ -11,6 +11,12 @@ struct GoalsView: View {
     @State private var isNavigatingToCustomRdiView: Bool = false
     @State private var isNavigatingToRdiView: Bool = false
     
+    let goalsViewModel: GoalsViewModel
+    
+    init(goalsViewModel: GoalsViewModel) {
+        self.goalsViewModel = goalsViewModel
+    }
+    
     var body: some View {
         NavigationStack {
             List {
@@ -71,7 +77,7 @@ struct GoalsView: View {
 
 #Preview {
     NavigationStack {
-        GoalsView()
+        GoalsView(goalsViewModel: GoalsViewModel())
     }
     .accentColor(.customGreen)
 }

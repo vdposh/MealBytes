@@ -17,34 +17,6 @@ struct RdiData: Codable {
     let height: String
     let selectedHeightUnit: String
     
-    enum CodingKeys: String, CodingKey {
-        case calculatedRdi,
-             age,
-             selectedGender,
-             selectedActivity,
-             weight,
-             selectedWeightUnit,
-             height,
-             selectedHeightUnit
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        func decodeString(forKey key: CodingKeys) -> String {
-            (try? container.decode(String.self, forKey: key)) ?? ""
-        }
-        
-        calculatedRdi = decodeString(forKey: .calculatedRdi)
-        age = decodeString(forKey: .age)
-        selectedGender = decodeString(forKey: .selectedGender)
-        selectedActivity = decodeString(forKey: .selectedActivity)
-        weight = decodeString(forKey: .weight)
-        selectedWeightUnit = decodeString(forKey: .selectedWeightUnit)
-        height = decodeString(forKey: .height)
-        selectedHeightUnit = decodeString(forKey: .selectedHeightUnit)
-    }
-    
     init(
         calculatedRdi: String = "",
         age: String = "",

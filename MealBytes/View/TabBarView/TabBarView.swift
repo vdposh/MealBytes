@@ -9,9 +9,12 @@ import SwiftUI
 
 struct TabBarView: View {
     @StateObject var mainViewModel: MainViewModel
+    @StateObject var goalsViewModel: GoalsViewModel
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModel,
+         goalsViewModel: GoalsViewModel) {
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
     }
     
     var body: some View {
@@ -25,7 +28,7 @@ struct TabBarView: View {
             }
             
             NavigationStack {
-                GoalsView()
+                GoalsView(goalsViewModel: goalsViewModel)
             }
             .tabItem {
                 Image(systemName: "chart.bar")
@@ -37,7 +40,8 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView(
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
     .accentColor(.customGreen)
 }
