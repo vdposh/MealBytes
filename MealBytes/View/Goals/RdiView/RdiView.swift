@@ -81,8 +81,7 @@ struct RdiView: View {
                 HStack {
                     Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
                         .lineLimit(1)
-                        .font(rdiViewModel.font(
-                            for: rdiViewModel.calculatedRdi))
+                        .font(.callout)
                         .foregroundColor(rdiViewModel.color(
                             for: rdiViewModel.calculatedRdi))
                         .fontWeight(rdiViewModel.weight(

@@ -235,15 +235,6 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    func font(for calculatedRdi: String) -> Font {
-        switch calculatedRdi.isEmpty {
-        case true:
-            return .callout
-        case false:
-            return .callout
-        }
-    }
-    
     func color(for calculatedRdi: String) -> Color {
         switch calculatedRdi.isEmpty {
         case true:

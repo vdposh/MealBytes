@@ -78,6 +78,9 @@ final class CustomRdiViewModel: ObservableObject {
         )
         do {
             try await firestoreManager.saveCustomRdiFirebase(customGoalsData)
+            await MainActor.run {
+                mainViewModel.rdi = calories
+            }
         } catch {
             await MainActor.run {
                 appError = .decoding
