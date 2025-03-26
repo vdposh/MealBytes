@@ -179,13 +179,12 @@ final class CustomRdiViewModel: ObservableObject {
         }
         
         for (value, errorMessage) in inputs {
-            switch true {
-            case value.isEmpty,
-                Double(value) == nil,
-                Double(value) == 0:
+            if value.isEmpty {
                 errorMessages.append(errorMessage)
-            default:
-                break
+            } else if Double(value) == nil {
+                errorMessages.append(errorMessage)
+            } else if Double(value) == 0 {
+                errorMessages.append(errorMessage)
             }
         }
         
@@ -228,7 +227,7 @@ final class CustomRdiViewModel: ObservableObject {
                 if roundedPerc >= excess {
                     return formatter.roundedValue(roundedPerc - excess)
                 }
-            } else if totalPerc < 100 {
+            } else {
                 let deficit = 100 - totalPerc
                 return formatter.roundedValue(roundedPerc + deficit)
             }

@@ -12,25 +12,14 @@ final class RdiViewModel: ObservableObject {
     @Published var height: String = ""
     @Published var weight: String = ""
     @Published var age: String = ""
-    @Published var selectedGender: String? = nil
-    @Published var selectedActivity: String? = nil
-    @Published var selectedWeightUnit: String = "kg"
-    @Published var selectedHeightUnit: String = "cm"
+    @Published var selectedGender: Gender = .notSelected
+    @Published var selectedActivity: ActivityLevel = .notSelected
+    @Published var selectedWeightUnit: WeightUnit = .kg
+    @Published var selectedHeightUnit: HeightUnit = .cm
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var isDataLoaded = false
-
-    let genders = ["Male", "Female"]
-    let activityLevels = [
-        "Sedentary",
-        "Lightly Active",
-        "Moderately Active",
-        "Very Active",
-        "Extra Active"
-    ]
-    let weightUnits = ["kg", "lbs"]
-    let heightUnits = ["cm", "inches"]
     
     private let formatter: Formatter
     private let firestoreManager: FirestoreManagerProtocol
@@ -51,12 +40,20 @@ final class RdiViewModel: ObservableObject {
             await MainActor.run {
                 self.calculatedRdi = rdiData.calculatedRdi
                 self.age = rdiData.age
-                self.selectedGender = rdiData.selectedGender
-                self.selectedActivity = rdiData.selectedActivity
+                self.selectedGender = Gender(
+                    rawValue: rdiData.selectedGender
+                ) ?? .notSelected
+                self.selectedActivity = ActivityLevel(
+                    rawValue: rdiData.selectedActivity
+                ) ?? .notSelected
                 self.weight = rdiData.weight
-                self.selectedWeightUnit = rdiData.selectedWeightUnit
+                self.selectedWeightUnit = WeightUnit(
+                    rawValue: rdiData.selectedWeightUnit
+                ) ?? .kg
                 self.height = rdiData.height
-                self.selectedHeightUnit = rdiData.selectedHeightUnit
+                self.selectedHeightUnit = HeightUnit(
+                    rawValue: rdiData.selectedHeightUnit
+                ) ?? .cm
             }
         } catch {
             await MainActor.run {
@@ -70,12 +67,12 @@ final class RdiViewModel: ObservableObject {
         let rdiData = RdiData(
             calculatedRdi: calculatedRdi,
             age: age,
-            selectedGender: selectedGender ?? "",
-            selectedActivity: selectedActivity ?? "",
+            selectedGender: selectedGender.rawValue,
+            selectedActivity: selectedActivity.rawValue,
             weight: weight,
-            selectedWeightUnit: selectedWeightUnit,
+            selectedWeightUnit: selectedWeightUnit.rawValue,
             height: height,
-            selectedHeightUnit: selectedHeightUnit
+            selectedHeightUnit: selectedHeightUnit.rawValue
         )
         
         do {
@@ -99,28 +96,26 @@ final class RdiViewModel: ObservableObject {
         ]
         
         for (value, errorMessage) in inputs {
-            switch true {
-            case value.isEmpty,
-                Double(value) == nil,
-                Double(value) == 0:
+            if value.isEmpty {
                 errorMessages.append(errorMessage)
-            default:
-                break
+            } else if Double(value) == nil {
+                errorMessages.append(errorMessage)
+            } else if Double(value) == 0 {
+                errorMessages.append(errorMessage)
             }
         }
         
-        if selectedGender == nil {
+        if selectedGender == .notSelected {
             errorMessages.append("Select a Gender.")
         }
         
-        if selectedActivity == nil {
+        if selectedActivity == .notSelected {
             errorMessages.append("Select an Activity Level.")
         }
         
-        switch errorMessages.isEmpty {
-        case true:
+        if errorMessages.isEmpty {
             return nil
-        case false:
+        } else {
             return errorMessages.joined(separator: "\n")
         }
     }
@@ -129,26 +124,35 @@ final class RdiViewModel: ObservableObject {
     private func calculateRdiInternal(weightValue: Double,
                                       heightValue: Double,
                                       ageValue: Double,
-                                      gender: String,
-                                      activityLevel: String) {
-        let weightInKg = selectedWeightUnit == "lbs" ? weightValue * 0.453592 : weightValue
-        let heightInCm = selectedHeightUnit == "inches" ? heightValue * 2.54 : heightValue
+                                      gender: Gender,
+                                      activityLevel: ActivityLevel) {
+        guard gender != .notSelected, activityLevel != .notSelected else {
+            calculatedRdi = "Error: Gender or Activity Level not selected"
+            return
+        }
+        
+        let weightInKg = selectedWeightUnit == .lbs ? weightValue * 0.453592 : weightValue
+        let heightInCm = selectedHeightUnit == .inches ? heightValue * 2.54 : heightValue
         
         let bmr: Double
-        if gender == "Male" {
+        switch gender {
+        case .male:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue + 5
-        } else {
+        case .female:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
+        case .notSelected:
+            fatalError("This case should never be reached because of the guard statement.")
         }
         
         let activityFactor: Double
         switch activityLevel {
-        case "Sedentary": activityFactor = 1.2
-        case "Lightly Active": activityFactor = 1.375
-        case "Moderately Active": activityFactor = 1.55
-        case "Very Active": activityFactor = 1.725
-        case "Extra Active": activityFactor = 1.9
-        default: activityFactor = 1.2
+        case .sedentary: activityFactor = 1.2
+        case .lightlyActive: activityFactor = 1.375
+        case .moderatelyActive: activityFactor = 1.55
+        case .veryActive: activityFactor = 1.725
+        case .extraActive: activityFactor = 1.9
+        case .notSelected:
+            fatalError("This case should never be reached because of the guard statement.")
         }
         
         calculatedRdi = formatter.roundedValue(bmr * activityFactor)
@@ -168,10 +172,20 @@ final class RdiViewModel: ObservableObject {
         
         guard let weightValue = Double(sanitizedWeight),
               let heightValue = Double(sanitizedHeight),
-              let ageValue = Double(sanitizedAge),
-              let gender = selectedGender,
-              let activityLevel = selectedActivity else {
+              let ageValue = Double(sanitizedAge) else {
             alertMessage = "There was an error processing the input values."
+            showAlert = true
+            return
+        }
+        
+        if selectedGender == .notSelected {
+            alertMessage = "Select a valid Gender."
+            showAlert = true
+            return
+        }
+        
+        if selectedActivity == .notSelected {
+            alertMessage = "Select a valid Activity Level."
             showAlert = true
             return
         }
@@ -179,8 +193,8 @@ final class RdiViewModel: ObservableObject {
         calculateRdiInternal(weightValue: weightValue,
                              heightValue: heightValue,
                              ageValue: ageValue,
-                             gender: gender,
-                             activityLevel: activityLevel)
+                             gender: selectedGender,
+                             activityLevel: selectedActivity)
     }
     
     // MARK: - Field Title Styling
@@ -253,6 +267,31 @@ final class RdiViewModel: ObservableObject {
             return .semibold
         }
     }
+}
+
+enum Gender: String, CaseIterable {
+    case notSelected = "Not selected"
+    case male = "Male"
+    case female = "Female"
+}
+
+enum ActivityLevel: String, CaseIterable {
+    case notSelected = "Not selected"
+    case sedentary = "Sedentary"
+    case lightlyActive = "Lightly Active"
+    case moderatelyActive = "Moderately Active"
+    case veryActive = "Very Active"
+    case extraActive = "Extra Active"
+}
+
+enum WeightUnit: String, CaseIterable {
+    case kg = "kg"
+    case lbs = "lbs"
+}
+
+enum HeightUnit: String, CaseIterable {
+    case cm = "cm"
+    case inches = "inches"
 }
 
 #Preview {

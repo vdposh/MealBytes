@@ -117,26 +117,23 @@ struct RdiView: View {
                 .focused($isAgeFocused)
                 
                 HStack {
-                    Text("Gender")
-                        .font(.callout)
-                    Picker("", selection: $rdiViewModel.selectedGender) {
-                            ForEach(rdiViewModel.genders,
-                                    id: \.self) { gender in
-                                Text(gender).tag(gender as String?)
-                            }
+                    Picker("Gender", selection: $rdiViewModel.selectedGender) {
+                        ForEach(Gender.allCases, id: \.self) { gender in
+                            Text(gender.rawValue)
                         }
+                    }
+                    .font(.callout)
                 }
                 .frame(height: 30)
                 
                 HStack {
-                    Text("Activity Level")
-                        .font(.callout)
-                    Picker("", selection: $rdiViewModel.selectedActivity) {
-                            ForEach(rdiViewModel.activityLevels,
-                                    id: \.self) { level in
-                                Text(level).tag(level as String?)
-                            }
+                    Picker("Activity Level",
+                           selection: $rdiViewModel.selectedActivity) {
+                        ForEach(ActivityLevel.allCases, id: \.self) { level in
+                            Text(level.rawValue)
                         }
+                    }
+                           .font(.callout)
                 }
                 .frame(height: 30)
             }
@@ -156,11 +153,11 @@ struct RdiView: View {
                 .focused($isWeightFocused)
                 
                 Picker("Unit", selection: $rdiViewModel.selectedWeightUnit) {
-                        ForEach(rdiViewModel.weightUnits,id: \.self) { unit in
-                            Text(unit).tag(unit)
-                        }
+                    ForEach(WeightUnit.allCases, id: \.self) { unit in
+                        Text(unit.rawValue)
                     }
-                    .font(.callout)
+                }
+                .font(.callout)
             }
         }
     }
@@ -178,11 +175,11 @@ struct RdiView: View {
                 .focused($isHeightFocused)
                 
                 Picker("Unit", selection: $rdiViewModel.selectedHeightUnit) {
-                        ForEach(rdiViewModel.heightUnits, id: \.self) { unit in
-                            Text(unit).tag(unit)
-                        }
+                    ForEach(HeightUnit.allCases, id: \.self) { unit in
+                        Text(unit.rawValue)
                     }
-                    .font(.callout)
+                }
+                .font(.callout)
             }
         }
     }

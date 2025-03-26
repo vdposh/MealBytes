@@ -8,13 +8,10 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @State private var isNavigatingToCustomRdiView: Bool = false
-    @State private var isNavigatingToRdiView: Bool = false
-    
-    let goalsViewModel: GoalsViewModel
+    @StateObject var goalsViewModel: GoalsViewModel
     
     init(goalsViewModel: GoalsViewModel) {
-        self.goalsViewModel = goalsViewModel
+        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
     }
     
     var body: some View {
@@ -31,7 +28,8 @@ struct GoalsView: View {
                             title: "Calculate RDI",
                             backgroundColor: .customGreen,
                             action: {
-                                isNavigatingToRdiView = true
+                                goalsViewModel.navigationDestination =
+                                    .rdiView
                             }
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -51,7 +49,8 @@ struct GoalsView: View {
                             title: "Custom RDI",
                             backgroundColor: .customGreen,
                             action: {
-                                isNavigatingToCustomRdiView = true
+                                goalsViewModel.navigationDestination =
+                                    .customRdiView
                             }
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -61,14 +60,15 @@ struct GoalsView: View {
                 .listRowBackground(Color.clear)
             }
             .navigationBarTitle("Your Goals", displayMode: .inline)
-            .navigationDestination(isPresented: $isNavigatingToRdiView) {
-                RdiView(rdiViewModel: goalsViewModel.rdiViewModel)
-            }
-            .navigationDestination(isPresented: $isNavigatingToCustomRdiView) {
-                CustomRdiView(
-                    customRdiViewModel: goalsViewModel.customRdiViewModel
-                )
-            }
+            .navigationDestination(isPresented: .constant(
+                goalsViewModel.navigationDestination == .rdiView)) {
+                    RdiView(rdiViewModel: goalsViewModel.rdiViewModel)
+                }
+                .navigationDestination(isPresented: .constant(
+                    goalsViewModel.navigationDestination == .customRdiView)) {
+                        CustomRdiView(
+                            customRdiViewModel: goalsViewModel.customRdiViewModel)
+                    }
         }
     }
 }

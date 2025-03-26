@@ -148,28 +148,30 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Recalculate Nutrients
     func recalculateNutrients(for date: Date) {
-        let newSummaries = mealItems.values.flatMap { $0 }
-            .filter { calendar.isDate($0.date, inSameDayAs: date) }
-            .reduce(into: [NutrientType: Double]()) { result, item in
-                item.nutrients.forEach { nutrient, value in
-                    result[nutrient, default: 0.0] += value
+        nutrientSummaries = mealItems.values.reduce(
+            into: [NutrientType: Double]()) { result, mealList in
+                mealList.forEach { item in
+                    guard calendar.isDate(item.date,
+                                          inSameDayAs: date) else { return }
+                    item.nutrients.forEach { nutrient, value in
+                        result[nutrient, default: 0.0] += value
+                    }
                 }
             }
-        
-        nutrientSummaries = newSummaries
     }
     
     // MARK: - Summary Calories
     func summariesForCaloriesSection() -> [NutrientType: Double] {
-        mealItems.values.reduce(into: [NutrientType: Double]()) {
-            result, items in
-            items.filter { calendar.isDate($0.date, inSameDayAs: date) }
-                 .forEach { item in
-                     item.nutrients.forEach { nutrient, value in
-                         result[nutrient, default: 0.0] += value
-                     }
-                 }
-        }
+        mealItems.values.reduce(
+            into: [NutrientType: Double]()) { result, items in
+                items.forEach { item in
+                    guard calendar.isDate(item.date,
+                                          inSameDayAs: date) else { return }
+                    item.nutrients.forEach { nutrient, value in
+                        result[nutrient, default: 0.0] += value
+                    }
+                }
+            }
     }
     
     // MARK: - Filter Meal Items

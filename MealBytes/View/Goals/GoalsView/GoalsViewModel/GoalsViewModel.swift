@@ -8,6 +8,14 @@
 import SwiftUI
 
 final class GoalsViewModel: ObservableObject {
+    enum NavigationDestination {
+        case customRdiView
+        case rdiView
+        case none
+    }
+    
+    @Published var navigationDestination: NavigationDestination = .none
+    
     let customRdiViewModel: CustomRdiViewModel
     let rdiViewModel: RdiViewModel
     
