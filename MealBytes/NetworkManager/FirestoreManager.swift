@@ -14,10 +14,12 @@ protocol FirestoreManagerProtocol {
     func loadBookmarksFirebase() async throws -> [Food]
     func loadCustomRdiFirebase() async throws -> CustomRdiData
     func loadRdiFirebase() async throws -> RdiData
+    func loadMainRdiFirebase() async throws -> String
     func addMealItemFirebase(_ mealItem: MealItem) async throws
     func addBookmarkFirebase(_ foods: [Food]) async throws
     func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) async throws
     func saveRdiFirebase(_ rdiData: RdiData) async throws
+    func saveMainRdiFirebase(_ rdi: String) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
 }
@@ -121,5 +123,24 @@ final class FirestoreManager: FirestoreManagerProtocol {
         let documentReference = firestore.collection("userRdiGoals")
             .document("currentRdiGoals")
         try documentReference.setData(from: rdiData)
+    }
+    
+    // MARK: - Load RDI String
+    func loadMainRdiFirebase() async throws -> String {
+        let documentReference = firestore.collection("rdi")
+            .document("myRdi")
+        let snapshot = try await documentReference.getDocument()
+        guard let data = snapshot.data(),
+              let rdi = data["rdi"] as? String else {
+            throw AppError.decoding
+        }
+        return rdi
+    }
+    
+    // MARK: - Save RDI String
+    func saveMainRdiFirebase(_ rdi: String) async throws {
+        let documentReference = firestore.collection("rdi")
+            .document("myRdi")
+        try await documentReference.setData(["rdi": rdi])
     }
 }

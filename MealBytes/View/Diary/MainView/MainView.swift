@@ -45,6 +45,7 @@ struct MainView: View {
         .task {
             await mainViewModel.loadMealItemsMainView()
             await mainViewModel.searchViewModel.loadBookmarksSearchView()
+            await mainViewModel.loadMainRdiMainView()
             await MainActor.run {
                 mainViewModel.isLoading = false
             }

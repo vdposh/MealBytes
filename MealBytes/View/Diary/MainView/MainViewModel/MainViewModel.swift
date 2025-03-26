@@ -114,7 +114,32 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    //MARK: - RDI % calculation 
+    // MARK: - Load RDI
+    func loadMainRdiMainView() async {
+        do {
+            let fetchedRdi = try await firestoreManager.loadMainRdiFirebase()
+            await MainActor.run {
+                self.rdi = fetchedRdi
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = AppError.network
+            }
+        }
+    }
+    
+    // MARK: - Save RDI
+    func saveMainRdiMainView() async {
+        do {
+            try await firestoreManager.saveMainRdiFirebase(rdi)
+        } catch {
+            await MainActor.run {
+                errorMessage = AppError.network
+            }
+        }
+    }
+    
+    //MARK: - RDI % calculation
     func calculateRdiPercentage(from calories: Double) -> String {
         guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
         let percentage = (calories / rdiValue) * 100

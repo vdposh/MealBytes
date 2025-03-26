@@ -81,6 +81,7 @@ final class CustomRdiViewModel: ObservableObject {
             await MainActor.run {
                 mainViewModel.rdi = calories
             }
+            await mainViewModel.saveMainRdiMainView()
         } catch {
             await MainActor.run {
                 appError = .decoding

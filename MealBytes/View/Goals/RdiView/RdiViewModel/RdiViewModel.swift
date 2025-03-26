@@ -83,6 +83,7 @@ final class RdiViewModel: ObservableObject {
             await MainActor.run {
                 mainViewModel.rdi = calculatedRdi
             }
+            await mainViewModel.saveMainRdiMainView()
         } catch {
             appError = .decoding
         }
