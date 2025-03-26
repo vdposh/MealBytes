@@ -16,24 +16,4 @@ struct RdiData: Codable {
     let selectedWeightUnit: String
     let height: String
     let selectedHeightUnit: String
-    
-    init(
-        calculatedRdi: String = "",
-        age: String = "",
-        selectedGender: String = "",
-        selectedActivity: String = "",
-        weight: String = "",
-        selectedWeightUnit: String = "kg",
-        height: String = "",
-        selectedHeightUnit: String = "cm"
-    ) {
-        self.calculatedRdi = calculatedRdi
-        self.age = age
-        self.selectedGender = selectedGender
-        self.selectedActivity = selectedActivity
-        self.weight = weight
-        self.selectedWeightUnit = selectedWeightUnit
-        self.height = height
-        self.selectedHeightUnit = selectedHeightUnit
-    }
 }

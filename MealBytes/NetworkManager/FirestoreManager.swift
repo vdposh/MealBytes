@@ -92,12 +92,9 @@ final class FirestoreManager: FirestoreManagerProtocol {
     
     // MARK: - Load customRDI Data
     func loadCustomRdiFirebase() async throws -> CustomRdiData {
-        let snapshot = try await firestore.collection("userCustomGoals")
-            .document("currentCustomGoals").getDocument()
-        guard let data = snapshot.data() else {
-            throw AppError.decoding
-        }
-        return try Firestore.Decoder().decode(CustomRdiData.self, from: data)
+        let documentReference = firestore.collection("userCustomGoals")
+            .document("currentCustomGoals")
+        return try await documentReference.getDocument(as: CustomRdiData.self)
     }
     
     // MARK: - Save customRDI Data
@@ -111,11 +108,7 @@ final class FirestoreManager: FirestoreManagerProtocol {
     func loadRdiFirebase() async throws -> RdiData {
         let documentReference = firestore.collection("userRdiGoals")
             .document("currentRdiGoals")
-        let snapshot = try await documentReference.getDocument()
-        guard let data = snapshot.data() else {
-            throw AppError.decoding
-        }
-        return try Firestore.Decoder().decode(RdiData.self, from: data)
+        return try await documentReference.getDocument(as: RdiData.self)
     }
     
     // MARK: - Save RDI Data

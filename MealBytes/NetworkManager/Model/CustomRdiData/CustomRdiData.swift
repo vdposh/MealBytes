@@ -13,12 +13,4 @@ struct CustomRdiData: Codable {
     var carbohydrate: String
     var protein: String
     var isUsingPercentage: Bool
-    
-    enum CodingKeys: String, CodingKey {
-        case calories
-        case fat
-        case carbohydrate
-        case protein
-        case isUsingPercentage
-    }
 }
