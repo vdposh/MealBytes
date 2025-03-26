@@ -39,10 +39,12 @@ struct RdiView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
-                            Task {
-                                await rdiViewModel.saveRdiView()
-                                dismissAllFocuses()
-                                rdiViewModel.saveGoalsAlert()
+                            if rdiViewModel.handleSave() {
+                                Task {
+                                    await rdiViewModel.saveRdiView()
+                                    dismissAllFocuses()
+                                    rdiViewModel.saveGoalsAlert()
+                                }
                             }
                         }
                     }

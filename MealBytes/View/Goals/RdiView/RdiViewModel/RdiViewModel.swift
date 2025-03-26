@@ -20,6 +20,7 @@ final class RdiViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var isDataLoaded = false
+    var isError: Bool = false
     
     private let formatter: Formatter
     private let firestoreManager: FirestoreManagerProtocol
@@ -232,11 +233,27 @@ final class RdiViewModel: ObservableObject {
     }
     
     func alertTitle() -> String {
-        switch alertMessage.contains("Error") {
-        case true:
-            "Error"
-        case false:
-            "Done"
+        if isError {
+            return "Error"
+        } else {
+            return "Done"
+        }
+    }
+    
+    func handleSave() -> Bool {
+        if let errors = validateInputs() {
+            isError = true
+            alertMessage = "Please fill all required fields and Calculate RDI first.\n\n\(errors)"
+            showAlert = true
+            return false
+        } else if calculatedRdi.isEmpty {
+            isError = true
+            alertMessage = "Please calculate RDI before saving."
+            showAlert = true
+            return false
+        } else {
+            isError = false
+            return true
         }
     }
     
