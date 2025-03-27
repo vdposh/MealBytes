@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 final class RdiViewModel: ObservableObject {
     @Published var appError: AppError?
@@ -25,6 +26,7 @@ final class RdiViewModel: ObservableObject {
     private let formatter: Formatter
     private let firestoreManager: FirestoreManagerProtocol
     private let mainViewModel: MainViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     init(formatter: Formatter = Formatter(),
          firestoreManager: FirestoreManagerProtocol,
@@ -32,6 +34,7 @@ final class RdiViewModel: ObservableObject {
         self.formatter = formatter
         self.firestoreManager = firestoreManager
         self.mainViewModel = mainViewModel
+        setupDataObserver()
     }
     
     // MARK: - Load RDI Data
@@ -121,14 +124,36 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Internal Calculation
-    private func calculateRdiInternal(weightValue: Double,
-                                      heightValue: Double,
-                                      ageValue: Double,
-                                      gender: Gender,
-                                      activityLevel: ActivityLevel) {
-        guard gender != .notSelected, activityLevel != .notSelected else {
-            calculatedRdi = "Error: Gender or Activity Level not selected"
+    // MARK: - RDI Calculation
+    private func setupDataObserver() {
+        Publishers.CombineLatest4(
+            $age,
+            $weight,
+            $height,
+            Publishers.CombineLatest($selectedGender, $selectedActivity)
+        )
+        .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+        .sink { [weak self] age, weight, height, combined in
+            let (gender, activity) = combined
+            self?.recalculateRdi(age: age,
+                                 weight: weight,
+                                 height: height,
+                                 gender: gender,
+                                 activity: activity)
+        }
+        .store(in: &cancellables)
+    }
+    
+    private func recalculateRdi(age: String,
+                                weight: String,
+                                height: String,
+                                gender: Gender,
+                                activity: ActivityLevel) {
+        guard let ageValue = Double(age.sanitizedForDouble),
+              let weightValue = Double(weight.sanitizedForDouble),
+              let heightValue = Double(height.sanitizedForDouble),
+              gender != .notSelected, activity != .notSelected else {
+            self.calculatedRdi = ""
             return
         }
         
@@ -142,60 +167,21 @@ final class RdiViewModel: ObservableObject {
         case .female:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
         case .notSelected:
-            fatalError("This case should never be reached because of the guard statement.")
+            return
         }
         
         let activityFactor: Double
-        switch activityLevel {
+        switch activity {
         case .sedentary: activityFactor = 1.2
         case .lightlyActive: activityFactor = 1.375
         case .moderatelyActive: activityFactor = 1.55
         case .veryActive: activityFactor = 1.725
         case .extraActive: activityFactor = 1.9
         case .notSelected:
-            fatalError("This case should never be reached because of the guard statement.")
-        }
-        
-        calculatedRdi = formatter.roundedValue(bmr * activityFactor)
-    }
-    
-    // MARK: - RDI Calculation
-    func calculateRdi() {
-        if let errors = validateInputs() {
-            alertMessage = errors
-            showAlert = true
             return
         }
         
-        let sanitizedWeight = weight.sanitizedForDouble
-        let sanitizedHeight = height.sanitizedForDouble
-        let sanitizedAge = age.sanitizedForDouble
-        
-        guard let weightValue = Double(sanitizedWeight),
-              let heightValue = Double(sanitizedHeight),
-              let ageValue = Double(sanitizedAge) else {
-            alertMessage = "There was an error processing the input values."
-            showAlert = true
-            return
-        }
-        
-        if selectedGender == .notSelected {
-            alertMessage = "Select a valid Gender."
-            showAlert = true
-            return
-        }
-        
-        if selectedActivity == .notSelected {
-            alertMessage = "Select a valid Activity Level."
-            showAlert = true
-            return
-        }
-        
-        calculateRdiInternal(weightValue: weightValue,
-                             heightValue: heightValue,
-                             ageValue: ageValue,
-                             gender: selectedGender,
-                             activityLevel: selectedActivity)
+        self.calculatedRdi = formatter.roundedValue(bmr * activityFactor)
     }
     
     // MARK: - Field Title Styling
@@ -212,23 +198,21 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Save Goals
-    func validateBeforeSave() -> String? {
-        switch calculatedRdi.isEmpty {
-        case true:
-            return "Calculate RDI first"
-        case false:
-            return nil
-        }
+    func saveGoalsAlert() {
+        alertMessage = "Your goals have been saved successfully!"
+        showAlert = true
+        isError = false
     }
     
-    func saveGoalsAlert() {
-        switch validateBeforeSave() {
-        case let error?:
-            alertMessage = error
+    func handleSave() -> Bool {
+        if let errors = validateInputs() {
+            isError = true
+            alertMessage = errors
             showAlert = true
-        case nil:
-            alertMessage = "Your goals have been saved successfully!"
-            showAlert = true
+            return false
+        } else {
+            isError = false
+            return true
         }
     }
     
@@ -237,23 +221,6 @@ final class RdiViewModel: ObservableObject {
             return "Error"
         } else {
             return "Done"
-        }
-    }
-    
-    func handleSave() -> Bool {
-        if let errors = validateInputs() {
-            isError = true
-            alertMessage = "Please fill all required fields and Calculate RDI first.\n\n\(errors)"
-            showAlert = true
-            return false
-        } else if calculatedRdi.isEmpty {
-            isError = true
-            alertMessage = "Please calculate RDI before saving."
-            showAlert = true
-            return false
-        } else {
-            isError = false
-            return true
         }
     }
     
@@ -273,15 +240,6 @@ final class RdiViewModel: ObservableObject {
             return .secondary
         case false:
             return .primary
-        }
-    }
-    
-    func weight(for calculatedRdi: String) -> Font.Weight {
-        switch calculatedRdi.isEmpty {
-        case true:
-            return .regular
-        case false:
-            return .semibold
         }
     }
 }

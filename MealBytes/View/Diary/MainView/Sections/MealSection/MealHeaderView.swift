@@ -95,12 +95,3 @@ struct MealHeaderView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel(
-            firestoreManager: FirestoreManager())
-        )
-    }
-    .accentColor(.customGreen)
-}

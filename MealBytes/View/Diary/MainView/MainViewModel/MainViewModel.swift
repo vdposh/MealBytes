@@ -354,12 +354,3 @@ enum DisplayElement {
     case day
     case weekday
 }
-
-#Preview {
-    NavigationStack {
-        MainView(
-            mainViewModel: MainViewModel(firestoreManager: FirestoreManager())
-        )
-    }
-    .accentColor(.customGreen)
-}

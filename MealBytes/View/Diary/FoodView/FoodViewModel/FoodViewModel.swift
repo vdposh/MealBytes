@@ -265,32 +265,3 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     
     var id: String { self.rawValue }
 }
-
-#Preview {
-    NavigationStack {
-        FoodView(
-            isDismissed: .constant(true),
-            food: Food(
-                searchFoodId: 794,
-                searchFoodName: "Whole Milk",
-                searchFoodDescription: ""
-            ),
-            searchViewModel: SearchViewModel(
-                networkManager: NetworkManager(),
-                mainViewModel: MainViewModel(
-                    firestoreManager: FirestoreManager()
-                )
-            ),
-            mainViewModel: MainViewModel(
-                firestoreManager: FirestoreManager()
-            ),
-            mealType: .breakfast,
-            amount: "1",
-            measurementDescription: "",
-            showAddButton: false,
-            showSaveRemoveButton: true,
-            showCloseButton: true
-        )
-    }
-    .accentColor(.customGreen)
-}

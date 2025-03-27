@@ -92,14 +92,14 @@ final class FirestoreManager: FirestoreManagerProtocol {
     
     // MARK: - Load customRDI Data
     func loadCustomRdiFirebase() async throws -> CustomRdiData {
-        let documentReference = firestore.collection("userCustomGoals")
+        let documentReference = firestore.collection("userCustomRdiGoals")
             .document("currentCustomGoals")
         return try await documentReference.getDocument(as: CustomRdiData.self)
     }
     
     // MARK: - Save customRDI Data
     func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) throws {
-        let documentReference = firestore.collection("userCustomGoals")
+        let documentReference = firestore.collection("userCustomRdiGoals")
             .document("currentCustomGoals")
         try documentReference.setData(from: customGoalsData)
     }

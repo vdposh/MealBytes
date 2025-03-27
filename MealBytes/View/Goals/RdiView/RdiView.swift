@@ -84,20 +84,9 @@ struct RdiView: View {
                     Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
                         .lineLimit(1)
                         .font(.callout)
+                        .fontWeight(.semibold)
                         .foregroundColor(rdiViewModel.color(
                             for: rdiViewModel.calculatedRdi))
-                        .fontWeight(rdiViewModel.weight(
-                            for: rdiViewModel.calculatedRdi))
-                    
-                    RdiButtonView(
-                        title: "Calculate",
-                        backgroundColor: .customGreen,
-                        action: {
-                            dismissAllFocuses()
-                            rdiViewModel.calculateRdi()
-                        }
-                    )
-                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
         }

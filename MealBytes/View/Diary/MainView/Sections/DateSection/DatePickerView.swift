@@ -92,12 +92,3 @@ struct DatePickerView: View {
         .padding()
     }
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel(
-            firestoreManager: FirestoreManager())
-        )
-    }
-    .accentColor(.customGreen)
-}

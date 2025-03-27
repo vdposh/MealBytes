@@ -42,12 +42,3 @@ struct DateView: View {
         .cornerRadius(12)
     }
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel(
-            firestoreManager: FirestoreManager())
-        )
-    }
-    .accentColor(.customGreen)
-}
