@@ -27,6 +27,7 @@ final class MainViewModel: ObservableObject {
     let firestoreManager: FirestoreManagerProtocol
     lazy var searchViewModel: SearchViewModel = SearchViewModel(
         mainViewModel: self)
+    private var cancellables = Set<AnyCancellable>()
     
     init(firestoreManager: FirestoreManagerProtocol) {
         var items = [MealType: [MealItem]]()
@@ -39,6 +40,7 @@ final class MainViewModel: ObservableObject {
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
         self.expandedSections = sections
+        setupBindings()
     }
     
     // MARK: - Load Meal Item
@@ -157,6 +159,16 @@ final class MainViewModel: ObservableObject {
     func updateProgressFromSummaries() {
         let calories = summariesForCaloriesSection()[.calories] ?? 0.0
         updateRdiProgress(calories: calories)
+    }
+    
+    private func setupBindings() {
+        $mealItems
+            .combineLatest($nutrientSummaries)
+            .sink { [weak self] _, _ in
+                guard let self = self else { return }
+                self.updateProgressFromSummaries()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Recalculate Nutrients
