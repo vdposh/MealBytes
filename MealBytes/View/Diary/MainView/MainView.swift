@@ -47,6 +47,7 @@ struct MainView: View {
             await mainViewModel.searchViewModel.loadBookmarksSearchView()
             await mainViewModel.loadMainRdiMainView()
             await MainActor.run {
+                mainViewModel.updateProgressFromSummaries()
                 mainViewModel.isLoading = false
             }
         }

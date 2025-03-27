@@ -146,6 +146,19 @@ final class MainViewModel: ObservableObject {
         return "RDI \(Int(percentage))%"
     }
     
+    func updateRdiProgress(calories: Double) {
+        guard let rdiValue = Double(rdi), rdiValue > 0 else {
+            rdiProgress = 0.0
+            return
+        }
+        rdiProgress = calories / rdiValue
+    }
+    
+    func updateProgressFromSummaries() {
+        let calories = summariesForCaloriesSection()[.calories] ?? 0.0
+        updateRdiProgress(calories: calories)
+    }
+    
     // MARK: - Recalculate Nutrients
     func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(

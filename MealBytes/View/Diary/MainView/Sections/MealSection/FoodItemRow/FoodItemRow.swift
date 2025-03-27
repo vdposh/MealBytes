@@ -79,37 +79,16 @@ struct FoodItemRow: View {
                             unit: .empty
                         )
                     )
-                    Spacer() //временно остается, справа будет еще одно значение
+                    Text(mainViewModel.calculateRdiPercentage(
+                        from: mealItem.nutrients[.calories] ?? 0.0))
+                    .lineLimit(1)
+                    .foregroundColor(.secondary)
+                    .font(.subheadline)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding(.vertical, 5)
             .padding(.trailing, 5)
         }
     }
-}
-
-#Preview {
-    NavigationStack {
-        FoodItemRow(
-            isDismissed: .constant(false),
-            mealItem: MealItem(
-                id: UUID(),
-                foodId: 724,
-                foodName: "Banana",
-                portionUnit: "g",
-                nutrients: [
-                    .calories: 89.0,
-                    .carbohydrate: 22.8,
-                    .fat: 0.3,
-                    .protein: 1.1
-                ],
-                measurementDescription: "grams",
-                amount: 150.0,
-                mealType: .breakfast
-            ),
-            mealType: .breakfast,
-            mainViewModel: MainViewModel(firestoreManager: FirestoreManager())
-        )
-    }
-    .accentColor(.primary)
 }

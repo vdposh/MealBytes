@@ -46,6 +46,7 @@ struct MealHeaderView: View {
                             fat: fat,
                             carbohydrate: carbohydrate,
                             protein: protein,
+                            calories: calories,
                             mainViewModel: mainViewModel
                         )
                     }

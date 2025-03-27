@@ -11,6 +11,7 @@ struct NutrientSummaryRow: View {
     let fat: Double
     let carbohydrate: Double
     let protein: Double
+    let calories: Double
     let mainViewModel: MainViewModel
     
     var body: some View {
@@ -28,7 +29,11 @@ struct NutrientSummaryRow: View {
                     formattedValue: nutrients[label] ?? ""
                 )
             }
-            Spacer() //временно остается, справа будет еще одно значение
+            Text(mainViewModel.calculateRdiPercentage(from: calories))
+                .lineLimit(1)
+                .foregroundColor(.secondary)
+                .font(.subheadline)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 }

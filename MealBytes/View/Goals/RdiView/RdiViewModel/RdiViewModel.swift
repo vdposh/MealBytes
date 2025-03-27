@@ -187,14 +187,10 @@ final class RdiViewModel: ObservableObject {
     // MARK: - Field Title Styling
     func fieldTitleColor(for field: String) -> Color {
         let sanitizedField = field.sanitizedForDouble
-        switch true {
-        case sanitizedField.isEmpty,
-            Double(sanitizedField) == nil,
-            Double(sanitizedField)! <= 0:
+        guard let value = Double(sanitizedField), value > 0 else {
             return .customRed
-        default:
-            return .primary
         }
+        return .primary
     }
     
     // MARK: - Save Goals
@@ -228,18 +224,18 @@ final class RdiViewModel: ObservableObject {
     func text(for calculatedRdi: String) -> String {
         switch calculatedRdi.isEmpty {
         case true:
-            return "Fill in the data"
+            "Fill in the data"
         case false:
-            return "\(calculatedRdi) calories"
+            "\(calculatedRdi) calories"
         }
     }
     
     func color(for calculatedRdi: String) -> Color {
         switch calculatedRdi.isEmpty {
         case true:
-            return .secondary
+                .secondary
         case false:
-            return .primary
+                .primary
         }
     }
 }
@@ -267,18 +263,4 @@ enum WeightUnit: String, CaseIterable {
 enum HeightUnit: String, CaseIterable {
     case cm = "cm"
     case inches = "inches"
-}
-
-#Preview {
-    NavigationStack {
-        RdiView(
-            rdiViewModel: RdiViewModel(
-                firestoreManager: FirestoreManager(),
-                mainViewModel: MainViewModel(
-                    firestoreManager: FirestoreManager()
-                )
-            )
-        )
-    }
-    .accentColor(.customGreen)
 }

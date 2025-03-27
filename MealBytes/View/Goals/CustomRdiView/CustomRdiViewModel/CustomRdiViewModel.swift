@@ -269,17 +269,3 @@ final class CustomRdiViewModel: ObservableObject {
         !isUsingPercentage
     }
 }
-
-#Preview {
-    NavigationStack {
-        CustomRdiView(
-            customRdiViewModel: CustomRdiViewModel(
-                firestoreManager: FirestoreManager(),
-                mainViewModel: MainViewModel(
-                    firestoreManager: FirestoreManager()
-                )
-            )
-        )
-    }
-    .accentColor(.customGreen)
-}

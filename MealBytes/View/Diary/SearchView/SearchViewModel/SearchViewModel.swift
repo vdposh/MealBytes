@@ -177,18 +177,3 @@ final class SearchViewModel: ObservableObject {
         isLoading = false
     }
 }
-
-#Preview {
-    NavigationStack {
-        SearchView(
-            isPresented: .constant(true),
-            searchViewModel: SearchViewModel(
-                mainViewModel: MainViewModel(
-                    firestoreManager: FirestoreManager()
-                )
-            ),
-            mealType: .breakfast
-        )
-    }
-    .accentColor(.customGreen)
-}
