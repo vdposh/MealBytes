@@ -8,12 +8,7 @@
 import SwiftUI
 
 struct CustomRdiView: View {
-    @FocusState private var isCaloriesFocused: Bool
-    @FocusState private var isFatFocused: Bool
-    @FocusState private var isCarbohydrateFocused: Bool
-    @FocusState private var isProteinFocused: Bool
-    @State private var isSaveSuccessAlertPresented: Bool = false
-    
+    @FocusState private var focusedField: Bool
     @StateObject private var customRdiViewModel: CustomRdiViewModel
     
     init(customRdiViewModel: CustomRdiViewModel) {
@@ -27,13 +22,11 @@ struct CustomRdiView: View {
             } else {
                 List {
                     CalorieMetricsSection(
-                        isCaloriesFocused: $isCaloriesFocused,
+                        focusedField: _focusedField,
                         customRdiViewModel: customRdiViewModel
                     )
                     MacronutrientMetricsSection(
-                        isFatFocused: $isFatFocused,
-                        isCarbohydrateFocused: $isCarbohydrateFocused,
-                        isProteinFocused: $isProteinFocused,
+                        focusedField: _focusedField,
                         customRdiViewModel: customRdiViewModel
                     )
                     
@@ -56,7 +49,7 @@ struct CustomRdiView: View {
                         Text("Enter value")
                             .foregroundColor(.secondary)
                         Button("Done") {
-                            dismissAllFocuses()
+                            focusedField = false
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
@@ -68,8 +61,8 @@ struct CustomRdiView: View {
                             } else {
                                 Task {
                                     await customRdiViewModel.saveCustomRdiView()
-                                    dismissAllFocuses()
-                                    isSaveSuccessAlertPresented = true
+                                    focusedField = false
+                                    customRdiViewModel.successAlert = true
                                 }
                             }
                         }
@@ -83,9 +76,9 @@ struct CustomRdiView: View {
                 } message: {
                     Text(customRdiViewModel.alertMessage)
                 }
-                .alert("Done", isPresented: $isSaveSuccessAlertPresented) {
+                .alert("Done", isPresented: $customRdiViewModel.successAlert) {
                     Button("OK", role: .none) {
-                        isSaveSuccessAlertPresented = false
+                        customRdiViewModel.successAlert = false
                     }
                 } message: {
                     Text("Your goals have been saved successfully!")
@@ -98,13 +91,6 @@ struct CustomRdiView: View {
                 customRdiViewModel.isLoading = false
             }
         }
-    }
-    
-    private func dismissAllFocuses() {
-        isCaloriesFocused = false
-        isFatFocused = false
-        isCarbohydrateFocused = false
-        isProteinFocused = false
     }
 }
 

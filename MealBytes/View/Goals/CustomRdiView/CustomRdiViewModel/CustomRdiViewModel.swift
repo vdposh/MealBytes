@@ -24,6 +24,7 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var isUsingPercentage: Bool = true
     @Published var isShowingAlert: Bool = false
+    @Published var successAlert: Bool = false
     @Published var isLoading: Bool = true
     
     private var isInitialized = false

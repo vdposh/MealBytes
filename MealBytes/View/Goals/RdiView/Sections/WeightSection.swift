@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct WeightSection: View {
+    @FocusState var focusedField: Bool
     @ObservedObject var rdiViewModel: RdiViewModel
-    @FocusState private var isWeightFocused: Bool
     
     var body: some View {
         Section(header: Text("Weight")) {
@@ -21,7 +21,7 @@ struct WeightSection: View {
                     titleColor: rdiViewModel.fieldTitleColor(
                         for: rdiViewModel.weight)
                 )
-                .focused($isWeightFocused)
+                .focused($focusedField)
                 
                 Picker("Unit", selection: $rdiViewModel.selectedWeightUnit) {
                     ForEach(WeightUnit.allCases, id: \.self) { unit in

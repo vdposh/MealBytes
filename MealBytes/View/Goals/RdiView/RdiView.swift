@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RdiView: View {
     @StateObject private var rdiViewModel: RdiViewModel
+    @FocusState private var focusedField: Bool
     
     init(rdiViewModel: RdiViewModel) {
         _rdiViewModel = .init(wrappedValue: rdiViewModel)
@@ -19,9 +20,18 @@ struct RdiView: View {
             if rdiViewModel.isDataLoaded {
                 List {
                     OverviewSection(rdiViewModel: rdiViewModel)
-                    BasicInfoSection(rdiViewModel: rdiViewModel)
-                    WeightSection(rdiViewModel: rdiViewModel)
-                    HeightSection(rdiViewModel: rdiViewModel)
+                    BasicInfoSection(
+                        focusedField: _focusedField,
+                        rdiViewModel: rdiViewModel
+                    )
+                    WeightSection(
+                        focusedField: _focusedField,
+                        rdiViewModel: rdiViewModel
+                    )
+                    HeightSection(
+                        focusedField: _focusedField,
+                        rdiViewModel: rdiViewModel
+                    )
                 }
                 .navigationBarTitle("RDI", displayMode: .inline)
                 .scrollDismissesKeyboard(.never)
@@ -30,7 +40,7 @@ struct RdiView: View {
                         Text("Enter value")
                             .foregroundColor(.secondary)
                         Button("Done") {
-                            dismissAllFocuses()
+                            focusedField = false
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
@@ -38,7 +48,7 @@ struct RdiView: View {
                             if rdiViewModel.handleSave() {
                                 Task {
                                     await rdiViewModel.saveRdiView()
-                                    dismissAllFocuses()
+                                    focusedField = false
                                     rdiViewModel.saveGoalsAlert()
                                 }
                             }
@@ -66,10 +76,6 @@ struct RdiView: View {
                     }
             }
         }
-    }
-    
-    private func dismissAllFocuses() {
-        
     }
 }
 

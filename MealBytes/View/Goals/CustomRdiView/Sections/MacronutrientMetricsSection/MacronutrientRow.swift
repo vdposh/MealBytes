@@ -9,12 +9,12 @@ import SwiftUI
 
 struct MacronutrientRow: View {
     @Binding var textFieldBinding: String
+    @FocusState var focusedField: Bool
     let value: String
     let unitRight: String
     let unitLeft: String
     let title: String
     let titleColor: Color
-    var focusedField: FocusState<Bool>.Binding
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -23,7 +23,7 @@ struct MacronutrientRow: View {
                 title: title,
                 titleColor: titleColor
             )
-            .focused(focusedField)
+            .focused($focusedField)
             .padding(.trailing, 5)
             
             Text(unitLeft)

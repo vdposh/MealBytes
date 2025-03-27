@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct MacronutrientMetricsSection: View {
-    var isFatFocused: FocusState<Bool>.Binding
-    var isCarbohydrateFocused: FocusState<Bool>.Binding
-    var isProteinFocused: FocusState<Bool>.Binding
+    @FocusState var focusedField: Bool
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
@@ -25,6 +23,7 @@ struct MacronutrientMetricsSection: View {
                 VStack(spacing: 15) {
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.fat,
+                        focusedField: _focusedField,
                         value: customRdiViewModel.oppositeValue(
                             for: customRdiViewModel.fat, factor: 9),
                         unitRight: customRdiViewModel.unitSymbol(
@@ -32,12 +31,12 @@ struct MacronutrientMetricsSection: View {
                         unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Fat",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.fat),
-                        focusedField: isFatFocused
+                            for: customRdiViewModel.fat)
                     )
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.carbohydrate,
+                        focusedField: _focusedField,
                         value: customRdiViewModel.oppositeValue(
                             for: customRdiViewModel.carbohydrate, factor: 4),
                         unitRight: customRdiViewModel.unitSymbol(
@@ -45,12 +44,12 @@ struct MacronutrientMetricsSection: View {
                         unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Carbohydrate",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.carbohydrate),
-                        focusedField: isCarbohydrateFocused
+                            for: customRdiViewModel.carbohydrate)
                     )
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.protein,
+                        focusedField: _focusedField,
                         value: customRdiViewModel.oppositeValue(
                             for: customRdiViewModel.protein, factor: 4),
                         unitRight: customRdiViewModel.unitSymbol(
@@ -58,8 +57,7 @@ struct MacronutrientMetricsSection: View {
                         unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Protein",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.protein),
-                        focusedField: isProteinFocused
+                            for: customRdiViewModel.protein)
                     )
                 }
                 .padding(.top, 5)

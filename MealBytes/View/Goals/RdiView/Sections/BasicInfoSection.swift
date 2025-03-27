@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct BasicInfoSection: View {
+    @FocusState var focusedField: Bool
     @ObservedObject var rdiViewModel: RdiViewModel
-    @FocusState private var isAgeFocused: Bool
     
     var body: some View {
         Section(header: Text("Basic Information")) {
@@ -21,7 +21,7 @@ struct BasicInfoSection: View {
                     titleColor: rdiViewModel.fieldTitleColor(
                         for: rdiViewModel.age)
                 )
-                .focused($isAgeFocused)
+                .focused($focusedField)
                 
                 HStack {
                     Picker("Gender", selection: $rdiViewModel.selectedGender) {

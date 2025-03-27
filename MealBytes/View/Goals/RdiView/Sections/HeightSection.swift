@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct HeightSection: View {
+    @FocusState var focusedField: Bool
     @ObservedObject var rdiViewModel: RdiViewModel
-    @FocusState private var isHeightFocused: Bool
     
     var body: some View {
         Section(header: Text("Height")) {
@@ -21,7 +21,7 @@ struct HeightSection: View {
                     titleColor: rdiViewModel.fieldTitleColor(
                         for: rdiViewModel.height)
                 )
-                .focused($isHeightFocused)
+                .focused($focusedField)
                 
                 Picker("Unit", selection: $rdiViewModel.selectedHeightUnit) {
                     ForEach(HeightUnit.allCases, id: \.self) { unit in
