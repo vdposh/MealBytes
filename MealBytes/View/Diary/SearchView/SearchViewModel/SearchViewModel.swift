@@ -107,22 +107,24 @@ final class SearchViewModel: ObservableObject {
         Task {
             let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
             
-            let updatedBookmarkedFoods = isAdding
-            ? bookmarkedFoods.union([food.searchFoodId])
-            : bookmarkedFoods.subtracting([food.searchFoodId])
+            let updatedBookmarkedFoods: Set<Int>
+            if isAdding {
+                updatedBookmarkedFoods = bookmarkedFoods
+                    .union([food.searchFoodId])
+            } else {
+                updatedBookmarkedFoods = bookmarkedFoods
+                    .subtracting([food.searchFoodId])
+            }
             
             let updatedFavorites: [Food]
             if isAdding {
-                if !favoriteFoods.contains(where: {
-                    $0.searchFoodId == food.searchFoodId }) {
+                if !favoriteFoods.contains(food) {
                     updatedFavorites = favoriteFoods + [food]
                 } else {
                     updatedFavorites = favoriteFoods
                 }
             } else {
-                updatedFavorites = favoriteFoods.filter {
-                    $0.searchFoodId != food.searchFoodId
-                }
+                updatedFavorites = favoriteFoods.filter { $0 != food }
             }
             
             await MainActor.run {

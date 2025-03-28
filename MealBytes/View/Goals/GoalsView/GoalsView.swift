@@ -28,8 +28,7 @@ struct GoalsView: View {
                             title: "Calculate RDI",
                             backgroundColor: .customGreen,
                             action: {
-                                goalsViewModel.navigationDestination =
-                                    .rdiView
+                                goalsViewModel.navigationDestination = .rdiView
                             }
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -60,15 +59,23 @@ struct GoalsView: View {
                 .listRowBackground(Color.clear)
             }
             .navigationBarTitle("Your Goals", displayMode: .inline)
-            .navigationDestination(isPresented: .constant(
-                goalsViewModel.navigationDestination == .rdiView)) {
-                    RdiView(rdiViewModel: goalsViewModel.rdiViewModel)
+            .navigationDestination(isPresented: Binding(
+                get: { goalsViewModel.navigationDestination != .none },
+                set: { if !$0 { goalsViewModel.navigationDestination = .none } }
+            )) {
+                switch goalsViewModel.navigationDestination {
+                case .rdiView:
+                    RdiView(
+                        rdiViewModel: goalsViewModel.rdiViewModel
+                    )
+                case .customRdiView:
+                    CustomRdiView(
+                        customRdiViewModel: goalsViewModel.customRdiViewModel
+                    )
+                case .none:
+                    EmptyView()
                 }
-                .navigationDestination(isPresented: .constant(
-                    goalsViewModel.navigationDestination == .customRdiView)) {
-                        CustomRdiView(
-                            customRdiViewModel: goalsViewModel.customRdiViewModel)
-                    }
+            }
         }
     }
 }

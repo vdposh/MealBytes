@@ -46,3 +46,9 @@ struct Food: Codable {
         return String(firstPart.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 }
+
+extension Food: Equatable {
+    static func == (lhs: Food, rhs: Food) -> Bool {
+        return lhs.searchFoodId == rhs.searchFoodId
+    }
+}

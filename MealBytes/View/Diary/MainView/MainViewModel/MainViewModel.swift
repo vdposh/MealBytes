@@ -158,7 +158,7 @@ final class MainViewModel: ObservableObject {
             rdiProgress = 0.0
             return
         }
-        rdiProgress = calories / rdiValue
+        rdiProgress = min(max(calories / rdiValue, 0), 1)
     }
     
     func updateProgress() {

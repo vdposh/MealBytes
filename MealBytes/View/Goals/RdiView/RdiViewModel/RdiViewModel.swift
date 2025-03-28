@@ -95,11 +95,7 @@ final class RdiViewModel: ObservableObject {
         ]
         
         for (value, errorMessage) in inputs {
-            if value.isEmpty {
-                errorMessages.append(errorMessage)
-            } else if Double(value) == nil {
-                errorMessages.append(errorMessage)
-            } else if Double(value) == 0 {
+            if value.isEmpty || Double(value) == nil || Double(value) == 0 {
                 errorMessages.append(errorMessage)
             }
         }
