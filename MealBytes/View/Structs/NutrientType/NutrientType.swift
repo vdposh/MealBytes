@@ -14,7 +14,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
          saturatedFat,
          monounsaturatedFat,
          polyunsaturatedFat,
-         carbohydrates,
+         carbohydrate,
          sugar,
          fiber,
          protein,
@@ -30,7 +30,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
         case .saturatedFat: "Saturated Fat"
         case .monounsaturatedFat: "Monounsaturated Fat"
         case .polyunsaturatedFat: "Polyunsaturated Fat"
-        case .carbohydrates: "Carbohydrates"
+        case .carbohydrate: "Carbohydrate"
         case .sugar: "Sugar"
         case .fiber: "Fiber"
         case .protein: "Protein"
@@ -42,7 +42,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
     
     var alternativeTitle: String {
         switch self {
-        case .carbohydrates: 
+        case .carbohydrate: 
             "Carb"
         default:
             title
@@ -53,7 +53,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
         switch self {
         case .fat: "F"
         case .protein: "P"
-        case .carbohydrates: "C"
+        case .carbohydrate: "C"
         default: title
         }
     }
@@ -66,7 +66,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
                 .saturatedFat,
                 .monounsaturatedFat,
                 .polyunsaturatedFat,
-                .carbohydrates,
+                .carbohydrate,
                 .sugar,
                 .fiber,
                 .protein: "g"

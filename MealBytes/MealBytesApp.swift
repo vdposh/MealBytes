@@ -6,14 +6,36 @@
 //
 
 import SwiftUI
+import FirebaseCore
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [
+                        UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+                            return true
+                        }
+}
 
 @main
 struct MealBytesApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    let mainViewModel: MainViewModel
+    let goalsViewModel: GoalsViewModel
+    
+    init() {
+        FirebaseApp.configure()
+        
+        self.mainViewModel = MainViewModel()
+        self.goalsViewModel = GoalsViewModel()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                MainView(mainViewModel: MainViewModel())
-            }
+            TabBarView(
+                mainViewModel: mainViewModel,
+                goalsViewModel: goalsViewModel
+            )
             .accentColor(.customGreen)
         }
     }

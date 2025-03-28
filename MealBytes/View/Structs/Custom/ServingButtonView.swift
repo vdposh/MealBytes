@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ServingButtonView: View {
+    @Binding var showActionSheet: Bool
     let title: String
     let description: String
-    @Binding var showActionSheet: Bool
     let action: () -> Void
     
     var body: some View {
@@ -22,6 +22,7 @@ struct ServingButtonView: View {
                 HStack {
                     Text(description)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .lineLimit(1)
                     Image(systemName: "chevron.down")
                         .resizable()
                         .frame(width: 10, height: 6)
@@ -37,25 +38,4 @@ struct ServingButtonView: View {
             .buttonStyle(.plain)
         }
     }
-}
-
-#Preview {
-    FoodView(
-        isDismissed: .constant(true),
-        food: Food(
-            searchFoodId: 794,
-            searchFoodName: "Whole Milk",
-            searchFoodDescription: ""
-        ),
-        searchViewModel: SearchViewModel(
-            networkManager: NetworkManager()
-        ),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        amount: "",
-        measurementDescription: "",
-        showAddButton: true,
-        showSaveRemoveButton: true,
-        showCloseButton: true
-    )
 }

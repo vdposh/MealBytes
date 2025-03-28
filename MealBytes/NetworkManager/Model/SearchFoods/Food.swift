@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Food: Decodable {
+struct Food: Codable {
     let searchFoodId: Int
     let searchFoodName: String
     let searchFoodDescription: String
@@ -44,5 +44,11 @@ struct Food: Decodable {
             separator: "|", maxSplits: 1, omittingEmptySubsequences: true)
         guard let firstPart = components.first else { return nil }
         return String(firstPart.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+}
+
+extension Food: Equatable {
+    static func == (lhs: Food, rhs: Food) -> Bool {
+        return lhs.searchFoodId == rhs.searchFoodId
     }
 }
