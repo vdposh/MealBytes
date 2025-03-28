@@ -24,19 +24,18 @@ final class MainViewModel: ObservableObject {
     let calendar = Calendar.current
     let formatter = Formatter()
     
-    let firestoreManager: FirestoreManagerProtocol
+    let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
     lazy var searchViewModel: SearchViewModel = SearchViewModel(
         mainViewModel: self)
     private var cancellables = Set<AnyCancellable>()
     
-    init(firestoreManager: FirestoreManagerProtocol) {
+    init() {
         var items = [MealType: [MealItem]]()
         MealType.allCases.forEach { items[$0] = [] }
         self.mealItems = items
         var summaries = [NutrientType: Double]()
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         self.nutrientSummaries = summaries
-        self.firestoreManager = firestoreManager
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
         self.expandedSections = sections

@@ -27,16 +27,13 @@ final class SearchViewModel: ObservableObject {
     private var maxResultsPerPage: Int = 20
     var currentPage: Int = 0
     
-    private let networkManager: NetworkManagerProtocol
-    private let firestoreManager: FirestoreManagerProtocol
-    private var searchCancellable: AnyCancellable?
+    private let networkManager: NetworkManagerProtocol = NetworkManager()
+    private let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
     let mainViewModel: MainViewModel
     
-    init(networkManager: NetworkManagerProtocol = NetworkManager(),
-         firestoreManager: FirestoreManagerProtocol = FirestoreManager(),
-         mainViewModel: MainViewModel) {
-        self.networkManager = networkManager
-        self.firestoreManager = firestoreManager
+    private var searchCancellable: AnyCancellable?
+    
+    init(mainViewModel: MainViewModel) {
         self.mainViewModel = mainViewModel
     }
     
@@ -90,9 +87,9 @@ final class SearchViewModel: ObservableObject {
         do {
             let favoriteFoods = try await firestoreManager
                 .loadBookmarksFirebase()
-
+            
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
-
+            
             await MainActor.run {
                 self.favoriteFoods = favoriteFoods
                 self.foods = favoriteFoods

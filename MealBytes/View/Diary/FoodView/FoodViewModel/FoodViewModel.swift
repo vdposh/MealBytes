@@ -30,17 +30,15 @@ final class FoodViewModel: ObservableObject {
     let mealType: MealType
     let originalMealItemId: UUID
     
-    private let networkManager: NetworkManagerProtocol
-    private let firestoreManager: FirestoreManagerProtocol
-    private let searchViewModel: SearchViewModel
+    private let networkManager: NetworkManagerProtocol = NetworkManager()
+    private let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
+    let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
     init(food: Food,
          mealType: MealType,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
-         networkManager: NetworkManagerProtocol = NetworkManager(),
-         firestoreManager: FirestoreManagerProtocol = FirestoreManager(),
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,
@@ -54,8 +52,6 @@ final class FoodViewModel: ObservableObject {
         self.food = food
         self.mealType = mealType
         self.mainViewModel = mainViewModel
-        self.networkManager = networkManager
-        self.firestoreManager = firestoreManager
         self.searchViewModel = searchViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
         self.amount = roundedAmount
@@ -150,7 +146,7 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Delete food
     func deleteMealItemFoodView() async {
         mainViewModel.deleteMealItemMainView(with: originalMealItemId,
-                                                   for: mealType)
+                                             for: mealType)
     }
     
     // MARK: - Bookmark Management

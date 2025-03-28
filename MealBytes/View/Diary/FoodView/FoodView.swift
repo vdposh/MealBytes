@@ -209,6 +209,8 @@ struct FoodView: View {
 
 #Preview {
     NavigationStack {
+        let mainViewModel = MainViewModel()
+
         FoodView(
             isDismissed: .constant(true),
             food: Food(
@@ -217,14 +219,9 @@ struct FoodView: View {
                 searchFoodDescription: ""
             ),
             searchViewModel: SearchViewModel(
-                networkManager: NetworkManager(),
-                mainViewModel: MainViewModel(
-                    firestoreManager: FirestoreManager()
-                )
+                mainViewModel: mainViewModel
             ),
-            mainViewModel: MainViewModel(
-                firestoreManager: FirestoreManager()
-            ),
+            mainViewModel: mainViewModel,
             mealType: .breakfast,
             amount: "1",
             measurementDescription: "",

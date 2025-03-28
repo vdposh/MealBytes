@@ -136,9 +136,7 @@ struct SearchView: View {
         SearchView(
             isPresented: .constant(true),
             searchViewModel: SearchViewModel(
-                mainViewModel: MainViewModel(
-                    firestoreManager: FirestoreManager()
-                )
+                mainViewModel: MainViewModel()
             ),
             mealType: .breakfast
         )

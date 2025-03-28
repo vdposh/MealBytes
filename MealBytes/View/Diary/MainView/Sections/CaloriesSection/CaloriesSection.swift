@@ -71,9 +71,7 @@ struct CaloriesSection: View {
 
 #Preview {
     NavigationStack {
-        MainView(mainViewModel: MainViewModel(
-            firestoreManager: FirestoreManager())
-        )
+        MainView(mainViewModel: MainViewModel())
     }
     .accentColor(.customGreen)
 }

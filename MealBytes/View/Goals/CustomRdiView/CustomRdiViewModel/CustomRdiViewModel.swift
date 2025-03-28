@@ -29,18 +29,13 @@ final class CustomRdiViewModel: ObservableObject {
     
     private var isInitialized = false
     
-    private let formatter: Formatter
-    private let firestoreManager: FirestoreManagerProtocol
-    private let mainViewModel: MainViewModel
+    private let formatter: Formatter = Formatter()
+    private let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
+    let mainViewModel: MainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
-    init(formatter: Formatter = Formatter(),
-         firestoreManager: FirestoreManagerProtocol,
-         mainViewModel: MainViewModel){
-        self.formatter = formatter
-        self.firestoreManager = firestoreManager
-        self.mainViewModel = mainViewModel
+    init() {
         calories = "2000"
         fat = "30"
         carbohydrate = "50"
@@ -89,7 +84,7 @@ final class CustomRdiViewModel: ObservableObject {
             }
         }
     }
-        
+    
     // MARK: - Setup Bindings
     private func setupBindings() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)

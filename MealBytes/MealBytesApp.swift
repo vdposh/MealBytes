@@ -12,7 +12,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [
                         UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-                            FirebaseApp.configure()
                             return true
                         }
 }
@@ -21,22 +20,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MealBytesApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
-    var body: some Scene {
-        let firestoreManager = FirestoreManager()
-        let mainViewModel = MainViewModel(firestoreManager: firestoreManager)
-        let customRdiViewModel = CustomRdiViewModel(
-            firestoreManager: firestoreManager,
-            mainViewModel: mainViewModel
-        )
-        let rdiViewModel = RdiViewModel(
-            firestoreManager: firestoreManager,
-            mainViewModel: mainViewModel
-        )
-        let goalsViewModel = GoalsViewModel(
-            customRdiViewModel: customRdiViewModel,
-            rdiViewModel: rdiViewModel
-        )
+    let mainViewModel: MainViewModel
+    let goalsViewModel: GoalsViewModel
+    
+    init() {
+        FirebaseApp.configure()
         
+        self.mainViewModel = MainViewModel()
+        self.goalsViewModel = GoalsViewModel()
+    }
+    
+    var body: some Scene {
         WindowGroup {
             TabBarView(
                 mainViewModel: mainViewModel,
