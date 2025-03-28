@@ -48,7 +48,7 @@ struct FoodItemRow: View {
                     .foregroundColor(.secondary)
                     
                     Text(mainViewModel.formatter.formattedValue(
-                        mealItem.nutrients[.calories] ?? 0.0,
+                        mealItem.nutrients[.calories],
                         unit: .empty,
                         alwaysRoundUp: true
                     ))
@@ -61,26 +61,26 @@ struct FoodItemRow: View {
                     NutrientLabel(
                         label: "F",
                         formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.fat] ?? 0.0,
+                            mealItem.nutrients[.fat],
                             unit: .empty
                         )
                     )
                     NutrientLabel(
                         label: "C",
                         formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.carbohydrate] ?? 0.0,
+                            mealItem.nutrients[.carbohydrate],
                             unit: .empty
                         )
                     )
                     NutrientLabel(
                         label: "P",
                         formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.protein] ?? 0.0,
+                            mealItem.nutrients[.protein],
                             unit: .empty
                         )
                     )
                     Text(mainViewModel.calculateRdiPercentage(
-                        from: mealItem.nutrients[.calories] ?? 0.0))
+                        from: mealItem.nutrients[.calories]))
                     .lineLimit(1)
                     .foregroundColor(.secondary)
                     .font(.subheadline)

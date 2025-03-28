@@ -16,10 +16,10 @@ struct DetailedNutrient: Identifiable {
     let isSubValue: Bool
     
     init(type: NutrientType,
-         value: Double,
+         value: Double?,
          isSubValue: Bool) {
         self.type = type
-        self.value = value
+        self.value = value ?? 0.0
         self.isSubValue = isSubValue
     }
 }

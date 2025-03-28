@@ -22,7 +22,7 @@ struct CaloriesSection: View {
                         HStack(spacing: 5) {
                             Text(
                                 mainViewModel.formatter.formattedValue(
-                                    summaries[.calories] ?? 0.0,
+                                    summaries[.calories],
                                     unit: .empty,
                                     alwaysRoundUp: true
                                 )
@@ -57,7 +57,7 @@ struct CaloriesSection: View {
                         )
                     }
                     Text(mainViewModel.calculateRdiPercentage(
-                        from: summaries[.calories] ?? 0.0))
+                        from: summaries[.calories]))
                         .lineLimit(1)
                         .foregroundColor(.secondary)
                         .font(.subheadline)

@@ -146,9 +146,10 @@ final class MainViewModel: ObservableObject {
     }
     
     //MARK: - RDI % calculation
-    func calculateRdiPercentage(from calories: Double) -> String {
+    func calculateRdiPercentage(from calories: Double?) -> String {
         guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
-        let percentage = (calories / rdiValue) * 100
+        let safeCalories = calories ?? 0.0
+        let percentage = round((safeCalories / rdiValue) * 100)
         return "RDI \(Int(percentage))%"
     }
     
@@ -233,7 +234,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Format Serving Size
     func formattedServingSize(for mealItem: MealItem) -> String {
-        return formatter.formattedValue(mealItem.nutrients[.servingSize] ?? 0.0,
+        return formatter.formattedValue(mealItem.nutrients[.servingSize],
                                         unit: .empty)
     }
     
@@ -264,7 +265,7 @@ final class MainViewModel: ObservableObject {
         source: NutrientSource
     ) -> [String: String] {
         func format(_ value: Double?) -> String {
-            formatter.formattedValue(value ?? 0.0, unit: .empty)
+            formatter.formattedValue(value, unit: .empty)
         }
         
         switch source {

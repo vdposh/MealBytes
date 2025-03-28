@@ -44,7 +44,7 @@ final class FoodViewModel: ObservableObject {
          showSaveRemoveButton: Bool = false,
          originalMealItemId: UUID? = nil) {
         let roundedAmount = Formatter().formattedValue(
-            Double(initialAmount) ?? 0.0,
+            Double(initialAmount),
             unit: .empty,
             alwaysRoundUp: false
         )
