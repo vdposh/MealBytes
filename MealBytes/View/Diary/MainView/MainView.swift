@@ -47,7 +47,7 @@ struct MainView: View {
             await mainViewModel.searchViewModel.loadBookmarksSearchView()
             await mainViewModel.loadMainRdiMainView()
             await MainActor.run {
-                mainViewModel.updateProgressFromSummaries()
+                mainViewModel.updateProgress()
                 mainViewModel.isLoading = false
             }
         }
@@ -70,7 +70,7 @@ struct MainView: View {
                                 }
                             }())
                             .font(.caption)
-                            .fontWeight(.semibold)
+                            .fontWeight(.medium)
                         }
                     }
                     .foregroundStyle(.customGreen)

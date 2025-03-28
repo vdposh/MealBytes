@@ -10,7 +10,12 @@ import Combine
 import FirebaseCore
 
 final class MainViewModel: ObservableObject {
-    @Published var date = Date()
+    @Published var date = Date() {
+        didSet {
+            recalculateNutrients(for: date)
+            updateProgress()
+        }
+    }
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
@@ -155,7 +160,7 @@ final class MainViewModel: ObservableObject {
         rdiProgress = calories / rdiValue
     }
     
-    func updateProgressFromSummaries() {
+    func updateProgress() {
         let calories = summariesForCaloriesSection()[.calories] ?? 0.0
         updateRdiProgress(calories: calories)
     }
@@ -165,7 +170,7 @@ final class MainViewModel: ObservableObject {
             .combineLatest($nutrientSummaries)
             .sink { [weak self] _, _ in
                 guard let self = self else { return }
-                self.updateProgressFromSummaries()
+                self.updateProgress()
             }
             .store(in: &cancellables)
     }
