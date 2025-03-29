@@ -320,12 +320,16 @@ final class MainViewModel: ObservableObject {
                date: Date? = nil,
                isSelected: Bool = false,
                isToday: Bool = false,
-               forBackground: Bool = false) -> Color {
+               forBackground: Bool = false,
+               forcePrimary: Bool = false) -> Color {
         if forBackground {
             return isSelected ? .customGreen.opacity(0.2) : .clear
         }
         if isSelected || isToday {
             return .customGreen
+        }
+        if forcePrimary {
+            return .primary
         }
         if let date, !calendar.isDate(date,
                                       equalTo: self.date,

@@ -20,7 +20,8 @@ struct DateView: View {
                     mainViewModel.color(for: .day,
                                         date: date,
                                         isSelected: isSelected,
-                                        isToday: isToday)
+                                        isToday: isToday,
+                                        forcePrimary: true)
                 )
             Text(date.formatted(.dateTime.weekday(.short)))
                 .foregroundColor(
