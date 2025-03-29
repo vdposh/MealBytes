@@ -23,6 +23,7 @@ struct FoodItemRow: View {
                     searchFoodDescription: ""
                 ),
                 searchViewModel: mainViewModel.searchViewModel,
+                mainViewModel: mainViewModel,
                 mealType: mealType,
                 amount: String(mealItem.amount),
                 measurementDescription: mealItem.measurementDescription,

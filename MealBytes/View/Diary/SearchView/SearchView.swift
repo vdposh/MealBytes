@@ -41,6 +41,8 @@ struct SearchView: View {
                                             isDismissed: $isPresented,
                                             food: food,
                                             searchViewModel: searchViewModel,
+                                            mainViewModel: searchViewModel
+                                                .mainViewModel,
                                             mealType: mealType,
                                             amount: "",
                                             measurementDescription: "",

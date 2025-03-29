@@ -21,6 +21,7 @@ struct FoodView: View {
     init(isDismissed: Binding<Bool>,
          food: Food,
          searchViewModel: SearchViewModel,
+         mainViewModel: MainViewModel,
          mealType: MealType,
          amount: String,
          measurementDescription: String,
@@ -36,6 +37,7 @@ struct FoodView: View {
             food: food,
             mealType: mealType,
             searchViewModel: searchViewModel,
+            mainViewModel: mainViewModel,
             initialAmount: amount,
             initialMeasurementDescription: measurementDescription,
             showSaveRemoveButton: showSaveRemoveButton,
@@ -219,6 +221,7 @@ struct FoodView: View {
             searchViewModel: SearchViewModel(
                 mainViewModel: mainViewModel
             ),
+            mainViewModel: mainViewModel,
             mealType: .breakfast,
             amount: "1",
             measurementDescription: "",
