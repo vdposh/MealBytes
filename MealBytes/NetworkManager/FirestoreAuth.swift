@@ -14,6 +14,7 @@ protocol FirestoreAuthProtocol {
     func signOutFirebase() throws
     func deleteAccountFirebase() async throws
     func resetPasswordFirebase(email: String) async throws
+    func resendVerificationFirebase() async throws
 }
 
 final class FirestoreAuth: FirestoreAuthProtocol {
@@ -28,7 +29,15 @@ final class FirestoreAuth: FirestoreAuthProtocol {
     func signUpFirebase(email: String, password: String) async throws -> User {
         let result = try await Auth.auth().createUser(withEmail: email,
                                                       password: password)
+        try await result.user.sendEmailVerification()
         return result.user
+    }
+    
+    func resendVerificationFirebase() async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw AuthError.userNotFound
+        }
+        try await user.sendEmailVerification()
     }
     
     // MARK: - Sign Out
@@ -39,7 +48,7 @@ final class FirestoreAuth: FirestoreAuthProtocol {
     // MARK: - Delete Account
     func deleteAccountFirebase() async throws {
         guard let user = Auth.auth().currentUser else {
-            throw AuthenticationError.userNotFound
+            throw AuthError.userNotFound
         }
         try await user.delete()
     }
@@ -47,9 +56,5 @@ final class FirestoreAuth: FirestoreAuthProtocol {
     // MARK: - Reset Password
     func resetPasswordFirebase(email: String) async throws {
         try await Auth.auth().sendPasswordReset(withEmail: email)
-    }
-    
-    enum AuthenticationError: Error {
-        case userNotFound
     }
 }
