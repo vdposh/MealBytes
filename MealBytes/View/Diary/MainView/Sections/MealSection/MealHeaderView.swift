@@ -96,11 +96,3 @@ struct MealHeaderView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel()
-        )
-    }
-    .accentColor(.customGreen)
-}
