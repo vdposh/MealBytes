@@ -11,7 +11,7 @@ struct FoodItemRow: View {
     @Binding var isDismissed: Bool
     let mealItem: MealItem
     let mealType: MealType
-    let mainViewModel: MainViewModel
+    @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
         NavigationLink(
@@ -79,8 +79,8 @@ struct FoodItemRow: View {
                             unit: .empty
                         )
                     )
-                    Text(mainViewModel.calculateRdiPercentage(
-                        from: mealItem.nutrients[.calories]))
+                    Text(mainViewModel.rdiPercentageText(
+                        for: mealItem.nutrients[.calories]))
                     .lineLimit(1)
                     .foregroundColor(.secondary)
                     .font(.subheadline)

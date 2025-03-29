@@ -176,6 +176,13 @@ final class MainViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    func rdiPercentageText(for calories: Double?) -> String {
+        guard !rdi.isEmpty, let calories = calories else {
+            return ""
+        }
+        return calculateRdiPercentage(from: calories)
+    }
+    
     // MARK: - Recalculate Nutrients
     func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(

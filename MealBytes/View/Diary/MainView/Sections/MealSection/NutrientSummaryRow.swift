@@ -12,7 +12,7 @@ struct NutrientSummaryRow: View {
     let carbohydrate: Double
     let protein: Double
     let calories: Double
-    let mainViewModel: MainViewModel
+    @StateObject var mainViewModel: MainViewModel
     
     var body: some View {
         HStack {
@@ -29,7 +29,7 @@ struct NutrientSummaryRow: View {
                     formattedValue: nutrients[label] ?? ""
                 )
             }
-            Text(mainViewModel.calculateRdiPercentage(from: calories))
+            Text(mainViewModel.rdiPercentageText(for: calories))
                 .lineLimit(1)
                 .foregroundColor(.secondary)
                 .font(.subheadline)
