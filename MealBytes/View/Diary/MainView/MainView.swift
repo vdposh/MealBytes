@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseCore
 
 struct MainView: View {
-    @StateObject private var mainViewModel: MainViewModel = MainViewModel()
+    @StateObject private var mainViewModel = MainViewModel()
     
     var body: some View {
         ZStack {

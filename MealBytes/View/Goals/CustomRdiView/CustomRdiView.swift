@@ -9,8 +9,7 @@ import SwiftUI
 
 struct CustomRdiView: View {
     @FocusState private var focusedField: Bool
-    @StateObject private var customRdiViewModel:
-    CustomRdiViewModel = CustomRdiViewModel()
+    @StateObject private var customRdiViewModel = CustomRdiViewModel()
     
     var body: some View {
         ZStack {

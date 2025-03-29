@@ -23,9 +23,9 @@ final class RdiViewModel: ObservableObject {
     @Published var isDataLoaded = false
     var isError: Bool = false
     
-    private let formatter: Formatter = Formatter()
+    private let formatter = Formatter()
     private let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
-    let mainViewModel: MainViewModel = MainViewModel()
+    let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
     init() {

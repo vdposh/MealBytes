@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @StateObject var goalsViewModel: GoalsViewModel = GoalsViewModel()
+    @StateObject var goalsViewModel = GoalsViewModel()
     
     var body: some View {
         NavigationStack {

@@ -31,5 +31,5 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView()
-    .accentColor(.customGreen)
+        .accentColor(.customGreen)
 }

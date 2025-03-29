@@ -30,8 +30,7 @@ final class MainViewModel: ObservableObject {
     let formatter = Formatter()
     
     let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
-    lazy var searchViewModel: SearchViewModel = SearchViewModel(
-        mainViewModel: self)
+    lazy var searchViewModel = SearchViewModel(mainViewModel: self)
     private var cancellables = Set<AnyCancellable>()
     
     init() {

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CaloriesSection: View {
     let summaries: [NutrientType: Double]
-    @StateObject var mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
