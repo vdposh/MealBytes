@@ -9,11 +9,8 @@ import SwiftUI
 
 struct CustomRdiView: View {
     @FocusState private var focusedField: Bool
-    @StateObject private var customRdiViewModel: CustomRdiViewModel
-    
-    init(customRdiViewModel: CustomRdiViewModel) {
-        _customRdiViewModel = StateObject(wrappedValue: customRdiViewModel)
-    }
+    @StateObject private var customRdiViewModel:
+    CustomRdiViewModel = CustomRdiViewModel()
     
     var body: some View {
         ZStack {
@@ -96,9 +93,7 @@ struct CustomRdiView: View {
 
 #Preview {
     NavigationStack {
-        CustomRdiView(
-            customRdiViewModel: CustomRdiViewModel()
-        )
+        CustomRdiView()
     }
     .accentColor(.customGreen)
 }

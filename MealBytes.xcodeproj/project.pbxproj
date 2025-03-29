@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F22D8C7611006FCC12 /* FirebaseCore */; };
 		FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F42D8C7611006FCC12 /* FirebaseFirestore */; };
+		FBCF4DAC2D9819F30008E46B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FBCF4DAB2D9819F30008E46B /* FirebaseAuth */; };
 		FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = FBD6B6C32D79AFC000AE0FDC /* Moya */; };
 /* End PBXBuildFile section */
 
@@ -32,16 +33,25 @@
 				FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */,
 				FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */,
 				FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */,
+				FBCF4DAC2D9819F30008E46B /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FBCF4A822D97FB890008E46B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FBD6B67D2D79AF0700AE0FDC = {
 			isa = PBXGroup;
 			children = (
 				FBD6B6882D79AF0700AE0FDC /* MealBytes */,
+				FBCF4A822D97FB890008E46B /* Frameworks */,
 				FBD6B6872D79AF0700AE0FDC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -77,6 +87,7 @@
 				FBD6B6C32D79AFC000AE0FDC /* Moya */,
 				FBA176F22D8C7611006FCC12 /* FirebaseCore */,
 				FBA176F42D8C7611006FCC12 /* FirebaseFirestore */,
+				FBCF4DAB2D9819F30008E46B /* FirebaseAuth */,
 			);
 			productName = MealBytes;
 			productReference = FBD6B6862D79AF0700AE0FDC /* MealBytes.app */;
@@ -370,6 +381,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		FBCF4DAB2D9819F30008E46B /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 		FBD6B6C32D79AFC000AE0FDC /* Moya */ = {
 			isa = XCSwiftPackageProductDependency;

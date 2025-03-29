@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @StateObject var goalsViewModel: GoalsViewModel
-    
-    init(goalsViewModel: GoalsViewModel) {
-        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
-    }
+    @StateObject var goalsViewModel: GoalsViewModel = GoalsViewModel()
     
     var body: some View {
         NavigationStack {
@@ -65,13 +61,9 @@ struct GoalsView: View {
             )) {
                 switch goalsViewModel.navigationDestination {
                 case .rdiView:
-                    RdiView(
-                        rdiViewModel: goalsViewModel.rdiViewModel
-                    )
+                    goalsViewModel.rdiView
                 case .customRdiView:
-                    CustomRdiView(
-                        customRdiViewModel: goalsViewModel.customRdiViewModel
-                    )
+                    goalsViewModel.customRdiView
                 case .none:
                     EmptyView()
                 }
@@ -82,9 +74,7 @@ struct GoalsView: View {
 
 #Preview {
     NavigationStack {
-        GoalsView(
-            goalsViewModel: GoalsViewModel()
-        )
+        GoalsView()
     }
     .accentColor(.customGreen)
 }

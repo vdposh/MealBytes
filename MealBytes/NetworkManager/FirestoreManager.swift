@@ -25,11 +25,7 @@ protocol FirestoreManagerProtocol {
 }
 
 final class FirestoreManager: FirestoreManagerProtocol {
-    private let firestore: Firestore
-    
-    init() {
-        self.firestore = Firestore.firestore()
-    }
+    private let firestore: Firestore = Firestore.firestore()
     
     // MARK: - Fetch Data
     func loadMealItemsFirebase() async throws -> [MealItem] {

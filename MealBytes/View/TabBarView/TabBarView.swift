@@ -8,14 +8,8 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @StateObject var mainViewModel: MainViewModel
-    @StateObject var goalsViewModel: GoalsViewModel
-    
-    init(mainViewModel: MainViewModel,
-         goalsViewModel: GoalsViewModel) {
-        _mainViewModel = StateObject(wrappedValue: mainViewModel)
-        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
-    }
+    @StateObject var mainViewModel: MainViewModel = MainViewModel()
+    @StateObject var goalsViewModel: GoalsViewModel = GoalsViewModel()
     
     var body: some View {
         TabView {
@@ -39,9 +33,6 @@ struct TabBarView: View {
 }
 
 #Preview {
-    TabBarView(
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
+    TabBarView()
     .accentColor(.customGreen)
 }

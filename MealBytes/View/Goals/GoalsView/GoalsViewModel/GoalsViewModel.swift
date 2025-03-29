@@ -16,6 +16,6 @@ final class GoalsViewModel: ObservableObject {
 
     @Published var navigationDestination: NavigationDestination = .none
     
-    let customRdiViewModel: CustomRdiViewModel = CustomRdiViewModel()
-    let rdiViewModel: RdiViewModel = RdiViewModel()
+    let customRdiView: CustomRdiView = CustomRdiView()
+    let rdiView: RdiView = RdiView()
 }
