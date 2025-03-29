@@ -8,13 +8,10 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @StateObject var mainViewModel: MainViewModel = MainViewModel()
-    @StateObject var goalsViewModel: GoalsViewModel = GoalsViewModel()
-    
     var body: some View {
         TabView {
             NavigationStack {
-                MainView(mainViewModel: mainViewModel)
+                MainView()
             }
             .tabItem {
                 Image(systemName: "fork.knife")
@@ -22,7 +19,7 @@ struct TabBarView: View {
             }
             
             NavigationStack {
-                GoalsView(goalsViewModel: goalsViewModel)
+                GoalsView()
             }
             .tabItem {
                 Image(systemName: "chart.bar")

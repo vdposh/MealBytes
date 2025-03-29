@@ -9,11 +9,7 @@ import SwiftUI
 import FirebaseCore
 
 struct MainView: View {
-    @StateObject private var mainViewModel: MainViewModel
-    
-    init(mainViewModel: MainViewModel) {
-        self._mainViewModel = StateObject(wrappedValue: mainViewModel)
-    }
+    @StateObject private var mainViewModel: MainViewModel = MainViewModel()
     
     var body: some View {
         ZStack {
@@ -156,8 +152,7 @@ struct MainView: View {
 
 #Preview {
     NavigationStack {
-        MainView(mainViewModel: MainViewModel()
-        )
+        MainView()
     }
     .accentColor(.customGreen)
 }
