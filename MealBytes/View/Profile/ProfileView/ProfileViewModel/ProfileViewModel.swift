@@ -19,10 +19,13 @@ final class ProfileViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
     
-    init(loginViewModel: LoginViewModel) {
+    init(loginViewModel: LoginViewModel,
+         mainViewModel: MainViewModel) {
         self.loginViewModel = loginViewModel
+        self.mainViewModel = mainViewModel
     }
     
     // MARK: - Sign Out
@@ -54,6 +57,16 @@ final class ProfileViewModel: ObservableObject {
         email = user.email
     }
     
+    // MARK: - Display RDI
+    func saveShouldDisplayRdiMainView(_ newValue: Bool) async {
+        mainViewModel.shouldDisplayRdi = newValue
+        do {
+            try await mainViewModel.firebase.saveDisplayRdiFirebase(newValue)
+        } catch {
+            appError = AppError.decoding
+        }
+    }
+    
     // MARK: - Alert
     func prepareAlert(for type: AlertType) {
         alertType = type
@@ -61,7 +74,7 @@ final class ProfileViewModel: ObservableObject {
         
         switch type {
         case .signOut:
-            alertTitle = "Are you sure you want to sign out?"
+            alertTitle = "Sign out"
             alertMessage = "You will need to sign in again to access your account."
             destructiveButtonTitle = "Sign Out"
         case .deleteAccount:

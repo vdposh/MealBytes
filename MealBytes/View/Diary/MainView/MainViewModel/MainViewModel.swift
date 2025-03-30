@@ -145,6 +145,20 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Load Display RDI
+    func loadShouldDisplayRdiMainView() async {
+        do {
+            let value = try await firebase.loadDisplayRdiFirebase()
+            await MainActor.run {
+                shouldDisplayRdi = value
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = AppError.decoding
+            }
+        }
+    }
+    
     //MARK: - RDI % calculation
     func calculateRdiPercentage(from calories: Double?) -> String {
         guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }

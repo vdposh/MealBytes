@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseCore
 
 struct MainView: View {
-    @StateObject private var mainViewModel = MainViewModel()
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         ZStack {
@@ -143,6 +143,7 @@ struct MainView: View {
         await mainViewModel.loadMealItemsMainView()
         await mainViewModel.searchViewModel.loadBookmarksSearchView()
         await mainViewModel.loadMainRdiMainView()
+        await mainViewModel.loadShouldDisplayRdiMainView()
         await MainActor.run {
             mainViewModel.updateProgress()
             mainViewModel.isLoading = false
@@ -152,7 +153,7 @@ struct MainView: View {
 
 #Preview {
     NavigationStack {
-        MainView()
+        MainView(mainViewModel: MainViewModel())
     }
     .accentColor(.customGreen)
 }

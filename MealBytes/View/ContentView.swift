@@ -10,12 +10,19 @@ import FirebaseAuth
 
 struct ContentView: View {
     @StateObject private var loginViewModel = LoginViewModel()
+    @StateObject private var mainViewModel = MainViewModel()
     
     var body: some View {
         if loginViewModel.isLoggedIn {
-            TabBarView(loginViewModel: loginViewModel)
+            TabBarView(loginViewModel: loginViewModel,
+                       mainViewModel: mainViewModel)
         } else {
             LoginView(loginViewModel: loginViewModel)
         }
     }
+}
+
+#Preview {
+    ContentView()
+        .accentColor(.customGreen)
 }

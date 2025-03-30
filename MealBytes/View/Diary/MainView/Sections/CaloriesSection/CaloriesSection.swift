@@ -29,8 +29,7 @@ struct CaloriesSection: View {
                             )
                             .lineLimit(1)
                             
-                            if mainViewModel.shouldDisplayRdi &&
-                                !mainViewModel.rdi.isEmpty {
+                            if mainViewModel.canDisplayRdi() {
                                 Text("/")
                                     .foregroundStyle(.secondary)
                                 Text(mainViewModel.rdi)
@@ -66,14 +65,14 @@ struct CaloriesSection: View {
                         if mainViewModel.canDisplayRdi() {
                             Text(mainViewModel.rdiPercentageText(
                                 for: summaries[.calories]))
-                                .lineLimit(1)
-                                .foregroundColor(.secondary)
-                                .font(.subheadline)
-                                .frame(maxWidth: .infinity,
-                                       alignment: .trailing)
+                            .lineLimit(1)
+                            .foregroundColor(.secondary)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity,
+                                   alignment: .trailing)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading) 
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .padding(.vertical, 5)

@@ -10,6 +10,7 @@ import SwiftUI
 struct TabBarView: View {
     @State private var selectedTab: Int = 0
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -23,7 +24,7 @@ struct TabBarView: View {
             .tag(1)
             
             NavigationStack {
-                MainView()
+                MainView(mainViewModel: mainViewModel)
             }
             .tabItem {
                 Image(systemName: "fork.knife")
@@ -32,7 +33,8 @@ struct TabBarView: View {
             .tag(0)
             
             NavigationStack {
-                ProfileView(loginViewModel: loginViewModel)
+                ProfileView(loginViewModel: loginViewModel,
+                            mainViewModel: mainViewModel)
             }
             .tabItem {
                 Image(systemName: "person.fill")
@@ -47,6 +49,6 @@ struct TabBarView: View {
 }
 
 #Preview {
-    TabBarView(loginViewModel: LoginViewModel())
+    ContentView()
         .accentColor(.customGreen)
 }

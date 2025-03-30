@@ -16,11 +16,13 @@ protocol FirestoreFirebaseProtocol {
     func loadCustomRdiFirebase() async throws -> CustomRdiData
     func loadRdiFirebase() async throws -> RdiData
     func loadMainRdiFirebase() async throws -> String
+    func loadDisplayRdiFirebase() async throws -> Bool
     func addMealItemFirebase(_ mealItem: MealItem) async throws
     func addBookmarkFirebase(_ foods: [Food]) async throws
     func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) async throws
     func saveRdiFirebase(_ rdiData: RdiData) async throws
     func saveMainRdiFirebase(_ rdi: String) async throws
+    func saveDisplayRdiFirebase(_ shouldDisplayRdi: Bool) async throws
     func updateMealItemFirebase(_ mealItem: MealItem) async throws
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
 }
@@ -194,5 +196,36 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
             .collection("rdi")
             .document("myRdi")
         try await documentReference.setData(["rdi": rdi])
+    }
+    
+    // MARK: - Load Display RDI
+    func loadDisplayRdiFirebase() async throws -> Bool {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        let documentReference = firestore.collection("users")
+            .document(uid)
+            .collection("settings")
+            .document("displayRdi")
+        let snapshot = try await documentReference.getDocument()
+        guard let data = snapshot.data(),
+              let shouldDisplayRdi = data["shouldDisplayRdi"] as? Bool else {
+            throw AppError.decoding
+        }
+        return shouldDisplayRdi
+    }
+    
+    // MARK: - Save Display RDI
+    func saveDisplayRdiFirebase(_ shouldDisplayRdi: Bool) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        let documentReference = firestore.collection("users")
+            .document(uid)
+            .collection("settings")
+            .document("displayRdi")
+        try await documentReference.setData(
+            ["shouldDisplayRdi": shouldDisplayRdi]
+        )
     }
 }

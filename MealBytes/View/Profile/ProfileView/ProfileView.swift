@@ -10,9 +10,11 @@ import SwiftUI
 struct ProfileView: View {
     @StateObject private var profileViewModel: ProfileViewModel
     
-    init(loginViewModel: LoginViewModel) {
-        _profileViewModel = StateObject(
-            wrappedValue: ProfileViewModel(loginViewModel: loginViewModel)
+    init(loginViewModel: LoginViewModel,
+         mainViewModel: MainViewModel) {
+        _profileViewModel = StateObject(wrappedValue: ProfileViewModel(
+            loginViewModel: loginViewModel,
+            mainViewModel: mainViewModel)
         )
     }
     
@@ -37,8 +39,38 @@ struct ProfileView: View {
                             .font(.headline)
                             .foregroundColor(.customRed)
                     }
+                    
+                    Toggle(
+                        "Display RDI",
+                        isOn: Binding(
+                            get: { profileViewModel
+                                .mainViewModel.shouldDisplayRdi },
+                            set: { newValue in
+                                profileViewModel
+                                    .mainViewModel.shouldDisplayRdi = newValue
+                                Task {
+                                    await profileViewModel
+                                        .saveShouldDisplayRdiMainView(newValue)
+                                }
+                            }
+                        )
+                    )
+
+                    .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+                    .font(.headline)
+                    .padding(.top, 50)
+                    .padding(.horizontal, 35)
+                    
+                    Text("Enable this option to display your Recommended Daily Intake (RDI) in the app.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                    
+                    Divider()
+                        .padding(.horizontal, 30)
                 }
-                .padding(.vertical)
+                .padding(.top)
                 .frame(maxHeight: .infinity, alignment: .top)
                 
                 VStack {
@@ -94,6 +126,9 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ContentView()
-        .accentColor(.customGreen)
+    NavigationStack {
+        ProfileView(loginViewModel: LoginViewModel(),
+                    mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }
