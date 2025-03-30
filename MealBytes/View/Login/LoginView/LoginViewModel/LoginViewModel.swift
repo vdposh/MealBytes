@@ -17,6 +17,7 @@ final class LoginViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var showAlert = false
     @Published var isLoggedIn: Bool = false
+    @Published var setMainViewLoading: (() -> Void)?
     
     let registerView = RegisterView()
     let resetView = ResetView()
@@ -46,6 +47,7 @@ final class LoginViewModel: ObservableObject {
             self.error = nil
             updateAlertState()
             isLoggedIn = true
+            setMainViewLoading?()
         } catch {
             self.error = handleError(error as NSError)
             updateAlertState()

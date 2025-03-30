@@ -56,7 +56,6 @@ final class ProfileViewModel: ObservableObject {
             return
         }
         email = user.email
-        self.isDataLoaded = true
     }
     
     // MARK: - Save Display RDI
@@ -103,9 +102,4 @@ final class ProfileViewModel: ObservableObject {
         case signOut
         case deleteAccount
     }
-}
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
 }

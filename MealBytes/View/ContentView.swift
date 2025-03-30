@@ -18,6 +18,11 @@ struct ContentView: View {
                        mainViewModel: mainViewModel)
         } else {
             LoginView(loginViewModel: loginViewModel)
+                .task {
+                    loginViewModel.setMainViewLoading = {
+                        mainViewModel.isLoading = true
+                    }
+                }
         }
     }
 }

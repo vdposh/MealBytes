@@ -112,6 +112,7 @@ struct ProfileView: View {
             profileViewModel.isDataLoaded = false
             await profileViewModel.mainViewModel.loadDisplayRdiMainView()
             await profileViewModel.fetchCurrentUserEmail()
+            profileViewModel.isDataLoaded = true
         }
         
         .alert(
@@ -132,14 +133,9 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ContentView()
-        .accentColor(.customGreen)
+    NavigationStack {
+        ProfileView(loginViewModel: LoginViewModel(),
+                    mainViewModel: MainViewModel())
+    }
+    .accentColor(.customGreen)
 }
-
-//#Preview {
-//    NavigationStack {
-//        ProfileView(loginViewModel: LoginViewModel(),
-//                    mainViewModel: MainViewModel())
-//    }
-//    .accentColor(.customGreen)
-//}
