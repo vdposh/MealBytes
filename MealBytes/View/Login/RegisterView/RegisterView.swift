@@ -53,6 +53,12 @@ struct RegisterView: View {
                 }
             }
             
+            Text("To register, please provide a valid email address and create a password that is at least 6 characters long. After completing the registration form, an email will be sent to the provided address containing a verification link.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+                .padding(.vertical, 5)
+            
             .alert(isPresented: $registerViewModel.showAlert) {
                 registerViewModel.getAlert()
             }

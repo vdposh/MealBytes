@@ -32,13 +32,15 @@ struct LoginView: View {
             }
             .padding()
             
-            VStack(spacing: 15) {
+            VStack(spacing: 10) {
                 HStack {
                     Text("Don't have a MealBytes account?")
                         .font(.callout)
                         .foregroundColor(.secondary)
                     
-                    NavigationLink(destination: loginViewModel.registerView) {
+                    Button(action: {
+                        loginViewModel.navigationDestination = .registerView
+                    }) {
                         Text("Sign up")
                             .font(.callout)
                             .fontWeight(.semibold)
@@ -51,7 +53,9 @@ struct LoginView: View {
                         .font(.callout)
                         .foregroundColor(.secondary)
                     
-                    NavigationLink(destination: loginViewModel.resetView) {
+                    Button(action: {
+                        loginViewModel.navigationDestination = .resetView
+                    }) {
                         Text("Reset")
                             .font(.callout)
                             .fontWeight(.semibold)
@@ -62,6 +66,19 @@ struct LoginView: View {
             
             .alert(isPresented: $loginViewModel.showAlert) {
                 loginViewModel.getAlert()
+            }
+            .navigationDestination(isPresented: Binding(
+                get: { loginViewModel.navigationDestination != .none },
+                set: { if !$0 { loginViewModel.navigationDestination = .none } }
+            )) {
+                switch loginViewModel.navigationDestination {
+                case .registerView:
+                    loginViewModel.registerView
+                case .resetView:
+                    loginViewModel.resetView
+                case .none:
+                    EmptyView()
+                }
             }
         }
         .accentColor(.customGreen)

@@ -28,6 +28,11 @@ struct ResetView: View {
             }
             .padding()
             
+            Text("Enter the email address you used during registration. A message will be sent to this email containing instructions to reset your password. By following the link in the email, you will be able to create a new password and regain access to your account.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+            
             .alert(isPresented: $resetViewModel.showAlert) {
                 resetViewModel.getAlert()
             }

@@ -10,6 +10,13 @@ import FirebaseAuth
 
 @MainActor
 final class LoginViewModel: ObservableObject {
+    enum NavigationDestination {
+        case registerView
+        case resetView
+        case none
+    }
+    
+    @Published var navigationDestination: NavigationDestination = .none
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var error: AuthError?
