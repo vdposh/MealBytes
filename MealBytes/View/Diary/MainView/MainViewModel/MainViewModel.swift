@@ -30,7 +30,7 @@ final class MainViewModel: ObservableObject {
     let calendar = Calendar.current
     let formatter = Formatter()
     
-    let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
+    let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
     lazy var searchViewModel = SearchViewModel(mainViewModel: self)
     private var cancellables = Set<AnyCancellable>()
     
@@ -49,7 +49,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Meal Item
     func loadMealItemsMainView() async {
-        let mealItems = try? await firestoreManager.loadMealItemsFirebase()
+        let mealItems = try? await firebase.loadMealItemsFirebase()
         await MainActor.run {
             self.mealItems = Dictionary(
                 grouping: mealItems ?? [],
@@ -88,7 +88,7 @@ final class MainViewModel: ObservableObject {
                 mealItems[mealType] = updatedItems
                 recalculateNutrients(for: date)
             }
-            try? await firestoreManager.updateMealItemFirebase(updatedItem)
+            try? await firebase.updateMealItemFirebase(updatedItem)
         }
     }
     
@@ -109,7 +109,7 @@ final class MainViewModel: ObservableObject {
                     }
                 }
                 do {
-                    try await firestoreManager
+                    try await firebase
                         .deleteMealItemFirebase(itemToDelete)
                 } catch {
                     await MainActor.run {
@@ -123,7 +123,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load RDI
     func loadMainRdiMainView() async {
         do {
-            let fetchedRdi = try await firestoreManager.loadMainRdiFirebase()
+            let fetchedRdi = try await firebase.loadMainRdiFirebase()
             await MainActor.run {
                 self.rdi = fetchedRdi
             }
@@ -137,7 +137,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Save RDI
     func saveMainRdiMainView() async {
         do {
-            try await firestoreManager.saveMainRdiFirebase(rdi)
+            try await firebase.saveMainRdiFirebase(rdi)
         } catch {
             await MainActor.run {
                 errorMessage = AppError.network

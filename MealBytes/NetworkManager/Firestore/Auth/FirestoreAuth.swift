@@ -1,5 +1,5 @@
 //
-//  FirestoreAuth.swift
+//  FirebaseAuth.swift
 //  MealBytes
 //
 //  Created by Porshe on 29/03/2025.
@@ -11,9 +11,9 @@ import FirebaseAuth
 protocol FirestoreAuthProtocol {
     func signInFirebase(email: String, password: String) async throws -> User
     func signUpFirebase(email: String, password: String) async throws -> User
+    func resetPasswordFirebase(email: String) async throws
     func signOutFirebase() throws
     func deleteAccountFirebase() async throws
-    func resetPasswordFirebase(email: String) async throws
     func resendVerificationFirebase() async throws
 }
 
@@ -33,11 +33,17 @@ final class FirestoreAuth: FirestoreAuthProtocol {
         return result.user
     }
     
+    // MARK: - Resend Verification
     func resendVerificationFirebase() async throws {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
         try await user.sendEmailVerification()
+    }
+    
+    // MARK: - Reset Password
+    func resetPasswordFirebase(email: String) async throws {
+        try await Auth.auth().sendPasswordReset(withEmail: email)
     }
     
     // MARK: - Sign Out
@@ -51,10 +57,5 @@ final class FirestoreAuth: FirestoreAuthProtocol {
             throw AuthError.userNotFound
         }
         try await user.delete()
-    }
-    
-    // MARK: - Reset Password
-    func resetPasswordFirebase(email: String) async throws {
-        try await Auth.auth().sendPasswordReset(withEmail: email)
     }
 }

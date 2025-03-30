@@ -18,12 +18,18 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     
+    @ObservedObject var loginViewModel: LoginViewModel
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    
+    init(loginViewModel: LoginViewModel) {
+        self.loginViewModel = loginViewModel
+    }
     
     // MARK: - Sign Out
     func signOut() {
         do {
             try firestoreAuth.signOutFirebase()
+            loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
         }
@@ -33,6 +39,7 @@ final class ProfileViewModel: ObservableObject {
     func deleteAccount() async {
         do {
             try await firestoreAuth.deleteAccountFirebase()
+            loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
         }

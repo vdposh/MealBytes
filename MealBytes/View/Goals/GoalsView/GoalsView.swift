@@ -50,7 +50,6 @@ struct GoalsView: View {
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                    .padding(.vertical)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top)
@@ -58,7 +57,8 @@ struct GoalsView: View {
                 .navigationBarTitle("Your Goals", displayMode: .inline)
                 .navigationDestination(isPresented: Binding(
                     get: { goalsViewModel.navigationDestination != .none },
-                    set: { if !$0 { goalsViewModel.navigationDestination = .none } }
+                    set: { if !$0 {
+                        goalsViewModel.navigationDestination = .none } }
                 )) {
                     switch goalsViewModel.navigationDestination {
                     case .rdiView:

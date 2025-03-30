@@ -30,7 +30,7 @@ final class CustomRdiViewModel: ObservableObject {
     private var isInitialized = false
     
     private let formatter = Formatter()
-    private let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
+    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
@@ -47,7 +47,7 @@ final class CustomRdiViewModel: ObservableObject {
     // MARK: - Load CustomGoals Data
     func loadCustomRdiView() async {
         do {
-            let customGoalsData = try await firestoreManager
+            let customGoalsData = try await firebase
                 .loadCustomRdiFirebase()
             await MainActor.run {
                 calories = customGoalsData.calories
@@ -73,7 +73,7 @@ final class CustomRdiViewModel: ObservableObject {
             isUsingPercentage: isUsingPercentage
         )
         do {
-            try await firestoreManager.saveCustomRdiFirebase(customGoalsData)
+            try await firebase.saveCustomRdiFirebase(customGoalsData)
             await MainActor.run {
                 mainViewModel.rdi = calories
             }

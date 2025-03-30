@@ -24,7 +24,8 @@ final class RdiViewModel: ObservableObject {
     var isError: Bool = false
     
     private let formatter = Formatter()
-    private let firestoreManager: FirestoreManagerProtocol = FirestoreManager()
+    
+    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
@@ -35,7 +36,7 @@ final class RdiViewModel: ObservableObject {
     // MARK: - Load RDI Data
     func loadRdiView() async {
         do {
-            let rdiData = try await firestoreManager.loadRdiFirebase()
+            let rdiData = try await firebase.loadRdiFirebase()
             await MainActor.run {
                 self.calculatedRdi = rdiData.calculatedRdi
                 self.age = rdiData.age
@@ -75,7 +76,7 @@ final class RdiViewModel: ObservableObject {
         )
         
         do {
-            try await firestoreManager.saveRdiFirebase(rdiData)
+            try await firebase.saveRdiFirebase(rdiData)
             await MainActor.run {
                 mainViewModel.rdi = calculatedRdi
             }

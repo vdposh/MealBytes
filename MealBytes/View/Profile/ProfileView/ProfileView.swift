@@ -8,7 +8,13 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var profileViewModel = ProfileViewModel()
+    @StateObject private var profileViewModel: ProfileViewModel
+    
+    init(loginViewModel: LoginViewModel) {
+        _profileViewModel = StateObject(
+            wrappedValue: ProfileViewModel(loginViewModel: loginViewModel)
+        )
+    }
     
     var body: some View {
         ZStack {

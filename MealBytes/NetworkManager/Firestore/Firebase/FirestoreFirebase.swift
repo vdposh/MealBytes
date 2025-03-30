@@ -1,5 +1,5 @@
 //
-//  FirestoreManager.swift
+//  FirestoreFirebase.swift
 //  MealBytes
 //
 //  Created by Porshe on 21/03/2025.
@@ -10,7 +10,7 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 
-protocol FirestoreManagerProtocol {
+protocol FirestoreFirebaseProtocol {
     func loadMealItemsFirebase() async throws -> [MealItem]
     func loadBookmarksFirebase() async throws -> [Food]
     func loadCustomRdiFirebase() async throws -> CustomRdiData
@@ -25,7 +25,7 @@ protocol FirestoreManagerProtocol {
     func deleteMealItemFirebase(_ mealItem: MealItem) async throws
 }
 
-final class FirestoreManager: FirestoreManagerProtocol {
+final class FirestoreFirebase: FirestoreFirebaseProtocol {
     private let firestore: Firestore = Firestore.firestore()
     
     // MARK: - Fetch Data
