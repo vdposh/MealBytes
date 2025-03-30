@@ -20,21 +20,6 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Sign Up
     func signUp() async {
-        guard !email.isEmpty else {
-            showAlertAndConfigure(success: false, error: .emptyEmail)
-            return
-        }
-        
-        guard !password.isEmpty else {
-            showAlertAndConfigure(success: false, error: .emptyPassword)
-            return
-        }
-        
-        guard password == confirmPassword else {
-            showAlertAndConfigure(success: false, error: .passwordMismatch)
-            return
-        }
-        
         do {
             let _ = try await firestoreAuth.signUpFirebase(email: email,
                                                            password: password)
@@ -71,10 +56,23 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    private func showAlertAndConfigure(success: Bool, error: AuthError? = nil) {
+    private func showAlertAndConfigure(success: Bool,
+                                       error: AuthError? = nil) {
         self.error = error
         self.showAlert = true
     }
+    
+    // MARK: - Color
+        func titleColor(for text: String) -> Color {
+            return text.isEmpty ? .customRed : .primary
+        }
+        
+        // MARK: - Button State
+        func isRegisterEnabled() -> Bool {
+            return !email.isEmpty &&
+            !password.isEmpty &&
+            password == confirmPassword
+        }
     
     // MARK: - Error
     private func handleError(_ error: Error) -> AuthError {
@@ -83,8 +81,6 @@ final class RegisterViewModel: ObservableObject {
             switch authErrorCode {
             case .invalidEmail:
                 return .invalidEmail
-            case .weakPassword:
-                return .weakPassword
             case .emailAlreadyInUse:
                 return .emailAlreadyInUse
             case .networkError:

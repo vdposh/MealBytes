@@ -14,31 +14,53 @@ struct RegisterView: View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Create account")
-                    .font(.largeTitle)
+                    .font(.title)
                     .fontWeight(.bold)
                 
-                LoginTextFieldView(text: $registerViewModel.email,
-                                   placeholder: "Email")
+                ServingTextFieldView(
+                    text: $registerViewModel.email,
+                    title: "Email",
+                    placeholder: "Enter your email",
+                    keyboardType: .emailAddress,
+                    titleColor: registerViewModel.titleColor(
+                        for: registerViewModel.email)
+                )
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
                 
-                LoginTextFieldView(text: $registerViewModel.password,
-                                   placeholder: "Password",
-                                   isSecureField: true)
+                ServingSecureFieldView(
+                    text: $registerViewModel.password,
+                    title: "Password",
+                    placeholder: "Enter your password",
+                    titleColor: registerViewModel.titleColor(
+                        for: registerViewModel.password)
+                )
                 
-                LoginTextFieldView(text: $registerViewModel.confirmPassword,
-                                   placeholder: "Confirm Password",
-                                   isSecureField: true)
+                ServingSecureFieldView(
+                    text: $registerViewModel.confirmPassword,
+                    title: "Confirm Password",
+                    placeholder: "Re-enter your password",
+                    titleColor: registerViewModel.titleColor(
+                        for: registerViewModel.confirmPassword)
+                )
                 
-                LoginButtonView(title: "Register", action: {
-                    Task {
-                        await registerViewModel.signUp()
-                    }
-                })
+                ActionButtonView(
+                    title: "Register",
+                    action: {
+                        Task {
+                            await registerViewModel.signUp()
+                        }
+                    },
+                    backgroundColor: .customGreen,
+                    isEnabled: registerViewModel.isRegisterEnabled()
+                )
             }
-            .padding()
+            .padding(.horizontal, 30)
+            .padding(.vertical, 15)
             
             HStack {
                 Text("Didn't receive the email?")
-                    .font(.callout)
+                    .font(.footnote)
                     .foregroundColor(.secondary)
                 
                 Button(action: {
@@ -47,7 +69,7 @@ struct RegisterView: View {
                     }
                 }) {
                     Text("Resend")
-                        .font(.callout)
+                        .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundColor(.customGreen)
                 }
@@ -56,7 +78,7 @@ struct RegisterView: View {
             Text("To register, please provide a valid email address and create a password that is at least 6 characters long. After completing the registration form, an email will be sent to the provided address containing a verification link.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
                 .padding(.vertical, 5)
             
             .alert(isPresented: $registerViewModel.showAlert) {

@@ -29,27 +29,18 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Sign In
     func signIn() async {
-        guard !(email.isEmpty && password.isEmpty) else {
-            self.error = .emptyFields
-            updateAlertState()
-            return
-        }
-        
-        guard !email.isEmpty else {
-            self.error = .emptyEmail
-            updateAlertState()
-            return
-        }
-        
-        guard !password.isEmpty else {
-            self.error = .emptyPassword
-            updateAlertState()
-            return
-        }
-        
         do {
-            let _ = try await firestoreAuth.signInFirebase(email: email,
-                                                           password: password)
+            let user = try await firestoreAuth.signInFirebase(
+                email: email,
+                password: password
+            )
+            
+            if !user.isEmailVerified {
+                self.error = .userNotVerified
+                updateAlertState()
+                return
+            }
+            
             isAuthenticated = true
             self.error = nil
             updateAlertState()
@@ -80,22 +71,32 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Button State
+    func isLoginEnabled() -> Bool {
+        return !email.isEmpty && !password.isEmpty
+    }
+    
+    // MARK: - Colors
+    func titleColor(for text: String) -> Color {
+        return text.isEmpty ? .customRed : .primary
+    }
+    
     // MARK: - Error
     private func handleError(_ error: Error) -> AuthError {
-        if let authError = error as? AuthErrorCode {
-            switch authError {
+        if let nsError = error as NSError?,
+           let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
+            switch authErrorCode {
             case .invalidEmail:
                 return .invalidEmail
-            case .wrongPassword:
-                return .emptyPassword
-            case .userNotFound:
-                return .incorrectCredentials
             case .networkError:
                 return .networkError
+            case .userDisabled:
+                return .userNotVerified
             default:
                 return .incorrectCredentials
             }
         }
-        return .incorrectCredentials
+        
+        return .unknownError
     }
 }

@@ -14,24 +14,38 @@ struct ResetView: View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Reset password")
-                    .font(.largeTitle)
+                    .font(.title)
                     .fontWeight(.bold)
                 
-                LoginTextFieldView(text: $resetViewModel.email,
-                                   placeholder: "Enter your email")
+                ServingTextFieldView(
+                    text: $resetViewModel.email,
+                    title: "Email",
+                    placeholder: "Enter your email",
+                    keyboardType: .emailAddress,
+                    titleColor: resetViewModel.titleColor(
+                        for: resetViewModel.email)
+                )
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
                 
-                LoginButtonView(title: "Send reset link on email", action: {
-                    Task {
-                        await resetViewModel.resetPassword()
-                    }
-                })
+                ActionButtonView(
+                    title: "Send reset link on email",
+                    action: {
+                        Task {
+                            await resetViewModel.resetPassword()
+                        }
+                    },
+                    backgroundColor: .customGreen,
+                    isEnabled: resetViewModel.isResetEnabled()
+                )
             }
-            .padding()
+            .padding(.horizontal, 30)
+            .padding(.vertical, 15)
             
             Text("Enter the email address you used during registration. A message will be sent to this email containing instructions to reset your password. By following the link in the email, you will be able to create a new password and regain access to your account.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
             
             .alert(isPresented: $resetViewModel.showAlert) {
                 resetViewModel.getAlert()

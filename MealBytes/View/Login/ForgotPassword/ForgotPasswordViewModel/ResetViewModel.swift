@@ -19,12 +19,6 @@ final class ResetViewModel: ObservableObject {
     
     // MARK: - Reset Password
     func resetPassword() async {
-        guard !email.isEmpty else {
-            self.error = .emptyEmail
-            updateAlertState()
-            return
-        }
-        
         do {
             try await firestoreAuth.resetPasswordFirebase(email: email)
             success = true
@@ -57,6 +51,16 @@ final class ResetViewModel: ObservableObject {
             )
         }
     }
+    
+    // MARK: - Button State
+    func isResetEnabled() -> Bool {
+        return !email.isEmpty
+    }
+    
+    // MARK: - Colors
+    func titleColor(for text: String) -> Color {
+        return text.isEmpty ? .customRed : .primary
+    }
    
     // MARK: - Error
     private func handleError(_ error: Error) -> AuthError {
@@ -67,8 +71,6 @@ final class ResetViewModel: ObservableObject {
                 return .invalidEmail
             case .networkError:
                 return .networkError
-            case .userNotFound:
-                return .userNotFound
             default:
                 return .unknownError
             }

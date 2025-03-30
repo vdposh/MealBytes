@@ -14,35 +14,53 @@ struct LoginView: View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Sign in")
-                    .font(.largeTitle)
+                    .font(.title)
                     .fontWeight(.bold)
                 
-                LoginTextFieldView(text: $loginViewModel.email,
-                                   placeholder: "Email")
+                ServingTextFieldView(
+                    text: $loginViewModel.email,
+                    title: "Email",
+                    placeholder: "Enter your email",
+                    keyboardType: .emailAddress,
+                    titleColor: loginViewModel.titleColor(
+                        for: loginViewModel.email)
+                )
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
                 
-                LoginTextFieldView(text: $loginViewModel.password,
-                                   placeholder: "Password",
-                                   isSecureField: true)
+                ServingSecureFieldView(
+                    text: $loginViewModel.password,
+                    title: "Password",
+                    placeholder: "Enter your password",
+                    titleColor: loginViewModel.titleColor(
+                        for: loginViewModel.password)
+                )
                 
-                LoginButtonView(title: "Login", action: {
-                    Task {
-                        await loginViewModel.signIn()
-                    }
-                })
+                ActionButtonView(
+                    title: "Login",
+                    action: {
+                        Task {
+                            await loginViewModel.signIn()
+                        }
+                    },
+                    backgroundColor: .customGreen,
+                    isEnabled: loginViewModel.isLoginEnabled()
+                )
             }
-            .padding()
+            .padding(.horizontal, 30)
+            .padding(.vertical, 15)
             
             VStack(spacing: 10) {
                 HStack {
                     Text("Don't have a MealBytes account?")
-                        .font(.callout)
+                        .font(.footnote)
                         .foregroundColor(.secondary)
                     
                     Button(action: {
                         loginViewModel.navigationDestination = .registerView
                     }) {
                         Text("Sign up")
-                            .font(.callout)
+                            .font(.footnote)
                             .fontWeight(.semibold)
                             .foregroundColor(.customGreen)
                     }
@@ -50,14 +68,14 @@ struct LoginView: View {
                 
                 HStack {
                     Text("Forgot the password?")
-                        .font(.callout)
+                        .font(.footnote)
                         .foregroundColor(.secondary)
                     
                     Button(action: {
                         loginViewModel.navigationDestination = .resetView
                     }) {
                         Text("Reset")
-                            .font(.callout)
+                            .font(.footnote)
                             .fontWeight(.semibold)
                             .foregroundColor(.customGreen)
                     }
