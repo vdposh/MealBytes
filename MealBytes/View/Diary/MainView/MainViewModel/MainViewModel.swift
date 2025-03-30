@@ -146,7 +146,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Load Display RDI
-    func loadShouldDisplayRdiMainView() async {
+    func loadDisplayRdiMainView() async {
         do {
             let value = try await firebase.loadDisplayRdiFirebase()
             await MainActor.run {

@@ -17,6 +17,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var alertType: AlertType?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
+    @Published var isDataLoaded: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
@@ -55,10 +56,11 @@ final class ProfileViewModel: ObservableObject {
             return
         }
         email = user.email
+        self.isDataLoaded = true
     }
     
-    // MARK: - Display RDI
-    func saveShouldDisplayRdiMainView(_ newValue: Bool) async {
+    // MARK: - Save Display RDI
+    func saveDisplayRdiMainView(_ newValue: Bool) async {
         mainViewModel.shouldDisplayRdi = newValue
         do {
             try await mainViewModel.firebase.saveDisplayRdiFirebase(newValue)

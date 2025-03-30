@@ -143,7 +143,7 @@ struct MainView: View {
         await mainViewModel.loadMealItemsMainView()
         await mainViewModel.searchViewModel.loadBookmarksSearchView()
         await mainViewModel.loadMainRdiMainView()
-        await mainViewModel.loadShouldDisplayRdiMainView()
+        await mainViewModel.loadDisplayRdiMainView()
         await MainActor.run {
             mainViewModel.updateProgress()
             mainViewModel.isLoading = false

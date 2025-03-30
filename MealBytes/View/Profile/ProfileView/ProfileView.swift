@@ -23,112 +23,122 @@ struct ProfileView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
             
-            VStack {
+            if  !profileViewModel.isDataLoaded {
+                LoadingView()
+            } else {
                 VStack {
-                    if let email = profileViewModel.email {
-                        VStack {
-                            Text("This account is signed in:")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
-                            
-                            Text(email)
-                                .font(.headline)
-                        }
-                    } else {
-                        Text("Unable to retrieve email.")
-                            .font(.headline)
-                            .foregroundColor(.customRed)
-                    }
-                    
-                    Toggle(
-                        "Display RDI",
-                        isOn: Binding(
-                            get: { profileViewModel
-                                .mainViewModel.shouldDisplayRdi },
-                            set: { newValue in
-                                profileViewModel
-                                    .mainViewModel.shouldDisplayRdi = newValue
-                                Task {
-                                    await profileViewModel
-                                        .saveShouldDisplayRdiMainView(newValue)
-                                }
+                    VStack {
+                        if let email = profileViewModel.email {
+                            VStack {
+                                Text("This account is signed in:")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                                
+                                Text(email)
+                                    .font(.headline)
                             }
-                        )
-                    )
-
-                    .toggleStyle(SwitchToggleStyle(tint: .customGreen))
-                    .font(.headline)
-                    .padding(.top, 50)
-                    .padding(.horizontal, 35)
-                    
-                    Text("Enable this option to display your Recommended Daily Intake (RDI) in the app.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                    
-                    Divider()
-                        .padding(.horizontal, 30)
-                }
-                .padding(.top)
-                .frame(maxHeight: .infinity, alignment: .top)
-                
-                VStack {
-                    RdiButtonView(
-                        title: "Sign Out",
-                        backgroundColor: .customRed
-                    ) {
-                        profileViewModel.prepareAlert(for: .signOut)
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Text("Do you want to")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                        
-                        Button(action: {
-                            profileViewModel.prepareAlert(for: .deleteAccount)
-                        }) {
-                            Text("remove")
-                                .fontWeight(.semibold)
+                            .padding(.top)
+                        } else {
+                            Text("Unable to retrieve email.")
+                                .font(.headline)
                                 .foregroundColor(.customRed)
                         }
                         
-                        Text("your account?")
-                            .foregroundColor(.secondary)
+                        Toggle(
+                            "Display RDI",
+                            isOn: Binding(
+                                get: { profileViewModel
+                                    .mainViewModel.shouldDisplayRdi },
+                                set: { newValue in
+                                    profileViewModel.mainViewModel
+                                        .shouldDisplayRdi = newValue
+                                    Task {
+                                        await profileViewModel
+                                            .saveDisplayRdiMainView(newValue)
+                                    }
+                                }
+                            )
+                        )
+                        .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+                        .font(.headline)
+                        .padding(.top, 50)
+                        .padding(.horizontal, 35)
+                        
+                        Text("Enable this option to display your Recommended Daily Intake (RDI) in the app.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                        
+                        Divider()
+                            .padding(.horizontal, 30)
                     }
-                    .font(.footnote)
                     .padding(.top)
-                    .padding(.bottom, 50)
-                }
-            }
-            .navigationBarTitle("Your Profile", displayMode: .inline)
-            .task {
-                await profileViewModel.fetchCurrentUserEmail()
-            }
-            
-            .alert(
-                profileViewModel.alertTitle,
-                isPresented: $profileViewModel.showAlert,
-                actions: {
-                    Button(profileViewModel.destructiveButtonTitle,
-                           role: .destructive) {
-                        profileViewModel.handleAlertAction()
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    
+                    VStack {
+                        RdiButtonView(
+                            title: "Sign Out",
+                            backgroundColor: .customRed
+                        ) {
+                            profileViewModel.prepareAlert(for: .signOut)
+                        }
+                        
+                        HStack(spacing: 4) {
+                            Text("Do you want to")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                            
+                            Button(action: {
+                                profileViewModel.prepareAlert(
+                                    for: .deleteAccount)
+                            }) {
+                                Text("remove")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.customRed)
+                            }
+                            
+                            Text("your account?")
+                                .foregroundColor(.secondary)
+                        }
+                        .font(.footnote)
+                        .padding(.top)
+                        .padding(.bottom, 50)
                     }
-                    Button("Cancel", role: .cancel) { }
-                },
-                message: {
-                    Text(profileViewModel.alertMessage)
                 }
-            )
+            }
         }
+        .task {
+            await profileViewModel.mainViewModel.loadDisplayRdiMainView()
+            await profileViewModel.fetchCurrentUserEmail()
+        }
+        
+        .alert(
+            profileViewModel.alertTitle,
+            isPresented: $profileViewModel.showAlert,
+            actions: {
+                Button(profileViewModel.destructiveButtonTitle,
+                       role: .destructive) {
+                    profileViewModel.handleAlertAction()
+                }
+                Button("Cancel", role: .cancel) { }
+            },
+            message: {
+                Text(profileViewModel.alertMessage)
+            }
+        )
     }
 }
 
 #Preview {
-    NavigationStack {
-        ProfileView(loginViewModel: LoginViewModel(),
-                    mainViewModel: MainViewModel())
-    }
-    .accentColor(.customGreen)
+    ContentView()
+        .accentColor(.customGreen)
 }
+
+//#Preview {
+//    NavigationStack {
+//        ProfileView(loginViewModel: LoginViewModel(),
+//                    mainViewModel: MainViewModel())
+//    }
+//    .accentColor(.customGreen)
+//}
