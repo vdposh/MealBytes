@@ -45,7 +45,7 @@ final class LoginViewModel: ObservableObject {
             self.error = nil
             updateAlertState()
         } catch {
-            self.error = handleError(error)
+            self.error = handleError(error as NSError)
             updateAlertState()
         }
     }
@@ -82,9 +82,8 @@ final class LoginViewModel: ObservableObject {
     }
     
     // MARK: - Error
-    private func handleError(_ error: Error) -> AuthError {
-        if let nsError = error as NSError?,
-           let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
+    private func handleError(_ error: NSError) -> AuthError {
+        if let authErrorCode = AuthErrorCode(rawValue: error.code) {
             switch authErrorCode {
             case .invalidEmail:
                 return .invalidEmail
@@ -96,7 +95,6 @@ final class LoginViewModel: ObservableObject {
                 return .incorrectCredentials
             }
         }
-        
         return .unknownError
     }
 }

@@ -25,7 +25,7 @@ final class ResetViewModel: ObservableObject {
             self.error = nil
             updateAlertState()
         } catch {
-            self.error = handleError(error)
+            self.error = handleError(error as NSError)
             success = false
             updateAlertState()
         }
@@ -63,8 +63,7 @@ final class ResetViewModel: ObservableObject {
     }
    
     // MARK: - Error
-    private func handleError(_ error: Error) -> AuthError {
-        let nsError = error as NSError
+    private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
             case .invalidEmail:

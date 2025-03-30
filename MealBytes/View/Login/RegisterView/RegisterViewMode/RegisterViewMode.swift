@@ -25,7 +25,7 @@ final class RegisterViewModel: ObservableObject {
                                                            password: password)
             showAlertAndConfigure(success: true)
         } catch {
-            let authError = handleError(error)
+            let authError = handleError(error as NSError)
             showAlertAndConfigure(success: false, error: authError)
         }
     }
@@ -35,7 +35,7 @@ final class RegisterViewModel: ObservableObject {
         do {
             try await firestoreAuth.resendVerificationFirebase()
         } catch {
-            self.error = handleError(error)
+            self.error = handleError(error as NSError)
         }
     }
     
@@ -75,8 +75,7 @@ final class RegisterViewModel: ObservableObject {
         }
     
     // MARK: - Error
-    private func handleError(_ error: Error) -> AuthError {
-        let nsError = error as NSError
+    private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
             case .invalidEmail:
