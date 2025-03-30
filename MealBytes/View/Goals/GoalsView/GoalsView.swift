@@ -11,14 +11,17 @@ struct GoalsView: View {
     @StateObject var goalsViewModel = GoalsViewModel()
     
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    VStack(alignment: .leading, spacing: 10) {
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            NavigationStack {
+                VStack {
+                    VStack(alignment: .leading) {
                         Text("MealBytes calculates your Recommended Daily Intake (RDI) to provide you with a daily calorie target tailored to help you achieve your desired weight.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
-                            .padding(.vertical, 10)
+                            .padding(.vertical)
                         
                         RdiButtonView(
                             title: "Calculate RDI",
@@ -29,16 +32,13 @@ struct GoalsView: View {
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-                
-                Section {
-                    VStack(alignment: .leading, spacing: 10) {
+                    .padding(.vertical)
+                    
+                    VStack(alignment: .leading) {
                         Text("You can also calculate your RDI manually by entering calories and macronutrient values such as fats, carbohydrates and proteins.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
-                            .padding(.vertical, 10)
+                            .padding(.vertical)
                         
                         RdiButtonView(
                             title: "Custom RDI",
@@ -50,22 +50,24 @@ struct GoalsView: View {
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
+                    .padding(.vertical)
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-            }
-            .navigationBarTitle("Your Goals", displayMode: .inline)
-            .navigationDestination(isPresented: Binding(
-                get: { goalsViewModel.navigationDestination != .none },
-                set: { if !$0 { goalsViewModel.navigationDestination = .none } }
-            )) {
-                switch goalsViewModel.navigationDestination {
-                case .rdiView:
-                    goalsViewModel.rdiView
-                case .customRdiView:
-                    goalsViewModel.customRdiView
-                case .none:
-                    EmptyView()
+                .padding(.horizontal, 20)
+                .padding(.top)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .navigationBarTitle("Your Goals", displayMode: .inline)
+                .navigationDestination(isPresented: Binding(
+                    get: { goalsViewModel.navigationDestination != .none },
+                    set: { if !$0 { goalsViewModel.navigationDestination = .none } }
+                )) {
+                    switch goalsViewModel.navigationDestination {
+                    case .rdiView:
+                        goalsViewModel.rdiView
+                    case .customRdiView:
+                        goalsViewModel.customRdiView
+                    case .none:
+                        EmptyView()
+                    }
                 }
             }
         }

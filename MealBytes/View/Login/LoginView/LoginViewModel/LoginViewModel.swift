@@ -10,22 +10,23 @@ import FirebaseAuth
 
 @MainActor
 final class LoginViewModel: ObservableObject {
-    enum NavigationDestination {
-        case registerView
-        case resetView
-        case none
-    }
-    
     @Published var navigationDestination: NavigationDestination = .none
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var error: AuthError?
     @Published var isAuthenticated: Bool = false
     @Published var showAlert = false
+    @Published var isLoggedIn: Bool = false
     
     let registerView = RegisterView()
     let resetView = ResetView()
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    
+    init() {
+        if let user = Auth.auth().currentUser, user.isEmailVerified {
+            isLoggedIn = true
+        }
+    }
     
     // MARK: - Sign In
     func signIn() async {
@@ -44,6 +45,7 @@ final class LoginViewModel: ObservableObject {
             isAuthenticated = true
             self.error = nil
             updateAlertState()
+            isLoggedIn = true
         } catch {
             self.error = handleError(error as NSError)
             updateAlertState()
@@ -96,5 +98,12 @@ final class LoginViewModel: ObservableObject {
             }
         }
         return .unknownError
+    }
+    
+    // MARK: - Navigation
+    enum NavigationDestination {
+        case registerView
+        case resetView
+        case none
     }
 }

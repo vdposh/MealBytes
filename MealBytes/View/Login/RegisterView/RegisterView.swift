@@ -58,9 +58,8 @@ struct RegisterView: View {
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
             
-            HStack {
+            HStack(spacing: 4) {
                 Text("Didn't receive the email?")
-                    .font(.footnote)
                     .foregroundColor(.secondary)
                 
                 Button(action: {
@@ -69,11 +68,11 @@ struct RegisterView: View {
                     }
                 }) {
                     Text("Resend")
-                        .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundColor(.customGreen)
                 }
             }
+            .font(.footnote)
             
             Text("To register, please provide a valid email address and create a password that is at least 6 characters long. After completing the registration form, an email will be sent to the provided address containing a verification link.")
                 .font(.footnote)

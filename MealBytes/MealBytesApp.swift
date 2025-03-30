@@ -24,12 +24,8 @@ struct MealBytesApp: App {
     
     var body: some Scene {
         WindowGroup {
-//                        TabBarView()
-//                            .accentColor(.customGreen)
-//                    }
-            
-            LoginView()
-            
+            ContentView()
+                .accentColor(.customGreen)
         }
     }
 }

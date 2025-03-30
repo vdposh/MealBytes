@@ -8,16 +8,10 @@
 import SwiftUI
 
 struct TabBarView: View {
+    @State private var selectedTab: Int = 0
+
     var body: some View {
-        TabView {
-            NavigationStack {
-                MainView()
-            }
-            .tabItem {
-                Image(systemName: "fork.knife")
-                Text("Diary")
-            }
-            
+        TabView(selection: $selectedTab) {
             NavigationStack {
                 GoalsView()
             }
@@ -25,6 +19,28 @@ struct TabBarView: View {
                 Image(systemName: "chart.bar")
                 Text("Goals")
             }
+            .tag(1)
+            
+            NavigationStack {
+                MainView()
+            }
+            .tabItem {
+                Image(systemName: "fork.knife")
+                Text("Diary")
+            }
+            .tag(0)
+
+            NavigationStack {
+                ProfileView()
+            }
+            .tabItem {
+                Image(systemName: "person.fill")
+                Text("Profile")
+            }
+            .tag(2)
+        }
+        .task {
+            selectedTab = 2
         }
     }
 }

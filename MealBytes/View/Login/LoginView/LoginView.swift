@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject private var loginViewModel = LoginViewModel()
+    @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
         NavigationStack {
@@ -51,36 +51,33 @@ struct LoginView: View {
             .padding(.vertical, 15)
             
             VStack(spacing: 10) {
-                HStack {
+                HStack(spacing: 4) {
                     Text("Don't have a MealBytes account?")
-                        .font(.footnote)
                         .foregroundColor(.secondary)
                     
                     Button(action: {
                         loginViewModel.navigationDestination = .registerView
                     }) {
                         Text("Sign up")
-                            .font(.footnote)
                             .fontWeight(.semibold)
                             .foregroundColor(.customGreen)
                     }
                 }
                 
-                HStack {
+                HStack(spacing: 4) {
                     Text("Forgot the password?")
-                        .font(.footnote)
                         .foregroundColor(.secondary)
                     
                     Button(action: {
                         loginViewModel.navigationDestination = .resetView
                     }) {
                         Text("Reset")
-                            .font(.footnote)
                             .fontWeight(.semibold)
                             .foregroundColor(.customGreen)
                     }
                 }
             }
+            .font(.footnote)
             
             .alert(isPresented: $loginViewModel.showAlert) {
                 loginViewModel.getAlert()
@@ -105,7 +102,7 @@ struct LoginView: View {
 
 #Preview {
     NavigationStack {
-        LoginView()
+        LoginView(loginViewModel: LoginViewModel())
     }
     .accentColor(.customGreen)
 }
