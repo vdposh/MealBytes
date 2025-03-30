@@ -25,6 +25,7 @@ final class MainViewModel: ObservableObject {
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var isLoading: Bool = true
+    @Published var shouldDisplayRdi: Bool = true
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -165,6 +166,10 @@ final class MainViewModel: ObservableObject {
         updateRdiProgress(calories: calories)
     }
     
+    func rdiPercentageText(for calories: Double?) -> String {
+        return calculateRdiPercentage(from: calories ?? 0.0)
+    }
+    
     private func setupBindings() {
         $mealItems
             .combineLatest($nutrientSummaries)
@@ -175,11 +180,8 @@ final class MainViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func rdiPercentageText(for calories: Double?) -> String {
-        guard !rdi.isEmpty, let calories = calories else {
-            return ""
-        }
-        return calculateRdiPercentage(from: calories)
+    func canDisplayRdi() -> Bool {
+        return shouldDisplayRdi && !rdi.isEmpty
     }
     
     // MARK: - Recalculate Nutrients

@@ -79,13 +79,16 @@ struct FoodItemRow: View {
                             unit: .empty
                         )
                     )
-                    Text(mainViewModel.rdiPercentageText(
-                        for: mealItem.nutrients[.calories]))
-                    .lineLimit(1)
-                    .foregroundColor(.secondary)
-                    .font(.subheadline)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    if mainViewModel.canDisplayRdi() {
+                        Text(mainViewModel.rdiPercentageText(
+                            for: mealItem.nutrients[.calories]))
+                        .lineLimit(1)
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.vertical, 5)
             .padding(.trailing, 5)

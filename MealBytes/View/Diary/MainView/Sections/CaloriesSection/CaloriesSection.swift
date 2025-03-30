@@ -29,7 +29,8 @@ struct CaloriesSection: View {
                             )
                             .lineLimit(1)
                             
-                            if !mainViewModel.rdi.isEmpty {
+                            if mainViewModel.shouldDisplayRdi &&
+                                !mainViewModel.rdi.isEmpty {
                                 Text("/")
                                     .foregroundStyle(.secondary)
                                 Text(mainViewModel.rdi)
@@ -41,7 +42,7 @@ struct CaloriesSection: View {
                         .fontWeight(.medium)
                     }
                     
-                    if !mainViewModel.rdi.isEmpty {
+                    if mainViewModel.canDisplayRdi() {
                         ProgressView(value: mainViewModel.rdiProgress)
                             .progressViewStyle(.linear)
                             .tint(.customGreen)
@@ -62,13 +63,17 @@ struct CaloriesSection: View {
                                 formattedValue: nutrients[key] ?? ""
                             )
                         }
-                        Text(mainViewModel.rdiPercentageText(
-                            for: summaries[.calories]))
-                        .lineLimit(1)
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        if mainViewModel.canDisplayRdi() {
+                            Text(mainViewModel.rdiPercentageText(
+                                for: summaries[.calories]))
+                                .lineLimit(1)
+                                .foregroundColor(.secondary)
+                                .font(.subheadline)
+                                .frame(maxWidth: .infinity,
+                                       alignment: .trailing)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading) 
                 }
             }
             .padding(.vertical, 5)

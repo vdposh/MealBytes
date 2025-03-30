@@ -29,11 +29,14 @@ struct NutrientSummaryRow: View {
                     formattedValue: nutrients[label] ?? ""
                 )
             }
-            Text(mainViewModel.rdiPercentageText(for: calories))
-                .lineLimit(1)
-                .foregroundColor(.secondary)
-                .font(.subheadline)
-                .frame(maxWidth: .infinity, alignment: .trailing)
+            if mainViewModel.canDisplayRdi() {
+                Text(mainViewModel.rdiPercentageText(for: calories))
+                    .lineLimit(1)
+                    .foregroundColor(.secondary)
+                    .font(.subheadline)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
