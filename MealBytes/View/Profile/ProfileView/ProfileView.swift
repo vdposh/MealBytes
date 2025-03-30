@@ -23,7 +23,7 @@ struct ProfileView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
             
-            if  !profileViewModel.isDataLoaded {
+            if !profileViewModel.isDataLoaded {
                 LoadingView()
             } else {
                 VStack {
@@ -109,6 +109,7 @@ struct ProfileView: View {
             }
         }
         .task {
+            profileViewModel.isDataLoaded = false
             await profileViewModel.mainViewModel.loadDisplayRdiMainView()
             await profileViewModel.fetchCurrentUserEmail()
         }
