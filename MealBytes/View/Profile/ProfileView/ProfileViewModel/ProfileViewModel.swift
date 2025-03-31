@@ -94,6 +94,7 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadProfileData() async {
+        isDataLoaded = false
         await mainViewModel.loadDisplayRdiMainView()
         await fetchCurrentUserEmail()
         Task {
