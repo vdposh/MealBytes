@@ -12,7 +12,8 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var calories: String = "" {
         didSet {
-            guard let calorieValue = Double(calories), calorieValue >= 17 else {
+            guard let calorieValue = Double(calories),
+                  calorieValue >= 17 else {
                 calories = "17"
                 return
             }
@@ -101,14 +102,7 @@ final class CustomRdiViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Alert Handling
-    func displaySuccessAlert() {
-        alertTitle = "Done"
-        alertMessage = "Your goals have been saved successfully!"
-        showAlert = true
-        isError = false
-    }
-
+    // MARK: - Alert Handling    
     func displayErrorAlert(with message: String) {
         alertTitle = "Invalid value"
         alertMessage = message

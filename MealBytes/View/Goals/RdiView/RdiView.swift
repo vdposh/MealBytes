@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RdiView: View {
+    @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: Bool
     @StateObject private var rdiViewModel = RdiViewModel()
     
@@ -44,8 +45,8 @@ struct RdiView: View {
                             if rdiViewModel.handleSave() {
                                 Task {
                                     await rdiViewModel.saveRdiView()
-                                    rdiViewModel.saveGoalsAlert()
                                 }
+                                dismiss()
                             }
                         }
                     }

@@ -190,12 +190,6 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Save Goals
-    func saveGoalsAlert() {
-        alertMessage = "Your goals have been saved successfully!"
-        showAlert = true
-        isError = false
-    }
-    
     func handleSave() -> Bool {
         if let errors = validateInputs() {
             isError = true

@@ -15,7 +15,8 @@ final class LoginViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var showAlert = false
     @Published var isLoggedIn: Bool = false
-    @Published var setMainViewLoading: (() -> Void)?
+    
+    var setMainViewLoading: (() -> Void)?
     
     let registerView = RegisterView()
     let resetView = ResetView()
