@@ -52,32 +52,24 @@ struct CustomRdiView: View {
                         Button("Save") {
                             if let errorMessage = customRdiViewModel
                                 .validateInputs(includePercentageCheck: true) {
-                                customRdiViewModel.showAlert(
-                                    message: errorMessage)
+                                customRdiViewModel.displayErrorAlert(
+                                    with: errorMessage)
                             } else {
                                 Task {
                                     await customRdiViewModel.saveCustomRdiView()
-                                    customRdiViewModel.successAlert = true
-                                    focusedField = false
+                                    customRdiViewModel.displaySuccessAlert()
                                 }
                             }
                         }
                     }
                 }
-                .alert("Invalid value",
-                       isPresented: $customRdiViewModel.isShowingAlert) {
+                .alert(customRdiViewModel.alertTitle,
+                       isPresented: $customRdiViewModel.showAlert) {
                     Button("OK", role: .none) {
-                        customRdiViewModel.isShowingAlert = false
+                        customRdiViewModel.showAlert = false
                     }
                 } message: {
                     Text(customRdiViewModel.alertMessage)
-                }
-                .alert("Done", isPresented: $customRdiViewModel.successAlert) {
-                    Button("OK", role: .none) {
-                        customRdiViewModel.successAlert = false
-                    }
-                } message: {
-                    Text("Your goals have been saved successfully!")
                 }
             }
         }

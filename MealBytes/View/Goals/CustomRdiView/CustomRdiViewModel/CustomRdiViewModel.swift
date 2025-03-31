@@ -22,10 +22,12 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
+    @Published var alertTitle: String = ""
     @Published var isUsingPercentage: Bool = true
-    @Published var isShowingAlert: Bool = false
+    @Published var showAlert: Bool = false
     @Published var successAlert: Bool = false
     @Published var isLoading: Bool = true
+    var isError: Bool = false
     
     private var isInitialized = false
     
@@ -99,6 +101,21 @@ final class CustomRdiViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    // MARK: - Alert Handling
+    func displaySuccessAlert() {
+        alertTitle = "Done"
+        alertMessage = "Your goals have been saved successfully!"
+        showAlert = true
+        isError = false
+    }
+
+    func displayErrorAlert(with message: String) {
+        alertTitle = "Invalid value"
+        alertMessage = message
+        showAlert = true
+        isError = true
+    }
+    
     // MARK: - Calculations
     private func calculateCalories(fat: String,
                                    carbohydrate: String,
@@ -117,7 +134,7 @@ final class CustomRdiViewModel: ObservableObject {
     // MARK: - Calculate Action
     func togglePercentageMode() {
         if let errorMessage = validateInputs(includePercentageCheck: true) {
-            showAlert(message: errorMessage)
+            displayErrorAlert(with: errorMessage)
             return
         }
         
@@ -192,7 +209,7 @@ final class CustomRdiViewModel: ObservableObject {
     
     func showAlert(message: String) {
         alertMessage = message
-        isShowingAlert = true
+        showAlert = true
     }
     
     // MARK: - For Text

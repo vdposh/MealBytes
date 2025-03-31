@@ -45,7 +45,6 @@ struct RdiView: View {
                                 Task {
                                     await rdiViewModel.saveRdiView()
                                     rdiViewModel.saveGoalsAlert()
-                                    focusedField = false
                                 }
                             }
                         }
