@@ -10,6 +10,7 @@ import FirebaseAuth
 
 protocol FirestoreAuthProtocol {
     func signInFirebase(email: String, password: String) async throws -> User
+    func isCurrentUserEmailVerified() -> Bool
     func signUpFirebase(email: String, password: String) async throws
     func resetPasswordFirebase(email: String) async throws
     func signOutFirebase() throws
@@ -56,5 +57,13 @@ final class FirestoreAuth: FirestoreAuthProtocol {
             throw AuthError.userNotFound
         }
         try await user.delete()
+    }
+    
+    // MARK: - Current User
+    func isCurrentUserEmailVerified() -> Bool {
+        guard let user = Auth.auth().currentUser else {
+            return false
+        }
+        return user.isEmailVerified
     }
 }

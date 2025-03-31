@@ -8,9 +8,7 @@
 import SwiftUI
 import FirebaseAuth
 
-@MainActor
 final class LoginViewModel: ObservableObject {
-    @Published var navigationDestination: NavigationDestination = .none
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var error: AuthError?
@@ -24,7 +22,7 @@ final class LoginViewModel: ObservableObject {
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
     
     init() {
-        if let user = Auth.auth().currentUser, user.isEmailVerified {
+        if firestoreAuth.isCurrentUserEmailVerified() {
             isLoggedIn = true
         }
     }
@@ -38,25 +36,35 @@ final class LoginViewModel: ObservableObject {
             )
             
             if !user.isEmailVerified {
-                self.error = .userNotVerified
-                updateAlertState()
+                await MainActor.run {
+                    self.error = .userNotVerified
+                    updateAlertState()
+                }
                 return
             }
             
-            isAuthenticated = true
-            self.error = nil
-            updateAlertState()
-            isLoggedIn = true
-            setMainViewLoading?()
+            await MainActor.run {
+                isAuthenticated = true
+                self.error = nil
+                updateAlertState()
+                isLoggedIn = true
+                setMainViewLoading?()
+            }
         } catch {
-            self.error = handleError(error as NSError)
-            updateAlertState()
+            await MainActor.run {
+                self.error = handleError(error as NSError)
+                updateAlertState()
+            }
         }
     }
     
     // MARK: - Alert
-    func updateAlertState() {
-        showAlert = error != nil
+    private func updateAlertState() {
+        Task {
+            await MainActor.run {
+                showAlert = error != nil
+            }
+        }
     }
     
     func getAlert() -> Alert {
@@ -100,12 +108,5 @@ final class LoginViewModel: ObservableObject {
             }
         }
         return .unknownError
-    }
-    
-    // MARK: - Navigation
-    enum NavigationDestination {
-        case registerView
-        case resetView
-        case none
     }
 }

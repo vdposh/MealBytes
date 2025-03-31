@@ -57,8 +57,8 @@ struct CustomRdiView: View {
                             } else {
                                 Task {
                                     await customRdiViewModel.saveCustomRdiView()
-                                    focusedField = false
                                     customRdiViewModel.successAlert = true
+                                    focusedField = false
                                 }
                             }
                         }

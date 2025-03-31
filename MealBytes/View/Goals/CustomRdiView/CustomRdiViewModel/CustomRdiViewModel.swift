@@ -66,7 +66,7 @@ final class CustomRdiViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save Texfields info
+    // MARK: - Save Textfields info
     func saveCustomRdiView() async {
         let customGoalsData = CustomRdiData(
             calories: calories,

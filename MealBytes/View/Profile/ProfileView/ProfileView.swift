@@ -66,7 +66,7 @@ struct ProfileView: View {
                     .frame(maxHeight: .infinity, alignment: .top)
                     
                     VStack {
-                        RdiButtonView(
+                        SignOutButtonView(
                             title: "Sign Out",
                             backgroundColor: .customRed
                         ) {
@@ -98,9 +98,7 @@ struct ProfileView: View {
             }
         }
         .task {
-            await profileViewModel.mainViewModel.loadDisplayRdiMainView()
-            await profileViewModel.fetchCurrentUserEmail()
-            profileViewModel.isDataLoaded = true
+            await profileViewModel.loadProfileData()
         }
         
         .alert(
@@ -124,11 +122,3 @@ struct ProfileView: View {
     ContentView()
         .accentColor(.customGreen)
 }
-
-//#Preview {
-//    NavigationStack {
-//        ProfileView(loginViewModel: LoginViewModel(),
-//                    mainViewModel: MainViewModel())
-//    }
-//    .accentColor(.customGreen)
-//}

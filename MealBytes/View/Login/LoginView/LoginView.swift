@@ -55,9 +55,7 @@ struct LoginView: View {
                     Text("Don't have a MealBytes account?")
                         .foregroundColor(.secondary)
                     
-                    Button(action: {
-                        loginViewModel.navigationDestination = .registerView
-                    }) {
+                    NavigationLink(destination: RegisterView()) {
                         Text("Sign up")
                             .fontWeight(.semibold)
                             .foregroundColor(.customGreen)
@@ -68,9 +66,7 @@ struct LoginView: View {
                     Text("Forgot the password?")
                         .foregroundColor(.secondary)
                     
-                    Button(action: {
-                        loginViewModel.navigationDestination = .resetView
-                    }) {
+                    NavigationLink(destination: ResetView()) {
                         Text("Reset")
                             .fontWeight(.semibold)
                             .foregroundColor(.customGreen)
@@ -81,19 +77,6 @@ struct LoginView: View {
             
             .alert(isPresented: $loginViewModel.showAlert) {
                 loginViewModel.getAlert()
-            }
-            .navigationDestination(isPresented: Binding(
-                get: { loginViewModel.navigationDestination != .none },
-                set: { if !$0 { loginViewModel.navigationDestination = .none } }
-            )) {
-                switch loginViewModel.navigationDestination {
-                case .registerView:
-                    loginViewModel.registerView
-                case .resetView:
-                    loginViewModel.resetView
-                case .none:
-                    EmptyView()
-                }
             }
         }
         .accentColor(.customGreen)

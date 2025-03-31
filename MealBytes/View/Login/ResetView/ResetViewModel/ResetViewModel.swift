@@ -8,7 +8,6 @@
 import SwiftUI
 import FirebaseAuth
 
-@MainActor
 final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var error: AuthError?
@@ -21,18 +20,27 @@ final class ResetViewModel: ObservableObject {
     func resetPassword() async {
         do {
             try await firestoreAuth.resetPasswordFirebase(email: email)
-            success = true
-            self.error = nil
-            updateAlertState()
+            handleResult(success: true, error: nil)
         } catch {
-            self.error = handleError(error as NSError)
-            success = false
-            updateAlertState()
+            handleResult(
+                success: false,
+                error: handleError(error as NSError)
+            )
+        }
+    }
+    
+    private func handleResult(success: Bool, error: AuthError?) {
+        Task {
+            await MainActor.run {
+                self.success = success
+                self.error = error
+                updateAlertState()
+            }
         }
     }
     
     // MARK: - Alert
-    func updateAlertState() {
+    private func updateAlertState() {
         showAlert = error != nil || success
     }
     

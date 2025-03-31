@@ -44,8 +44,8 @@ struct RdiView: View {
                             if rdiViewModel.handleSave() {
                                 Task {
                                     await rdiViewModel.saveRdiView()
-                                    focusedField = false
                                     rdiViewModel.saveGoalsAlert()
+                                    focusedField = false
                                 }
                             }
                         }

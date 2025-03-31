@@ -8,7 +8,6 @@
 import SwiftUI
 import FirebaseAuth
 
-@MainActor
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var alertTitle: String = ""
@@ -18,6 +17,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isDataLoaded: Bool = false
+    
     var bindingForShouldDisplayRdi: Binding<Bool> {
         Binding(
             get: { self.mainViewModel.shouldDisplayRdi },
@@ -44,7 +44,11 @@ final class ProfileViewModel: ObservableObject {
     func signOut() {
         do {
             try firestoreAuth.signOutFirebase()
-            loginViewModel.isLoggedIn = false
+            Task {
+                await MainActor.run {
+                    loginViewModel.isLoggedIn = false
+                }
+            }
         } catch {
             appError = .decoding
         }
@@ -54,35 +58,66 @@ final class ProfileViewModel: ObservableObject {
     func deleteAccount() async {
         do {
             try await firestoreAuth.deleteAccountFirebase()
-            loginViewModel.isLoggedIn = false
+            Task {
+                await MainActor.run {
+                    loginViewModel.isLoggedIn = false
+                }
+            }
         } catch {
-            appError = .decoding
+            Task {
+                await MainActor.run {
+                    appError = .decoding
+                }
+            }
         }
     }
     
     // MARK: - Fetch Current User Email
     func fetchCurrentUserEmail() async {
         guard let user = Auth.auth().currentUser else {
-            email = nil
+            Task {
+                await MainActor.run {
+                    email = nil
+                }
+            }
             return
         }
-        email = user.email
+        Task {
+            await MainActor.run {
+                email = user.email
+            }
+        }
+    }
+    
+    // MARK: - Load Data
+    func loadProfileData() async {
+        await mainViewModel.loadDisplayRdiMainView()
+        await fetchCurrentUserEmail()
+        Task {
+            await MainActor.run {
+                isDataLoaded = true
+            }
+        }
     }
     
     // MARK: - Alert
     func prepareAlert(for type: AlertType) {
-        alertType = type
-        showAlert = true
-        
-        switch type {
-        case .signOut:
-            alertTitle = "Sign out"
-            alertMessage = "You will need to sign in again to access your account."
-            destructiveButtonTitle = "Sign Out"
-        case .deleteAccount:
-            alertTitle = "Are you sure you want to delete your profile?"
-            alertMessage = "All your data, preferences, and account details will be permanently erased. This action cannot be undone."
-            destructiveButtonTitle = "Delete"
+        Task {
+            await MainActor.run {
+                alertType = type
+                showAlert = true
+                
+                switch type {
+                case .signOut:
+                    alertTitle = "Sign out"
+                    alertMessage = "You will need to sign in again to access your account."
+                    destructiveButtonTitle = "Sign Out"
+                case .deleteAccount:
+                    alertTitle = "Are you sure you want to delete your profile?"
+                    alertMessage = "All your data, preferences, and account details will be permanently erased. This action cannot be undone."
+                    destructiveButtonTitle = "Delete"
+                }
+            }
         }
     }
     

@@ -8,7 +8,6 @@
 import SwiftUI
 import FirebaseAuth
 
-@MainActor
 final class RegisterViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
@@ -23,10 +22,10 @@ final class RegisterViewModel: ObservableObject {
         do {
             try await firestoreAuth.signUpFirebase(email: email,
                                                    password: password)
-            showAlertAndConfigure(success: true)
+            handleSignUpResult(success: true)
         } catch {
             let authError = handleError(error as NSError)
-            showAlertAndConfigure(success: false, error: authError)
+            handleSignUpResult(success: false, error: authError)
         }
     }
     
@@ -35,7 +34,9 @@ final class RegisterViewModel: ObservableObject {
         do {
             try await firestoreAuth.resendVerificationFirebase()
         } catch {
-            self.error = handleError(error as NSError)
+            await MainActor.run {
+                self.error = handleError(error as NSError)
+            }
         }
     }
     
@@ -56,23 +57,26 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    private func showAlertAndConfigure(success: Bool,
-                                       error: AuthError? = nil) {
-        self.error = error
-        self.showAlert = true
+    private func handleSignUpResult(success: Bool, error: AuthError? = nil) {
+        Task {
+            await MainActor.run {
+                self.error = error
+                self.showAlert = true
+            }
+        }
     }
     
     // MARK: - Color
-        func titleColor(for text: String) -> Color {
-            return text.isEmpty ? .customRed : .primary
-        }
-        
-        // MARK: - Button State
-        func isRegisterEnabled() -> Bool {
-            return !email.isEmpty &&
-            !password.isEmpty &&
-            password == confirmPassword
-        }
+    func titleColor(for text: String) -> Color {
+        return text.isEmpty ? .customRed : .primary
+    }
+    
+    // MARK: - Button State
+    func isRegisterEnabled() -> Bool {
+        return !email.isEmpty &&
+        !password.isEmpty &&
+        password == confirmPassword
+    }
     
     // MARK: - Error
     private func handleError(_ nsError: NSError) -> AuthError {

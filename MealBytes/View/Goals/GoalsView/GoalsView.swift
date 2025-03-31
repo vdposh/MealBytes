@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @StateObject private var goalsViewModel = GoalsViewModel()
-    
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
@@ -23,14 +21,13 @@ struct GoalsView: View {
                             .foregroundColor(.secondary)
                             .padding(.vertical)
                         
-                        RdiButtonView(
-                            title: "Calculate RDI",
-                            backgroundColor: .customGreen,
-                            action: {
-                                goalsViewModel.navigationDestination = .rdiView
-                            }
-                        )
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        NavigationLink(destination: RdiView()) {
+                            RdiButtonView(
+                                title: "Calculate RDI",
+                                backgroundColor: .customGreen
+                            )
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
                     }
                     .padding(.vertical)
                     
@@ -40,35 +37,19 @@ struct GoalsView: View {
                             .foregroundColor(.secondary)
                             .padding(.vertical)
                         
-                        RdiButtonView(
-                            title: "Custom RDI",
-                            backgroundColor: .customGreen,
-                            action: {
-                                goalsViewModel.navigationDestination =
-                                    .customRdiView
-                            }
-                        )
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        NavigationLink(destination: CustomRdiView()) {
+                            RdiButtonView(
+                                title: "Custom RDI",
+                                backgroundColor: .customGreen
+                            )
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top)
                 .frame(maxHeight: .infinity, alignment: .top)
                 .navigationBarTitle("Your Goals", displayMode: .inline)
-                .navigationDestination(isPresented: Binding(
-                    get: { goalsViewModel.navigationDestination != .none },
-                    set: { if !$0 {
-                        goalsViewModel.navigationDestination = .none } }
-                )) {
-                    switch goalsViewModel.navigationDestination {
-                    case .rdiView:
-                        goalsViewModel.rdiView
-                    case .customRdiView:
-                        goalsViewModel.customRdiView
-                    case .none:
-                        EmptyView()
-                    }
-                }
             }
         }
     }

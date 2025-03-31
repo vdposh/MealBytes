@@ -165,11 +165,15 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Save Display RDI
     func saveDisplayRdiMainView(_ newValue: Bool) async {
-        shouldDisplayRdi = newValue
+        await MainActor.run {
+            shouldDisplayRdi = newValue
+        }
         do {
             try await firebase.saveDisplayRdiFirebase(newValue)
         } catch {
-            errorMessage = AppError.decoding
+            await MainActor.run {
+                errorMessage = AppError.decoding
+            }
         }
     }
     
