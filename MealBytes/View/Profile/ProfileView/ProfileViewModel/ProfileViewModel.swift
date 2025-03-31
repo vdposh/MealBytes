@@ -10,6 +10,7 @@ import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
+    @Published var password: String = ""
     @Published var alertTitle: String = ""
     @Published var alertMessage: String = ""
     @Published var destructiveButtonTitle: String = ""
@@ -55,8 +56,10 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Delete Account
-    func deleteAccount() async {
+    func deleteAccount(email: String, password: String) async {
         do {
+            try await firestoreAuth.reauthenticateFirebase(email: email,
+                                                           password: password)
             try await firestoreAuth.deleteAccountFirebase()
             Task {
                 await MainActor.run {
@@ -113,24 +116,49 @@ final class ProfileViewModel: ObservableObject {
                     alertMessage = "You will need to sign in again to access your account."
                     destructiveButtonTitle = "Sign Out"
                 case .deleteAccount:
-                    alertTitle = "Are you sure you want to delete your profile?"
-                    alertMessage = "All your data, preferences, and account details will be permanently erased. This action cannot be undone."
+                    alertTitle = "Delete Account"
+                    alertMessage = """
+                    To delete your account, please enter the password associated with your account.
+                    Your data and account details will be permanently erased. This action cannot be undone.
+                    """
                     destructiveButtonTitle = "Delete"
                 }
             }
         }
     }
     
-    func handleAlertAction() {
+    func handleAlertAction() async {
+        guard let alertType = alertType else { return }
+
         switch alertType {
         case .signOut:
             signOut()
         case .deleteAccount:
-            Task {
-                await deleteAccount()
+            guard let email = email, !email.isEmpty else {
+                alertTitle = "Delete Account"
+                alertMessage = "Email is missing."
+                showAlert = true
+                return
             }
-        case .none:
-            break
+            
+            guard !password.isEmpty else {
+                alertTitle = "Delete Account"
+                alertMessage = "Password is missing. To delete your account, please enter the password associated with your account."
+                showAlert = true
+                return
+            }
+            
+            do {
+                try await firestoreAuth.reauthenticateFirebase(
+                    email: email,
+                    password: password
+                )
+                await deleteAccount(email: email, password: password)
+            } catch {
+                alertTitle = "Delete Account"
+                alertMessage = "The password you entered is incorrect. To delete your account, please provide the correct password."
+                showAlert = true
+            }
         }
     }
     

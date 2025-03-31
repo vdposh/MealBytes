@@ -105,9 +105,25 @@ struct ProfileView: View {
             profileViewModel.alertTitle,
             isPresented: $profileViewModel.showAlert,
             actions: {
-                Button(profileViewModel.destructiveButtonTitle,
-                       role: .destructive) {
-                    profileViewModel.handleAlertAction()
+                if profileViewModel.alertType == .deleteAccount {
+                    SecureField("Enter your password",
+                                text: $profileViewModel.password)
+                        .textContentType(.password)
+                    
+                    Button(profileViewModel.destructiveButtonTitle,
+                           role: .destructive) {
+                        Task {
+                            await profileViewModel.handleAlertAction()
+                        }
+                    }
+                }
+                if profileViewModel.alertType == .signOut {
+                    Button(profileViewModel.destructiveButtonTitle,
+                           role: .destructive) {
+                        Task {
+                            await profileViewModel.handleAlertAction()
+                        }
+                    }
                 }
                 Button("Cancel", role: .cancel) { }
             },
