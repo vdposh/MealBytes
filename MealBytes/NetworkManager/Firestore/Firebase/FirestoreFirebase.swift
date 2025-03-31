@@ -181,7 +181,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
         let snapshot = try await documentReference.getDocument()
         guard let data = snapshot.data(),
               let rdi = data["rdi"] as? String else {
-            throw AppError.decoding
+            return ""
         }
         return rdi
     }
