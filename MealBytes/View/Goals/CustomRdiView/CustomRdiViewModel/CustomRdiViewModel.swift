@@ -34,7 +34,6 @@ final class CustomRdiViewModel: ObservableObject {
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Initializer
     init() {
         calories = "2000"
         fat = "30"
@@ -42,6 +41,10 @@ final class CustomRdiViewModel: ObservableObject {
         protein = "20"
         isInitialized = true
         setupBindings()
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     // MARK: - Load CustomGoals Data

@@ -47,6 +47,10 @@ final class MainViewModel: ObservableObject {
         setupBindings()
     }
     
+    deinit {
+        cancellables.removeAll()
+    }
+    
     // MARK: - Load Meal Item
     func loadMealItemsMainView() async {
         let mealItems = try? await firebase.loadMealItemsFirebase()
@@ -159,6 +163,16 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Save Display RDI
+    func saveDisplayRdiMainView(_ newValue: Bool) async {
+        shouldDisplayRdi = newValue
+        do {
+            try await firebase.saveDisplayRdiFirebase(newValue)
+        } catch {
+            errorMessage = AppError.decoding
+        }
+    }
+    
     //MARK: - RDI % calculation
     func calculateRdiPercentage(from calories: Double?) -> String {
         guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
@@ -188,7 +202,7 @@ final class MainViewModel: ObservableObject {
         $mealItems
             .combineLatest($nutrientSummaries)
             .sink { [weak self] _, _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.updateProgress()
             }
             .store(in: &cancellables)

@@ -46,18 +46,7 @@ struct ProfileView: View {
                         
                         Toggle(
                             "Display RDI",
-                            isOn: Binding(
-                                get: { profileViewModel
-                                    .mainViewModel.shouldDisplayRdi },
-                                set: { newValue in
-                                    profileViewModel.mainViewModel
-                                        .shouldDisplayRdi = newValue
-                                    Task {
-                                        await profileViewModel
-                                            .saveDisplayRdiMainView(newValue)
-                                    }
-                                }
-                            )
+                            isOn: profileViewModel.bindingForShouldDisplayRdi
                         )
                         .toggleStyle(SwitchToggleStyle(tint: .customGreen))
                         .font(.headline)
@@ -109,7 +98,6 @@ struct ProfileView: View {
             }
         }
         .task {
-            profileViewModel.isDataLoaded = false
             await profileViewModel.mainViewModel.loadDisplayRdiMainView()
             await profileViewModel.fetchCurrentUserEmail()
             profileViewModel.isDataLoaded = true
@@ -133,9 +121,14 @@ struct ProfileView: View {
 }
 
 #Preview {
-    NavigationStack {
-        ProfileView(loginViewModel: LoginViewModel(),
-                    mainViewModel: MainViewModel())
-    }
-    .accentColor(.customGreen)
+    ContentView()
+        .accentColor(.customGreen)
 }
+
+//#Preview {
+//    NavigationStack {
+//        ProfileView(loginViewModel: LoginViewModel(),
+//                    mainViewModel: MainViewModel())
+//    }
+//    .accentColor(.customGreen)
+//}

@@ -11,7 +11,7 @@ struct FoodItemRow: View {
     @Binding var isDismissed: Bool
     let mealItem: MealItem
     let mealType: MealType
-    @StateObject var mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         NavigationLink(

@@ -21,8 +21,8 @@ final class RegisterViewModel: ObservableObject {
     // MARK: - Sign Up
     func signUp() async {
         do {
-            let _ = try await firestoreAuth.signUpFirebase(email: email,
-                                                           password: password)
+            try await firestoreAuth.signUpFirebase(email: email,
+                                                   password: password)
             showAlertAndConfigure(success: true)
         } catch {
             let authError = handleError(error as NSError)
@@ -41,7 +41,7 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Alert
     func getAlert() -> Alert {
-        if let error = error {
+        if let error {
             return Alert(
                 title: Text("Error"),
                 message: Text(error.errorDescription ?? "Unknown error"),

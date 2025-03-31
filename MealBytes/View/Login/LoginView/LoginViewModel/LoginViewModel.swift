@@ -60,7 +60,7 @@ final class LoginViewModel: ObservableObject {
     }
     
     func getAlert() -> Alert {
-        if let error = error {
+        if let error {
             return Alert(
                 title: Text("Error"),
                 message: Text(error.errorDescription ?? "Unknown error"),

@@ -10,7 +10,7 @@ import FirebaseAuth
 
 protocol FirestoreAuthProtocol {
     func signInFirebase(email: String, password: String) async throws -> User
-    func signUpFirebase(email: String, password: String) async throws -> User
+    func signUpFirebase(email: String, password: String) async throws
     func resetPasswordFirebase(email: String) async throws
     func signOutFirebase() throws
     func deleteAccountFirebase() async throws
@@ -26,11 +26,10 @@ final class FirestoreAuth: FirestoreAuthProtocol {
     }
     
     // MARK: - Sign Up
-    func signUpFirebase(email: String, password: String) async throws -> User {
+    func signUpFirebase(email: String, password: String) async throws {
         let result = try await Auth.auth().createUser(withEmail: email,
                                                       password: password)
         try await result.user.sendEmailVerification()
-        return result.user
     }
     
     // MARK: - Resend Verification

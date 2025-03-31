@@ -12,7 +12,7 @@ struct NutrientSummaryRow: View {
     let carbohydrate: Double
     let protein: Double
     let calories: Double
-    @StateObject var mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         HStack {

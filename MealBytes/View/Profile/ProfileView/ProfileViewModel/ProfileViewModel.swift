@@ -18,6 +18,17 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isDataLoaded: Bool = false
+    var bindingForShouldDisplayRdi: Binding<Bool> {
+        Binding(
+            get: { self.mainViewModel.shouldDisplayRdi },
+            set: { newValue in
+                self.mainViewModel.shouldDisplayRdi = newValue
+                Task {
+                    await self.mainViewModel.saveDisplayRdiMainView(newValue)
+                }
+            }
+        )
+    }
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
@@ -56,16 +67,6 @@ final class ProfileViewModel: ObservableObject {
             return
         }
         email = user.email
-    }
-    
-    // MARK: - Save Display RDI
-    func saveDisplayRdiMainView(_ newValue: Bool) async {
-        mainViewModel.shouldDisplayRdi = newValue
-        do {
-            try await mainViewModel.firebase.saveDisplayRdiFirebase(newValue)
-        } catch {
-            appError = AppError.decoding
-        }
     }
     
     // MARK: - Alert

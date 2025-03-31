@@ -33,6 +33,10 @@ final class RdiViewModel: ObservableObject {
         setupDataObserver()
     }
     
+    deinit {
+        cancellables.removeAll()
+    }
+    
     // MARK: - Load RDI Data
     func loadRdiView() async {
         do {
