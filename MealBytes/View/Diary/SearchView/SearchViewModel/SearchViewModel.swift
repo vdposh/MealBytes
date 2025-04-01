@@ -169,7 +169,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Reset Search
-    func resetSearch() {
+    private func resetSearch() {
         currentPage = 0
         foods = favoriteFoods
         errorMessage = nil

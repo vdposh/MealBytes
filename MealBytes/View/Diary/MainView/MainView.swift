@@ -39,7 +39,7 @@ struct MainView: View {
             }
         }
         .task {
-            await initializeMainView()
+            await mainViewModel.loadMainData()
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -137,20 +137,5 @@ struct MainView: View {
             isExpanded: $mainViewModel.isExpanded,
             nutrients: mainViewModel.filteredNutrients
         )
-    }
-    
-    private func initializeMainView() async {
-        async let mealItemsTask: () = mainViewModel.loadMealItemsMainView()
-        async let bookmarksTask: () = mainViewModel
-            .searchViewModel.loadBookmarksSearchView()
-        async let mainRdiTask: () = mainViewModel.loadMainRdiMainView()
-        async let displayRdiTask: () = mainViewModel.loadDisplayRdiMainView()
-        
-        _ = await (mealItemsTask, bookmarksTask, mainRdiTask, displayRdiTask)
-        
-        await MainActor.run {
-            mainViewModel.updateProgress()
-            mainViewModel.isLoading = false
-        }
     }
 }

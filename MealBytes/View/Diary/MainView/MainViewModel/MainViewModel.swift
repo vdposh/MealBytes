@@ -52,7 +52,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Load Meal Item
-    func loadMealItemsMainView() async {
+    private func loadMealItemsMainView() async {
         let mealItems = try? await firebase.loadMealItemsFirebase()
         await MainActor.run {
             self.mealItems = Dictionary(
@@ -125,7 +125,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Load RDI
-    func loadMainRdiMainView() async {
+    private func loadMainRdiMainView() async {
         do {
             let fetchedRdi = try await firebase.loadMainRdiFirebase()
             await MainActor.run {
@@ -150,7 +150,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Load Display RDI
-    func loadDisplayRdiMainView() async {
+    private func loadDisplayRdiMainView() async {
         do {
             let value = try await firebase.loadDisplayRdiFirebase()
             await MainActor.run {
@@ -177,15 +177,29 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func loadMainData() async {
+        async let mealItemsTask: () = loadMealItemsMainView()
+        async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
+        async let mainRdiTask: () = loadMainRdiMainView()
+        async let displayRdiTask: () = loadDisplayRdiMainView()
+        
+        _ = await (mealItemsTask, bookmarksTask, mainRdiTask, displayRdiTask)
+        
+        await MainActor.run {
+            updateProgress()
+            isLoading = false
+        }
+    }
+    
     //MARK: - RDI % calculation
-    func calculateRdiPercentage(from calories: Double?) -> String {
+    private func calculateRdiPercentage(from calories: Double?) -> String {
         guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
         let safeCalories = calories ?? 0.0
         let percentage = round((safeCalories / rdiValue) * 100)
         return "RDI \(Int(percentage))%"
     }
     
-    func updateRdiProgress(calories: Double) {
+    private func updateRdiProgress(calories: Double) {
         guard let rdiValue = Double(rdi), rdiValue > 0 else {
             rdiProgress = 0.0
             return
@@ -193,7 +207,7 @@ final class MainViewModel: ObservableObject {
         rdiProgress = min(max(calories / rdiValue, 0), 1)
     }
     
-    func updateProgress() {
+    private func updateProgress() {
         let calories = summariesForCaloriesSection()[.calories] ?? 0.0
         updateRdiProgress(calories: calories)
     }
@@ -217,7 +231,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Recalculate Nutrients
-    func recalculateNutrients(for date: Date) {
+    private func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(
             into: [NutrientType: Double]()) { result, mealList in
                 mealList.forEach { item in

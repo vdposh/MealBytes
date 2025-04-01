@@ -18,8 +18,6 @@ final class LoginViewModel: ObservableObject {
     
     var setMainViewLoading: (() -> Void)?
     
-    let registerView = RegisterView()
-    let resetView = ResetView()
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
     
     init() {

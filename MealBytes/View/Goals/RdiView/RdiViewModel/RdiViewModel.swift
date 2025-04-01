@@ -91,7 +91,7 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Input Validation
-    func validateInputs() -> String? {
+    private func validateInputs() -> String? {
         var errorMessages: [String] = []
         let inputs: [(String, String)] = [
             (age.sanitizedForDouble, "Enter a valid Age."),

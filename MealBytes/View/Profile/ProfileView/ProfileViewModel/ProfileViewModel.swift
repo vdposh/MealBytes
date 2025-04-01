@@ -42,7 +42,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Sign Out
-    func signOut() {
+    private func signOut() {
         do {
             try firestoreAuth.signOutFirebase()
             Task {
@@ -56,7 +56,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Delete Account
-    func deleteAccount(email: String, password: String) async {
+    private func deleteAccount(email: String, password: String) async {
         do {
             try await firestoreAuth.reauthenticateFirebase(email: email,
                                                            password: password)
@@ -76,7 +76,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Fetch Current User Email
-    func fetchCurrentUserEmail() async {
+    private func fetchCurrentUserEmail() async {
         guard let user = Auth.auth().currentUser else {
             Task {
                 await MainActor.run {
@@ -95,7 +95,6 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Load Data
     func loadProfileData() async {
         isDataLoaded = false
-        await mainViewModel.loadDisplayRdiMainView()
         await fetchCurrentUserEmail()
         Task {
             await MainActor.run {

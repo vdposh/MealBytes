@@ -162,7 +162,7 @@ final class FoodViewModel: ObservableObject {
         self.unit = serving.measurementUnit
     }
     
-    func setAmount(for serving: Serving?) {
+    private func setAmount(for serving: Serving?) {
         guard let serving else {
             self.amount = ""
             return
@@ -206,14 +206,14 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Nutrient Calculation
-    func calculateSelectedAmountValue() -> Double {
+    private func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
         return calculateBaseAmountValue(amountValue,
                                         serving: selectedServing)
     }
     
-    func calculateBaseAmountValue(_ amount: Double,
+    private func calculateBaseAmountValue(_ amount: Double,
                                   serving: Serving) -> Double {
         if amount.isZero {
             return 0
