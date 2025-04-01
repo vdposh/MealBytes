@@ -32,7 +32,8 @@ struct BasicInfoSection: View {
                             }
                         }
                         .pickerStyle(.menu)
-                        .accentColor(.secondary)
+                        .accentColor(rdiViewModel.accentColor(
+                            for: rdiViewModel.selectedGender))
                         .font(.callout)
                     }
                     
@@ -46,7 +47,8 @@ struct BasicInfoSection: View {
                             }
                         }
                                .pickerStyle(.menu)
-                               .accentColor(.secondary)
+                               .accentColor(rdiViewModel.accentColor(
+                                for: rdiViewModel.selectedActivity))
                                .font(.callout)
                     }
                 }

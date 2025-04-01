@@ -56,7 +56,7 @@ struct ProfileView: View {
                     )
                     .toggleStyle(SwitchToggleStyle(tint: .customGreen))
                 } footer: {
-                    Text("Enable this option to display your Recommended Daily Intake (RDI) in the app.")
+                    Text("Enable this option to display your Recommended Daily Intake (RDI) in the Diary.")
                         .font(.footnote)
                         .padding(.bottom)
                 }
