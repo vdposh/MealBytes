@@ -178,6 +178,19 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
+    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
+        if newValue {
+            originalAmount = amount
+            amount = ""
+        } else {
+            if let newAmount = Double(amount), newAmount > 0 {
+                originalAmount = amount
+            } else {
+                amount = originalAmount
+            }
+        }
+    }
+    
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
         let description = serving.measurementDescription

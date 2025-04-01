@@ -118,13 +118,8 @@ struct FoodView: View {
                 )
                 .focused($isTextFieldFocused)
                 .onChange(of: isTextFieldFocused) { oldValue, newValue in
-                    if newValue {
-                        foodViewModel.originalAmount = foodViewModel.amount
-                        foodViewModel.amount = ""
-                        foodViewModel.shouldUseOriginalAmount = false
-                    } else if !foodViewModel.shouldUseOriginalAmount {
-                        foodViewModel.amount = foodViewModel.originalAmount
-                    }
+                    foodViewModel.handleFocusChange(from: oldValue,
+                                                    to: newValue)
                 }
                 
                 ServingButtonView(
