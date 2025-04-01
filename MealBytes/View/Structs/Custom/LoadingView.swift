@@ -13,7 +13,6 @@ struct LoadingView: View {
             ProgressView()
                 .progressViewStyle(
                     CircularProgressViewStyle(tint: .customGreen))
-                .scaleEffect(1.5)
         }
     }
 }

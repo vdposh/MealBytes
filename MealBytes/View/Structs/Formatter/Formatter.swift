@@ -24,16 +24,17 @@ struct Formatter {
         }
     }
     
-    func formattedValue(_ value: Double,
+    func formattedValue(_ value: Double?,
                         unit: Unit,
                         alwaysRoundUp: Bool = false) -> String {
+        let safeValue = value ?? 0.0
         let roundedValue: Double
         
         switch alwaysRoundUp {
         case true:
-            roundedValue = ceil(value)
+            roundedValue = ceil(safeValue)
         case false:
-            roundedValue = round(value * 10) / 10
+            roundedValue = round(safeValue * 10) / 10
         }
         
         var finalValue: String
@@ -52,6 +53,16 @@ struct Formatter {
             return finalValue
         default:
             return "\(finalValue) \(unit.description)"
+        }
+    }
+    
+    func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
+        let roundedValue = ceil(value)
+        switch unit {
+        case .empty:
+            return String(format: "%.0f", roundedValue)
+        default:
+            return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
         }
     }
 }

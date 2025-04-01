@@ -11,17 +11,17 @@ struct ActionButtonView: View {
     let title: String
     let action: () -> Void
     let backgroundColor: Color
-    let isEnabled: Bool
+    var isEnabled: Bool = true
     
     var body: some View {
         Button(action: action) {
             Text(title)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(isEnabled ? backgroundColor :
-                                backgroundColor.opacity(0.5))
+                .background(backgroundColor)
                 .foregroundColor(.white)
                 .font(.headline)
+                .lineLimit(1)
                 .cornerRadius(12)
         }
         .buttonStyle(.plain)

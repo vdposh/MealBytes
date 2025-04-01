@@ -32,10 +32,15 @@ final class NetworkManager: NetworkManagerProtocol {
                         )
                         continuation.resume(returning: decodedResponse)
                     } catch {
-                        continuation.resume(throwing: AppError.decodingError)
+                        switch target {
+                        case .searchFoods:
+                            continuation.resume(throwing: AppError.results)
+                        case .getFoodDetails:
+                            continuation.resume(throwing: AppError.decoding)
+                        }
                     }
                 case .failure:
-                    continuation.resume(throwing: AppError.networkError)
+                    continuation.resume(throwing: AppError.network)
                 }
             }
         }
