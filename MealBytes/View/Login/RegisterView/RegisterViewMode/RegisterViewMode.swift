@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import FirebaseAuth
 
 final class RegisterViewModel: ObservableObject {
@@ -18,10 +19,13 @@ final class RegisterViewModel: ObservableObject {
     @Published var isResendEnabled: Bool = false
     @Published var showResendOptions: Bool = false
     
-    private var timer: DispatchSourceTimer?
+    private var timerSubscription: AnyCancellable?
+    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
     private var remainingSeconds: Int = 60
     
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    deinit {
+        timerSubscription?.cancel()
+    }
     
     // MARK: - Sign Up
     func signUp() async {
@@ -41,7 +45,7 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Resend link
+    // MARK: - Resend Email Verification
     func resendEmailVerification() async {
         guard isResendEnabled else { return }
         do {
@@ -60,31 +64,26 @@ final class RegisterViewModel: ObservableObject {
         await MainActor.run {
             self.isResendEnabled = false
             self.remainingSeconds = 60
-            self.timerText = "01:00"
+            self.updateTimerText()
         }
         
-        timer?.cancel()
-        timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-        timer?.schedule(deadline: .now(), repeating: 1.0)
-        
-        timer?.setEventHandler { [weak self] in
-            guard let self else { return }
-            
-            self.remainingSeconds -= 1
-            
-            Task { @MainActor in
-                if self.remainingSeconds <= 0 {
-                    self.timer?.cancel()
-                    self.timer = nil
-                    self.isResendEnabled = true
-                    return
-                }
+        timerSubscription?.cancel()
+        timerSubscription = Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self else { return }
                 
-                self.updateTimerText()
+                self.remainingSeconds -= 1
+                
+                Task { @MainActor in
+                    self.updateTimerText()
+                    
+                    if self.remainingSeconds <= 0 {
+                        self.timerSubscription?.cancel()
+                        self.isResendEnabled = true
+                    }
+                }
             }
-        }
-        
-        timer?.resume()
     }
     
     private func updateTimerText() {
