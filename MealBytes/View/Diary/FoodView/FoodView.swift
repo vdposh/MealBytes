@@ -12,6 +12,7 @@ struct FoodView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding private var isDismissed: Bool
     
+    private let navigationTitle: String
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
     private let showCloseButton: Bool
@@ -19,6 +20,7 @@ struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
     
     init(isDismissed: Binding<Bool>,
+         navigationTitle: String,
          food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
@@ -30,6 +32,7 @@ struct FoodView: View {
          showCloseButton: Bool,
          originalMealItemId: UUID? = nil) {
         self._isDismissed = isDismissed
+        self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
         self.showCloseButton = showCloseButton
@@ -68,7 +71,7 @@ struct FoodView: View {
                 }
             }
         }
-        .navigationBarTitle("Add to Diary", displayMode: .inline)
+        .navigationBarTitle(navigationTitle, displayMode: .inline)
         .confirmationDialog(
             "Select Serving",
             isPresented: $foodViewModel.showActionSheet,
@@ -213,6 +216,7 @@ struct FoodView: View {
 
         FoodView(
             isDismissed: .constant(true),
+            navigationTitle: "Add to Diary",
             food: Food(
                 searchFoodId: 794,
                 searchFoodName: "Whole Milk",

@@ -40,6 +40,7 @@ struct SearchView: View {
                                     NavigationLink(
                                         destination: FoodView(
                                             isDismissed: $isPresented,
+                                            navigationTitle: "Add to Diary",
                                             food: food,
                                             searchViewModel: searchViewModel,
                                             mainViewModel: searchViewModel

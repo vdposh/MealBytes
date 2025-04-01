@@ -17,6 +17,7 @@ struct FoodItemRow: View {
         NavigationLink(
             destination: FoodView(
                 isDismissed: $isDismissed,
+                navigationTitle: "Edit in Diary",
                 food: Food(
                     searchFoodId: mealItem.foodId,
                     searchFoodName: mealItem.foodName,

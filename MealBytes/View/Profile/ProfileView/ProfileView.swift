@@ -20,7 +20,7 @@ struct ProfileView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground)
+            Color(.secondarySystemBackground)
                 .ignoresSafeArea()
             
             if !profileViewModel.isDataLoaded {
@@ -37,7 +37,6 @@ struct ProfileView: View {
                                 Text(email)
                                     .font(.headline)
                             }
-                            .padding(.top)
                         } else {
                             Text("Unable to retrieve email.")
                                 .font(.headline)
@@ -93,6 +92,7 @@ struct ProfileView: View {
                         .font(.footnote)
                         .padding(.top)
                         .padding(.bottom, 50)
+                        .navigationBarTitle("Profile", displayMode: .inline)
                     }
                 }
             }

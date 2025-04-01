@@ -18,14 +18,21 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isDataLoaded: Bool = false
+    @Published var isToggleUpdating: Bool = false
     
     var bindingForShouldDisplayRdi: Binding<Bool> {
         Binding(
             get: { self.mainViewModel.shouldDisplayRdi },
             set: { newValue in
-                self.mainViewModel.shouldDisplayRdi = newValue
                 Task {
+                    await MainActor.run {
+                        self.isToggleUpdating = true
+                        self.mainViewModel.shouldDisplayRdi = newValue
+                    }
                     await self.mainViewModel.saveDisplayRdiMainView(newValue)
+                    await MainActor.run {
+                        self.isToggleUpdating = false
+                    }
                 }
             }
         )
@@ -94,7 +101,6 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadProfileData() async {
-        isDataLoaded = false
         await fetchCurrentUserEmail()
         Task {
             await MainActor.run {

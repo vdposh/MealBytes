@@ -10,7 +10,7 @@ import SwiftUI
 struct GoalsView: View {
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground)
+            Color(.secondarySystemBackground)
                 .ignoresSafeArea()
             
             NavigationStack {
@@ -49,7 +49,7 @@ struct GoalsView: View {
                 .padding(.horizontal, 20)
                 .padding(.top)
                 .frame(maxHeight: .infinity, alignment: .top)
-                .navigationBarTitle("Your Goals", displayMode: .inline)
+                .navigationBarTitle("Goals", displayMode: .inline)
             }
         }
     }
