@@ -14,6 +14,7 @@ final class MainViewModel: ObservableObject {
         didSet {
             recalculateNutrients(for: date)
             updateProgress()
+            collapseAllSections()
         }
     }
     @Published var mealItems: [MealType: [MealItem]]
@@ -430,6 +431,12 @@ final class MainViewModel: ObservableObject {
         : []
         
         return previousMonthDates + daysInMonth + nextMonthDates
+    }
+    
+    func collapseAllSections() {
+        expandedSections.keys.forEach { key in
+            expandedSections[key] = false
+        }
     }
 }
 

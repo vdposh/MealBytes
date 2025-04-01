@@ -12,12 +12,14 @@ import FirebaseCore
 final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?
     @Published var amount: String = ""
+    @Published var originalAmount: String = ""
     @Published var errorMessage: AppError?
     @Published var unit: MeasurementUnit = .grams
     @Published var showActionSheet = false
     @Published var isLoading = true
     @Published var isError = false
     @Published var isBookmarkFilled = false
+    @Published var shouldUseOriginalAmount: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
