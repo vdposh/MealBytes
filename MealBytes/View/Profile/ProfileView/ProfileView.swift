@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @State private var shouldDisplayRdi: Bool = false
     @StateObject private var profileViewModel: ProfileViewModel
     
     init(loginViewModel: LoginViewModel,
@@ -45,7 +46,14 @@ struct ProfileView: View {
                         
                         Toggle(
                             "Display RDI",
-                            isOn: profileViewModel.bindingForShouldDisplayRdi
+                            isOn: .init(
+                                get: { profileViewModel
+                                    .mainViewModel.shouldDisplayRdi },
+                                set: { newValue in
+                                    profileViewModel
+                                        .updateShouldDisplayRdi(to: newValue)
+                                }
+                            )
                         )
                         .toggleStyle(SwitchToggleStyle(tint: .customGreen))
                         .font(.headline)

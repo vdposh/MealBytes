@@ -12,8 +12,14 @@ final class RegisterViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
+    @Published var timerText: String = ""
     @Published var error: AuthError?
     @Published var showAlert: Bool = false
+    @Published var isResendEnabled: Bool = false
+    @Published var showResendOptions: Bool = false
+    
+    private var timer: DispatchSourceTimer?
+    private var remainingSeconds: Int = 60
     
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
     
@@ -23,6 +29,12 @@ final class RegisterViewModel: ObservableObject {
             try await firestoreAuth.signUpFirebase(email: email,
                                                    password: password)
             await handleSignUpResult(success: true)
+            
+            await MainActor.run {
+                self.showResendOptions = true
+            }
+            
+            await startResendTimer()
         } catch {
             let authError = handleError(error as NSError)
             await handleSignUpResult(success: false, error: authError)
@@ -31,13 +43,58 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Resend link
     func resendEmailVerification() async {
+        guard isResendEnabled else { return }
         do {
             try await firestoreAuth.resendVerificationFirebase()
+            await startResendTimer()
         } catch {
+            let authError = handleError(error as NSError)
             await MainActor.run {
-                self.error = handleError(error as NSError)
+                self.error = authError
             }
         }
+    }
+    
+    // MARK: - Timer for Resend
+    private func startResendTimer() async {
+        await MainActor.run {
+            self.isResendEnabled = false
+            self.remainingSeconds = 60
+            self.timerText = "01:00"
+        }
+        
+        timer?.cancel()
+        timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+        timer?.schedule(deadline: .now(), repeating: 1.0)
+        
+        timer?.setEventHandler { [weak self] in
+            guard let self else { return }
+            
+            self.remainingSeconds -= 1
+            
+            Task { @MainActor in
+                if self.remainingSeconds <= 0 {
+                    self.timer?.cancel()
+                    self.timer = nil
+                    self.isResendEnabled = true
+                    return
+                }
+                
+                self.updateTimerText()
+            }
+        }
+        
+        timer?.resume()
+    }
+    
+    private func updateTimerText() {
+        let minutes = remainingSeconds / 60
+        let seconds = remainingSeconds % 60
+        timerText = String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    func resendButtonColor() -> Color {
+        return isResendEnabled ? .customGreen : .secondary
     }
     
     // MARK: - Alert

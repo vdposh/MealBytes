@@ -20,24 +20,6 @@ final class ProfileViewModel: ObservableObject {
     @Published var isDataLoaded: Bool = false
     @Published var isToggleUpdating: Bool = false
     
-    var bindingForShouldDisplayRdi: Binding<Bool> {
-        Binding(
-            get: { self.mainViewModel.shouldDisplayRdi },
-            set: { newValue in
-                Task {
-                    await MainActor.run {
-                        self.isToggleUpdating = true
-                        self.mainViewModel.shouldDisplayRdi = newValue
-                    }
-                    await self.mainViewModel.saveDisplayRdiMainView(newValue)
-                    await MainActor.run {
-                        self.isToggleUpdating = false
-                    }
-                }
-            }
-        )
-    }
-    
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
     private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
@@ -46,6 +28,20 @@ final class ProfileViewModel: ObservableObject {
          mainViewModel: MainViewModel) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
+    }
+    
+    // MARK: - Toggle
+    func updateShouldDisplayRdi(to newValue: Bool) {
+        Task {
+            await MainActor.run {
+                self.isToggleUpdating = true
+                self.mainViewModel.shouldDisplayRdi = newValue
+            }
+            await self.mainViewModel.saveDisplayRdiMainView(newValue)
+            await MainActor.run {
+                self.isToggleUpdating = false
+            }
+        }
     }
     
     // MARK: - Sign Out

@@ -58,31 +58,40 @@ struct RegisterView: View {
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
             
-            HStack(spacing: 4) {
-                Text("Didn't receive the email?")
-                    .foregroundColor(.secondary)
-                
-                Button(action: {
-                    Task {
-                        await registerViewModel.resendEmailVerification()
+            if registerViewModel.showResendOptions {
+                HStack(spacing: 4) {
+                    Text("Didn't receive the email?")
+                    
+                    
+                    Button(action: {
+                        Task {
+                            await registerViewModel.resendEmailVerification()
+                        }
+                    }) {
+                        Text("Resend")
+                            .fontWeight(.semibold)
+                            .foregroundColor(registerViewModel
+                                .resendButtonColor())
                     }
-                }) {
-                    Text("Resend")
-                        .fontWeight(.semibold)
-                        .foregroundColor(.customGreen)
+                    .disabled(!registerViewModel.isResendEnabled)
+                    
+                    if !registerViewModel.isResendEnabled {
+                        Text(registerViewModel.timerText)
+                    }
                 }
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 5)
             }
-            .font(.footnote)
             
             Text("To register, please provide a valid email address and create a password that is at least 6 characters long. After completing the registration form, an email will be sent to the provided address containing a verification link.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 20)
-                .padding(.vertical, 5)
             
-            .alert(isPresented: $registerViewModel.showAlert) {
-                registerViewModel.getAlert()
-            }
+                .alert(isPresented: $registerViewModel.showAlert) {
+                    registerViewModel.getAlert()
+                }
         }
         .accentColor(.customGreen)
     }
