@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SignOutButtonView: View {
     let title: String
-    let backgroundColor: Color
     let action: () -> Void
     
     var body: some View {
@@ -17,14 +16,8 @@ struct SignOutButtonView: View {
             action()
         }) {
             Text(title)
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .frame(width: 150)
-                .lineLimit(1)
-                .background(backgroundColor)
-                .cornerRadius(12)
+                .foregroundColor(.customRed)
         }
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }

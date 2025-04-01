@@ -28,6 +28,8 @@ struct WeightSection: View {
                         Text(unit.rawValue)
                     }
                 }
+                .pickerStyle(.menu)
+                .accentColor(.secondary)
                 .font(.callout)
             }
         }

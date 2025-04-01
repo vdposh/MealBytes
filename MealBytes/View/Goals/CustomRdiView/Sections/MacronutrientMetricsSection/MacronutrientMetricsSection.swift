@@ -12,14 +12,8 @@ struct MacronutrientMetricsSection: View {
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
-        Section {
+        Section(header: Text("Macronutrient Metrics")) {
             VStack {
-                Text("Required Macronutrient Metrics")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 5)
-                
                 VStack(spacing: 15) {
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.fat,
@@ -60,7 +54,6 @@ struct MacronutrientMetricsSection: View {
                             for: customRdiViewModel.protein)
                     )
                 }
-                .padding(.top, 5)
                 .padding(.bottom, 10)
                 
                 HStack {

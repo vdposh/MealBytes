@@ -16,7 +16,7 @@ struct OverviewSection: View {
                 Text("The RDI calculation is based on unique factors, including your age, weight, height, gender, and activity level.")
                     .font(.footnote)
                     .foregroundColor(.secondary)
-                    .padding(.vertical, 5)
+                    .padding(.bottom, 5)
                 
                 HStack {
                     Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))

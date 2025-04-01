@@ -18,6 +18,16 @@ struct CustomRdiView: View {
                 LoadingView()
             } else {
                 List {
+                    Section {
+                        Text("Calculate your daily calorie intake by distributing macronutrients (fats, carbohydrates, and proteins) in percentages or grams, depending on your preference.")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.horizontal)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    
                     CalorieMetricsSection(
                         focusedField: _focusedField,
                         customRdiViewModel: customRdiViewModel
@@ -26,17 +36,6 @@ struct CustomRdiView: View {
                         focusedField: _focusedField,
                         customRdiViewModel: customRdiViewModel
                     )
-                    
-                    Section {
-                        Text("Calculate your daily calorie intake by entering the total number of calories and distributing macronutrients such as fats, carbohydrates, and proteins in percentages. Alternatively, you can switch to grams and specify the required amounts for each macronutrient to calculate the total calorie amount.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding(.horizontal)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
                 }
                 .listSectionSpacing(15)
                 .scrollDismissesKeyboard(.never)

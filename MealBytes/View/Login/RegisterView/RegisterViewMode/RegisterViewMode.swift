@@ -75,12 +75,14 @@ final class RegisterViewModel: ObservableObject {
                 
                 self.remainingSeconds -= 1
                 
-                Task { @MainActor in
-                    self.updateTimerText()
-                    
-                    if self.remainingSeconds <= 0 {
-                        self.timerSubscription?.cancel()
-                        self.isResendEnabled = true
+                Task {
+                    await MainActor.run {
+                        self.updateTimerText()
+                        
+                        if self.remainingSeconds <= 0 {
+                            self.timerSubscription?.cancel()
+                            self.isResendEnabled = true
+                        }
                     }
                 }
             }

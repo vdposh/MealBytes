@@ -23,26 +23,33 @@ struct BasicInfoSection: View {
                 )
                 .focused($focusedField)
                 
-                HStack {
-                    Picker("Gender", selection: $rdiViewModel.selectedGender) {
-                        ForEach(Gender.allCases, id: \.self) { gender in
-                            Text(gender.rawValue)
+                VStack {
+                    HStack {
+                        Picker("Gender", selection: $rdiViewModel.selectedGender) {
+                            ForEach(Gender.allCases, id: \.self) { gender in
+                                Text(gender.rawValue)
+                                
+                            }
                         }
+                        .pickerStyle(.menu)
+                        .accentColor(.secondary)
+                        .font(.callout)
                     }
-                    .font(.callout)
-                }
-                .frame(height: 30)
-                
-                HStack {
-                    Picker("Activity Level",
-                           selection: $rdiViewModel.selectedActivity) {
-                        ForEach(ActivityLevel.allCases, id: \.self) { level in
-                            Text(level.rawValue)
+                    
+                    Divider()
+                    
+                    HStack {
+                        Picker("Activity Level",
+                               selection: $rdiViewModel.selectedActivity) {
+                            ForEach(ActivityLevel.allCases, id: \.self) { level in
+                                Text(level.rawValue)
+                            }
                         }
+                               .pickerStyle(.menu)
+                               .accentColor(.secondary)
+                               .font(.callout)
                     }
-                    .font(.callout)
                 }
-                .frame(height: 30)
             }
         }
     }
