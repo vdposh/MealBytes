@@ -22,10 +22,10 @@ final class RegisterViewModel: ObservableObject {
         do {
             try await firestoreAuth.signUpFirebase(email: email,
                                                    password: password)
-            handleSignUpResult(success: true)
+            await handleSignUpResult(success: true)
         } catch {
             let authError = handleError(error as NSError)
-            handleSignUpResult(success: false, error: authError)
+            await handleSignUpResult(success: false, error: authError)
         }
     }
     
@@ -57,12 +57,11 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    private func handleSignUpResult(success: Bool, error: AuthError? = nil) {
-        Task {
-            await MainActor.run {
-                self.error = error
-                self.showAlert = true
-            }
+    private func handleSignUpResult(success: Bool,
+                                    error: AuthError? = nil) async {
+        await MainActor.run {
+            self.error = error
+            self.showAlert = true
         }
     }
     

@@ -52,11 +52,7 @@ final class ProfileViewModel: ObservableObject {
     private func signOut() {
         do {
             try firestoreAuth.signOutFirebase()
-            Task {
-                await MainActor.run {
-                    loginViewModel.isLoggedIn = false
-                }
-            }
+            loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
         }
@@ -135,7 +131,7 @@ final class ProfileViewModel: ObservableObject {
     
     func handleAlertAction() async {
         guard let alertType = alertType else { return }
-
+        
         switch alertType {
         case .signOut:
             signOut()

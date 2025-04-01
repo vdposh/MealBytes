@@ -20,22 +20,20 @@ final class ResetViewModel: ObservableObject {
     func resetPassword() async {
         do {
             try await firestoreAuth.resetPasswordFirebase(email: email)
-            handleResult(success: true, error: nil)
+            await handleResult(success: true, error: nil)
         } catch {
-            handleResult(
+            await handleResult(
                 success: false,
                 error: handleError(error as NSError)
             )
         }
     }
     
-    private func handleResult(success: Bool, error: AuthError?) {
-        Task {
-            await MainActor.run {
-                self.success = success
-                self.error = error
-                updateAlertState()
-            }
+    private func handleResult(success: Bool, error: AuthError?) async {
+        await MainActor.run {
+            self.success = success
+            self.error = error
+            updateAlertState()
         }
     }
     
