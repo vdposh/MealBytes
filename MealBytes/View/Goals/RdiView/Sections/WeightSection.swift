@@ -29,7 +29,6 @@ struct WeightSection: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .font(.callout)
             }
         }
     }

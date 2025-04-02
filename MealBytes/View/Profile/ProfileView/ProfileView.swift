@@ -27,14 +27,16 @@ struct ProfileView: View {
                     if let email = profileViewModel.email {
                         VStack {
                             Text("This account is signed in:")
-                                .font(.footnote)
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
                             Text(email)
                                 .font(.headline)
+                                .lineLimit(1)
                         }
                     } else {
                         Text("Unable to retrieve email.")
-                            .font(.headline)
+                            .font(.title3)
+                            .fontWeight(.semibold)
                             .foregroundColor(.customRed)
                     }
                 }
@@ -57,7 +59,6 @@ struct ProfileView: View {
                     .toggleStyle(SwitchToggleStyle(tint: .customGreen))
                 } footer: {
                     Text("Enable this option to display your Recommended Daily Intake (RDI) in the Diary.")
-                        .font(.footnote)
                         .padding(.bottom)
                 }
                 
@@ -129,6 +130,11 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ContentView()
-        .accentColor(.customGreen)
+    NavigationStack {
+        ProfileView(
+            loginViewModel: LoginViewModel(),
+            mainViewModel: MainViewModel()
+        )
+    }
+    .accentColor(.customGreen)
 }

@@ -39,3 +39,8 @@ struct ServingButtonView: View {
         }
     }
 }
+
+#Preview {
+    ContentView()
+        .accentColor(.customGreen)
+}

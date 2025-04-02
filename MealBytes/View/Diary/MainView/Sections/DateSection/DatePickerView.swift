@@ -42,7 +42,7 @@ struct DatePickerView: View {
                     Image(systemName: "chevron.right")
                 }
             }
-            .fontWeight(.medium)
+            .font(.headline)
             .padding(.bottom)
             .padding(.horizontal)
 
@@ -91,4 +91,9 @@ struct DatePickerView: View {
         }
         .padding()
     }
+}
+
+#Preview {
+    ContentView()
+        .accentColor(.customGreen)
 }

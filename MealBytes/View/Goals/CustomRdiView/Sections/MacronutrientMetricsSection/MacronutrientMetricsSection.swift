@@ -54,20 +54,19 @@ struct MacronutrientMetricsSection: View {
                             for: customRdiViewModel.protein)
                     )
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 5)
                 
                 HStack {
                     Button(action: {
                         customRdiViewModel.togglePercentageMode()
                     }) {
                         Text(customRdiViewModel.toggleButtonText)
-                            .font(.callout)
-                            .fontWeight(.medium)
+                            .font(.headline)
                             .foregroundColor(.customGreen)
                     }
                     .buttonStyle(.plain)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.bottom, 5)
+                    .padding(.vertical, 10)
                 }
             }
         }

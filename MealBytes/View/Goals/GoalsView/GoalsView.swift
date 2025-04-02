@@ -20,7 +20,7 @@ struct GoalsView: View {
             
             Section {
                 NavigationLink(destination: CustomRdiView()) {
-                    Label("Custom RDI", systemImage: "list.bullet")
+                    Label("Custom RDI", systemImage: "slider.horizontal.3")
                 }
             } footer: {
                 Text("You can also calculate your RDI manually by entering calories and macronutrient values such as fats, carbohydrates and proteins.")

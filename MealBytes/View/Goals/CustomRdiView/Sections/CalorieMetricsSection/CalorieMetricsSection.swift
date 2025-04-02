@@ -34,7 +34,6 @@ struct CalorieMetricsSection: View {
             .padding(.trailing, 5)
             
             Text("kcal")
-                .font(.callout)
                 .foregroundColor(customRdiViewModel.caloriesTextColor)
         }
     }

@@ -29,7 +29,6 @@ struct HeightSection: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .font(.callout)
             }
         }
     }

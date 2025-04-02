@@ -25,16 +25,16 @@ struct BasicInfoSection: View {
                 
                 VStack {
                     HStack {
-                        Picker("Gender", selection: $rdiViewModel.selectedGender) {
-                            ForEach(Gender.allCases, id: \.self) { gender in
+                        Picker("Gender",
+                               selection: $rdiViewModel.selectedGender) {
+                            ForEach(Gender.allCases,
+                                    id: \.self) { gender in
                                 Text(gender.rawValue)
-                                
                             }
                         }
-                        .pickerStyle(.menu)
-                        .accentColor(rdiViewModel.accentColor(
-                            for: rdiViewModel.selectedGender))
-                        .font(.callout)
+                               .pickerStyle(.menu)
+                               .accentColor(rdiViewModel.accentColor(
+                                for: rdiViewModel.selectedGender))
                     }
                     
                     Divider()
@@ -42,14 +42,15 @@ struct BasicInfoSection: View {
                     HStack {
                         Picker("Activity Level",
                                selection: $rdiViewModel.selectedActivity) {
-                            ForEach(ActivityLevel.allCases, id: \.self) { level in
+                            ForEach(ActivityLevel.allCases,
+                                    id: \.self) { level in
                                 Text(level.rawValue)
                             }
                         }
+                               .padding(.top, 5)
                                .pickerStyle(.menu)
                                .accentColor(rdiViewModel.accentColor(
                                 for: rdiViewModel.selectedActivity))
-                               .font(.callout)
                     }
                 }
             }

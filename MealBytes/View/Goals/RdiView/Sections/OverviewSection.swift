@@ -21,8 +21,7 @@ struct OverviewSection: View {
                 HStack {
                     Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
                         .lineLimit(1)
-                        .font(.callout)
-                        .fontWeight(.semibold)
+                        .font(.headline)
                         .foregroundColor(rdiViewModel.color(
                             for: rdiViewModel.calculatedRdi))
                 }

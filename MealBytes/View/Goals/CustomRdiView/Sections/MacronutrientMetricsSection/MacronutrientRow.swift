@@ -27,7 +27,6 @@ struct MacronutrientRow: View {
             .padding(.trailing, 5)
             
             Text(unitLeft)
-                .font(.callout)
                 .frame(width: 15, alignment: .leading)
             
             HStack (spacing: 5) {
@@ -35,7 +34,6 @@ struct MacronutrientRow: View {
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                 Text(unitRight)
-                    .font(.callout)
                     .foregroundColor(.secondary)
                     .frame(width: 15, alignment: .leading)
             }
