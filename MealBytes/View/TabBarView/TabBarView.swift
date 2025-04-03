@@ -42,6 +42,13 @@ struct TabBarView: View {
             }
             .tag(2)
         }
+        .onChange(of: selectedTab) { oldValue, newValue in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mainViewModel.isExpandedCalendar {
+                    mainViewModel.isExpandedCalendar = false
+                }
+            }
+        }
         .task {
             selectedTab = 0
         }

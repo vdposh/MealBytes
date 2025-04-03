@@ -26,6 +26,9 @@ struct MainView: View {
                             .opacity(0.4)
                             .ignoresSafeArea()
                             .zIndex(1)
+                            .onTapGesture {
+                                mainViewModel.isExpandedCalendar = false
+                            }
                     }
                     
                     List {
@@ -48,10 +51,8 @@ struct MainView: View {
                     Button(action: {
                         mainViewModel.isExpandedCalendar.toggle()
                     }) {
-                        HStack(spacing: 4) {
-                            Text(mainViewModel.formattedYearDisplay())
-                                .font(.headline)
-                        }
+                        Text(mainViewModel.formattedYearDisplay())
+                            .font(.headline)
                     }
                 }
             }
