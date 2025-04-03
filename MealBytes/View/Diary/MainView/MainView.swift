@@ -51,10 +51,6 @@ struct MainView: View {
                         HStack(spacing: 4) {
                             Text(mainViewModel.formattedYearDisplay())
                                 .font(.headline)
-                            Image(systemName: "chevron.up")
-                                .rotationEffect(.degrees(mainViewModel.isExpandedCalendar ? 0 : 180))
-                                .font(.system(size: 10))
-                                .fontWeight(.semibold)
                         }
                     }
                 }
