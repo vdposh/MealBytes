@@ -55,7 +55,6 @@ struct MealHeaderView: View {
                     
                     Text("+")
                         .font(.title)
-                        .foregroundColor(.customGreen)
                 }
             }
             .sheet(isPresented: $isPresentingSheet) {

@@ -67,7 +67,6 @@ struct ProfileView: View {
                     }) {
                         Text("Change Password")
                     }
-                    .foregroundColor(.customGreen)
                 } footer: {
                     Text("Use this option to update your account password for improved security.")
                         .padding(.bottom)
@@ -138,14 +137,4 @@ struct ProfileView: View {
             }
         )
     }
-}
-
-#Preview {
-    NavigationStack {
-        ProfileView(
-            loginViewModel: LoginViewModel(),
-            mainViewModel: MainViewModel()
-        )
-    }
-    .accentColor(.customGreen)
 }

@@ -229,7 +229,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     private func calculateBaseAmountValue(_ amount: Double,
-                                  serving: Serving) -> Double {
+                                          serving: Serving) -> Double {
         if amount.isZero {
             return 0
         }

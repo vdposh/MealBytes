@@ -128,8 +128,3 @@ struct MainView: View {
         )
     }
 }
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
-}

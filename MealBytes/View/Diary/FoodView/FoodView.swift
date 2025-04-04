@@ -219,30 +219,3 @@ struct FoodView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        let mainViewModel = MainViewModel()
-        
-        FoodView(
-            isDismissed: .constant(true),
-            navigationTitle: "Add to Diary",
-            food: Food(
-                searchFoodId: 794,
-                searchFoodName: "Whole Milk",
-                searchFoodDescription: ""
-            ),
-            searchViewModel: SearchViewModel(
-                mainViewModel: mainViewModel
-            ),
-            mainViewModel: mainViewModel,
-            mealType: .breakfast,
-            amount: "1",
-            measurementDescription: "",
-            showAddButton: false,
-            showSaveRemoveButton: true,
-            showCloseButton: true
-        )
-    }
-    .accentColor(.customGreen)
-}

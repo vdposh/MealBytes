@@ -58,7 +58,7 @@ final class ProfileViewModel: ObservableObject {
     private func deleteAccount(email: String, password: String) async {
         do {
             try await firebaseAuth.reauthenticateAuth(email: email,
-                                                           password: password)
+                                                      password: password)
             try await firebaseAuth.deleteAccountAuth()
             Task {
                 await MainActor.run {

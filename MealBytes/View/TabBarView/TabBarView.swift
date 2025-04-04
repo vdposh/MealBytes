@@ -54,8 +54,3 @@ struct TabBarView: View {
         }
     }
 }
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
-}

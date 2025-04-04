@@ -102,7 +102,6 @@ struct SearchView: View {
             )
             
         }
-        .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
     }
     
@@ -131,17 +130,4 @@ struct SearchView: View {
             EmptyView()
         }
     }
-}
-
-#Preview {
-    NavigationStack {
-        SearchView(
-            isPresented: .constant(true),
-            searchViewModel: SearchViewModel(
-                mainViewModel: MainViewModel()
-            ),
-            mealType: .breakfast
-        )
-    }
-    .accentColor(.customGreen)
 }

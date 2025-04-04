@@ -67,7 +67,7 @@ final class ResetViewModel: ObservableObject {
     func titleColor(for text: String) -> Color {
         return text.isEmpty ? .customRed : .primary
     }
-   
+    
     // MARK: - Error
     private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {

@@ -31,7 +31,7 @@ final class RegisterViewModel: ObservableObject {
     func signUp() async {
         do {
             try await firebaseAuth.signUpAuth(email: email,
-                                                   password: password)
+                                              password: password)
             await handleSignUpResult(success: true)
             
             await MainActor.run {

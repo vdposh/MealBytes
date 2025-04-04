@@ -92,8 +92,3 @@ struct DatePickerView: View {
         .padding()
     }
 }
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
-}

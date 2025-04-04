@@ -30,10 +30,3 @@ struct GoalsView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
-#Preview {
-    NavigationStack {
-        GoalsView()
-    }
-    .accentColor(.customGreen)
-}
