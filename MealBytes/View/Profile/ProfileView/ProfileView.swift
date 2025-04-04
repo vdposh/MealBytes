@@ -59,6 +59,17 @@ struct ProfileView: View {
                     .toggleStyle(SwitchToggleStyle(tint: .customGreen))
                 } footer: {
                     Text("Enable this option to display your Recommended Daily Intake (RDI) in the Diary.")
+                }
+                
+                Section {
+                    Button(action: {
+                        // Действие при нажатии
+                    }) {
+                        Text("Change Password")
+                    }
+                    .foregroundColor(.customGreen)
+                } footer: {
+                    Text("Use this option to update your account password for improved security.")
                         .padding(.bottom)
                 }
                 

@@ -110,7 +110,7 @@ final class ProfileViewModel: ObservableObject {
                 
                 switch type {
                 case .signOut:
-                    alertTitle = "Sign out"
+                    alertTitle = "Sign Out"
                     alertMessage = "You will need to sign in again to access your account."
                     destructiveButtonTitle = "Sign Out"
                 case .deleteAccount:
