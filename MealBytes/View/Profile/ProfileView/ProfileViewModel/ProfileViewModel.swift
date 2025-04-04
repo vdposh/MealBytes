@@ -22,7 +22,7 @@ final class ProfileViewModel: ObservableObject {
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModel) {
@@ -47,7 +47,7 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Sign Out
     private func signOut() {
         do {
-            try firestoreAuth.signOutFirebase()
+            try firebaseAuth.signOutAuth()
             loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
@@ -57,9 +57,9 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Delete Account
     private func deleteAccount(email: String, password: String) async {
         do {
-            try await firestoreAuth.reauthenticateFirebase(email: email,
+            try await firebaseAuth.reauthenticateAuth(email: email,
                                                            password: password)
-            try await firestoreAuth.deleteAccountFirebase()
+            try await firebaseAuth.deleteAccountAuth()
             Task {
                 await MainActor.run {
                     loginViewModel.isLoggedIn = false
@@ -147,7 +147,7 @@ final class ProfileViewModel: ObservableObject {
             }
             
             do {
-                try await firestoreAuth.reauthenticateFirebase(
+                try await firebaseAuth.reauthenticateAuth(
                     email: email,
                     password: password
                 )

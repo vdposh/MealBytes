@@ -8,34 +8,34 @@
 import SwiftUI
 import FirebaseAuth
 
-protocol FirestoreAuthProtocol {
-    func signInFirebase(email: String, password: String) async throws -> User
-    func isCurrentUserEmailVerified() -> Bool
-    func signUpFirebase(email: String, password: String) async throws
-    func reauthenticateFirebase(email: String, password: String) async throws
-    func resetPasswordFirebase(email: String) async throws
-    func signOutFirebase() throws
-    func deleteAccountFirebase() async throws
-    func resendVerificationFirebase() async throws
+protocol FirebaseAuthProtocol {
+    func signInAuth(email: String, password: String) async throws -> User
+    func isCurrentUserEmailVerifiedAuth() -> Bool
+    func signUpAuth(email: String, password: String) async throws
+    func reauthenticateAuth(email: String, password: String) async throws
+    func resetPasswordAuth(email: String) async throws
+    func signOutAuth() throws
+    func deleteAccountAuth() async throws
+    func resendVerificationAuth() async throws
 }
 
-final class FirestoreAuth: FirestoreAuthProtocol {
+final class FirebaseAuth: FirebaseAuthProtocol {
     // MARK: - Sign In
-    func signInFirebase(email: String, password: String) async throws -> User {
+    func signInAuth(email: String, password: String) async throws -> User {
         let result = try await Auth.auth().signIn(withEmail: email,
                                                   password: password)
         return result.user
     }
     
     // MARK: - Sign Up
-    func signUpFirebase(email: String, password: String) async throws {
+    func signUpAuth(email: String, password: String) async throws {
         let result = try await Auth.auth().createUser(withEmail: email,
                                                       password: password)
         try await result.user.sendEmailVerification()
     }
     
     // MARK: - Resend Verification
-    func resendVerificationFirebase() async throws {
+    func resendVerificationAuth() async throws {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
@@ -43,24 +43,24 @@ final class FirestoreAuth: FirestoreAuthProtocol {
     }
     
     // MARK: - Reset Password
-    func resetPasswordFirebase(email: String) async throws {
+    func resetPasswordAuth(email: String) async throws {
         try await Auth.auth().sendPasswordReset(withEmail: email)
     }
     
     // MARK: - Sign Out
-    func signOutFirebase() throws {
+    func signOutAuth() throws {
         try Auth.auth().signOut()
     }
     
     // MARK: - Delete Account
-    func deleteAccountFirebase() async throws {
+    func deleteAccountAuth() async throws {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
         try await user.delete()
     }
     
-    func reauthenticateFirebase(email: String,
+    func reauthenticateAuth(email: String,
                                 password: String) async throws {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
@@ -71,7 +71,7 @@ final class FirestoreAuth: FirestoreAuthProtocol {
     }
     
     // MARK: - Current User
-    func isCurrentUserEmailVerified() -> Bool {
+    func isCurrentUserEmailVerifiedAuth() -> Bool {
         guard let user = Auth.auth().currentUser else {
             return false
         }

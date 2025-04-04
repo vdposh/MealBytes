@@ -14,12 +14,12 @@ final class ResetViewModel: ObservableObject {
     @Published var success: Bool = false
     @Published var showAlert = false
     
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     // MARK: - Reset Password
     func resetPassword() async {
         do {
-            try await firestoreAuth.resetPasswordFirebase(email: email)
+            try await firebaseAuth.resetPasswordAuth(email: email)
             await handleResult(success: true, error: nil)
         } catch {
             await handleResult(

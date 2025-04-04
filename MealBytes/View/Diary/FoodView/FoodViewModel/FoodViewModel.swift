@@ -33,7 +33,7 @@ final class FoodViewModel: ObservableObject {
     let originalMealItemId: UUID
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
@@ -114,7 +114,7 @@ final class FoodViewModel: ObservableObject {
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         Task {
-            try? await firebase.addMealItemFirebase(newItem)
+            try? await firestore.addMealItemFirestore(newItem)
         }
     }
     
@@ -141,7 +141,7 @@ final class FoodViewModel: ObservableObject {
                                                  for: mealType,
                                                  on: date)
             try? await mainViewModel
-                .firebase.updateMealItemFirebase(updatedMealItem)
+                .firestore.updateMealItemFirestore(updatedMealItem)
         }
     }
     

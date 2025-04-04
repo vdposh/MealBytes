@@ -28,7 +28,7 @@ final class SearchViewModel: ObservableObject {
     var currentPage: Int = 0
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let mainViewModel: MainViewModel
     
     private var searchCancellable: AnyCancellable?
@@ -85,8 +85,8 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Delete Meal Item
     func loadBookmarksSearchView() async {
         do {
-            let favoriteFoods = try await firebase
-                .loadBookmarksFirebase()
+            let favoriteFoods = try await firestore
+                .loadBookmarksFirestore()
             
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
             
@@ -132,7 +132,7 @@ final class SearchViewModel: ObservableObject {
                 self.bookmarkedFoods = updatedBookmarkedFoods
             }
             
-            try await firebase.addBookmarkFirebase(updatedFavorites)
+            try await firestore.addBookmarkFirestore(updatedFavorites)
         }
     }
     
