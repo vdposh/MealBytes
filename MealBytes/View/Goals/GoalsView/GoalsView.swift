@@ -14,6 +14,7 @@ struct GoalsView: View {
         ZStack {
             if !goalsViewModel.isDataLoaded {
                 LoadingView()
+                    .navigationBarTitle("Goals", displayMode: .inline)
             } else {
                 List {
                     Section {
@@ -49,6 +50,9 @@ struct GoalsView: View {
                     }
                 }
                 .navigationBarTitle("Goals", displayMode: .inline)
+                .task {
+                    await goalsViewModel.loadProfileData()
+                }
             }
         }
     }
