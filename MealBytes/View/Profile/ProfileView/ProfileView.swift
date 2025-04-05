@@ -145,10 +145,15 @@ struct ProfileView: View {
                                     text: $profileViewModel.newPassword)
                         .textContentType(.newPassword)
                         
-                        Button(profileViewModel.destructiveButtonTitle,
-                               role: .destructive) {
-                            Task {
-                                await profileViewModel.handleAlertAction()
+                        Group {
+                            Button("Cancel", role: .cancel) {
+                                profileViewModel.showAlert = false
+                            }
+                            
+                            Button(profileViewModel.destructiveButtonTitle) {
+                                Task {
+                                    await profileViewModel.handleAlertAction()
+                                }
                             }
                         }
                     }

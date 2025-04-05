@@ -28,7 +28,7 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var successAlert: Bool = false
     @Published var isLoading: Bool = true
-    var isError: Bool = false
+    @Published var isSaved: Bool = false
     
     private var isInitialized = false
     
@@ -61,6 +61,7 @@ final class CustomRdiViewModel: ObservableObject {
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
                 isUsingPercentage = customGoalsData.isUsingPercentage
+                isSaved = !calories.isEmpty
             }
         } catch {
             await MainActor.run {
@@ -82,6 +83,7 @@ final class CustomRdiViewModel: ObservableObject {
             try await firestore.saveCustomRdiFirestore(customGoalsData)
             await MainActor.run {
                 mainViewModel.rdi = calories
+                isSaved = true
             }
             await mainViewModel.saveMainRdiMainView()
         } catch {
@@ -107,7 +109,6 @@ final class CustomRdiViewModel: ObservableObject {
         alertTitle = "Invalid value"
         alertMessage = message
         showAlert = true
-        isError = true
     }
     
     // MARK: - Calculations

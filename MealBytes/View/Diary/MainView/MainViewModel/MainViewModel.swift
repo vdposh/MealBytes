@@ -178,6 +178,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Load Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
