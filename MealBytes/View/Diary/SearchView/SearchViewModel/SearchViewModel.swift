@@ -16,6 +16,7 @@ final class SearchViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var query: String = "" {
         didSet {
+            guard query != oldValue else { return }
             switch query.isEmpty {
             case true:
                 resetSearch()
@@ -24,6 +25,7 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
+    
     private var maxResultsPerPage: Int = 20
     var currentPage: Int = 0
     
