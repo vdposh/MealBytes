@@ -63,7 +63,7 @@ struct ProfileView: View {
                 
                 Section {
                     Button(action: {
-                        // Действие при нажатии
+                        profileViewModel.prepareAlert(for: .changePassword)
                     }) {
                         Text("Change Password")
                     }
@@ -130,7 +130,28 @@ struct ProfileView: View {
                         }
                     }
                 }
-                Button("Cancel", role: .cancel) { }
+                if profileViewModel.alertType == .changePassword {
+                    if profileViewModel.alertTitle == "Done" {
+                        Button("OK") {
+                            profileViewModel.showAlert = false
+                        }
+                    } else {
+                        SecureField("Current Password",
+                                    text: $profileViewModel.password)
+                        .textContentType(.password)
+                        
+                        SecureField("New Password",
+                                    text: $profileViewModel.newPassword)
+                        .textContentType(.newPassword)
+                        
+                        Button(profileViewModel.destructiveButtonTitle,
+                               role: .destructive) {
+                            Task {
+                                await profileViewModel.handleAlertAction()
+                            }
+                        }
+                    }
+                }
             },
             message: {
                 Text(profileViewModel.alertMessage)

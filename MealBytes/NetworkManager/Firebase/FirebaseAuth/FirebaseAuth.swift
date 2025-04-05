@@ -17,6 +17,8 @@ protocol FirebaseAuthProtocol {
     func signOutAuth() throws
     func deleteAccountAuth() async throws
     func resendVerificationAuth() async throws
+    func changePasswordAuth(currentPassword: String,
+                            newPassword: String) async throws
 }
 
 final class FirebaseAuth: FirebaseAuthProtocol {
@@ -76,5 +78,18 @@ final class FirebaseAuth: FirebaseAuthProtocol {
             return false
         }
         return user.isEmailVerified
+    }
+    
+    // MARK: - Change Password
+    func changePasswordAuth(currentPassword: String,
+                            newPassword: String) async throws {
+        guard let user = Auth.auth().currentUser,
+              let email = user.email else {
+            throw AuthError.userNotFound
+        }
+        let credential = EmailAuthProvider.credential(withEmail: email,
+                                                      password: currentPassword)
+        try await user.reauthenticate(with: credential)
+        try await user.updatePassword(to: newPassword)
     }
 }
