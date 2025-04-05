@@ -15,6 +15,7 @@ struct MainView: View {
         ZStack {
             if mainViewModel.isLoading {
                 LoadingView()
+                    .navigationBarTitle("Diary", displayMode: .inline)
             } else {
                 ZStack(alignment: .top) {
                     if mainViewModel.isExpandedCalendar {
