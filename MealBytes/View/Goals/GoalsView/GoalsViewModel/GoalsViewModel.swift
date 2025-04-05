@@ -13,6 +13,12 @@ final class GoalsViewModel: ObservableObject {
     private let rdiViewModel: RdiViewModel = RdiViewModel()
     private let customRdiViewModel: CustomRdiViewModel = CustomRdiViewModel()
     
+    init() {
+        Task {
+            await loadProfileData()
+        }
+    }
+    
     // MARK: - Load Data
     func loadProfileData() async {
         async let rdiTask: () = rdiViewModel.loadRdiView()

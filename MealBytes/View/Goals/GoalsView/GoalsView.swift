@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @StateObject private var goalsviewModel: GoalsViewModel = GoalsViewModel()
+    @ObservedObject var goalsViewModel: GoalsViewModel
     
     var body: some View {
         ZStack {
-            if !goalsviewModel.isDataLoaded {
+            if !goalsViewModel.isDataLoaded {
                 LoadingView()
             } else {
                 List {
                     Section {
                         NavigationLink(destination: RdiView()) {
                             LabeledContent {
-                                Text(goalsviewModel.rdiText())
+                                Text(goalsViewModel.rdiText())
                             } label: {
                                 HStack {
                                     Image(systemName: "person")
@@ -35,7 +35,7 @@ struct GoalsView: View {
                     Section {
                         NavigationLink(destination: CustomRdiView()) {
                             LabeledContent {
-                                Text(goalsviewModel.customRdiText())
+                                Text(goalsViewModel.customRdiText())
                             } label: {
                                 HStack {
                                     Image(systemName: "person.badge.plus")
@@ -50,9 +50,6 @@ struct GoalsView: View {
                 }
                 .navigationBarTitle("Goals", displayMode: .inline)
             }
-        }
-        .task {
-            await goalsviewModel.loadProfileData()
         }
     }
 }
