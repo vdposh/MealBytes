@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State private var currentPage: Int = 0
     @Binding private var isPresented: Bool
     
     private let mealType: MealType
@@ -80,8 +79,7 @@ struct SearchView: View {
                     .background(
                         Group {
                             if searchViewModel.foods.isEmpty {
-                                contentUnavailableView(for: .noBookmarks,
-                                                       query: "") { }
+                                contentUnavailableView(for: .noBookmarks) { }
                             } else {
                                 EmptyView()
                             }

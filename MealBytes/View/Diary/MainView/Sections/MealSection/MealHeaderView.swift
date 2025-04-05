@@ -57,7 +57,7 @@ struct MealHeaderView: View {
                         .font(.title)
                 }
             }
-            .sheet(isPresented: $isPresentingSheet) {
+            .fullScreenCover(isPresented: $isPresentingSheet) {
                 SearchView(
                     isPresented: $isPresentingSheet,
                     searchViewModel: mainViewModel.searchViewModel,

@@ -167,16 +167,6 @@ final class ProfileViewModel: ObservableObject {
                 return
             }
             
-            guard !password.isEmpty else {
-                alertTitle = "Delete Account"
-                alertMessage = """
-                Password is missing.
-                To delete your account, please enter the password associated with your account.
-                """
-                showAlert = true
-                return
-            }
-            
             do {
                 try await firebaseAuth.reauthenticateAuth(
                     email: email,
@@ -193,13 +183,6 @@ final class ProfileViewModel: ObservableObject {
             }
             
         case .changePassword:
-            guard !password.isEmpty, !newPassword.isEmpty else {
-                alertTitle = "Change Password"
-                alertMessage = "Both current and new passwords must be provided."
-                showAlert = true
-                return
-            }
-            
             do {
                 try await firebaseAuth.changePasswordAuth(
                     currentPassword: password,

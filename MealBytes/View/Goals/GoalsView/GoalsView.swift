@@ -57,7 +57,3 @@ struct GoalsView: View {
         }
     }
 }
-
-#Preview {
-    ContentView()
-}

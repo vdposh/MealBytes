@@ -165,8 +165,3 @@ struct ProfileView: View {
         )
     }
 }
-
-#Preview {
-    ProfileView(loginViewModel: LoginViewModel(),
-                mainViewModel: MainViewModel())
-}

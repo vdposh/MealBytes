@@ -27,7 +27,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     private var maxResultsPerPage: Int = 20
-    var currentPage: Int = 0
+    private var currentPage: Int = 0
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
@@ -132,6 +132,11 @@ final class SearchViewModel: ObservableObject {
             await MainActor.run {
                 self.favoriteFoods = updatedFavorites
                 self.bookmarkedFoods = updatedBookmarkedFoods
+                if query.isEmpty {
+                    self.foods = updatedFavorites
+                } else {
+                    self.foods = self.foods
+                }
             }
             
             try await firestore.addBookmarkFirestore(updatedFavorites)
