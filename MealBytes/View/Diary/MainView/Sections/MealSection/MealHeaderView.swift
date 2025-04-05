@@ -55,10 +55,9 @@ struct MealHeaderView: View {
                     
                     Text("+")
                         .font(.title)
-                        .foregroundColor(.customGreen)
                 }
             }
-            .sheet(isPresented: $isPresentingSheet) {
+            .fullScreenCover(isPresented: $isPresentingSheet) {
                 SearchView(
                     isPresented: $isPresentingSheet,
                     searchViewModel: mainViewModel.searchViewModel,
@@ -67,23 +66,28 @@ struct MealHeaderView: View {
             }
             
             if mainViewModel.expandedSections[mealType] == true {
-                ForEach(foodItems, id: \.id) { item in
-                    FoodItemRow(
-                        isDismissed: $isFoodViewPresented,
-                        mealItem: item,
-                        mealType: mealType,
-                        mainViewModel: mainViewModel
-                    )
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            Task {
-                                mainViewModel.deleteMealItemMainView(
-                                    with: item.id,
-                                    for: mealType
-                                )
+                if let foodItems = mainViewModel.mealItems[mealType]?.filter({
+                    Calendar.current.isDate($0.date,
+                                            inSameDayAs: mainViewModel.date)
+                }), !foodItems.isEmpty {
+                    ForEach(foodItems, id: \.id) { item in
+                        FoodItemRow(
+                            isDismissed: $isFoodViewPresented,
+                            mealItem: item,
+                            mealType: mealType,
+                            mainViewModel: mainViewModel
+                        )
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                Task {
+                                    mainViewModel.deleteMealItemMainView(
+                                        with: item.id,
+                                        for: mealType
+                                    )
+                                }
+                            } label: {
+                                Image(systemName: "trash")
                             }
-                        } label: {
-                            Image(systemName: "trash")
                         }
                     }
                 }

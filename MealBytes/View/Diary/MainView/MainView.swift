@@ -15,6 +15,7 @@ struct MainView: View {
         ZStack {
             if mainViewModel.isLoading {
                 LoadingView()
+                    .navigationBarTitle("Diary", displayMode: .inline)
             } else {
                 ZStack(alignment: .top) {
                     if mainViewModel.isExpandedCalendar {
@@ -26,6 +27,9 @@ struct MainView: View {
                             .opacity(0.4)
                             .ignoresSafeArea()
                             .zIndex(1)
+                            .onTapGesture {
+                                mainViewModel.isExpandedCalendar = false
+                            }
                     }
                     
                     List {
@@ -48,23 +52,9 @@ struct MainView: View {
                     Button(action: {
                         mainViewModel.isExpandedCalendar.toggle()
                     }) {
-                        HStack(spacing: 4) {
-                            Text(mainViewModel.formattedYearDisplay())
-                                .fontWeight(.medium)
-                            Image(systemName: {
-                                switch mainViewModel.isExpandedCalendar {
-                                case true:
-                                    "chevron.up"
-                                case false:
-                                    "chevron.down"
-                                }
-                            }())
-                            .font(.caption)
-                            .fontWeight(.medium)
-                        }
+                        Text(mainViewModel.formattedYearDisplay())
+                            .font(.headline)
                     }
-                    .foregroundStyle(.customGreen)
-                    .buttonStyle(.plain)
                 }
             }
         }

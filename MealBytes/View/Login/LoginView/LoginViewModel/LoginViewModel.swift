@@ -18,10 +18,10 @@ final class LoginViewModel: ObservableObject {
     
     var setMainViewLoading: (() -> Void)?
     
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init() {
-        if firestoreAuth.isCurrentUserEmailVerified() {
+        if firebaseAuth.isCurrentUserEmailVerifiedAuth() {
             isLoggedIn = true
         }
     }
@@ -29,7 +29,7 @@ final class LoginViewModel: ObservableObject {
     // MARK: - Sign In
     func signIn() async {
         do {
-            let user = try await firestoreAuth.signInFirebase(
+            let user = try await firebaseAuth.signInAuth(
                 email: email,
                 password: password
             )

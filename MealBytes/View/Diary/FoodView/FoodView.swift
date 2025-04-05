@@ -110,16 +110,24 @@ struct FoodView: View {
                 .padding(.top, 10)
             
             VStack(spacing: 15) {
-                ServingTextFieldView(text: $foodViewModel.amount,
-                                     title: "Size",
-                                     placeholder: "Enter serving size",
-                                     keyboardType: .decimalPad)
+                ServingTextFieldView(
+                    text: $foodViewModel.amount,
+                    title: "Size",
+                    placeholder: "Enter serving size",
+                    keyboardType: .decimalPad
+                )
                 .focused($isTextFieldFocused)
+                .onChange(of: isTextFieldFocused) { oldValue, newValue in
+                    foodViewModel.handleFocusChange(from: oldValue,
+                                                    to: newValue)
+                }
+                
                 ServingButtonView(
                     showActionSheet: $foodViewModel.showActionSheet,
                     title: "Serving",
                     description: foodViewModel.servingDescription
                 ) {
+                    isTextFieldFocused = false
                     foodViewModel.showActionSheet.toggle()
                 }
             }
@@ -144,6 +152,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
+                                foodViewModel.shouldUseOriginalAmount = true
                                 foodViewModel.addMealItemFoodView(
                                     in: foodViewModel.mealType,
                                     for: foodViewModel.mainViewModel.date
@@ -177,6 +186,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Save",
                             action: {
+                                foodViewModel.shouldUseOriginalAmount = true
                                 Task {
                                     await foodViewModel.updateMealItemFoodView(
                                         for: foodViewModel.mainViewModel.date)
@@ -208,31 +218,4 @@ struct FoodView: View {
             }
         }
     }
-}
-
-#Preview {
-    NavigationStack {
-        let mainViewModel = MainViewModel()
-
-        FoodView(
-            isDismissed: .constant(true),
-            navigationTitle: "Add to Diary",
-            food: Food(
-                searchFoodId: 794,
-                searchFoodName: "Whole Milk",
-                searchFoodDescription: ""
-            ),
-            searchViewModel: SearchViewModel(
-                mainViewModel: mainViewModel
-            ),
-            mainViewModel: mainViewModel,
-            mealType: .breakfast,
-            amount: "1",
-            measurementDescription: "",
-            showAddButton: false,
-            showSaveRemoveButton: true,
-            showCloseButton: true
-        )
-    }
-    .accentColor(.customGreen)
 }

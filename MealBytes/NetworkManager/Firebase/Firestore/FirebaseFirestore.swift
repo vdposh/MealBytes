@@ -1,5 +1,5 @@
 //
-//  FirestoreFirebase.swift
+//  FirebaseFirestore.swift
 //  MealBytes
 //
 //  Created by Porshe on 21/03/2025.
@@ -10,28 +10,28 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 
-protocol FirestoreFirebaseProtocol {
-    func loadMealItemsFirebase() async throws -> [MealItem]
-    func loadBookmarksFirebase() async throws -> [Food]
-    func loadCustomRdiFirebase() async throws -> CustomRdiData
-    func loadRdiFirebase() async throws -> RdiData
-    func loadMainRdiFirebase() async throws -> String
-    func loadDisplayRdiFirebase() async throws -> Bool
-    func addMealItemFirebase(_ mealItem: MealItem) async throws
-    func addBookmarkFirebase(_ foods: [Food]) async throws
-    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) async throws
-    func saveRdiFirebase(_ rdiData: RdiData) async throws
-    func saveMainRdiFirebase(_ rdi: String) async throws
-    func saveDisplayRdiFirebase(_ shouldDisplayRdi: Bool) async throws
-    func updateMealItemFirebase(_ mealItem: MealItem) async throws
-    func deleteMealItemFirebase(_ mealItem: MealItem) async throws
+protocol FirebaseFirestoreProtocol {
+    func loadMealItemsFirestore() async throws -> [MealItem]
+    func loadBookmarksFirestore() async throws -> [Food]
+    func loadCustomRdiFirestore() async throws -> CustomRdiData
+    func loadRdiFirestore() async throws -> RdiData
+    func loadMainRdiFirestore() async throws -> String
+    func loadDisplayRdiFirestore() async throws -> Bool
+    func addMealItemFirestore(_ mealItem: MealItem) async throws
+    func addBookmarkFirestore(_ foods: [Food]) async throws
+    func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) async throws
+    func saveRdiFirestore(_ rdiData: RdiData) async throws
+    func saveMainRdiFirestore(_ rdi: String) async throws
+    func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws
+    func updateMealItemFirestore(_ mealItem: MealItem) async throws
+    func deleteMealItemFirestore(_ mealItem: MealItem) async throws
 }
 
-final class FirestoreFirebase: FirestoreFirebaseProtocol {
+final class FirebaseFirestore: FirebaseFirestoreProtocol {
     private let firestore: Firestore = Firestore.firestore()
     
     // MARK: - Fetch Data
-    func loadMealItemsFirebase() async throws -> [MealItem] {
+    func loadMealItemsFirestore() async throws -> [MealItem] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -45,7 +45,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Save Data
-    func addMealItemFirebase(_ mealItem: MealItem) throws {
+    func addMealItemFirestore(_ mealItem: MealItem) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -57,7 +57,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Update Data
-    func updateMealItemFirebase(_ mealItem: MealItem) throws {
+    func updateMealItemFirestore(_ mealItem: MealItem) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -69,7 +69,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Delete Data
-    func deleteMealItemFirebase(_ mealItem: MealItem) async throws {
+    func deleteMealItemFirestore(_ mealItem: MealItem) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -81,7 +81,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Load bookmarks
-    func loadBookmarksFirebase() async throws -> [Food] {
+    func loadBookmarksFirestore() async throws -> [Food] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -107,7 +107,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Add bookmarks
-    func addBookmarkFirebase(_ foods: [Food]) async throws {
+    func addBookmarkFirestore(_ foods: [Food]) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -122,7 +122,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Load customRDI Data
-    func loadCustomRdiFirebase() async throws -> CustomRdiData {
+    func loadCustomRdiFirestore() async throws -> CustomRdiData {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -134,7 +134,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Save customRDI Data
-    func saveCustomRdiFirebase(_ customGoalsData: CustomRdiData) throws {
+    func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -146,7 +146,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Load RDI Data
-    func loadRdiFirebase() async throws -> RdiData {
+    func loadRdiFirestore() async throws -> RdiData {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -158,7 +158,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Save RDI Data
-    func saveRdiFirebase(_ rdiData: RdiData) async throws {
+    func saveRdiFirestore(_ rdiData: RdiData) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -170,7 +170,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Load RDI String
-    func loadMainRdiFirebase() async throws -> String {
+    func loadMainRdiFirestore() async throws -> String {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -187,7 +187,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Save RDI String
-    func saveMainRdiFirebase(_ rdi: String) async throws {
+    func saveMainRdiFirestore(_ rdi: String) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -199,7 +199,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Load Display RDI
-    func loadDisplayRdiFirebase() async throws -> Bool {
+    func loadDisplayRdiFirestore() async throws -> Bool {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -216,7 +216,7 @@ final class FirestoreFirebase: FirestoreFirebaseProtocol {
     }
     
     // MARK: - Save Display RDI
-    func saveDisplayRdiFirebase(_ shouldDisplayRdi: Bool) async throws {
+    func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }

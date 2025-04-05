@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var shouldDisplayRdi: Bool = false
     @StateObject private var profileViewModel: ProfileViewModel
     
     init(loginViewModel: LoginViewModel,
@@ -21,29 +20,32 @@ struct ProfileView: View {
     
     var body: some View {
         ZStack {
-            Color(.secondarySystemBackground)
-                .ignoresSafeArea()
-            
             if !profileViewModel.isDataLoaded {
                 LoadingView()
             } else {
-                VStack {
-                    VStack {
+                List {
+                    Section {
                         if let email = profileViewModel.email {
                             VStack {
                                 Text("This account is signed in:")
-                                    .font(.footnote)
+                                    .font(.subheadline)
                                     .foregroundColor(.secondary)
-                                
                                 Text(email)
                                     .font(.headline)
+                                    .lineLimit(1)
                             }
                         } else {
                             Text("Unable to retrieve email.")
-                                .font(.headline)
+                                .font(.title3)
+                                .fontWeight(.semibold)
                                 .foregroundColor(.customRed)
                         }
-                        
+                    }
+                    .padding(.bottom)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color.clear)
+                    
+                    Section {
                         Toggle(
                             "Display RDI",
                             isOn: .init(
@@ -56,33 +58,30 @@ struct ProfileView: View {
                             )
                         )
                         .toggleStyle(SwitchToggleStyle(tint: .customGreen))
-                        .font(.headline)
-                        .padding(.top, 50)
-                        .padding(.horizontal, 35)
-                        
-                        Text("Enable this option to display your Recommended Daily Intake (RDI) in the app.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                        
-                        Divider()
-                            .padding(.horizontal, 30)
+                    } footer: {
+                        Text("Enable this option to display your Recommended Daily Intake (RDI) in the Diary.")
                     }
-                    .padding(.top)
-                    .frame(maxHeight: .infinity, alignment: .top)
                     
-                    VStack {
+                    Section {
+                        Button(action: {
+                            profileViewModel.prepareAlert(for: .changePassword)
+                        }) {
+                            Text("Change Password")
+                        }
+                    } footer: {
+                        Text("Use this option to update your account password for improved security.")
+                            .padding(.bottom)
+                    }
+                    
+                    Section {
                         SignOutButtonView(
-                            title: "Sign Out",
-                            backgroundColor: .customRed
+                            title: "Sign Out"
                         ) {
                             profileViewModel.prepareAlert(for: .signOut)
                         }
-                        
+                    } footer: {
                         HStack(spacing: 4) {
                             Text("Do you want to")
-                                .font(.footnote)
                                 .foregroundColor(.secondary)
                             
                             Button(action: {
@@ -93,22 +92,21 @@ struct ProfileView: View {
                                     .fontWeight(.semibold)
                                     .foregroundColor(.customRed)
                             }
+                            .buttonStyle(.plain)
                             
                             Text("your account?")
                                 .foregroundColor(.secondary)
                         }
-                        .font(.footnote)
                         .padding(.top)
-                        .padding(.bottom, 50)
-                        .navigationBarTitle("Profile", displayMode: .inline)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
             }
         }
+        .navigationBarTitle("Profile", displayMode: .inline)
         .task {
             await profileViewModel.loadProfileData()
         }
-        
         .alert(
             profileViewModel.alertTitle,
             isPresented: $profileViewModel.showAlert,
@@ -116,7 +114,7 @@ struct ProfileView: View {
                 if profileViewModel.alertType == .deleteAccount {
                     SecureField("Enter your password",
                                 text: $profileViewModel.password)
-                        .textContentType(.password)
+                    .textContentType(.password)
                     
                     Button(profileViewModel.destructiveButtonTitle,
                            role: .destructive) {
@@ -133,16 +131,37 @@ struct ProfileView: View {
                         }
                     }
                 }
-                Button("Cancel", role: .cancel) { }
+                if profileViewModel.alertType == .changePassword {
+                    if profileViewModel.alertTitle == "Done" {
+                        Button("OK") {
+                            profileViewModel.showAlert = false
+                        }
+                    } else {
+                        SecureField("Current Password",
+                                    text: $profileViewModel.password)
+                        .textContentType(.password)
+                        
+                        SecureField("New Password",
+                                    text: $profileViewModel.newPassword)
+                        .textContentType(.newPassword)
+                        
+                        Group {
+                            Button("Cancel", role: .cancel) {
+                                profileViewModel.showAlert = false
+                            }
+                            
+                            Button(profileViewModel.destructiveButtonTitle) {
+                                Task {
+                                    await profileViewModel.handleAlertAction()
+                                }
+                            }
+                        }
+                    }
+                }
             },
             message: {
                 Text(profileViewModel.alertMessage)
             }
         )
     }
-}
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
 }

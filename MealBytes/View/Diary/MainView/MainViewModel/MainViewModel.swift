@@ -14,6 +14,7 @@ final class MainViewModel: ObservableObject {
         didSet {
             recalculateNutrients(for: date)
             updateProgress()
+            collapseAllSections()
         }
     }
     @Published var mealItems: [MealType: [MealItem]]
@@ -30,7 +31,7 @@ final class MainViewModel: ObservableObject {
     let calendar = Calendar.current
     let formatter = Formatter()
     
-    let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     lazy var searchViewModel = SearchViewModel(mainViewModel: self)
     private var cancellables = Set<AnyCancellable>()
     
@@ -53,7 +54,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Meal Item
     private func loadMealItemsMainView() async {
-        let mealItems = try? await firebase.loadMealItemsFirebase()
+        let mealItems = try? await firestore.loadMealItemsFirestore()
         await MainActor.run {
             self.mealItems = Dictionary(
                 grouping: mealItems ?? [],
@@ -92,7 +93,7 @@ final class MainViewModel: ObservableObject {
                 mealItems[mealType] = updatedItems
                 recalculateNutrients(for: date)
             }
-            try? await firebase.updateMealItemFirebase(updatedItem)
+            try? await firestore.updateMealItemFirestore(updatedItem)
         }
     }
     
@@ -113,8 +114,8 @@ final class MainViewModel: ObservableObject {
                     }
                 }
                 do {
-                    try await firebase
-                        .deleteMealItemFirebase(itemToDelete)
+                    try await firestore
+                        .deleteMealItemFirestore(itemToDelete)
                 } catch {
                     await MainActor.run {
                         self.errorMessage = error as? AppError ?? .network
@@ -127,7 +128,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load RDI
     private func loadMainRdiMainView() async {
         do {
-            let fetchedRdi = try await firebase.loadMainRdiFirebase()
+            let fetchedRdi = try await firestore.loadMainRdiFirestore()
             await MainActor.run {
                 self.rdi = fetchedRdi
             }
@@ -141,7 +142,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Save RDI
     func saveMainRdiMainView() async {
         do {
-            try await firebase.saveMainRdiFirebase(rdi)
+            try await firestore.saveMainRdiFirestore(rdi)
         } catch {
             await MainActor.run {
                 errorMessage = AppError.network
@@ -152,7 +153,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Display RDI
     private func loadDisplayRdiMainView() async {
         do {
-            let value = try await firebase.loadDisplayRdiFirebase()
+            let value = try await firestore.loadDisplayRdiFirestore()
             await MainActor.run {
                 shouldDisplayRdi = value
             }
@@ -169,7 +170,7 @@ final class MainViewModel: ObservableObject {
             shouldDisplayRdi = newValue
         }
         do {
-            try await firebase.saveDisplayRdiFirebase(newValue)
+            try await firestore.saveDisplayRdiFirestore(newValue)
         } catch {
             await MainActor.run {
                 errorMessage = AppError.decoding
@@ -177,6 +178,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Load Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
@@ -430,6 +432,12 @@ final class MainViewModel: ObservableObject {
         : []
         
         return previousMonthDates + daysInMonth + nextMonthDates
+    }
+    
+    func collapseAllSections() {
+        expandedSections.keys.forEach { key in
+            expandedSections[key] = false
+        }
     }
 }
 

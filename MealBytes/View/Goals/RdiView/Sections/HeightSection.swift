@@ -28,7 +28,7 @@ struct HeightSection: View {
                         Text(unit.rawValue)
                     }
                 }
-                .font(.callout)
+                .pickerStyle(.menu)
             }
         }
     }

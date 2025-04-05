@@ -58,7 +58,6 @@ struct LoginView: View {
                     NavigationLink(destination: RegisterView()) {
                         Text("Sign up")
                             .fontWeight(.semibold)
-                            .foregroundColor(.customGreen)
                     }
                 }
                 
@@ -69,7 +68,6 @@ struct LoginView: View {
                     NavigationLink(destination: ResetView()) {
                         Text("Reset")
                             .fontWeight(.semibold)
-                            .foregroundColor(.customGreen)
                     }
                 }
             }
@@ -79,13 +77,5 @@ struct LoginView: View {
                 loginViewModel.getAlert()
             }
         }
-        .accentColor(.customGreen)
     }
-}
-
-#Preview {
-    NavigationStack {
-        LoginView(loginViewModel: LoginViewModel())
-    }
-    .accentColor(.customGreen)
 }

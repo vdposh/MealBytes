@@ -12,12 +12,14 @@ import FirebaseCore
 final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?
     @Published var amount: String = ""
+    @Published var originalAmount: String = ""
     @Published var errorMessage: AppError?
     @Published var unit: MeasurementUnit = .grams
     @Published var showActionSheet = false
     @Published var isLoading = true
     @Published var isError = false
     @Published var isBookmarkFilled = false
+    @Published var shouldUseOriginalAmount: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -31,7 +33,7 @@ final class FoodViewModel: ObservableObject {
     let originalMealItemId: UUID
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
@@ -112,7 +114,7 @@ final class FoodViewModel: ObservableObject {
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         Task {
-            try? await firebase.addMealItemFirebase(newItem)
+            try? await firestore.addMealItemFirestore(newItem)
         }
     }
     
@@ -139,7 +141,7 @@ final class FoodViewModel: ObservableObject {
                                                  for: mealType,
                                                  on: date)
             try? await mainViewModel
-                .firebase.updateMealItemFirebase(updatedMealItem)
+                .firestore.updateMealItemFirestore(updatedMealItem)
         }
     }
     
@@ -173,6 +175,19 @@ final class FoodViewModel: ObservableObject {
             self.amount = "100"
         case false:
             self.amount = "1"
+        }
+    }
+    
+    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
+        if newValue {
+            originalAmount = amount
+            amount = ""
+        } else {
+            if let newAmount = Double(amount), newAmount > 0 {
+                originalAmount = amount
+            } else {
+                amount = originalAmount
+            }
         }
     }
     
@@ -214,7 +229,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     private func calculateBaseAmountValue(_ amount: Double,
-                                  serving: Serving) -> Double {
+                                          serving: Serving) -> Double {
         if amount.isZero {
             return 0
         }

@@ -24,7 +24,6 @@ struct ServingSecureFieldView: View {
             SecureField(placeholder, text: $text)
                 .padding(.vertical, 5)
                 .lineLimit(1)
-                .font(.callout)
                 .foregroundColor(textColor)
                 .overlay(
                     Rectangle()

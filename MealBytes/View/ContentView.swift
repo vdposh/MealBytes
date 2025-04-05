@@ -26,8 +26,3 @@ struct ContentView: View {
         }
     }
 }
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
-}

@@ -47,17 +47,9 @@ struct ResetView: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 20)
             
-            .alert(isPresented: $resetViewModel.showAlert) {
-                resetViewModel.getAlert()
-            }
+                .alert(isPresented: $resetViewModel.showAlert) {
+                    resetViewModel.getAlert()
+                }
         }
-        .accentColor(.customGreen)
     }
-}
-
-#Preview {
-    NavigationStack {
-        ResetView()
-    }
-    .accentColor(.customGreen)
 }

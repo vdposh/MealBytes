@@ -16,6 +16,7 @@ final class SearchViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var query: String = "" {
         didSet {
+            guard query != oldValue else { return }
             switch query.isEmpty {
             case true:
                 resetSearch()
@@ -24,11 +25,12 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
+    
     private var maxResultsPerPage: Int = 20
-    var currentPage: Int = 0
+    private var currentPage: Int = 0
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let mainViewModel: MainViewModel
     
     private var searchCancellable: AnyCancellable?
@@ -85,8 +87,8 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Delete Meal Item
     func loadBookmarksSearchView() async {
         do {
-            let favoriteFoods = try await firebase
-                .loadBookmarksFirebase()
+            let favoriteFoods = try await firestore
+                .loadBookmarksFirestore()
             
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
             
@@ -130,9 +132,14 @@ final class SearchViewModel: ObservableObject {
             await MainActor.run {
                 self.favoriteFoods = updatedFavorites
                 self.bookmarkedFoods = updatedBookmarkedFoods
+                if query.isEmpty {
+                    self.foods = updatedFavorites
+                } else {
+                    self.foods = self.foods
+                }
             }
             
-            try await firebase.addBookmarkFirebase(updatedFavorites)
+            try await firestore.addBookmarkFirestore(updatedFavorites)
         }
     }
     

@@ -20,7 +20,7 @@ final class RegisterViewModel: ObservableObject {
     @Published var showResendOptions: Bool = false
     
     private var timerSubscription: AnyCancellable?
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     private var remainingSeconds: Int = 60
     
     deinit {
@@ -30,8 +30,8 @@ final class RegisterViewModel: ObservableObject {
     // MARK: - Sign Up
     func signUp() async {
         do {
-            try await firestoreAuth.signUpFirebase(email: email,
-                                                   password: password)
+            try await firebaseAuth.signUpAuth(email: email,
+                                              password: password)
             await handleSignUpResult(success: true)
             
             await MainActor.run {
@@ -49,7 +49,7 @@ final class RegisterViewModel: ObservableObject {
     func resendEmailVerification() async {
         guard isResendEnabled else { return }
         do {
-            try await firestoreAuth.resendVerificationFirebase()
+            try await firebaseAuth.resendVerificationAuth()
             await startResendTimer()
         } catch {
             let authError = handleError(error as NSError)
@@ -75,12 +75,14 @@ final class RegisterViewModel: ObservableObject {
                 
                 self.remainingSeconds -= 1
                 
-                Task { @MainActor in
-                    self.updateTimerText()
-                    
-                    if self.remainingSeconds <= 0 {
-                        self.timerSubscription?.cancel()
-                        self.isResendEnabled = true
+                Task {
+                    await MainActor.run {
+                        self.updateTimerText()
+                        
+                        if self.remainingSeconds <= 0 {
+                            self.timerSubscription?.cancel()
+                            self.isResendEnabled = true
+                        }
                     }
                 }
             }

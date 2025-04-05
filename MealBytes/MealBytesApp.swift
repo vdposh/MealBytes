@@ -25,7 +25,6 @@ struct MealBytesApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .accentColor(.customGreen)
         }
     }
 }

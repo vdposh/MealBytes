@@ -28,7 +28,7 @@ struct WeightSection: View {
                         Text(unit.rawValue)
                     }
                 }
-                .font(.callout)
+                .pickerStyle(.menu)
             }
         }
     }

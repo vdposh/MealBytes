@@ -12,21 +12,12 @@ struct CalorieMetricsSection: View {
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
-        Section {
+        Section(header: Text("Calorie Metrics")) {
             VStack {
-                sectionTitle
                 calorieInputRow
             }
             .padding(.bottom, 5)
         }
-    }
-    
-    private var sectionTitle: some View {
-        Text("Required Calorie Metrics")
-            .font(.subheadline)
-            .fontWeight(.medium)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 5)
     }
     
     private var calorieInputRow: some View {
@@ -43,9 +34,7 @@ struct CalorieMetricsSection: View {
             .padding(.trailing, 5)
             
             Text("kcal")
-                .font(.callout)
                 .foregroundColor(customRdiViewModel.caloriesTextColor)
         }
-        .padding(.top, 5)
     }
 }
