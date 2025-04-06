@@ -16,8 +16,6 @@ final class LoginViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     
-    var setMainViewLoading: (() -> Void)?
-    
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init() {
@@ -47,7 +45,6 @@ final class LoginViewModel: ObservableObject {
                 self.error = nil
                 updateAlertState()
                 isLoggedIn = true
-                setMainViewLoading?()
             }
         } catch {
             await MainActor.run {

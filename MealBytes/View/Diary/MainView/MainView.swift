@@ -12,35 +12,31 @@ struct MainView: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        ZStack {
-            if mainViewModel.isLoading {
-                LoadingView()
-                    .navigationBarTitle("Diary", displayMode: .inline)
-            } else {
-                ZStack(alignment: .top) {
-                    if mainViewModel.isExpandedCalendar {
-                        VStack {
-                            datePickerView
-                        }
-                        .zIndex(2)
-                        Color.primary
-                            .opacity(0.4)
-                            .ignoresSafeArea()
-                            .zIndex(1)
-                            .onTapGesture {
-                                mainViewModel.isExpandedCalendar = false
-                            }
-                    }
-                    
-                    List {
-                        dateSection
-                        caloriesSection
-                        mealSections
-                        detailedInformationSection
-                    }
-                    .listSectionSpacing(15)
+        ZStack(alignment: .top) {
+            if mainViewModel.isExpandedCalendar {
+                VStack {
+                    datePickerView
                 }
+                .zIndex(2)
+                
+                Button(action: {
+                    mainViewModel.isExpandedCalendar = false
+                }) {
+                    Color.primary
+                        .opacity(0.4)
+                        .ignoresSafeArea()
+                }
+                .buttonStyle(InvisibleButtonStyle())
+                .zIndex(1)
             }
+            
+            List {
+                dateSection
+                caloriesSection
+                mealSections
+                detailedInformationSection
+            }
+            .listSectionSpacing(15)
         }
         .task {
             await mainViewModel.loadMainData()
@@ -128,4 +124,8 @@ struct MainView: View {
             nutrients: mainViewModel.filteredNutrients
         )
     }
+}
+
+#Preview {
+    ContentView()
 }

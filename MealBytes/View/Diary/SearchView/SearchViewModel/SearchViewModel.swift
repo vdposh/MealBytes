@@ -96,6 +96,12 @@ final class SearchViewModel: ObservableObject {
                 self.favoriteFoods = favoriteFoods
                 self.foods = favoriteFoods
                 self.bookmarkedFoods = bookmarked
+                
+                if favoriteFoods.isEmpty {
+                    self.appError = .noBookmarks
+                } else {
+                    self.appError = nil
+                }
             }
         } catch {
             await MainActor.run {

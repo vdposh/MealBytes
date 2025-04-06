@@ -196,7 +196,8 @@ final class FoodViewModel: ObservableObject {
             originalAmount = amount
             amount = ""
         } else {
-            if let newAmount = Double(amount), newAmount > 0 {
+            if let newAmount = Double(amount.sanitizedForDouble),
+                newAmount > 0 {
                 originalAmount = amount
             } else {
                 amount = originalAmount

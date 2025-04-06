@@ -13,18 +13,21 @@ struct ContentView: View {
     @StateObject private var mainViewModel = MainViewModel()
     
     var body: some View {
-        Group {
+        ZStack {
             if loginViewModel.isLoggedIn {
                 TabBarView(loginViewModel: loginViewModel,
                            mainViewModel: mainViewModel)
             } else {
                 LoginView(loginViewModel: loginViewModel)
-                    .task {
-                        loginViewModel.setMainViewLoading = {
-                            mainViewModel.isLoading = true
-                        }
-                    }
+            }
+            
+            if loginViewModel.isLoggedIn && mainViewModel.isLoading {
+                LoginLoadingView()
             }
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
