@@ -20,12 +20,12 @@ final class RdiViewModel: ObservableObject {
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isDataLoaded = false
-    var isError: Bool = false
+    @Published var isDataLoaded: Bool = false
+    @Published var isError: Bool = false
     
     private let formatter = Formatter()
     
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
@@ -40,7 +40,7 @@ final class RdiViewModel: ObservableObject {
     // MARK: - Load RDI Data
     func loadRdiView() async {
         do {
-            let rdiData = try await firebase.loadRdiFirebase()
+            let rdiData = try await firestore.loadRdiFirestore()
             await MainActor.run {
                 self.calculatedRdi = rdiData.calculatedRdi
                 self.age = rdiData.age
@@ -80,7 +80,7 @@ final class RdiViewModel: ObservableObject {
         )
         
         do {
-            try await firebase.saveRdiFirebase(rdiData)
+            try await firestore.saveRdiFirestore(rdiData)
             await MainActor.run {
                 mainViewModel.rdi = calculatedRdi
             }
@@ -234,6 +234,15 @@ enum Gender: String, CaseIterable {
     case notSelected = "Not selected"
     case male = "Male"
     case female = "Female"
+
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .secondary
+        case .male, .female:
+            return .customGreen
+        }
+    }
 }
 
 enum ActivityLevel: String, CaseIterable {
@@ -243,6 +252,15 @@ enum ActivityLevel: String, CaseIterable {
     case moderatelyActive = "Moderately Active"
     case veryActive = "Very Active"
     case extraActive = "Extra Active"
+
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .secondary
+        default:
+            return .customGreen
+        }
+    }
 }
 
 enum WeightUnit: String, CaseIterable {

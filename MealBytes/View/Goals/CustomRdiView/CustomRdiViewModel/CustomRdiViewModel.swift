@@ -28,12 +28,12 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var successAlert: Bool = false
     @Published var isLoading: Bool = true
-    var isError: Bool = false
+    @Published var isSaved: Bool = false
     
     private var isInitialized = false
     
     private let formatter = Formatter()
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
     
@@ -53,14 +53,15 @@ final class CustomRdiViewModel: ObservableObject {
     // MARK: - Load CustomGoals Data
     func loadCustomRdiView() async {
         do {
-            let customGoalsData = try await firebase
-                .loadCustomRdiFirebase()
+            let customGoalsData = try await firestore
+                .loadCustomRdiFirestore()
             await MainActor.run {
                 calories = customGoalsData.calories
                 fat = customGoalsData.fat
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
                 isUsingPercentage = customGoalsData.isUsingPercentage
+                isSaved = !calories.isEmpty
             }
         } catch {
             await MainActor.run {
@@ -79,9 +80,10 @@ final class CustomRdiViewModel: ObservableObject {
             isUsingPercentage: isUsingPercentage
         )
         do {
-            try await firebase.saveCustomRdiFirebase(customGoalsData)
+            try await firestore.saveCustomRdiFirestore(customGoalsData)
             await MainActor.run {
                 mainViewModel.rdi = calories
+                isSaved = true
             }
             await mainViewModel.saveMainRdiMainView()
         } catch {
@@ -107,7 +109,6 @@ final class CustomRdiViewModel: ObservableObject {
         alertTitle = "Invalid value"
         alertMessage = message
         showAlert = true
-        isError = true
     }
     
     // MARK: - Calculations

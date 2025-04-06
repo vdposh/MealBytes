@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State private var currentPage: Int = 0
     @Binding private var isPresented: Bool
+    
     private let mealType: MealType
     
     @ObservedObject private var searchViewModel: SearchViewModel
@@ -27,7 +27,7 @@ struct SearchView: View {
             VStack {
                 if searchViewModel.isLoading {
                     LoadingView()
-                } else if let error = searchViewModel.errorMessage {
+                } else if let error = searchViewModel.appError {
                     contentUnavailableView(for: error) {
                         searchViewModel.queueSearch(searchViewModel.query)
                     }
@@ -79,8 +79,7 @@ struct SearchView: View {
                     .background(
                         Group {
                             if searchViewModel.foods.isEmpty {
-                                contentUnavailableView(for: .noBookmarks,
-                                                       query: "") { }
+                                contentUnavailableView(for: .noBookmarks) { }
                             } else {
                                 EmptyView()
                             }
@@ -102,7 +101,6 @@ struct SearchView: View {
             )
             
         }
-        .accentColor(.customGreen)
         .scrollDismissesKeyboard(.immediately)
     }
     
@@ -131,17 +129,4 @@ struct SearchView: View {
             EmptyView()
         }
     }
-}
-
-#Preview {
-    NavigationStack {
-        SearchView(
-            isPresented: .constant(true),
-            searchViewModel: SearchViewModel(
-                mainViewModel: MainViewModel()
-            ),
-            mealType: .breakfast
-        )
-    }
-    .accentColor(.customGreen)
 }

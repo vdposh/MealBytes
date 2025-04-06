@@ -11,28 +11,28 @@ import FirebaseAuth
 final class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var error: AuthError?
     @Published var isAuthenticated: Bool = false
-    @Published var showAlert = false
+    @Published var showAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     
-    var setMainViewLoading: (() -> Void)?
+    private var error: AuthError?
     
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init() {
-        if firestoreAuth.isCurrentUserEmailVerified() {
+        if firebaseAuth.checkCurrentUserAuth() {
             isLoggedIn = true
+        }
+        Task {
+            await loadLoginData()
         }
     }
     
     // MARK: - Sign In
     func signIn() async {
         do {
-            let user = try await firestoreAuth.signInFirebase(
-                email: email,
-                password: password
-            )
+            let user = try await firebaseAuth.signInAuth(email: email,
+                                                         password: password)
             
             if !user.isEmailVerified {
                 await MainActor.run {
@@ -47,12 +47,30 @@ final class LoginViewModel: ObservableObject {
                 self.error = nil
                 updateAlertState()
                 isLoggedIn = true
-                setMainViewLoading?()
             }
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
                 updateAlertState()
+            }
+        }
+    }
+    
+    // MARK: - Load Data
+    func loadLoginData() async {
+        async let refreshTokenTask: String? = firebaseAuth.refreshTokenAuth()
+        async let checkAuthTask: Bool = firebaseAuth.checkCurrentUserAuth()
+        
+        do {
+            let (_, isAuthenticated) = try await (refreshTokenTask,
+                                                  checkAuthTask)
+            
+            await MainActor.run {
+                self.isLoggedIn = isAuthenticated
+            }
+        } catch {
+            await MainActor.run {
+                self.isLoggedIn = false
             }
         }
     }

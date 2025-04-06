@@ -11,11 +11,12 @@ struct TabBarView: View {
     @State private var selectedTab: Int = 0
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    @StateObject private var goalsViewModel = GoalsViewModel()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack {
-                GoalsView()
+                GoalsView(goalsViewModel: goalsViewModel)
             }
             .tabItem {
                 Image(systemName: "chart.bar")
@@ -42,13 +43,15 @@ struct TabBarView: View {
             }
             .tag(2)
         }
+        .onChange(of: selectedTab) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if mainViewModel.isExpandedCalendar {
+                    mainViewModel.isExpandedCalendar = false
+                }
+            }
+        }
         .task {
             selectedTab = 0
         }
     }
-}
-
-#Preview {
-    ContentView()
-        .accentColor(.customGreen)
 }

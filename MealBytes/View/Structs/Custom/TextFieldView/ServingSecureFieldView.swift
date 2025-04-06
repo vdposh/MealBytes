@@ -1,17 +1,16 @@
 //
-//  ServingTextFieldView.swift
+//  ServingSecureFieldView.swift
 //  MealBytes
 //
-//  Created by Porshe on 08/03/2025.
+//  Created by Porshe on 30/03/2025.
 //
 
 import SwiftUI
 
-struct ServingTextFieldView: View {
+struct ServingSecureFieldView: View {
     @Binding var text: String
     let title: String
     var placeholder: String = "Enter value"
-    var keyboardType: UIKeyboardType = .numberPad
     var titleColor: Color = .primary
     var textColor: Color = .primary
     
@@ -22,11 +21,9 @@ struct ServingTextFieldView: View {
                 .foregroundColor(titleColor) + Text("*")
                 .foregroundColor(.customRed)
             
-            TextField(placeholder, text: $text)
-                .keyboardType(keyboardType)
+            SecureField(placeholder, text: $text)
                 .padding(.vertical, 5)
                 .lineLimit(1)
-                .font(.callout)
                 .foregroundColor(textColor)
                 .overlay(
                     Rectangle()

@@ -11,18 +11,18 @@ import FirebaseAuth
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var password: String = ""
+    @Published var newPassword: String = ""
     @Published var alertTitle: String = ""
     @Published var alertMessage: String = ""
     @Published var destructiveButtonTitle: String = ""
     @Published var alertType: AlertType?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
-    @Published var isDataLoaded: Bool = false
     @Published var isToggleUpdating: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModel) {
@@ -47,7 +47,7 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Sign Out
     private func signOut() {
         do {
-            try firestoreAuth.signOutFirebase()
+            try firebaseAuth.signOutAuth()
             loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
@@ -57,25 +57,41 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Delete Account
     private func deleteAccount(email: String, password: String) async {
         do {
-            try await firestoreAuth.reauthenticateFirebase(email: email,
-                                                           password: password)
-            try await firestoreAuth.deleteAccountFirebase()
+            try await firebaseAuth.reauthenticateAuth(email: email,
+                                                      password: password)
+            try await firebaseAuth.deleteAccountAuth()
             Task {
                 await MainActor.run {
                     loginViewModel.isLoggedIn = false
                 }
             }
         } catch {
-            Task {
-                await MainActor.run {
-                    appError = .decoding
-                }
+            await MainActor.run {
+                appError = .decoding
             }
         }
     }
     
-    // MARK: - Fetch Current User Email
-    private func fetchCurrentUserEmail() async {
+    // MARK: - Change Password
+    func changePassword(currentPassword: String, newPassword: String) async {
+        guard !currentPassword.isEmpty, !newPassword.isEmpty else {
+            return
+        }
+        
+        do {
+            try await firebaseAuth.changePasswordAuth(
+                currentPassword: currentPassword,
+                newPassword: newPassword
+            )
+        } catch {
+            await MainActor.run {
+                appError = .decoding
+            }
+        }
+    }
+    
+    // MARK: - Load Data
+    func loadProfileData() async {
         guard let user = Auth.auth().currentUser else {
             Task {
                 await MainActor.run {
@@ -91,16 +107,6 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Data
-    func loadProfileData() async {
-        await fetchCurrentUserEmail()
-        Task {
-            await MainActor.run {
-                isDataLoaded = true
-            }
-        }
-    }
-    
     // MARK: - Alert
     func prepareAlert(for type: AlertType) {
         Task {
@@ -110,9 +116,10 @@ final class ProfileViewModel: ObservableObject {
                 
                 switch type {
                 case .signOut:
-                    alertTitle = "Sign out"
+                    alertTitle = "Sign Out"
                     alertMessage = "You will need to sign in again to access your account."
                     destructiveButtonTitle = "Sign Out"
+                    
                 case .deleteAccount:
                     alertTitle = "Delete Account"
                     alertMessage = """
@@ -120,6 +127,11 @@ final class ProfileViewModel: ObservableObject {
                     Your data and account details will be permanently erased. This action cannot be undone.
                     """
                     destructiveButtonTitle = "Delete"
+                    
+                case .changePassword:
+                    alertTitle = "Change Password"
+                    alertMessage = "Please provide your current password and a new password to update your account credentials."
+                    destructiveButtonTitle = "Update Password"
                 }
             }
         }
@@ -131,6 +143,7 @@ final class ProfileViewModel: ObservableObject {
         switch alertType {
         case .signOut:
             signOut()
+            
         case .deleteAccount:
             guard let email = email, !email.isEmpty else {
                 alertTitle = "Delete Account"
@@ -139,22 +152,36 @@ final class ProfileViewModel: ObservableObject {
                 return
             }
             
-            guard !password.isEmpty else {
-                alertTitle = "Delete Account"
-                alertMessage = "Password is missing. To delete your account, please enter the password associated with your account."
-                showAlert = true
-                return
-            }
-            
             do {
-                try await firestoreAuth.reauthenticateFirebase(
+                try await firebaseAuth.reauthenticateAuth(
                     email: email,
                     password: password
                 )
                 await deleteAccount(email: email, password: password)
             } catch {
                 alertTitle = "Delete Account"
-                alertMessage = "The password you entered is incorrect. To delete your account, please provide the correct password."
+                alertMessage = """
+                The password you entered is incorrect.
+                To delete your account, please provide the correct password.
+                """
+                showAlert = true
+            }
+            
+        case .changePassword:
+            do {
+                try await firebaseAuth.changePasswordAuth(
+                    currentPassword: password,
+                    newPassword: newPassword
+                )
+                alertTitle = "Done"
+                alertMessage = "Your password has been successfully updated."
+                showAlert = true
+            } catch {
+                alertTitle = "Change Password"
+                alertMessage = """
+                Failed to update the password.
+                Please check your current password and try again.
+                """
                 showAlert = true
             }
         }
@@ -163,5 +190,6 @@ final class ProfileViewModel: ObservableObject {
     enum AlertType {
         case signOut
         case deleteAccount
+        case changePassword
     }
 }

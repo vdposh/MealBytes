@@ -74,10 +74,3 @@ struct RdiView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        RdiView()
-    }
-    .accentColor(.customGreen)
-}

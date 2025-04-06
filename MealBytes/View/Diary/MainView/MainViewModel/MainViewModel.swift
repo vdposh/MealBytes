@@ -14,12 +14,13 @@ final class MainViewModel: ObservableObject {
         didSet {
             recalculateNutrients(for: date)
             updateProgress()
+            collapseAllSections()
         }
     }
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
-    @Published var errorMessage: AppError?
+    @Published var appError: AppError?
     @Published var rdiProgress: Double = 0.0
     @Published var rdi: String = ""
     @Published var isExpandedCalendar: Bool = false
@@ -30,7 +31,7 @@ final class MainViewModel: ObservableObject {
     let calendar = Calendar.current
     let formatter = Formatter()
     
-    let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     lazy var searchViewModel = SearchViewModel(mainViewModel: self)
     private var cancellables = Set<AnyCancellable>()
     
@@ -53,13 +54,19 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Meal Item
     private func loadMealItemsMainView() async {
-        let mealItems = try? await firebase.loadMealItemsFirebase()
-        await MainActor.run {
-            self.mealItems = Dictionary(
-                grouping: mealItems ?? [],
-                by: { $0.mealType }
-            )
-            self.recalculateNutrients(for: self.date)
+        do {
+            let mealItems = try await firestore.loadMealItemsFirestore()
+            await MainActor.run {
+                self.mealItems = Dictionary(
+                    grouping: mealItems,
+                    by: { $0.mealType }
+                )
+                self.recalculateNutrients(for: self.date)
+            }
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
         }
     }
     
@@ -88,11 +95,17 @@ final class MainViewModel: ObservableObject {
         let updatedItems = items
         
         Task {
-            await MainActor.run {
-                mealItems[mealType] = updatedItems
-                recalculateNutrients(for: date)
+            do {
+                try await firestore.updateMealItemFirestore(updatedItem)
+                await MainActor.run {
+                    mealItems[mealType] = updatedItems
+                    recalculateNutrients(for: date)
+                }
+            } catch {
+                await MainActor.run {
+                    self.appError = .network
+                }
             }
-            try? await firebase.updateMealItemFirebase(updatedItem)
         }
     }
     
@@ -108,16 +121,17 @@ final class MainViewModel: ObservableObject {
                 await MainActor.run {
                     mealItems[mealType] = updatedItems
                     recalculateNutrients(for: date)
-                    if updatedItems.isEmpty {
+                    
+                    if filteredMealItems(for: mealType, on: date).isEmpty {
                         expandedSections[mealType] = false
                     }
                 }
                 do {
-                    try await firebase
-                        .deleteMealItemFirebase(itemToDelete)
+                    try await firestore
+                        .deleteMealItemFirestore(itemToDelete)
                 } catch {
                     await MainActor.run {
-                        self.errorMessage = error as? AppError ?? .network
+                        self.appError = .network
                     }
                 }
             }
@@ -127,13 +141,13 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load RDI
     private func loadMainRdiMainView() async {
         do {
-            let fetchedRdi = try await firebase.loadMainRdiFirebase()
+            let fetchedRdi = try await firestore.loadMainRdiFirestore()
             await MainActor.run {
                 self.rdi = fetchedRdi
             }
         } catch {
             await MainActor.run {
-                self.errorMessage = AppError.network
+                self.appError = .network
             }
         }
     }
@@ -141,10 +155,10 @@ final class MainViewModel: ObservableObject {
     // MARK: - Save RDI
     func saveMainRdiMainView() async {
         do {
-            try await firebase.saveMainRdiFirebase(rdi)
+            try await firestore.saveMainRdiFirestore(rdi)
         } catch {
             await MainActor.run {
-                errorMessage = AppError.network
+                appError = .network
             }
         }
     }
@@ -152,13 +166,13 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Display RDI
     private func loadDisplayRdiMainView() async {
         do {
-            let value = try await firebase.loadDisplayRdiFirebase()
+            let value = try await firestore.loadDisplayRdiFirestore()
             await MainActor.run {
                 shouldDisplayRdi = value
             }
         } catch {
             await MainActor.run {
-                errorMessage = AppError.decoding
+                appError = .decoding
             }
         }
     }
@@ -169,14 +183,15 @@ final class MainViewModel: ObservableObject {
             shouldDisplayRdi = newValue
         }
         do {
-            try await firebase.saveDisplayRdiFirebase(newValue)
+            try await firestore.saveDisplayRdiFirestore(newValue)
         } catch {
             await MainActor.run {
-                errorMessage = AppError.decoding
+                appError = .decoding
             }
         }
     }
     
+    // MARK: - Load Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
@@ -430,6 +445,13 @@ final class MainViewModel: ObservableObject {
         : []
         
         return previousMonthDates + daysInMonth + nextMonthDates
+    }
+    
+    //MARK: - Close all sections
+    func collapseAllSections() {
+        expandedSections.keys.forEach { key in
+            expandedSections[key] = false
+        }
     }
 }
 

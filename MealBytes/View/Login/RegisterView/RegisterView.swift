@@ -93,13 +93,5 @@ struct RegisterView: View {
                     registerViewModel.getAlert()
                 }
         }
-        .accentColor(.customGreen)
     }
-}
-
-#Preview {
-    NavigationStack {
-        RegisterView()
-    }
-    .accentColor(.customGreen)
 }

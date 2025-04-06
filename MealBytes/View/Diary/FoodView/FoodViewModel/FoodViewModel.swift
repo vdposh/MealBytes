@@ -12,12 +12,14 @@ import FirebaseCore
 final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?
     @Published var amount: String = ""
-    @Published var errorMessage: AppError?
+    @Published var originalAmount: String = ""
+    @Published var appError: AppError?
     @Published var unit: MeasurementUnit = .grams
-    @Published var showActionSheet = false
-    @Published var isLoading = true
-    @Published var isError = false
-    @Published var isBookmarkFilled = false
+    @Published var showActionSheet: Bool = false
+    @Published var isLoading: Bool = true
+    @Published var isError: Bool = false
+    @Published var isBookmarkFilled: Bool = false
+    @Published var shouldUseOriginalAmount: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -31,7 +33,7 @@ final class FoodViewModel: ObservableObject {
     let originalMealItemId: UUID
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
-    private let firebase: FirestoreFirebaseProtocol = FirestoreFirebase()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
@@ -84,9 +86,9 @@ final class FoodViewModel: ObservableObject {
         } catch {
             switch error {
             case let appError as AppError:
-                self.errorMessage = appError
+                self.appError = appError
             default:
-                self.errorMessage = .network
+                self.appError = .network
             }
             isError = true
         }
@@ -112,7 +114,13 @@ final class FoodViewModel: ObservableObject {
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         Task {
-            try? await firebase.addMealItemFirebase(newItem)
+            do {
+                try await firestore.addMealItemFirestore(newItem)
+            } catch {
+                await MainActor.run {
+                    self.appError = .network
+                }
+            }
         }
     }
     
@@ -135,11 +143,18 @@ final class FoodViewModel: ObservableObject {
         )
         
         Task {
-            mainViewModel.updateMealItemMainView(updatedMealItem,
-                                                 for: mealType,
-                                                 on: date)
-            try? await mainViewModel
-                .firebase.updateMealItemFirebase(updatedMealItem)
+            do {
+                mainViewModel.updateMealItemMainView(
+                    updatedMealItem,
+                    for: mealType,
+                    on: date
+                )
+                try await firestore.updateMealItemFirestore(updatedMealItem)
+            } catch {
+                await MainActor.run {
+                    self.appError = .network
+                }
+            }
         }
     }
     
@@ -173,6 +188,20 @@ final class FoodViewModel: ObservableObject {
             self.amount = "100"
         case false:
             self.amount = "1"
+        }
+    }
+    
+    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
+        if newValue {
+            originalAmount = amount
+            amount = ""
+        } else {
+            if let newAmount = Double(amount.sanitizedForDouble),
+                newAmount > 0 {
+                originalAmount = amount
+            } else {
+                amount = originalAmount
+            }
         }
     }
     
@@ -214,7 +243,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     private func calculateBaseAmountValue(_ amount: Double,
-                                  serving: Serving) -> Double {
+                                          serving: Serving) -> Double {
         if amount.isZero {
             return 0
         }

@@ -10,16 +10,17 @@ import FirebaseAuth
 
 final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
-    @Published var error: AuthError?
     @Published var success: Bool = false
-    @Published var showAlert = false
+    @Published var showAlert: Bool = false
     
-    private let firestoreAuth: FirestoreAuthProtocol = FirestoreAuth()
+    private var error: AuthError?
+    
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     // MARK: - Reset Password
     func resetPassword() async {
         do {
-            try await firestoreAuth.resetPasswordFirebase(email: email)
+            try await firebaseAuth.resetPasswordAuth(email: email)
             await handleResult(success: true, error: nil)
         } catch {
             await handleResult(
@@ -67,7 +68,7 @@ final class ResetViewModel: ObservableObject {
     func titleColor(for text: String) -> Color {
         return text.isEmpty ? .customRed : .primary
     }
-   
+    
     // MARK: - Error
     private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
