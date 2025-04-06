@@ -10,7 +10,8 @@ import FirebaseAuth
 
 protocol FirebaseAuthProtocol {
     func signInAuth(email: String, password: String) async throws -> User
-    func isCurrentUserEmailVerifiedAuth() -> Bool
+    func refreshTokenAuth() async throws -> String
+    func checkCurrentUserAuth() -> Bool
     func signUpAuth(email: String, password: String) async throws
     func reauthenticateAuth(email: String, password: String) async throws
     func resetPasswordAuth(email: String) async throws
@@ -72,14 +73,6 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         try await user.reauthenticate(with: credential)
     }
     
-    // MARK: - Current User
-    func isCurrentUserEmailVerifiedAuth() -> Bool {
-        guard let user = Auth.auth().currentUser else {
-            return false
-        }
-        return user.isEmailVerified
-    }
-    
     // MARK: - Change Password
     func changePasswordAuth(currentPassword: String,
                             newPassword: String) async throws {
@@ -91,5 +84,31 @@ final class FirebaseAuth: FirebaseAuthProtocol {
                                                       password: currentPassword)
         try await user.reauthenticate(with: credential)
         try await user.updatePassword(to: newPassword)
+    }
+    
+    // MARK: - Current User
+    func checkCurrentUserAuth() -> Bool {
+        guard let user = Auth.auth().currentUser else {
+            return false
+        }
+        return user.isEmailVerified
+    }
+    
+    func refreshTokenAuth() async throws -> String {
+        guard let user = Auth.auth().currentUser else {
+            throw AuthError.userNotFound
+        }
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            user.getIDTokenForcingRefresh(true) { token, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let token = token {
+                    continuation.resume(returning: token)
+                } else {
+                    continuation.resume(throwing: AuthError.unknownError)
+                }
+            }
+        }
     }
 }
