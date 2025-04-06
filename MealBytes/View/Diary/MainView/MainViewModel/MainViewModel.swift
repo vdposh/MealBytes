@@ -121,7 +121,8 @@ final class MainViewModel: ObservableObject {
                 await MainActor.run {
                     mealItems[mealType] = updatedItems
                     recalculateNutrients(for: date)
-                    if updatedItems.isEmpty {
+                    
+                    if filteredMealItems(for: mealType, on: date).isEmpty {
                         expandedSections[mealType] = false
                     }
                 }

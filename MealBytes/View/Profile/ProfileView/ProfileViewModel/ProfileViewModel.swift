@@ -67,10 +67,8 @@ final class ProfileViewModel: ObservableObject {
                 }
             }
         } catch {
-            Task {
-                await MainActor.run {
-                    appError = .decoding
-                }
+            await MainActor.run {
+                appError = .decoding
             }
         }
     }
@@ -87,10 +85,8 @@ final class ProfileViewModel: ObservableObject {
                 newPassword: newPassword
             )
         } catch {
-            Task {
-                await MainActor.run {
-                    appError = .decoding
-                }
+            await MainActor.run {
+                appError = .decoding
             }
         }
     }

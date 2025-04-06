@@ -189,16 +189,12 @@ final class RdiViewModel: ObservableObject {
         return .primary
     }
     
-    func accentColor(for selection: Any) -> Color {
-        if let gender = selection as? Gender,
-           gender == .notSelected {
-            return .secondary
-        }
-        if let activityLevel = selection as? ActivityLevel,
-           activityLevel == .notSelected {
-            return .secondary
-        }
-        return .customGreen
+    func accentColor(for gender: Gender) -> Color {
+        return gender == .notSelected ? .secondary : .customGreen
+    }
+
+    func accentColor(for activityLevel: ActivityLevel) -> Color {
+        return activityLevel == .notSelected ? .secondary : .customGreen
     }
     
     // MARK: - Save Goals
