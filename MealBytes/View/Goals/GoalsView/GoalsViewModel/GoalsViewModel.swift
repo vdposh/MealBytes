@@ -10,17 +10,11 @@ import SwiftUI
 final class GoalsViewModel: ObservableObject {
     @Published var isDataLoaded: Bool = false
     
-    private let rdiViewModel: RdiViewModel = RdiViewModel()
-    private let customRdiViewModel: CustomRdiViewModel = CustomRdiViewModel()
-    
-    init() {
-        Task {
-            await loadProfileData()
-        }
-    }
+    private let rdiViewModel = RdiViewModel()
+    private let customRdiViewModel = CustomRdiViewModel()
     
     // MARK: - Load Data
-    func loadProfileData() async {
+    func loadGoalsData() async {
         async let rdiTask: () = rdiViewModel.loadRdiView()
         async let customRdiTask: () = customRdiViewModel.loadCustomRdiView()
         

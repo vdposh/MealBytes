@@ -13,16 +13,18 @@ struct ContentView: View {
     @StateObject private var mainViewModel = MainViewModel()
     
     var body: some View {
-        if loginViewModel.isLoggedIn {
-            TabBarView(loginViewModel: loginViewModel,
-                       mainViewModel: mainViewModel)
-        } else {
-            LoginView(loginViewModel: loginViewModel)
-                .task {
-                    loginViewModel.setMainViewLoading = {
-                        mainViewModel.isLoading = true
+        Group {
+            if loginViewModel.isLoggedIn {
+                TabBarView(loginViewModel: loginViewModel,
+                           mainViewModel: mainViewModel)
+            } else {
+                LoginView(loginViewModel: loginViewModel)
+                    .task {
+                        loginViewModel.setMainViewLoading = {
+                            mainViewModel.isLoading = true
+                        }
                     }
-                }
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
-    @Published var errorMessage: AppError?
+    @Published var appError: AppError?
     @Published var rdiProgress: Double = 0.0
     @Published var rdi: String = ""
     @Published var isExpandedCalendar: Bool = false
@@ -31,7 +31,7 @@ final class MainViewModel: ObservableObject {
     let calendar = Calendar.current
     let formatter = Formatter()
     
-    let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     lazy var searchViewModel = SearchViewModel(mainViewModel: self)
     private var cancellables = Set<AnyCancellable>()
     
@@ -54,13 +54,19 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Meal Item
     private func loadMealItemsMainView() async {
-        let mealItems = try? await firestore.loadMealItemsFirestore()
-        await MainActor.run {
-            self.mealItems = Dictionary(
-                grouping: mealItems ?? [],
-                by: { $0.mealType }
-            )
-            self.recalculateNutrients(for: self.date)
+        do {
+            let mealItems = try await firestore.loadMealItemsFirestore()
+            await MainActor.run {
+                self.mealItems = Dictionary(
+                    grouping: mealItems,
+                    by: { $0.mealType }
+                )
+                self.recalculateNutrients(for: self.date)
+            }
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
         }
     }
     
@@ -89,11 +95,17 @@ final class MainViewModel: ObservableObject {
         let updatedItems = items
         
         Task {
-            await MainActor.run {
-                mealItems[mealType] = updatedItems
-                recalculateNutrients(for: date)
+            do {
+                try await firestore.updateMealItemFirestore(updatedItem)
+                await MainActor.run {
+                    mealItems[mealType] = updatedItems
+                    recalculateNutrients(for: date)
+                }
+            } catch {
+                await MainActor.run {
+                    self.appError = .network
+                }
             }
-            try? await firestore.updateMealItemFirestore(updatedItem)
         }
     }
     
@@ -118,7 +130,7 @@ final class MainViewModel: ObservableObject {
                         .deleteMealItemFirestore(itemToDelete)
                 } catch {
                     await MainActor.run {
-                        self.errorMessage = error as? AppError ?? .network
+                        self.appError = .network
                     }
                 }
             }
@@ -134,7 +146,7 @@ final class MainViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.errorMessage = AppError.network
+                self.appError = .network
             }
         }
     }
@@ -145,7 +157,7 @@ final class MainViewModel: ObservableObject {
             try await firestore.saveMainRdiFirestore(rdi)
         } catch {
             await MainActor.run {
-                errorMessage = AppError.network
+                appError = .network
             }
         }
     }
@@ -159,7 +171,7 @@ final class MainViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                errorMessage = AppError.decoding
+                appError = .decoding
             }
         }
     }
@@ -173,7 +185,7 @@ final class MainViewModel: ObservableObject {
             try await firestore.saveDisplayRdiFirestore(newValue)
         } catch {
             await MainActor.run {
-                errorMessage = AppError.decoding
+                appError = .decoding
             }
         }
     }
@@ -434,6 +446,7 @@ final class MainViewModel: ObservableObject {
         return previousMonthDates + daysInMonth + nextMonthDates
     }
     
+    //MARK: - Close all sections
     func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false

@@ -13,7 +13,7 @@ final class LoginViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var error: AuthError?
     @Published var isAuthenticated: Bool = false
-    @Published var showAlert = false
+    @Published var showAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     
     var setMainViewLoading: (() -> Void)?

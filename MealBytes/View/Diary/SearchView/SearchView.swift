@@ -27,7 +27,7 @@ struct SearchView: View {
             VStack {
                 if searchViewModel.isLoading {
                     LoadingView()
-                } else if let error = searchViewModel.errorMessage {
+                } else if let error = searchViewModel.appError {
                     contentUnavailableView(for: error) {
                         searchViewModel.queueSearch(searchViewModel.query)
                     }

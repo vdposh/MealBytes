@@ -12,8 +12,8 @@ final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
-    @Published var errorMessage: AppError?
-    @Published var isLoading = false
+    @Published var appError: AppError?
+    @Published var isLoading: Bool = false
     @Published var query: String = "" {
         didSet {
             guard query != oldValue else { return }
@@ -54,7 +54,7 @@ final class SearchViewModel: ObservableObject {
                 
                 if query.isEmpty {
                     self.foods = self.favoriteFoods
-                    self.errorMessage = nil
+                    self.appError = nil
                     return
                 }
                 
@@ -66,16 +66,16 @@ final class SearchViewModel: ObservableObject {
                                         page: self.currentPage)
                         await MainActor.run {
                             self.foods = foods
-                            self.errorMessage = nil
+                            self.appError = nil
                             self.isLoading = false
                         }
                     } catch {
                         await MainActor.run {
                             switch error {
                             case let appError as AppError:
-                                self.errorMessage = appError
+                                self.appError = appError
                             default:
-                                self.errorMessage = .network
+                                self.appError = .network
                             }
                             self.isLoading = false
                         }
@@ -99,7 +99,7 @@ final class SearchViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.errorMessage = error as? AppError ?? .network
+                self.appError = .network
             }
         }
     }
@@ -179,7 +179,7 @@ final class SearchViewModel: ObservableObject {
     private func resetSearch() {
         currentPage = 0
         foods = favoriteFoods
-        errorMessage = nil
+        appError = nil
         isLoading = false
     }
 }

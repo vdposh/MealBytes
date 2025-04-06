@@ -12,7 +12,7 @@ final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var error: AuthError?
     @Published var success: Bool = false
-    @Published var showAlert = false
+    @Published var showAlert: Bool = false
     
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     

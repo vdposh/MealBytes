@@ -13,12 +13,12 @@ final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?
     @Published var amount: String = ""
     @Published var originalAmount: String = ""
-    @Published var errorMessage: AppError?
+    @Published var appError: AppError?
     @Published var unit: MeasurementUnit = .grams
-    @Published var showActionSheet = false
-    @Published var isLoading = true
-    @Published var isError = false
-    @Published var isBookmarkFilled = false
+    @Published var showActionSheet: Bool = false
+    @Published var isLoading: Bool = true
+    @Published var isError: Bool = false
+    @Published var isBookmarkFilled: Bool = false
     @Published var shouldUseOriginalAmount: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
@@ -86,9 +86,9 @@ final class FoodViewModel: ObservableObject {
         } catch {
             switch error {
             case let appError as AppError:
-                self.errorMessage = appError
+                self.appError = appError
             default:
-                self.errorMessage = .network
+                self.appError = .network
             }
             isError = true
         }
@@ -114,7 +114,13 @@ final class FoodViewModel: ObservableObject {
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         Task {
-            try? await firestore.addMealItemFirestore(newItem)
+            do {
+                try await firestore.addMealItemFirestore(newItem)
+            } catch {
+                await MainActor.run {
+                    self.appError = .network
+                }
+            }
         }
     }
     
@@ -137,11 +143,18 @@ final class FoodViewModel: ObservableObject {
         )
         
         Task {
-            mainViewModel.updateMealItemMainView(updatedMealItem,
-                                                 for: mealType,
-                                                 on: date)
-            try? await mainViewModel
-                .firestore.updateMealItemFirestore(updatedMealItem)
+            do {
+                mainViewModel.updateMealItemMainView(
+                    updatedMealItem,
+                    for: mealType,
+                    on: date
+                )
+                try await firestore.updateMealItemFirestore(updatedMealItem)
+            } catch {
+                await MainActor.run {
+                    self.appError = .network
+                }
+            }
         }
     }
     

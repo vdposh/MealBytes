@@ -20,8 +20,8 @@ final class RdiViewModel: ObservableObject {
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isDataLoaded = false
-    var isError: Bool = false
+    @Published var isDataLoaded: Bool = false
+    @Published var isError: Bool = false
     
     private let formatter = Formatter()
     

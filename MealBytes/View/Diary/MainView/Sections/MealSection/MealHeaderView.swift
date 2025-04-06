@@ -66,10 +66,12 @@ struct MealHeaderView: View {
             }
             
             if mainViewModel.expandedSections[mealType] == true {
-                if let foodItems = mainViewModel.mealItems[mealType]?.filter({
-                    Calendar.current.isDate($0.date,
-                                            inSameDayAs: mainViewModel.date)
-                }), !foodItems.isEmpty {
+                let foodItems = mainViewModel.filteredMealItems(
+                    for: mealType,
+                    on: mainViewModel.date
+                )
+                
+                if !foodItems.isEmpty {
                     ForEach(foodItems, id: \.id) { item in
                         FoodItemRow(
                             isDismissed: $isFoodViewPresented,
