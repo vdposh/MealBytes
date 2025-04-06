@@ -33,8 +33,9 @@ struct BasicInfoSection: View {
                             }
                         }
                                .pickerStyle(.menu)
-                               .accentColor(rdiViewModel.accentColor(
-                                for: rdiViewModel.selectedGender))
+                               .accentColor(
+                                rdiViewModel.selectedGender.accentColor
+                               )
                     }
                     
                     Divider()
@@ -49,8 +50,9 @@ struct BasicInfoSection: View {
                         }
                                .padding(.top, 5)
                                .pickerStyle(.menu)
-                               .accentColor(rdiViewModel.accentColor(
-                                for: rdiViewModel.selectedActivity))
+                               .accentColor(
+                                rdiViewModel.selectedActivity.accentColor
+                               )
                     }
                 }
             }

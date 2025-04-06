@@ -18,7 +18,6 @@ final class ProfileViewModel: ObservableObject {
     @Published var alertType: AlertType?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
-    @Published var isDataLoaded: Bool = false
     @Published var isToggleUpdating: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
@@ -91,8 +90,8 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Fetch Current User Email
-    private func fetchCurrentUserEmail() async {
+    // MARK: - Load Data
+    func loadProfileData() async {
         guard let user = Auth.auth().currentUser else {
             Task {
                 await MainActor.run {
@@ -104,16 +103,6 @@ final class ProfileViewModel: ObservableObject {
         Task {
             await MainActor.run {
                 email = user.email
-            }
-        }
-    }
-    
-    // MARK: - Load Data
-    func loadProfileData() async {
-        await fetchCurrentUserEmail()
-        Task {
-            await MainActor.run {
-                isDataLoaded = true
             }
         }
     }

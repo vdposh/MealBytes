@@ -43,14 +43,12 @@ struct MainView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if !mainViewModel.isLoading {
-                ToolbarItem(placement: .principal) {
-                    Button(action: {
-                        mainViewModel.isExpandedCalendar.toggle()
-                    }) {
-                        Text(mainViewModel.formattedYearDisplay())
-                            .font(.headline)
-                    }
+            ToolbarItem(placement: .principal) {
+                Button(action: {
+                    mainViewModel.isExpandedCalendar.toggle()
+                }) {
+                    Text(mainViewModel.formattedYearDisplay())
+                        .font(.headline)
                 }
             }
         }

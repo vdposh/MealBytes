@@ -11,12 +11,12 @@ import FirebaseAuth
 final class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var error: AuthError?
     @Published var isAuthenticated: Bool = false
     @Published var showAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     
-    private let mainViewModel = MainViewModel()
+    private var error: AuthError?
+    
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init() {
@@ -31,10 +31,6 @@ final class LoginViewModel: ObservableObject {
     // MARK: - Sign In
     func signIn() async {
         do {
-            await MainActor.run {
-                mainViewModel.isLoading = true
-            }
-            
             let user = try await firebaseAuth.signInAuth(email: email,
                                                          password: password)
             
@@ -42,7 +38,6 @@ final class LoginViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = .userNotVerified
                     updateAlertState()
-                    mainViewModel.isLoading = false
                 }
                 return
             }
@@ -52,17 +47,14 @@ final class LoginViewModel: ObservableObject {
                 self.error = nil
                 updateAlertState()
                 isLoggedIn = true
-                mainViewModel.isLoading = false
             }
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
                 updateAlertState()
-                mainViewModel.isLoading = false
             }
         }
     }
-    
     
     // MARK: - Load Data
     func loadLoginData() async {

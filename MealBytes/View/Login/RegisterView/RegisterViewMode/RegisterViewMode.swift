@@ -14,10 +14,11 @@ final class RegisterViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
     @Published var timerText: String = ""
-    @Published var error: AuthError?
     @Published var showAlert: Bool = false
     @Published var isResendEnabled: Bool = false
     @Published var showResendOptions: Bool = false
+    
+    private var error: AuthError?
     
     private var timerSubscription: AnyCancellable?
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()

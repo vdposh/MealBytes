@@ -189,14 +189,6 @@ final class RdiViewModel: ObservableObject {
         return .primary
     }
     
-    func accentColor(for gender: Gender) -> Color {
-        return gender == .notSelected ? .secondary : .customGreen
-    }
-
-    func accentColor(for activityLevel: ActivityLevel) -> Color {
-        return activityLevel == .notSelected ? .secondary : .customGreen
-    }
-    
     // MARK: - Save Goals
     func handleSave() -> Bool {
         if let errors = validateInputs() {
@@ -242,6 +234,15 @@ enum Gender: String, CaseIterable {
     case notSelected = "Not selected"
     case male = "Male"
     case female = "Female"
+
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .secondary
+        case .male, .female:
+            return .customGreen
+        }
+    }
 }
 
 enum ActivityLevel: String, CaseIterable {
@@ -251,6 +252,15 @@ enum ActivityLevel: String, CaseIterable {
     case moderatelyActive = "Moderately Active"
     case veryActive = "Very Active"
     case extraActive = "Extra Active"
+
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .secondary
+        default:
+            return .customGreen
+        }
+    }
 }
 
 enum WeightUnit: String, CaseIterable {
