@@ -38,11 +38,20 @@ extension View {
                 } icon: {
                     Image(systemName: "bookmark")
                 }
+            case .disconnected:
+                Label {
+                    Text("Disconnected")
+                } icon: {
+                    Image(systemName: "person.fill.questionmark")
+                }
+                .symbolEffect(.breathe)
             }
         } description: {
             switch error {
             case .noBookmarks:
                 Text("Add your favorite dishes to bookmarks, and they'll appear here.")
+            case .disconnected:
+                Text("Your account is disconnected. Please log out and log back in to sync your data.")
             default:
                 Text(error.errorDescription)
             }
@@ -54,5 +63,11 @@ extension View {
                 EmptyView()
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
     }
 }

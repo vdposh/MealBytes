@@ -118,7 +118,7 @@ final class FoodViewModel: ObservableObject {
                 try await firestore.addMealItemFirestore(newItem)
             } catch {
                 await MainActor.run {
-                    self.appError = .network
+                    print(error.localizedDescription)
                 }
             }
         }
@@ -152,7 +152,7 @@ final class FoodViewModel: ObservableObject {
                 try await firestore.updateMealItemFirestore(updatedMealItem)
             } catch {
                 await MainActor.run {
-                    self.appError = .network
+                    print(error.localizedDescription)
                 }
             }
         }
