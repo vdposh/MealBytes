@@ -49,6 +49,8 @@ final class ProfileViewModel: ObservableObject {
         do {
             try firebaseAuth.signOutAuth()
             loginViewModel.isLoggedIn = false
+            UserDefaults.standard.setValue(false, forKey: "isLoggedIn")
+            UserDefaults.standard.removeObject(forKey: "lastEmail")
         } catch {
             appError = .decoding
         }
@@ -63,6 +65,8 @@ final class ProfileViewModel: ObservableObject {
             Task {
                 await MainActor.run {
                     loginViewModel.isLoggedIn = false
+                    UserDefaults.standard.setValue(false, forKey: "isLoggedIn")
+                    UserDefaults.standard.removeObject(forKey: "lastEmail")
                 }
             }
         } catch {

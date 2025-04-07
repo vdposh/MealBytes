@@ -164,7 +164,3 @@ struct SearchView: View {
         }
     }
 }
-
-#Preview {
-    ContentView()
-}

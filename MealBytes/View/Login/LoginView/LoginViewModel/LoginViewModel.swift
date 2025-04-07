@@ -14,15 +14,14 @@ final class LoginViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var showAlert: Bool = false
     @Published var isLoggedIn: Bool = false
+    @Published var isLoading: Bool = true
     
     private var error: AuthError?
     
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private let networkMonitor = NetworkMonitor()
     
     init() {
-        if firebaseAuth.checkCurrentUserAuth() {
-            isLoggedIn = true
-        }
         Task {
             await loadLoginData()
         }
@@ -47,6 +46,9 @@ final class LoginViewModel: ObservableObject {
                 self.error = nil
                 updateAlertState()
                 isLoggedIn = true
+                
+                UserDefaults.standard.setValue(true, forKey: "isLoggedIn")
+                UserDefaults.standard.setValue(email, forKey: "lastEmail")
             }
         } catch {
             await MainActor.run {
@@ -58,20 +60,38 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadLoginData() async {
-        async let refreshTokenTask: String? = firebaseAuth.refreshTokenAuth()
-        async let checkAuthTask: Bool = firebaseAuth.checkCurrentUserAuth()
+        isLoading = true
+        await networkMonitor.waitForConnectionUpdate()
         
-        do {
-            let (_, isAuthenticated) = try await (refreshTokenTask,
-                                                  checkAuthTask)
+        if networkMonitor.isConnected == true {
+            async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
+            async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
             
-            await MainActor.run {
-                self.isLoggedIn = isAuthenticated
+            do {
+                let (_, isAuthenticated) = try await (tokenTask,
+                                                      authTask)
+                await MainActor.run {
+                    self.isLoggedIn = isAuthenticated
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoggedIn = false
+                }
             }
-        } catch {
+        } else {
             await MainActor.run {
-                self.isLoggedIn = false
+                self.isLoggedIn = UserDefaults.standard.bool(
+                    forKey: "isLoggedIn"
+                )
+                self.email = UserDefaults.standard.string(
+                    forKey: "lastEmail"
+                ) ?? ""
+                self.password = ""
             }
+        }
+        
+        await MainActor.run {
+            isLoading = false
         }
     }
     
