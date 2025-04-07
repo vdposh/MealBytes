@@ -88,38 +88,39 @@ struct SearchView: View {
             }
             .navigationBarTitle("Search", displayMode: .large)
             .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button(action: {
-                        searchViewModel.showMealType = true
-                    }) {
-                        VStack(alignment: .leading, spacing: 2) {
+                ToolbarItem(placement: .status) {
+                    VStack(alignment: .center, spacing: 1) {
+                        Button(action: {
+                            searchViewModel.showMealType = true
+                        }) {
                             HStack {
                                 Image(systemName: mealType.iconName)
                                     .font(.system(size: 13))
                                     .frame(width: 15, height: 5)
                                     .foregroundColor(mealType.color)
                                 Text(mealType.rawValue)
-                                    .font(.headline)
+                                    .fontWeight(.medium)
                             }
-                            Text(searchViewModel.mainViewModel.formattedDate())
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
+                            .frame(width: 150)
                         }
-                    }
-                    .confirmationDialog(
-                        "Select Meal Type",
-                        isPresented: $searchViewModel.showMealType,
-                        titleVisibility: .visible
-                    ) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Button(action: {
-                                mealType = meal
-                            }) {
-                                Text(meal.rawValue)
+                        .confirmationDialog(
+                            "Select Meal Type",
+                            isPresented: $searchViewModel.showMealType,
+                            titleVisibility: .visible
+                        ) {
+                            ForEach(MealType.allCases, id: \.self) { meal in
+                                Button(action: {
+                                    mealType = meal
+                                }) {
+                                    Text(meal.rawValue)
+                                }
                             }
+                            
                         }
+                        Text(searchViewModel.mainViewModel.formattedDate())
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
                     }
-                    
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
