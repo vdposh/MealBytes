@@ -16,6 +16,7 @@ enum AppError: Error, Identifiable, LocalizedError {
     case decoding
     case results
     case noBookmarks
+    case disconnected
     
     var errorDescription: String {
         switch self {
@@ -27,6 +28,8 @@ enum AppError: Error, Identifiable, LocalizedError {
             ""
         case .noBookmarks:
             "No bookmarks yet"
+        case .disconnected:
+            "Your account is disconnected. Please log out and log back in to sync your data."
         }
     }
 }

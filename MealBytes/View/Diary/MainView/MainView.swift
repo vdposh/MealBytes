@@ -123,7 +123,3 @@ struct MainView: View {
         )
     }
 }
-
-#Preview {
-    ContentView()
-}
