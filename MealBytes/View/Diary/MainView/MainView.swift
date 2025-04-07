@@ -47,7 +47,7 @@ struct MainView: View {
                 Button(action: {
                     mainViewModel.isExpandedCalendar.toggle()
                 }) {
-                    Text(mainViewModel.formattedYearDisplay())
+                    Text(mainViewModel.formattedDate())
                         .font(.headline)
                 }
             }

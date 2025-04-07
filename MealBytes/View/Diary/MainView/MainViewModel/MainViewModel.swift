@@ -367,7 +367,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Formatted year for Calendar
-    func formattedYearDisplay() -> String {
+    func formattedDate() -> String {
         switch calendar.isDate(date,
                                equalTo: Date(),
                                toGranularity: .year) {
