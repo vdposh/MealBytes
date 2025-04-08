@@ -13,18 +13,21 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore() async throws -> [Food]
+    func loadLoginDataFirestore() async throws -> (email: String, isLoggedIn: Bool)
     func loadCustomRdiFirestore() async throws -> CustomRdiData
     func loadRdiFirestore() async throws -> RdiData
     func loadMainRdiFirestore() async throws -> String
     func loadDisplayRdiFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
     func addBookmarkFirestore(_ foods: [Food]) async throws
+    func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
     func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
     func saveMainRdiFirestore(_ rdi: String) async throws
     func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
+    func deleteLoginDataFirestore() async throws
 }
 
 final class FirebaseFirestore: FirebaseFirestoreProtocol {
@@ -227,5 +230,55 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await documentReference.setData(
             ["shouldDisplayRdi": shouldDisplayRdi]
         )
+    }
+    
+    // MARK: - Current User
+    func loadLoginDataFirestore() async throws -> (email: String,
+                                                   isLoggedIn: Bool) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AuthError.userNotFound
+        }
+        
+        let snapshot = try await firestore.collection("users")
+            .document(uid)
+            .collection("LoginData")
+            .document("loginInfo")
+            .getDocument()
+        
+        guard let data = snapshot.data(),
+              let email = data["email"] as? String,
+              let isLoggedIn = data["isLoggedIn"] as? Bool else {
+            throw AppError.decoding
+        }
+        
+        return (email, isLoggedIn)
+    }
+    
+    func saveLoginDataFirestore(email: String,
+                                isLoggedIn: Bool) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        let data: [String: Any] = [
+            "email": email,
+            "isLoggedIn": isLoggedIn
+        ]
+        try await firestore.collection("users")
+            .document(uid)
+            .collection("LoginData")
+            .document("loginInfo")
+            .setData(data, merge: true)
+    }
+    
+    func deleteLoginDataFirestore() async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let documentReference = firestore.collection("users")
+            .document(uid)
+            .collection("LoginData")
+            .document("loginInfo")
+        try await documentReference.delete()
     }
 }

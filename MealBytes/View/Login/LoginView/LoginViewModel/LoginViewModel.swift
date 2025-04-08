@@ -18,6 +18,7 @@ final class LoginViewModel: ObservableObject {
     
     private var error: AuthError?
     
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     private let networkMonitor = NetworkMonitor()
     
@@ -29,6 +30,10 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Sign In
     func signIn() async {
+        await MainActor.run {
+            isLoading = true
+        }
+        
         do {
             let user = try await firebaseAuth.signInAuth(email: email,
                                                          password: password)
@@ -36,6 +41,19 @@ final class LoginViewModel: ObservableObject {
             if !user.isEmailVerified {
                 await MainActor.run {
                     self.error = .userNotVerified
+                    self.isLoading = false
+                    updateAlertState()
+                }
+                return
+            }
+            
+            do {
+                try await firestore.saveLoginDataFirestore(email: email,
+                                                           isLoggedIn: true)
+            } catch {
+                await MainActor.run {
+                    self.error = .networkError
+                    self.isLoading = false
                     updateAlertState()
                 }
                 return
@@ -44,15 +62,14 @@ final class LoginViewModel: ObservableObject {
             await MainActor.run {
                 isAuthenticated = true
                 self.error = nil
+                self.isLoading = false
                 updateAlertState()
                 isLoggedIn = true
-                
-                UserDefaults.standard.setValue(true, forKey: "isLoggedIn")
-                UserDefaults.standard.setValue(email, forKey: "lastEmail")
             }
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
+                self.isLoading = false
                 updateAlertState()
             }
         }
@@ -68,10 +85,20 @@ final class LoginViewModel: ObservableObject {
             async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
             
             do {
-                let (_, isAuthenticated) = try await (tokenTask,
-                                                      authTask)
-                await MainActor.run {
-                    self.isLoggedIn = isAuthenticated
+                let (_, isAuthenticated) = try await (tokenTask, authTask)
+                
+                do {
+                    let (email, isLoggedIn) = try await firestore
+                        .loadLoginDataFirestore()
+                    await MainActor.run {
+                        self.isLoggedIn = isAuthenticated && isLoggedIn
+                        self.email = email
+                    }
+                } catch {
+                    await MainActor.run {
+                        self.error = .networkError
+                        updateAlertState()
+                    }
                 }
             } catch {
                 await MainActor.run {
@@ -79,14 +106,19 @@ final class LoginViewModel: ObservableObject {
                 }
             }
         } else {
-            await MainActor.run {
-                self.isLoggedIn = UserDefaults.standard.bool(
-                    forKey: "isLoggedIn"
-                )
-                self.email = UserDefaults.standard.string(
-                    forKey: "lastEmail"
-                ) ?? ""
-                self.password = ""
+            do {
+                let (email, isLoggedIn) = try await firestore
+                    .loadLoginDataFirestore()
+                await MainActor.run {
+                    self.isLoggedIn = isLoggedIn
+                    self.email = email
+                    self.password = ""
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = .networkError
+                    updateAlertState()
+                }
             }
         }
         

@@ -22,7 +22,9 @@ final class ProfileViewModel: ObservableObject {
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private let networkMonitor = NetworkMonitor()
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModel) {
@@ -48,9 +50,16 @@ final class ProfileViewModel: ObservableObject {
     private func signOut() {
         do {
             try firebaseAuth.signOutAuth()
+            
+            Task {
+                do {
+                    try await firestore.deleteLoginDataFirestore()
+                } catch {
+                    appError = .network
+                }
+            }
+            
             loginViewModel.isLoggedIn = false
-            UserDefaults.standard.setValue(false, forKey: "isLoggedIn")
-            UserDefaults.standard.removeObject(forKey: "lastEmail")
         } catch {
             appError = .decoding
         }
@@ -62,12 +71,15 @@ final class ProfileViewModel: ObservableObject {
             try await firebaseAuth.reauthenticateAuth(email: email,
                                                       password: password)
             try await firebaseAuth.deleteAccountAuth()
-            Task {
-                await MainActor.run {
-                    loginViewModel.isLoggedIn = false
-                    UserDefaults.standard.setValue(false, forKey: "isLoggedIn")
-                    UserDefaults.standard.removeObject(forKey: "lastEmail")
-                }
+            
+            do {
+                try await firestore.deleteLoginDataFirestore()
+            } catch {
+                appError = .network
+            }
+            
+            await MainActor.run {
+                loginViewModel.isLoggedIn = false
             }
         } catch {
             await MainActor.run {
@@ -156,6 +168,16 @@ final class ProfileViewModel: ObservableObject {
                 return
             }
             
+            if let isConnected = networkMonitor.isConnected, !isConnected {
+                alertTitle = "Network Issue"
+                alertMessage = """
+                Unable to delete your account due to no network connection.
+                Please check your internet connection and try again.
+                """
+                showAlert = true
+                return
+            }
+            
             do {
                 try await firebaseAuth.reauthenticateAuth(
                     email: email,
@@ -172,6 +194,16 @@ final class ProfileViewModel: ObservableObject {
             }
             
         case .changePassword:
+            if let isConnected = networkMonitor.isConnected, !isConnected {
+                alertTitle = "Network Issue"
+                alertMessage = """
+                Unable to change password due to no network connection.
+                Please check your internet connection and try again.
+                """
+                showAlert = true
+                return
+            }
+            
             do {
                 try await firebaseAuth.changePasswordAuth(
                     currentPassword: password,
