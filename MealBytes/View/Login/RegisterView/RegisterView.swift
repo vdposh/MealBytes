@@ -44,16 +44,22 @@ struct RegisterView: View {
                         for: registerViewModel.confirmPassword)
                 )
                 
-                ActionButtonView(
-                    title: "Register",
-                    action: {
-                        Task {
-                            await registerViewModel.signUp()
-                        }
-                    },
-                    backgroundColor: .customGreen,
-                    isEnabled: registerViewModel.isRegisterEnabled()
-                )
+                if registerViewModel.isRegisterLoading {
+                    LoadingView()
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    ActionButtonView(
+                        title: "Register",
+                        action: {
+                            Task {
+                                await registerViewModel.signUp()
+                            }
+                        },
+                        backgroundColor: .customGreen,
+                        isEnabled: registerViewModel.isRegisterEnabled()
+                    )
+                }
             }
             .padding(.horizontal, 30)
             .padding(.vertical, 15)

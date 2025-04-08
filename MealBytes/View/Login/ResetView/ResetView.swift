@@ -28,16 +28,22 @@ struct ResetView: View {
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
                 
-                ActionButtonView(
-                    title: "Send reset link on email",
-                    action: {
-                        Task {
-                            await resetViewModel.resetPassword()
-                        }
-                    },
-                    backgroundColor: .customGreen,
-                    isEnabled: resetViewModel.isResetEnabled()
-                )
+                if resetViewModel.isLoading {
+                    LoadingView()
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    ActionButtonView(
+                        title: "Send reset link on email",
+                        action: {
+                            Task {
+                                await resetViewModel.resetPassword()
+                            }
+                        },
+                        backgroundColor: .customGreen,
+                        isEnabled: resetViewModel.isResetEnabled()
+                    )
+                }
             }
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
