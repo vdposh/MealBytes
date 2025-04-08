@@ -13,7 +13,8 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore() async throws -> [Food]
-    func loadLoginDataFirestore() async throws -> (email: String, isLoggedIn: Bool)
+    func loadLoginDataFirestore() async throws -> (email: String,
+                                                   isLoggedIn: Bool)
     func loadCustomRdiFirestore() async throws -> CustomRdiData
     func loadRdiFirestore() async throws -> RdiData
     func loadMainRdiFirestore() async throws -> String
