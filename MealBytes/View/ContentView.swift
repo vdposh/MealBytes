@@ -11,20 +11,20 @@ import FirebaseAuth
 struct ContentView: View {
     @StateObject private var loginViewModel = LoginViewModel()
     @StateObject private var mainViewModel = MainViewModel()
-
+    
     var body: some View {
         ZStack {
             if loginViewModel.isLoading {
-                LoginLoadingView() // Показываем загрузочный экран
+                LoginLoadingView()
             } else if loginViewModel.isLoggedIn {
                 TabBarView(loginViewModel: loginViewModel,
                            mainViewModel: mainViewModel)
             } else {
                 LoginView(loginViewModel: loginViewModel)
             }
-
+            
             if loginViewModel.isLoggedIn && mainViewModel.isLoading {
-                LoginLoadingView() // Может также отображаться на фоне
+                LoginLoadingView()
             }
         }
     }

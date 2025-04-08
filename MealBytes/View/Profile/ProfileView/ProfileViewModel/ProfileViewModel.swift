@@ -19,6 +19,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isToggleUpdating: Bool = false
+    @Published var isPasswordChanging: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
@@ -204,6 +205,10 @@ final class ProfileViewModel: ObservableObject {
                 return
             }
             
+            await MainActor.run {
+                isPasswordChanging = true
+            }
+            
             do {
                 try await firebaseAuth.changePasswordAuth(
                     currentPassword: password,
@@ -212,6 +217,7 @@ final class ProfileViewModel: ObservableObject {
                 alertTitle = "Done"
                 alertMessage = "Your password has been successfully updated."
                 showAlert = true
+                isPasswordChanging = false
             } catch {
                 alertTitle = "Change Password"
                 alertMessage = """
@@ -219,6 +225,7 @@ final class ProfileViewModel: ObservableObject {
                 Please check your current password and try again.
                 """
                 showAlert = true
+                isPasswordChanging = false
             }
         }
     }

@@ -77,7 +77,10 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadLoginData() async {
-        isLoading = true
+        await MainActor.run {
+            isLoading = true
+        }
+        
         await networkMonitor.waitForConnectionUpdate()
         
         if networkMonitor.isConnected == true {
