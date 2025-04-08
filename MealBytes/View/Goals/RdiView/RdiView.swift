@@ -39,6 +39,7 @@ struct RdiView: View {
                         Button("Done") {
                             focusedField = false
                         }
+                        .font(.headline)
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {

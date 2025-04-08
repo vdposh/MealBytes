@@ -88,6 +88,7 @@ struct FoodView: View {
                 Button("Done") {
                     isTextFieldFocused = false
                 }
+                .font(.headline)
             }
             if showCloseButton {
                 ToolbarItem(placement: .confirmationAction) {
