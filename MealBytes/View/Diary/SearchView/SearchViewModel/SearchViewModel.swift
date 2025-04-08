@@ -13,6 +13,7 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
+    @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var query: String = "" {
         didSet {

@@ -17,6 +17,7 @@ final class RegisterViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var isResendEnabled: Bool = false
     @Published var showResendOptions: Bool = false
+    @Published var isRegisterLoading: Bool = false
     
     private var error: AuthError?
     
@@ -30,6 +31,10 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Sign Up
     func signUp() async {
+        await MainActor.run {
+            self.isRegisterLoading = true
+        }
+        
         do {
             try await firebaseAuth.signUpAuth(email: email,
                                               password: password)
@@ -43,6 +48,10 @@ final class RegisterViewModel: ObservableObject {
         } catch {
             let authError = handleError(error as NSError)
             await handleSignUpResult(success: false, error: authError)
+        }
+        
+        await MainActor.run {
+            self.isRegisterLoading = false
         }
     }
     

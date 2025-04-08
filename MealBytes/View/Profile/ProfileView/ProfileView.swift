@@ -62,7 +62,15 @@ struct ProfileView: View {
                 Button(action: {
                     profileViewModel.prepareAlert(for: .changePassword)
                 }) {
-                    Text("Change Password")
+                    if profileViewModel.isPasswordChanging {
+                        HStack {
+                            LoadingView()
+                            Text("Loading...")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Text("Change Password")
+                    }
                 }
             } footer: {
                 Text("Use this option to update your account password for improved security.")
@@ -81,8 +89,7 @@ struct ProfileView: View {
                         .foregroundColor(.secondary)
                     
                     Button(action: {
-                        profileViewModel.prepareAlert(
-                            for: .deleteAccount)
+                        profileViewModel.prepareAlert(for: .deleteAccount)
                     }) {
                         Text("remove")
                             .fontWeight(.semibold)

@@ -19,9 +19,11 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isToggleUpdating: Bool = false
+    @Published var isPasswordChanging: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
     init(loginViewModel: LoginViewModel,
@@ -48,6 +50,15 @@ final class ProfileViewModel: ObservableObject {
     private func signOut() {
         do {
             try firebaseAuth.signOutAuth()
+            
+            Task {
+                do {
+                    try await firestore.deleteLoginDataFirestore()
+                } catch {
+                    appError = .network
+                }
+            }
+            
             loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
@@ -60,10 +71,15 @@ final class ProfileViewModel: ObservableObject {
             try await firebaseAuth.reauthenticateAuth(email: email,
                                                       password: password)
             try await firebaseAuth.deleteAccountAuth()
-            Task {
-                await MainActor.run {
-                    loginViewModel.isLoggedIn = false
-                }
+            
+            do {
+                try await firestore.deleteLoginDataFirestore()
+            } catch {
+                appError = .network
+            }
+            
+            await MainActor.run {
+                loginViewModel.isLoggedIn = false
             }
         } catch {
             await MainActor.run {
@@ -168,6 +184,10 @@ final class ProfileViewModel: ObservableObject {
             }
             
         case .changePassword:
+            await MainActor.run {
+                isPasswordChanging = true
+            }
+            
             do {
                 try await firebaseAuth.changePasswordAuth(
                     currentPassword: password,
@@ -176,6 +196,7 @@ final class ProfileViewModel: ObservableObject {
                 alertTitle = "Done"
                 alertMessage = "Your password has been successfully updated."
                 showAlert = true
+                isPasswordChanging = false
             } catch {
                 alertTitle = "Change Password"
                 alertMessage = """
@@ -183,6 +204,7 @@ final class ProfileViewModel: ObservableObject {
                 Please check your current password and try again.
                 """
                 showAlert = true
+                isPasswordChanging = false
             }
         }
     }

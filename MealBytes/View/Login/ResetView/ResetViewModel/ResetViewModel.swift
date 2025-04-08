@@ -12,6 +12,7 @@ final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var success: Bool = false
     @Published var showAlert: Bool = false
+    @Published var isLoading: Bool = false
     
     private var error: AuthError?
     
@@ -19,6 +20,10 @@ final class ResetViewModel: ObservableObject {
     
     // MARK: - Reset Password
     func resetPassword() async {
+        await MainActor.run {
+            isLoading = true
+        }
+        
         do {
             try await firebaseAuth.resetPasswordAuth(email: email)
             await handleResult(success: true, error: nil)
@@ -27,6 +32,10 @@ final class ResetViewModel: ObservableObject {
                 success: false,
                 error: handleError(error as NSError)
             )
+        }
+        
+        await MainActor.run {
+            isLoading = false
         }
     }
     

@@ -33,6 +33,7 @@ final class CustomRdiViewModel: ObservableObject {
     private var isInitialized = false
     
     private let formatter = Formatter()
+    
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()

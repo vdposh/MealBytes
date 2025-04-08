@@ -14,20 +14,14 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if loginViewModel.isLoggedIn {
+            if loginViewModel.isLoading {
+                LoginLoadingView()
+            } else if loginViewModel.isLoggedIn {
                 TabBarView(loginViewModel: loginViewModel,
                            mainViewModel: mainViewModel)
             } else {
                 LoginView(loginViewModel: loginViewModel)
             }
-            
-            if loginViewModel.isLoggedIn && mainViewModel.isLoading {
-                LoginLoadingView()
-            }
         }
     }
-}
-
-#Preview {
-    ContentView()
 }

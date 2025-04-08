@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct SearchView: View {
+    @State private var mealType: MealType
     @Binding private var isPresented: Bool
-    
-    private let mealType: MealType
     
     @ObservedObject private var searchViewModel: SearchViewModel
     
@@ -19,7 +18,7 @@ struct SearchView: View {
          mealType: MealType) {
         self._isPresented = isPresented
         self.searchViewModel = searchViewModel
-        self.mealType = mealType
+        self._mealType = State(initialValue: mealType)
     }
     
     var body: some View {
@@ -40,7 +39,7 @@ struct SearchView: View {
                                     NavigationLink(
                                         destination: FoodView(
                                             isDismissed: $isPresented,
-                                            navigationTitle: "Add to Diary",
+                                            navigationTitle: "Add to \(mealType.rawValue)",
                                             food: food,
                                             searchViewModel: searchViewModel,
                                             mainViewModel: searchViewModel
@@ -89,6 +88,41 @@ struct SearchView: View {
             }
             .navigationBarTitle("Search", displayMode: .large)
             .toolbar {
+                ToolbarItem(placement: .status) {
+                    VStack(alignment: .center, spacing: 1) {
+                        Button(action: {
+                            searchViewModel.showMealType = true
+                        }) {
+                            HStack {
+                                Image(systemName: mealType.iconName)
+                                    .font(.system(size: 13))
+                                    .frame(width: 15, height: 5)
+                                    .foregroundColor(mealType.color)
+                                Text(mealType.rawValue)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(width: 150)
+                        }
+                        .confirmationDialog(
+                            "Select Meal Type",
+                            isPresented: $searchViewModel.showMealType,
+                            titleVisibility: .visible
+                        ) {
+                            ForEach(MealType.allCases, id: \.self) { meal in
+                                Button(action: {
+                                    mealType = meal
+                                }) {
+                                    Text(meal.rawValue)
+                                }
+                            }
+                            
+                        }
+                        Text(searchViewModel.mainViewModel.formattedDate())
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         isPresented = false

@@ -65,9 +65,3 @@ extension View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
-}
