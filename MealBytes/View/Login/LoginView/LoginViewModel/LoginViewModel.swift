@@ -20,7 +20,6 @@ final class LoginViewModel: ObservableObject {
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
-    private let networkMonitor = NetworkMonitor()
     
     init() {
         Task {
@@ -81,47 +80,28 @@ final class LoginViewModel: ObservableObject {
             isLoading = true
         }
         
-        await networkMonitor.waitForConnectionUpdate()
+        async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
+        async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
         
-        if networkMonitor.isConnected == true {
-            async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
-            async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
+        do {
+            let (_, isAuthenticated) = try await (tokenTask, authTask)
             
-            do {
-                let (_, isAuthenticated) = try await (tokenTask, authTask)
-                
-                do {
-                    let (email, isLoggedIn) = try await firestore
-                        .loadLoginDataFirestore()
-                    await MainActor.run {
-                        self.isLoggedIn = isAuthenticated && isLoggedIn
-                        self.email = email
-                    }
-                } catch {
-                    await MainActor.run {
-                        self.error = .networkError
-                        updateAlertState()
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    self.isLoggedIn = false
-                }
-            }
-        } else {
             do {
                 let (email, isLoggedIn) = try await firestore
                     .loadLoginDataFirestore()
                 await MainActor.run {
-                    self.isLoggedIn = isLoggedIn
+                    self.isLoggedIn = isAuthenticated && isLoggedIn
                     self.email = email
-                    self.password = ""
                 }
             } catch {
                 await MainActor.run {
                     self.error = .networkError
                     updateAlertState()
                 }
+            }
+        } catch {
+            await MainActor.run {
+                self.isLoggedIn = false
             }
         }
         

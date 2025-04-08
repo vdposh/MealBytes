@@ -25,7 +25,6 @@ final class ProfileViewModel: ObservableObject {
     @ObservedObject var mainViewModel: MainViewModel
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
-    private let networkMonitor = NetworkMonitor()
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModel) {
@@ -169,16 +168,6 @@ final class ProfileViewModel: ObservableObject {
                 return
             }
             
-            if let isConnected = networkMonitor.isConnected, !isConnected {
-                alertTitle = "Network Issue"
-                alertMessage = """
-                Unable to delete your account due to no network connection.
-                Please check your internet connection and try again.
-                """
-                showAlert = true
-                return
-            }
-            
             do {
                 try await firebaseAuth.reauthenticateAuth(
                     email: email,
@@ -195,16 +184,6 @@ final class ProfileViewModel: ObservableObject {
             }
             
         case .changePassword:
-            if let isConnected = networkMonitor.isConnected, !isConnected {
-                alertTitle = "Network Issue"
-                alertMessage = """
-                Unable to change password due to no network connection.
-                Please check your internet connection and try again.
-                """
-                showAlert = true
-                return
-            }
-            
             await MainActor.run {
                 isPasswordChanging = true
             }

@@ -22,10 +22,6 @@ struct ContentView: View {
             } else {
                 LoginView(loginViewModel: loginViewModel)
             }
-            
-            if loginViewModel.isLoggedIn && mainViewModel.isLoading {
-                LoginLoadingView()
-            }
         }
     }
 }
