@@ -99,7 +99,7 @@ struct SearchView: View {
                                     .frame(width: 15, height: 5)
                                     .foregroundColor(mealType.color)
                                 Text(mealType.rawValue)
-                                    .fontWeight(.medium)
+                                    .font(.headline)
                             }
                             .frame(width: 150)
                         }

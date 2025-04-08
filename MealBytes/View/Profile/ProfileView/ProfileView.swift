@@ -72,6 +72,7 @@ struct ProfileView: View {
                         Text("Change Password")
                     }
                 }
+                .disabled(profileViewModel.isPasswordChanging)
             } footer: {
                 Text("Use this option to update your account password for improved security.")
                     .padding(.bottom)
@@ -145,6 +146,9 @@ struct ProfileView: View {
                         SecureField("New Password",
                                     text: $profileViewModel.newPassword)
                         .textContentType(.newPassword)
+                        
+                        SecureField("Confirm New Password", text: $profileViewModel.confirmPassword)
+                            .textContentType(.newPassword)
                         
                         Group {
                             Button("Cancel", role: .cancel) {

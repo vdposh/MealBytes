@@ -58,6 +58,11 @@ final class RegisterViewModel: ObservableObject {
     // MARK: - Resend Email Verification
     func resendEmailVerification() async {
         guard isResendEnabled else { return }
+        
+        await MainActor.run {
+            self.isRegisterLoading = true
+        }
+        
         do {
             try await firebaseAuth.resendVerificationAuth()
             await startResendTimer()
@@ -66,6 +71,10 @@ final class RegisterViewModel: ObservableObject {
             await MainActor.run {
                 self.error = authError
             }
+        }
+        
+        await MainActor.run {
+            self.isRegisterLoading = false
         }
     }
     
@@ -153,6 +162,8 @@ final class RegisterViewModel: ObservableObject {
                 return .invalidEmail
             case .emailAlreadyInUse:
                 return .emailAlreadyInUse
+            case .weakPassword:
+                return .weakPassword
             case .networkError:
                 return .networkError
             default:

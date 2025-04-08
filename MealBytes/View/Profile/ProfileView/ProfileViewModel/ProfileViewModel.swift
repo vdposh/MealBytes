@@ -12,6 +12,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var password: String = ""
     @Published var newPassword: String = ""
+    @Published var confirmPassword: String = ""
     @Published var alertTitle: String = ""
     @Published var alertMessage: String = ""
     @Published var destructiveButtonTitle: String = ""
@@ -89,21 +90,12 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Change Password
-    func changePassword(currentPassword: String, newPassword: String) async {
-        guard !currentPassword.isEmpty, !newPassword.isEmpty else {
-            return
-        }
-        
-        do {
-            try await firebaseAuth.changePasswordAuth(
-                currentPassword: currentPassword,
-                newPassword: newPassword
-            )
-        } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
-        }
+    func changePassword(currentPassword: String,
+                        newPassword: String) async throws {
+        try await firebaseAuth.changePasswordAuth(
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        )
     }
     
     // MARK: - Load Data
@@ -188,23 +180,51 @@ final class ProfileViewModel: ObservableObject {
                 isPasswordChanging = true
             }
             
+            guard newPassword.count >= 6 else {
+                await MainActor.run {
+                    alertTitle = "Change Password"
+                    alertMessage = """
+                    Failed to update the password.
+                    The password must be at least 6 characters long.
+                    """
+                    showAlert = true
+                    isPasswordChanging = false
+                }
+                return
+            }
+            
+            guard newPassword == confirmPassword else {
+                await MainActor.run {
+                    alertTitle = "Change Password"
+                    alertMessage = """
+                    Failed to update the password.
+                    New password and confirmation do not match.
+                    """
+                    showAlert = true
+                    isPasswordChanging = false
+                }
+                return
+            }
+            
             do {
-                try await firebaseAuth.changePasswordAuth(
-                    currentPassword: password,
-                    newPassword: newPassword
-                )
-                alertTitle = "Done"
-                alertMessage = "Your password has been successfully updated."
-                showAlert = true
-                isPasswordChanging = false
+                try await changePassword(currentPassword: password,
+                                         newPassword: newPassword)
+                await MainActor.run {
+                    alertTitle = "Done"
+                    alertMessage = "Your password has been successfully updated."
+                    showAlert = true
+                    isPasswordChanging = false
+                }
             } catch {
-                alertTitle = "Change Password"
-                alertMessage = """
-                Failed to update the password.
-                Please check your current password and try again.
-                """
-                showAlert = true
-                isPasswordChanging = false
+                await MainActor.run {
+                    alertTitle = "Change Password"
+                    alertMessage = """
+                    Failed to update the password.
+                    Please check your current password and try again.
+                    """
+                    showAlert = true
+                    isPasswordChanging = false
+                }
             }
         }
     }

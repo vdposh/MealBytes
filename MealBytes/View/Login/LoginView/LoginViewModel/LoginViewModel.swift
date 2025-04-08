@@ -85,19 +85,12 @@ final class LoginViewModel: ObservableObject {
         
         do {
             let (_, isAuthenticated) = try await (tokenTask, authTask)
+            let (email,
+                 isLoggedIn) = try await firestore.loadLoginDataFirestore()
             
-            do {
-                let (email, isLoggedIn) = try await firestore
-                    .loadLoginDataFirestore()
-                await MainActor.run {
-                    self.isLoggedIn = isAuthenticated && isLoggedIn
-                    self.email = email
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = .networkError
-                    updateAlertState()
-                }
+            await MainActor.run {
+                self.isLoggedIn = isAuthenticated && isLoggedIn
+                self.email = email
             }
         } catch {
             await MainActor.run {

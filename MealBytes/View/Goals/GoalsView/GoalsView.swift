@@ -25,6 +25,7 @@ struct GoalsView: View {
                             }
                         }
                     }
+                    .disabled(goalsViewModel.isDataLoaded == false)
                 } else {
                     HStack {
                         LoadingView()
@@ -49,6 +50,7 @@ struct GoalsView: View {
                             }
                         }
                     }
+                    .disabled(goalsViewModel.isDataLoaded == false)
                 } else {
                     HStack {
                         LoadingView()

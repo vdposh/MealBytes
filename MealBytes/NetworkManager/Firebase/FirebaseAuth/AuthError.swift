@@ -17,6 +17,7 @@ enum AuthError: Error, Identifiable, LocalizedError {
     case emailAlreadyInUse
     case userNotFound
     case userNotVerified
+    case weakPassword
     case networkError
     case unknownError
     
@@ -32,6 +33,8 @@ enum AuthError: Error, Identifiable, LocalizedError {
             "No user found with the specified email address."
         case .userNotVerified:
             "Your email is not verified. Please check your inbox and verify your email address."
+        case .weakPassword:
+            "The password must be at least 6 characters long."
         case .networkError:
             "A network error occurred. Please check your internet connection and try again."
         case .unknownError:

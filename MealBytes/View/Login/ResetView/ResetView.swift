@@ -43,6 +43,7 @@ struct ResetView: View {
                         backgroundColor: .customGreen,
                         isEnabled: resetViewModel.isResetEnabled()
                     )
+                    .frame(height: 50)
                 }
             }
             .padding(.horizontal, 30)
