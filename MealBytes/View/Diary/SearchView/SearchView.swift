@@ -164,3 +164,11 @@ struct SearchView: View {
         }
     }
 }
+
+#Preview {
+    SearchView(
+        isPresented: .constant(true),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mealType: .breakfast
+    )
+}

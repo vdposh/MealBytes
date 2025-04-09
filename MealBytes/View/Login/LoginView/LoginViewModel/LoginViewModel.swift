@@ -11,8 +11,8 @@ import FirebaseAuth
 final class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var isAuthenticated: Bool = false
     @Published var showAlert: Bool = false
+    @Published var showNetworkAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     @Published var isLoading: Bool = true
     
@@ -59,11 +59,11 @@ final class LoginViewModel: ObservableObject {
             }
             
             await MainActor.run {
-                isAuthenticated = true
                 self.error = nil
                 self.isLoading = false
                 updateAlertState()
                 isLoggedIn = true
+                showNetworkAlert = false
             }
         } catch {
             await MainActor.run {
@@ -93,8 +93,22 @@ final class LoginViewModel: ObservableObject {
                 self.email = email
             }
         } catch {
-            await MainActor.run {
-                self.isLoggedIn = false
+            do {
+                let (email,
+                     isLoggedIn) = try await firestore.loadLoginDataFirestore()
+                
+                await MainActor.run {
+                    self.email = email
+                    self.isLoggedIn = isLoggedIn
+                    self.error = .networkError
+                    self.showNetworkAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoggedIn = self.isLoggedIn
+                    self.error = .networkError
+                    self.showNetworkAlert = true
+                }
             }
         }
         
@@ -112,13 +126,36 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    func getAlert() -> Alert {
+    func getNetworkAlert() -> Alert {
+        Alert(
+            title: Text("Network Error"),
+            message: Text(error?.errorDescription ?? "Something went wrong"),
+            dismissButton: .default(Text("OK"))
+        )
+    }
+    
+    func getErrorAlert() -> Alert {
         if let error {
-            return Alert(
-                title: Text("Error"),
-                message: Text(error.errorDescription ?? "Unknown error"),
-                dismissButton: .default(Text("OK"))
-            )
+            switch error {
+            case .userNotVerified:
+                return Alert(
+                    title: Text("Verification Error"),
+                    message: Text(error.errorDescription ?? "Email not verified"),
+                    dismissButton: .default(Text("OK"))
+                )
+            case .networkError:
+                return Alert(
+                    title: Text("Network Error"),
+                    message: Text(error.errorDescription ?? "Network issue occurred"),
+                    dismissButton: .default(Text("OK"))
+                )
+            default:
+                return Alert(
+                    title: Text("Error"),
+                    message: Text(error.errorDescription ?? "Unknown error"),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         } else {
             return Alert(
                 title: Text("Unknown"),
