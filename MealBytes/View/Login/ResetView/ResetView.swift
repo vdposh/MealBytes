@@ -32,6 +32,13 @@ struct ResetView: View {
                     LoadingView()
                         .frame(height: 50)
                         .frame(maxWidth: .infinity)
+                } else if resetViewModel.isEmailSent {
+                    Text("A reset link has been sent to the email \"\(resetViewModel.sentEmail)\".")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
                 } else {
                     ActionButtonView(
                         title: "Send reset link on email",

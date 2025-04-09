@@ -85,24 +85,33 @@ struct ProfileView: View {
                     profileViewModel.prepareAlert(for: .signOut)
                 }
             } footer: {
-                HStack(spacing: 4) {
-                    Text("Do you want to")
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        profileViewModel.prepareAlert(for: .deleteAccount)
-                    }) {
-                        Text("remove")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.customRed)
+                if profileViewModel.isDeletingAccount {
+                    HStack {
+                        ProgressView()
                     }
-                    .buttonStyle(.plain)
-                    
-                    Text("your account?")
-                        .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                } else {
+                    HStack(spacing: 4) {
+                        Text("Do you want to")
+                            .foregroundColor(.secondary)
+                        
+                        Button(action: {
+                            profileViewModel.prepareAlert(for: .deleteAccount)
+                        }) {
+                            Text("remove")
+                                .fontWeight(.semibold)
+                                .foregroundColor(.customRed)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Text("your account?")
+                            .foregroundColor(.secondary)
+                    }
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
                 }
-                .padding(.top)
-                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
         .navigationBarTitle("Profile", displayMode: .inline)
@@ -116,6 +125,7 @@ struct ProfileView: View {
                 if profileViewModel.alertType == .deleteAccount {
                     SecureField("Enter your password",
                                 text: $profileViewModel.password)
+                    .font(.callout)
                     .textContentType(.password)
                     
                     Button(profileViewModel.destructiveButtonTitle,
@@ -141,13 +151,19 @@ struct ProfileView: View {
                     } else {
                         SecureField("Current Password",
                                     text: $profileViewModel.password)
+                        
+                        .font(.callout)
                         .textContentType(.password)
                         
                         SecureField("New Password",
                                     text: $profileViewModel.newPassword)
+                        
+                        .font(.callout)
                         .textContentType(.newPassword)
                         
                         SecureField("Confirm New Password", text: $profileViewModel.confirmPassword)
+                        
+                            .font(.callout)
                             .textContentType(.newPassword)
                         
                         Group {

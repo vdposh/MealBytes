@@ -21,6 +21,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var isToggleUpdating: Bool = false
     @Published var isPasswordChanging: Bool = false
+    @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
@@ -119,6 +120,10 @@ final class ProfileViewModel: ObservableObject {
     func prepareAlert(for type: AlertType) {
         Task {
             await MainActor.run {
+                password = ""
+                newPassword = ""
+                confirmPassword = ""
+                
                 alertType = type
                 showAlert = true
                 
@@ -153,10 +158,17 @@ final class ProfileViewModel: ObservableObject {
             signOut()
             
         case .deleteAccount:
+            await MainActor.run {
+                isDeletingAccount = true
+            }
+            
             guard let email = email, !email.isEmpty else {
-                alertTitle = "Delete Account"
-                alertMessage = "Email is missing."
-                showAlert = true
+                await MainActor.run {
+                    alertTitle = "Delete Account"
+                    alertMessage = "Email is missing."
+                    showAlert = true
+                    isDeletingAccount = true
+                }
                 return
             }
             
@@ -165,14 +177,22 @@ final class ProfileViewModel: ObservableObject {
                     email: email,
                     password: password
                 )
+                
                 await deleteAccount(email: email, password: password)
+                
+                await MainActor.run {
+                    isDeletingAccount = false
+                }
             } catch {
-                alertTitle = "Delete Account"
-                alertMessage = """
-                The password you entered is incorrect.
-                To delete your account, please provide the correct password.
-                """
-                showAlert = true
+                await MainActor.run {
+                    alertTitle = "Delete Account"
+                    alertMessage = """
+                    The password you entered is incorrect.
+                    To delete your account, please provide the correct password.
+                    """
+                    showAlert = true
+                    isDeletingAccount = false
+                }
             }
             
         case .changePassword:

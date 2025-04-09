@@ -10,9 +10,11 @@ import FirebaseAuth
 
 final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
+    @Published var sentEmail: String = ""
     @Published var success: Bool = false
     @Published var showAlert: Bool = false
     @Published var isLoading: Bool = false
+    @Published var isEmailSent = false
     
     private var error: AuthError?
     
@@ -26,6 +28,10 @@ final class ResetViewModel: ObservableObject {
         
         do {
             try await firebaseAuth.resetPasswordAuth(email: email)
+            await MainActor.run {
+                isEmailSent = true
+                sentEmail = email
+            }
             await handleResult(success: true, error: nil)
         } catch {
             await handleResult(

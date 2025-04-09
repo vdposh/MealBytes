@@ -77,6 +77,7 @@ struct RegisterView: View {
                         }
                         .font(.footnote)
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                     } else {
