@@ -50,8 +50,8 @@ struct TabBarView: View {
                 }
             }
         }
-        .alert(isPresented: $loginViewModel.showNetworkAlert) {
-            loginViewModel.getNetworkAlert()
+        .alert(isPresented: $loginViewModel.showErrorAlert) {
+            loginViewModel.getErrorAlert()
         }
         .task {
             selectedTab = 0

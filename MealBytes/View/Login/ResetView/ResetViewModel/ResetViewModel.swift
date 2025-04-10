@@ -68,7 +68,7 @@ final class ResetViewModel: ObservableObject {
         } else {
             return Alert(
                 title: Text("Error"),
-                message: Text(error?.errorDescription ?? "Unknown error"),
+                message: Text(error?.errorDescription ?? ""),
                 dismissButton: .default(Text("OK"))
             )
         }

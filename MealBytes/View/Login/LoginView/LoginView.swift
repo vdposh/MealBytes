@@ -73,7 +73,7 @@ struct LoginView: View {
             }
             .font(.footnote)
             .alert(isPresented: $loginViewModel.showAlert) {
-                loginViewModel.getErrorAlert()
+                loginViewModel.getLoginErrorAlert()
             }
         }
     }

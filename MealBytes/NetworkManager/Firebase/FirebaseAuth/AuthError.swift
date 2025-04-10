@@ -19,6 +19,8 @@ enum AuthError: Error, Identifiable, LocalizedError {
     case userNotVerified
     case weakPassword
     case networkError
+    case sessionExpired
+    case offlineMode
     case unknownError
     
     var errorDescription: String? {
@@ -32,13 +34,29 @@ enum AuthError: Error, Identifiable, LocalizedError {
         case .userNotFound:
             "No user found with the specified email address."
         case .userNotVerified:
-            "Your email is not verified. Please check your inbox and verify your email address."
+            """
+            Your email is not verified.
+            Please check your inbox and verify your email address.
+            """
         case .weakPassword:
             "The password must be at least 6 characters long."
         case .networkError:
-            "A network error occurred. Please check your internet connection and try again."
+            """
+            A network error occurred. 
+            Please check your internet connection and try again.
+            """
+        case .sessionExpired:
+            """
+            You have been disconnected.
+            Please log in again to regain access and continue.
+            """
+        case .offlineMode:
+            """
+            You are offline.
+            Local changes are saved and will sync automatically when the network connection is restored.
+            """
         case .unknownError:
-            "An unknown error occurred. Please try again later."
+            "Something went wrong while processing your request. Please try again in a moment."
         }
     }
 }

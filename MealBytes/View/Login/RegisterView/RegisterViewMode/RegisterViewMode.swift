@@ -122,7 +122,7 @@ final class RegisterViewModel: ObservableObject {
         if let error {
             return Alert(
                 title: Text("Error"),
-                message: Text(error.errorDescription ?? "Unknown error"),
+                message: Text(error.errorDescription ?? ""),
                 dismissButton: .default(Text("OK"))
             )
         } else {
