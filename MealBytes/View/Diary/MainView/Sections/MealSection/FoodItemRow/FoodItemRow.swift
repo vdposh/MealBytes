@@ -30,7 +30,6 @@ struct FoodItemRow: View {
                 measurementDescription: mealItem.measurementDescription,
                 showAddButton: false,
                 showSaveRemoveButton: true,
-                showCloseButton: false,
                 originalMealItemId: mealItem.id
             )
         ) {

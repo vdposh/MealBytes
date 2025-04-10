@@ -15,7 +15,6 @@ struct FoodView: View {
     private let navigationTitle: String
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
-    private let showCloseButton: Bool
     
     @StateObject private var foodViewModel: FoodViewModel
     
@@ -29,13 +28,11 @@ struct FoodView: View {
          measurementDescription: String,
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
-         showCloseButton: Bool,
          originalMealItemId: UUID? = nil) {
         self._isDismissed = isDismissed
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
-        self.showCloseButton = showCloseButton
         _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             mealType: mealType,
@@ -89,13 +86,6 @@ struct FoodView: View {
                     isTextFieldFocused = false
                 }
                 .font(.headline)
-            }
-            if showCloseButton {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        isDismissed = false
-                    }
-                }
             }
         }
         .task {

@@ -49,7 +49,6 @@ struct SearchView: View {
                                             measurementDescription: "",
                                             showAddButton: true,
                                             showSaveRemoveButton: false,
-                                            showCloseButton: true
                                         )
                                     ) {
                                         FoodDetailView(
