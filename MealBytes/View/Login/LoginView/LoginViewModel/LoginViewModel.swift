@@ -94,26 +94,12 @@ final class LoginViewModel: ObservableObject {
                     self.showErrorAlert = true
                 }
             } catch {
-                if let authErrorCode = AuthErrorCode(rawValue: (error as NSError).code) {
-                    switch authErrorCode {
-                    case .userNotFound:
-                        await MainActor.run {
-                            self.error = .userNotFound
-                            self.showErrorAlert = true
-                        }
-                    default:
-                        await MainActor.run {
-                            self.error = .unknownError
-                            self.showErrorAlert = true
-                        }
-                    }
-                } else {
-                    await MainActor.run {
-                        self.error = .sessionExpired
-                        self.showErrorAlert = true
-                    }
+                await MainActor.run {
+                    self.error = .sessionExpired
+                    self.showErrorAlert = true
                 }
             }
+            
         }
         
         await MainActor.run {
@@ -133,12 +119,7 @@ final class LoginViewModel: ObservableObject {
     func getErrorAlert() -> Alert {
         if let error {
             switch error {
-            case .userNotFound:
-                return Alert(
-                    title: Text("User Not Found"),
-                    message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK"))
-                )
+                
             case .offlineMode:
                 return Alert(
                     title: Text("Warning!"),
@@ -158,18 +139,10 @@ final class LoginViewModel: ObservableObject {
                     dismissButton: .default(Text("OK"))
                 )
             default:
-                return Alert(
-                    title: Text("Error"),
-                    message: Text("Something went wrong while processing your request. Please try again in a moment."),
-                    dismissButton: .default(Text("OK"))
-                )
+                return commonErrorAlert()
             }
         } else {
-            return Alert(
-                title: Text("Error"),
-                message: Text("Something went wrong while processing your request. Please try again in a moment."),
-                dismissButton: .default(Text("OK"))
-            )
+            return commonErrorAlert()
         }
     }
     
@@ -196,12 +169,16 @@ final class LoginViewModel: ObservableObject {
                 )
             }
         } else {
-            return Alert(
-                title: Text("Error"),
-                message: Text("Something went wrong"),
-                dismissButton: .default(Text("OK"))
-            )
+            return commonErrorAlert()
         }
+    }
+    
+    private func commonErrorAlert() -> Alert {
+        return Alert(
+            title: Text("Error"),
+            message: Text("Something went wrong while processing your request. Please try again in a moment."),
+            dismissButton: .default(Text("OK"))
+        )
     }
     
     // MARK: - Button State

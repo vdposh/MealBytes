@@ -15,7 +15,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if loginViewModel.isLoading {
-                LoginLoadingView()
+                LoginLogoView()
             } else if loginViewModel.isLoggedIn {
                 TabBarView(loginViewModel: loginViewModel,
                            mainViewModel: mainViewModel)
