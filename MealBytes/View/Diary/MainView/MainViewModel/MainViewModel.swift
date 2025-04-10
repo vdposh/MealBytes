@@ -26,7 +26,6 @@ final class MainViewModel: ObservableObject {
     @Published var rdi: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
-    @Published var isLoading: Bool = true
     @Published var shouldDisplayRdi: Bool = true
     
     let calendar = Calendar.current
@@ -203,7 +202,6 @@ final class MainViewModel: ObservableObject {
         
         await MainActor.run {
             updateProgress()
-            isLoading = false
         }
     }
     

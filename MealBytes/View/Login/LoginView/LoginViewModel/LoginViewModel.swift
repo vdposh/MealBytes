@@ -21,12 +21,6 @@ final class LoginViewModel: ObservableObject {
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
-    init() {
-        Task {
-            await loadLoginData()
-        }
-    }
-    
     // MARK: - Sign In
     func signIn() async {
         await MainActor.run {
