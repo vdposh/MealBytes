@@ -21,10 +21,25 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct MealBytesApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @StateObject private var mainViewModel = MainViewModel()
+    @StateObject private var loginViewModel = LoginViewModel()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(
+                loginViewModel: loginViewModel,
+                mainViewModel: mainViewModel
+            )
+            .onChange(of: scenePhase) {
+                if scenePhase == .active {
+                    Task {
+                        await mainViewModel.loadMainData()
+                        await loginViewModel.loadLoginData()
+                    }
+                }
+            }
         }
     }
 }

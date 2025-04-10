@@ -190,7 +190,3 @@ final class SearchViewModel: ObservableObject {
         isLoading = false
     }
 }
-
-#Preview {
-    ContentView()
-}

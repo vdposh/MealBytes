@@ -76,10 +76,6 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadLoginData() async {
-        await MainActor.run {
-            isLoading = true
-        }
-        
         async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
         async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
         

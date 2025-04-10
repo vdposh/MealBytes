@@ -9,8 +9,8 @@ import SwiftUI
 import FirebaseAuth
 
 struct ContentView: View {
-    @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var mainViewModel = MainViewModel()
+    @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         ZStack {
