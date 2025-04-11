@@ -22,7 +22,7 @@ struct ServingSecureFieldView: View {
                 .foregroundColor(.customRed)
             
             SecureField(placeholder, text: $text)
-                .padding(.vertical, 5)
+                .frame(height: 35)
                 .lineLimit(1)
                 .foregroundColor(textColor)
                 .overlay(

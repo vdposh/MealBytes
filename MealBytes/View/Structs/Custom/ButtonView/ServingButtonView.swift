@@ -27,7 +27,7 @@ struct ServingButtonView: View {
                         .resizable()
                         .frame(width: 10, height: 6)
                 }
-                .padding(.vertical, 5)
+                .frame(height: 35)
                 .overlay(
                     Rectangle()
                         .frame(height: 1)

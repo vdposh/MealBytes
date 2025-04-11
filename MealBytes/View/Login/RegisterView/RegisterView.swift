@@ -12,7 +12,7 @@ struct RegisterView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 21) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text("Create account")
                     .font(.title)
                     .fontWeight(.bold)

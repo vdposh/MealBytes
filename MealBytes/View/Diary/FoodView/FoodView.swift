@@ -66,7 +66,7 @@ struct FoodView: View {
                         nutrientActionSection
                         nutrientDetailSection
                     }
-                    .listSectionSpacing(15)
+                    .listSectionSpacing(20)
                     .scrollDismissesKeyboard(.never)
                 }
             }
