@@ -15,6 +15,7 @@ final class LoginViewModel: ObservableObject {
     @Published var showErrorAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     @Published var isLoading: Bool = true
+    @Published var isSignIn: Bool = false
     
     private var error: AuthError?
     
@@ -24,7 +25,7 @@ final class LoginViewModel: ObservableObject {
     // MARK: - Sign In
     func signIn() async {
         await MainActor.run {
-            isLoading = true
+            isSignIn = true
         }
         
         do {
@@ -34,7 +35,7 @@ final class LoginViewModel: ObservableObject {
             if !user.isEmailVerified {
                 await MainActor.run {
                     self.error = .userNotVerified
-                    self.isLoading = false
+                    self.isSignIn = false
                     updateAlertState()
                 }
                 return
@@ -46,7 +47,7 @@ final class LoginViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.error = .networkError
-                    self.isLoading = false
+                    self.isSignIn = false
                     updateAlertState()
                 }
                 return
@@ -54,7 +55,7 @@ final class LoginViewModel: ObservableObject {
             
             await MainActor.run {
                 self.error = nil
-                self.isLoading = false
+                self.isSignIn = false
                 updateAlertState()
                 isLoggedIn = true
                 showErrorAlert = false
@@ -62,7 +63,7 @@ final class LoginViewModel: ObservableObject {
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
-                self.isLoading = false
+                self.isSignIn = false
                 updateAlertState()
             }
         }
