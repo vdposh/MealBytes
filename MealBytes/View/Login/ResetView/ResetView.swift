@@ -12,7 +12,7 @@ struct ResetView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 21) {
                 Text("Reset password")
                     .font(.title)
                     .fontWeight(.bold)
@@ -66,4 +66,8 @@ struct ResetView: View {
                 }
         }
     }
+}
+
+#Preview {
+    ResetView()
 }

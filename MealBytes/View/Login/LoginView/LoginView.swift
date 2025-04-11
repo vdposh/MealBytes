@@ -12,7 +12,7 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 21) {
                 Text("Sign in")
                     .font(.title)
                     .fontWeight(.bold)
@@ -77,4 +77,8 @@ struct LoginView: View {
             }
         }
     }
+}
+
+#Preview {
+    LoginView(loginViewModel: LoginViewModel())
 }

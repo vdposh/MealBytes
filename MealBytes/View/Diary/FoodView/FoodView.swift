@@ -15,6 +15,7 @@ struct FoodView: View {
     private let navigationTitle: String
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
+    private let showMealTypeButton: Bool
     
     @StateObject private var foodViewModel: FoodViewModel
     
@@ -28,11 +29,13 @@ struct FoodView: View {
          measurementDescription: String,
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
+         showMealTypeButton: Bool,
          originalMealItemId: UUID? = nil) {
         self._isDismissed = isDismissed
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
+        self.showMealTypeButton = showMealTypeButton
         _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             mealType: mealType,
@@ -69,15 +72,6 @@ struct FoodView: View {
             }
         }
         .navigationBarTitle(navigationTitle, displayMode: .inline)
-        .confirmationDialog(
-            "Select Serving",
-            isPresented: $foodViewModel.showActionSheet,
-            titleVisibility: .visible
-        ) {
-            if let servings = foodViewModel.foodDetail?.servings.serving {
-                servingButtons(servings: servings)
-            }
-        }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Text("Enter serving size")
@@ -114,12 +108,48 @@ struct FoodView: View {
                 }
                 
                 ServingButtonView(
-                    showActionSheet: $foodViewModel.showActionSheet,
+                    showActionSheet: $foodViewModel.showServingDialog,
                     title: "Serving",
                     description: foodViewModel.servingDescription
                 ) {
                     isTextFieldFocused = false
-                    foodViewModel.showActionSheet.toggle()
+                    foodViewModel.showServingDialog.toggle()
+                }
+                .confirmationDialog(
+                    "Select Serving",
+                    isPresented: $foodViewModel.showServingDialog,
+                    titleVisibility: .visible
+                ) {
+                    if let servings = foodViewModel
+                        .foodDetail?.servings.serving {
+                        ForEach(servings, id: \.self) { serving in
+                            Button(foodViewModel.servingDescription(for: serving)) {
+                                foodViewModel.updateServing(serving)
+                            }
+                        }
+                    }
+                }
+                
+                if showMealTypeButton {
+                    ServingButtonView(
+                        showActionSheet: $foodViewModel.showMealTypeDialog,
+                        title: "Meal Type",
+                        description: foodViewModel.mealType.rawValue
+                    ) {
+                        isTextFieldFocused = false
+                        foodViewModel.showMealTypeDialog.toggle()
+                    }
+                    .confirmationDialog(
+                        "Select Meal Type",
+                        isPresented: $foodViewModel.showMealTypeDialog,
+                        titleVisibility: .visible
+                    ) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Button(meal.rawValue) {
+                                foodViewModel.mealType = meal
+                            }
+                        }
+                    }
                 }
             }
             .padding(.bottom, 10)
@@ -209,4 +239,25 @@ struct FoodView: View {
             }
         }
     }
+}
+
+#Preview {
+    FoodView(
+        isDismissed: .constant(false),
+        navigationTitle: "Add to Diary",
+        food: Food(
+            searchFoodId: 3092,
+            searchFoodName: "Egg",
+            searchFoodDescription: "1 cup"
+        ),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "1",
+        measurementDescription: "Grams",
+        showAddButton: false,
+        showSaveRemoveButton: true,
+        showMealTypeButton: true,
+        originalMealItemId: UUID()
+    )
 }

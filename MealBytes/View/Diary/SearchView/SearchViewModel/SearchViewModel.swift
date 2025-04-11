@@ -190,3 +190,11 @@ final class SearchViewModel: ObservableObject {
         isLoading = false
     }
 }
+
+#Preview {
+    SearchView(
+        isPresented: .constant(true),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mealType: .breakfast
+    )
+}

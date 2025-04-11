@@ -15,11 +15,12 @@ final class FoodViewModel: ObservableObject {
     @Published var originalAmount: String = ""
     @Published var appError: AppError?
     @Published var unit: MeasurementUnit = .grams
-    @Published var showActionSheet: Bool = false
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
     @Published var shouldUseOriginalAmount: Bool = false
+    @Published var showServingDialog: Bool = false
+    @Published var showMealTypeDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -29,12 +30,13 @@ final class FoodViewModel: ObservableObject {
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
     let food: Food
-    let mealType: MealType
+    var mealType: MealType
+    let originalMealType: MealType
     let originalMealItemId: UUID
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    let searchViewModel: SearchViewModel
+    var searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
     init(food: Food,
@@ -53,6 +55,7 @@ final class FoodViewModel: ObservableObject {
         
         self.food = food
         self.mealType = mealType
+        self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
@@ -144,11 +147,22 @@ final class FoodViewModel: ObservableObject {
         
         Task {
             do {
-                mainViewModel.updateMealItemMainView(
-                    updatedMealItem,
-                    for: mealType,
-                    on: date
-                )
+                await MainActor.run {
+                    mainViewModel.deleteMealItemMainView(
+                        with: originalMealItemId,
+                        for: originalMealType
+                    )
+                    
+                    mainViewModel.addMealItemMainView(
+                        updatedMealItem,
+                        to: mealType,
+                        for: date
+                    )
+                    
+                    mainViewModel.expandedSections[originalMealType] = false
+                    mainViewModel.expandedSections[mealType] = true
+                }
+                
                 try await firestore.updateMealItemFirestore(updatedMealItem)
             } catch {
                 await MainActor.run {
@@ -161,7 +175,7 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Delete food
     func deleteMealItemFoodView() async {
         mainViewModel.deleteMealItemMainView(with: originalMealItemId,
-                                             for: mealType)
+                                             for: originalMealType)
     }
     
     // MARK: - Bookmark Management

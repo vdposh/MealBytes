@@ -39,7 +39,7 @@ struct SearchView: View {
                                     NavigationLink(
                                         destination: FoodView(
                                             isDismissed: $isPresented,
-                                            navigationTitle: "Add to \(mealType.rawValue)",
+                                            navigationTitle: "Add to Diary",
                                             food: food,
                                             searchViewModel: searchViewModel,
                                             mainViewModel: searchViewModel
@@ -49,6 +49,7 @@ struct SearchView: View {
                                             measurementDescription: "",
                                             showAddButton: true,
                                             showSaveRemoveButton: false,
+                                            showMealTypeButton: false
                                         )
                                     ) {
                                         FoodDetailView(
