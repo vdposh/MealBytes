@@ -67,7 +67,3 @@ struct ResetView: View {
         }
     }
 }
-
-#Preview {
-    ResetView()
-}

@@ -66,7 +66,7 @@ struct FoodView: View {
                         nutrientActionSection
                         nutrientDetailSection
                     }
-                    .listSectionSpacing(20)
+                    .listSectionSpacing(15)
                     .scrollDismissesKeyboard(.never)
                 }
             }
@@ -123,9 +123,10 @@ struct FoodView: View {
                     if let servings = foodViewModel
                         .foodDetail?.servings.serving {
                         ForEach(servings, id: \.self) { serving in
-                            Button(foodViewModel.servingDescription(for: serving)) {
-                                foodViewModel.updateServing(serving)
-                            }
+                            Button(foodViewModel.servingDescription(
+                                for: serving)) {
+                                    foodViewModel.updateServing(serving)
+                                }
                         }
                     }
                 }

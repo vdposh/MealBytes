@@ -159,7 +159,6 @@ final class FoodViewModel: ObservableObject {
                         for: date
                     )
                     
-                    mainViewModel.expandedSections[originalMealType] = false
                     mainViewModel.expandedSections[mealType] = true
                 }
                 

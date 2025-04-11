@@ -39,7 +39,8 @@ struct SearchView: View {
                                     NavigationLink(
                                         destination: FoodView(
                                             isDismissed: $isPresented,
-                                            navigationTitle: "Add to Diary",
+                                            navigationTitle:
+                                                "Add to \(mealType.rawValue)",
                                             food: food,
                                             searchViewModel: searchViewModel,
                                             mainViewModel: searchViewModel

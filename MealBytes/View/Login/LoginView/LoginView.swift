@@ -35,6 +35,7 @@ struct LoginView: View {
                     titleColor: loginViewModel.titleColor(
                         for: loginViewModel.password)
                 )
+                
                 ActionButtonView(
                     title: "Login",
                     action: {
@@ -77,8 +78,4 @@ struct LoginView: View {
             }
         }
     }
-}
-
-#Preview {
-    LoginView(loginViewModel: LoginViewModel())
 }
