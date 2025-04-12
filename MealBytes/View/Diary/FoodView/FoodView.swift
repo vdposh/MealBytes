@@ -174,7 +174,6 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
-                                foodViewModel.shouldUseOriginalAmount = true
                                 foodViewModel.addMealItemFoodView(
                                     in: foodViewModel.mealType,
                                     for: foodViewModel.mainViewModel.date
@@ -208,7 +207,6 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Save",
                             action: {
-                                foodViewModel.shouldUseOriginalAmount = true
                                 Task {
                                     await foodViewModel.updateMealItemFoodView(
                                         for: foodViewModel.mainViewModel.date)

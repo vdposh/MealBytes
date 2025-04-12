@@ -18,7 +18,6 @@ final class FoodViewModel: ObservableObject {
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
-    @Published var shouldUseOriginalAmount: Bool = false
     @Published var showServingDialog: Bool = false
     @Published var showMealTypeDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
@@ -137,35 +136,55 @@ final class FoodViewModel: ObservableObject {
             foodName: food.searchFoodName,
             portionUnit: selectedServing.metricServingUnit,
             nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
-                result, detail in
-                result[detail.type] = detail.value
+                result, detail in result[detail.type] = detail.value
             },
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.sanitizedForDouble) ?? 0,
-            date: date, mealType: mealType
+            date: date,
+            mealType: mealType
         )
         
         Task {
             do {
-                await MainActor.run {
-                    mainViewModel.deleteMealItemMainView(
-                        with: originalMealItemId,
-                        for: originalMealType
-                    )
+                if originalMealType == mealType {
+                    await MainActor.run {
+                        mainViewModel.updateMealItemMainView(
+                            updatedMealItem,
+                            for: mealType,
+                            on: date
+                        )
+                    }
+                    try await firestore.updateMealItemFirestore(updatedMealItem)
+                } else {
+                    await MainActor.run {
+                        mainViewModel.deleteMealItemMainView(
+                            with: originalMealItemId,
+                            for: originalMealType
+                        )
+                    }
                     
-                    mainViewModel.addMealItemMainView(
-                        updatedMealItem,
-                        to: mealType,
-                        for: date
-                    )
+                    if mainViewModel.filteredMealItems(for: originalMealType,
+                                                       on: date).isEmpty {
+                        await MainActor.run {
+                            mainViewModel
+                                .expandedSections[originalMealType] = false
+                        }
+                    }
                     
-                    mainViewModel.expandedSections[mealType] = true
+                    await MainActor.run {
+                        mainViewModel.addMealItemMainView(
+                            updatedMealItem,
+                            to: mealType,
+                            for: date
+                        )
+                        mainViewModel.expandedSections[mealType] = true
+                    }
+                    
+                    try await firestore.updateMealItemFirestore(updatedMealItem)
                 }
-                
-                try await firestore.updateMealItemFirestore(updatedMealItem)
             } catch {
                 await MainActor.run {
-                    print(error.localizedDescription)
+                    appError = .disconnected
                 }
             }
         }
@@ -210,7 +229,7 @@ final class FoodViewModel: ObservableObject {
             amount = ""
         } else {
             if let newAmount = Double(amount.sanitizedForDouble),
-                newAmount > 0 {
+               newAmount > 0 {
                 originalAmount = amount
             } else {
                 amount = originalAmount
