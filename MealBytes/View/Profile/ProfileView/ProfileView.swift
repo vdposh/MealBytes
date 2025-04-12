@@ -31,9 +31,11 @@ struct ProfileView: View {
                             .lineLimit(1)
                     }
                 } else {
+                    Text("You have been disconnected:")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     Text("Unable to retrieve email.")
-                        .font(.title3)
-                        .fontWeight(.semibold)
+                        .font(.headline)
                         .foregroundColor(.customRed)
                 }
             }
