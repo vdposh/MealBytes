@@ -16,7 +16,7 @@ final class TokenManager {
     private let clientSecret = "bf1b1b039b8f435bbd5a724220d5e333"
     @Published var accessToken: String?
     
-    func fetchToken() async throws -> String {
+    func fetchToken() async throws {
         var request = URLRequest(url: tokenURL)
         request.httpMethod = "POST"
         request.addValue("application/x-www-form-urlencoded",
@@ -40,24 +40,8 @@ final class TokenManager {
             let decodedResponse = try JSONDecoder().decode(TokenResponse.self,
                                                            from: data)
             self.accessToken = decodedResponse.accessToken
-            
-            return decodedResponse.accessToken
         } catch {
             throw AppError.network
         }
-    }
-}
-
-struct TokenResponse: Decodable {
-    let accessToken: String
-    let expiresIn: Int
-    let tokenType: String
-    let scope: String
-    
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case expiresIn = "expires_in"
-        case tokenType = "token_type"
-        case scope
     }
 }

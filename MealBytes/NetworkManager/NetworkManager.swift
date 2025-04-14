@@ -50,7 +50,7 @@ final class NetworkManager: NetworkManagerProtocol {
     
     private func ensureValidToken() async throws {
         if TokenManager.shared.accessToken == nil {
-            _ = try await TokenManager.shared.fetchToken()
+            try await TokenManager.shared.fetchToken()
         }
     }
     
