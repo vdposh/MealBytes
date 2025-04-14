@@ -15,14 +15,14 @@ struct CompactNutrientDetailRow: View {
             Text(nutrient.type.alternativeTitle)
                 .font(.subheadline)
                 .foregroundColor(.white)
-                .padding(.vertical, 1)
+                .padding(.bottom, 1)
             HStack {
                 Text(nutrient.formattedValue)
                     .lineLimit(1)
                     .foregroundColor(.white)
             }
         }
-        .frame(height: 73)
+        .frame(height: 78)
         .frame(maxWidth: .infinity)
         .background(.customGreen)
         .cornerRadius(12)

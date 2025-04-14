@@ -31,12 +31,9 @@ struct ProfileView: View {
                             .lineLimit(1)
                     }
                 } else {
-                    Text("You have been disconnected:")
+                    Text("You have been disconnected.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Text("Unable to retrieve email.")
-                        .font(.headline)
-                        .foregroundColor(.customRed)
                 }
             }
             .padding(.bottom)
@@ -163,10 +160,11 @@ struct ProfileView: View {
                         .font(.callout)
                         .textContentType(.newPassword)
                         
-                        SecureField("Confirm New Password", text: $profileViewModel.confirmPassword)
+                        SecureField("Confirm New Password",
+                                    text: $profileViewModel.confirmPassword)
                         
-                            .font(.callout)
-                            .textContentType(.newPassword)
+                        .font(.callout)
+                        .textContentType(.newPassword)
                         
                         Group {
                             Button("Cancel", role: .cancel) {
