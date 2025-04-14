@@ -7,11 +7,7 @@
 
 import SwiftUI
 
-protocol TokenManagerProtocol {
-    func fetchToken() async throws -> String
-}
-
-final class TokenManager: TokenManagerProtocol {
+final class TokenManager {
     
     static let shared = TokenManager()
     
@@ -33,14 +29,16 @@ final class TokenManager: TokenManagerProtocol {
             let (data, response) = try await URLSession.shared.data(
                 for: request)
             
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw URLError(.badServerResponse)
+            }
+            
+            if httpResponse.statusCode != 200 {
                 throw URLError(.badServerResponse)
             }
             
             let decodedResponse = try JSONDecoder().decode(TokenResponse.self,
                                                            from: data)
-            
             self.accessToken = decodedResponse.accessToken
             
             return decodedResponse.accessToken

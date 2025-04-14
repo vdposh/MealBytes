@@ -52,10 +52,10 @@ extension FatSecretAPI: TargetType {
     }
     
     var headers: [String: String]? {
-        guard let token = TokenManager.shared.accessToken else {
-            return nil
-        }
-        return ["Authorization": "Bearer \(token)"]
+        let currentToken = TokenManager.shared.accessToken ?? ""
+        return [
+            "Authorization": "Bearer \(currentToken)"
+        ]
     }
     
     var format: String {

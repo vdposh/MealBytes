@@ -21,7 +21,6 @@ final class LoginViewModel: ObservableObject {
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
-    private let tokenManager: TokenManagerProtocol = TokenManager()
     
     // MARK: - Sign In
     func signIn() async {
@@ -76,8 +75,6 @@ final class LoginViewModel: ObservableObject {
         async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
         
         do {
-            let token = try await tokenManager.fetchToken()
-            print("TOKEN: \(token)")
             let (_, isAuthenticated) = try await (tokenTask, authTask)
             let (email,
                  isLoggedIn) = try await firestore.loadLoginDataFirestore()
