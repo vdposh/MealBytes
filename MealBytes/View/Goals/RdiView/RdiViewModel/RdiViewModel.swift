@@ -122,20 +122,33 @@ final class RdiViewModel: ObservableObject {
     
     // MARK: - RDI Calculation
     private func setupDataObserver() {
-        Publishers.CombineLatest4(
-            $age,
-            $weight,
-            $height,
-            Publishers.CombineLatest($selectedGender, $selectedActivity)
+        Publishers.CombineLatest(
+            Publishers.CombineLatest($age, $weight),
+            Publishers.CombineLatest($height, $selectedGender)
         )
-        .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-        .sink { [weak self] age, weight, height, combined in
-            let (gender, activity) = combined
-            self?.recalculateRdi(age: age,
-                                 weight: weight,
-                                 height: height,
-                                 gender: gender,
-                                 activity: activity)
+        .combineLatest(
+            Publishers.CombineLatest(
+                $selectedActivity,
+                Publishers.CombineLatest($selectedWeightUnit,
+                                         $selectedHeightUnit)
+            )
+        )
+        .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
+        .sink { [weak self] combined1, combined2 in
+            let (age, weight) = combined1.0
+            let (height, gender) = combined1.1
+            let (activity, units) = combined2
+            let (weightUnit, heightUnit) = units
+            
+            self?.recalculateRdi(
+                age: age,
+                weight: weight,
+                height: height,
+                gender: gender,
+                activity: activity,
+                weightUnit: weightUnit,
+                heightUnit: heightUnit
+            )
         }
         .store(in: &cancellables)
     }
@@ -144,7 +157,9 @@ final class RdiViewModel: ObservableObject {
                                 weight: String,
                                 height: String,
                                 gender: Gender,
-                                activity: ActivityLevel) {
+                                activity: ActivityLevel,
+                                weightUnit: WeightUnit,
+                                heightUnit: HeightUnit) {
         guard let ageValue = Double(age.sanitizedForDouble),
               let weightValue = Double(weight.sanitizedForDouble),
               let heightValue = Double(height.sanitizedForDouble),
@@ -153,8 +168,10 @@ final class RdiViewModel: ObservableObject {
             return
         }
         
-        let weightInKg = selectedWeightUnit == .lbs ? weightValue * 0.453592 : weightValue
-        let heightInCm = selectedHeightUnit == .inches ? heightValue * 2.54 : heightValue
+        let weightInKg = weightUnit ==
+            .lbs ? weightValue * 0.453592 : weightValue
+        let heightInCm = heightUnit ==
+            .inches ? heightValue * 2.54 : heightValue
         
         let bmr: Double
         switch gender {
@@ -234,7 +251,7 @@ enum Gender: String, CaseIterable {
     case notSelected = "Not selected"
     case male = "Male"
     case female = "Female"
-
+    
     var accentColor: Color {
         switch self {
         case .notSelected:
@@ -252,7 +269,7 @@ enum ActivityLevel: String, CaseIterable {
     case moderatelyActive = "Moderately Active"
     case veryActive = "Very Active"
     case extraActive = "Extra Active"
-
+    
     var accentColor: Color {
         switch self {
         case .notSelected:

@@ -119,7 +119,6 @@ final class LoginViewModel: ObservableObject {
     func getErrorAlert() -> Alert {
         if let error {
             switch error {
-                
             case .offlineMode:
                 return Alert(
                     title: Text("Warning!"),
@@ -130,13 +129,13 @@ final class LoginViewModel: ObservableObject {
                 return Alert(
                     title: Text("Session Expired"),
                     message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK"))
-                )
-            case .unknownError:
-                return Alert(
-                    title: Text("Error"),
-                    message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK"))
+                    dismissButton: .default(Text("OK")) {
+                        Task {
+                            await MainActor.run {
+                                self.isLoggedIn = false
+                            }
+                        }
+                    }
                 )
             default:
                 return commonErrorAlert()
