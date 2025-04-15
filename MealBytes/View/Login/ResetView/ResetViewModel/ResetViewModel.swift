@@ -81,7 +81,7 @@ final class ResetViewModel: ObservableObject {
     
     // MARK: - Colors
     func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .primary
+        return text.isEmpty ? .customRed : .secondary
     }
     
     // MARK: - Error

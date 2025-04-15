@@ -247,7 +247,7 @@ final class CustomRdiViewModel: ObservableObject {
     func titleColor(for value: String) -> Color {
         switch value.isEmpty {
         case true: .customRed
-        case false: .primary
+        case false: .secondary
         }
     }
     

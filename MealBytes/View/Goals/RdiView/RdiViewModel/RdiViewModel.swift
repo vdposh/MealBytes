@@ -203,7 +203,7 @@ final class RdiViewModel: ObservableObject {
         guard let value = Double(sanitizedField), value > 0 else {
             return .customRed
         }
-        return .primary
+        return .secondary
     }
     
     // MARK: - Save Goals
