@@ -1,18 +1,18 @@
 //
-//  ServingSecureFieldView.swift
+//  LoginTextFieldView.swift
 //  MealBytes
 //
-//  Created by Porshe on 30/03/2025.
+//  Created by Porshe on 15/04/2025.
 //
 
 import SwiftUI
 
-struct ServingSecureFieldView: View {
+struct LoginTextFieldView: View {
     @Binding var text: String
-    let title: String
-    var placeholder: String = "Enter value"
+    var title: String = "Email"
+    var placeholder: String = "Enter your email"
+    var keyboardType: UIKeyboardType = .emailAddress
     var titleColor: Color = .primary
-    var textColor: Color = .primary
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -21,10 +21,12 @@ struct ServingSecureFieldView: View {
                 .foregroundColor(titleColor) + Text("*")
                 .foregroundColor(.customRed)
             
-            SecureField(placeholder, text: $text)
+            TextField(placeholder, text: $text)
+                .keyboardType(keyboardType)
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
                 .frame(height: 35)
                 .lineLimit(1)
-                .foregroundColor(textColor)
                 .overlay(
                     Rectangle()
                         .frame(height: 1)

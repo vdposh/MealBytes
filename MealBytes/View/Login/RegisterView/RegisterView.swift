@@ -17,18 +17,13 @@ struct RegisterView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                ServingTextFieldView(
+                LoginTextFieldView(
                     text: $registerViewModel.email,
-                    title: "Email",
-                    placeholder: "Enter your email",
-                    keyboardType: .emailAddress,
                     titleColor: registerViewModel.titleColor(
                         for: registerViewModel.email)
                 )
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
                 
-                ServingSecureFieldView(
+                SecureFieldView(
                     text: $registerViewModel.password,
                     title: "Password",
                     placeholder: "Enter your password",
@@ -36,7 +31,7 @@ struct RegisterView: View {
                         for: registerViewModel.password)
                 )
                 
-                ServingSecureFieldView(
+                SecureFieldView(
                     text: $registerViewModel.confirmPassword,
                     title: "Confirm Password",
                     placeholder: "Re-enter your password",

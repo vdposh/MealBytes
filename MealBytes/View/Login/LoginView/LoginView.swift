@@ -17,18 +17,13 @@ struct LoginView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                ServingTextFieldView(
+                LoginTextFieldView(
                     text: $loginViewModel.email,
-                    title: "Email",
-                    placeholder: "Enter your email",
-                    keyboardType: .emailAddress,
                     titleColor: loginViewModel.titleColor(
                         for: loginViewModel.email)
                 )
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
                 
-                ServingSecureFieldView(
+                SecureFieldView(
                     text: $loginViewModel.password,
                     title: "Password",
                     placeholder: "Enter your password",

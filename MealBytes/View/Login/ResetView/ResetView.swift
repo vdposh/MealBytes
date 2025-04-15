@@ -17,16 +17,11 @@ struct ResetView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                ServingTextFieldView(
+                LoginTextFieldView(
                     text: $resetViewModel.email,
-                    title: "Email",
-                    placeholder: "Enter your email",
-                    keyboardType: .emailAddress,
                     titleColor: resetViewModel.titleColor(
                         for: resetViewModel.email)
                 )
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
                 
                 if resetViewModel.isLoading {
                     LoadingView()
