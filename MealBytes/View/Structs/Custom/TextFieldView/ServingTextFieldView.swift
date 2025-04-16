@@ -14,8 +14,8 @@ struct ServingTextFieldView: View {
     var keyboardType: UIKeyboardType = .decimalPad
     var titleColor: Color = .secondary
     var textColor: Color = .primary
-    var maxInteger: Int = 99999
-    var maxFractionalDigits: Int = 1
+    var maxInteger: Int = 100000
+    var maxFractionalDigits: Int = 2
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -61,8 +61,8 @@ struct ServingTextFieldView: View {
             input = "\(maxInteger)".replacingOccurrences(of: ".", with: ",")
         }
         
-        if input.hasSuffix(",0") {
-            input.removeLast(2)
+        if input.hasSuffix(",00") {
+            input.removeLast(3)
         }
     }
 }
