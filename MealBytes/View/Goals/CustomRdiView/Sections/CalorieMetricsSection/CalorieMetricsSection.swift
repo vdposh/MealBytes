@@ -28,7 +28,8 @@ struct CalorieMetricsSection: View {
                 showStar: customRdiViewModel.showStar,
                 keyboardType: .decimalPad,
                 titleColor: customRdiViewModel.titleColor(
-                    for: customRdiViewModel.calories),
+                    for: customRdiViewModel.calories,
+                    isCalorie: true),
                 textColor: customRdiViewModel.caloriesTextColor
             )
             .focused($focusedField)

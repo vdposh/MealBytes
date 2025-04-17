@@ -27,7 +27,7 @@ final class CustomRdiViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        calories = "0"
+        calories = ""
         fat = ""
         carbohydrate = ""
         protein = ""
@@ -98,7 +98,7 @@ final class CustomRdiViewModel: ObservableObject {
     private func calculateCalories(fat: String,
                                    carbohydrate: String,
                                    protein: String) {
-        guard toggleOn && !calories.isEmpty else {
+        guard toggleOn else {
             return
         }
         
@@ -113,17 +113,20 @@ final class CustomRdiViewModel: ObservableObject {
     func validateInputs() -> String? {
         var errorMessages: [String] = []
         
-        if calories.sanitizedForDouble.isEmpty || Double(calories.sanitizedForDouble) == nil {
-            errorMessages.append("Enter a valid calorie value.")
-        }
-        
-        if toggleOn {
+        if !toggleOn {
+            if calories.sanitizedForDouble.isEmpty ||
+                Double(calories.sanitizedForDouble) == nil {
+                errorMessages.append("Enter a valid calorie value.")
+            }
+        } else {
             let macronutrients: [(String, String)] = [
-                (fat.sanitizedForDouble, "Enter a valid fat value."),
-                (carbohydrate.sanitizedForDouble, "Enter a valid carbohydrate value."),
-                (protein.sanitizedForDouble, "Enter a valid protein value.")
+                (fat.sanitizedForDouble,
+                 "Enter a valid fat value."),
+                (carbohydrate.sanitizedForDouble,
+                 "Enter a valid carbohydrate value."),
+                (protein.sanitizedForDouble,
+                 "Enter a valid protein value.")
             ]
-            
             for (value, errorMessage) in macronutrients {
                 if value.isEmpty || Double(value) == nil {
                     errorMessages.append(errorMessage)
@@ -149,10 +152,14 @@ final class CustomRdiViewModel: ObservableObject {
     }
     
     // MARK: - UI Helpers
-    func titleColor(for value: String) -> Color {
-        switch value.isEmpty {
-        case true: .customRed
-        case false: .secondary
+    func titleColor(for value: String,
+                    isCalorie: Bool = false) -> Color {
+        if isCalorie && toggleOn {
+            return Color.secondary
+        } else if value.isEmpty {
+            return Color.customRed
+        } else {
+            return Color.secondary
         }
     }
     

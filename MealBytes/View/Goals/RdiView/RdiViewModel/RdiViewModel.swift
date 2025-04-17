@@ -229,10 +229,8 @@ final class RdiViewModel: ObservableObject {
     
     func color(for calculatedRdi: String) -> Color {
         switch calculatedRdi.isEmpty {
-        case true:
-                .secondary
-        case false:
-                .primary
+        case true: .secondary
+        case false: .primary
         }
     }
 }
