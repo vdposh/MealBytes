@@ -21,7 +21,6 @@ final class RdiViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var isDataLoaded: Bool = false
-    @Published var isError: Bool = false
     
     private let formatter = Formatter()
     
@@ -89,36 +88,6 @@ final class RdiViewModel: ObservableObject {
             await mainViewModel.saveMainRdiMainView()
         } catch {
             appError = .decoding
-        }
-    }
-    
-    // MARK: - Input Validation
-    private func validateInputs() -> String? {
-        var errorMessages: [String] = []
-        let inputs: [(String, String)] = [
-            (age.sanitizedForDouble, "Enter a valid Age."),
-            (weight.sanitizedForDouble, "Enter a valid Weight."),
-            (height.sanitizedForDouble, "Enter a valid Height.")
-        ]
-        
-        for (value, errorMessage) in inputs {
-            if value.isEmpty || Double(value) == nil || Double(value) == 0 {
-                errorMessages.append(errorMessage)
-            }
-        }
-        
-        if selectedGender == .notSelected {
-            errorMessages.append("Select a Gender.")
-        }
-        
-        if selectedActivity == .notSelected {
-            errorMessages.append("Select an Activity Level.")
-        }
-        
-        if errorMessages.isEmpty {
-            return nil
-        } else {
-            return errorMessages.joined(separator: "\n")
         }
     }
     
@@ -208,24 +177,43 @@ final class RdiViewModel: ObservableObject {
         return .secondary
     }
     
-    // MARK: - Save Goals
+    // MARK: - Input Validation
+    private func validateInputs() -> String? {
+        var errorMessages: [String] = []
+        let inputs: [(String, String)] = [
+            (age.sanitizedForDouble, "Enter a valid Age."),
+            (weight.sanitizedForDouble, "Enter a valid Weight."),
+            (height.sanitizedForDouble, "Enter a valid Height.")
+        ]
+        
+        for (value, errorMessage) in inputs {
+            if value.isEmpty || Double(value) == nil || Double(value) == 0 {
+                errorMessages.append(errorMessage)
+            }
+        }
+        
+        if selectedGender == .notSelected {
+            errorMessages.append("Select a Gender.")
+        }
+        
+        if selectedActivity == .notSelected {
+            errorMessages.append("Select an Activity Level.")
+        }
+        
+        if errorMessages.isEmpty {
+            return nil
+        } else {
+            return errorMessages.joined(separator: "\n")
+        }
+    }
+    
     func handleSave() -> Bool {
         if let errors = validateInputs() {
-            isError = true
             alertMessage = errors
             showAlert = true
             return false
         } else {
-            isError = false
             return true
-        }
-    }
-    
-    func alertTitle() -> String {
-        if isError {
-            return "Error"
-        } else {
-            return "Done"
         }
     }
     

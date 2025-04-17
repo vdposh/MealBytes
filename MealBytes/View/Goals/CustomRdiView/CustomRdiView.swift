@@ -66,14 +66,23 @@ struct CustomRdiView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
-                            Task {
-                                await customRdiViewModel.saveCustomRdiView()
+                            if customRdiViewModel.handleSave() {
+                                Task {
+                                    await customRdiViewModel.saveCustomRdiView()
+                                }
                                 dismiss()
                             }
                         }
                     }
                 }
             }
+        }
+        .alert("Error", isPresented: $customRdiViewModel.showAlert) {
+            Button("OK", role: .none) {
+                customRdiViewModel.showAlert = false
+            }
+        } message: {
+            Text(customRdiViewModel.alertMessage)
         }
         .task {
             await customRdiViewModel.loadCustomRdiView()

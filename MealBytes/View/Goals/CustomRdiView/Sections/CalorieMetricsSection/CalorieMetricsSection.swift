@@ -26,6 +26,7 @@ struct CalorieMetricsSection: View {
                 text: $customRdiViewModel.calories,
                 title: "Calories",
                 showStar: customRdiViewModel.showStar,
+                keyboardType: .decimalPad,
                 titleColor: customRdiViewModel.titleColor(
                     for: customRdiViewModel.calories),
                 textColor: customRdiViewModel.caloriesTextColor

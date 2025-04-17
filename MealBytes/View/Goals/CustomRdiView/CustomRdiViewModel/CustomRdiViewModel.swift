@@ -14,9 +14,11 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
+    @Published var alertMessage: String = ""
     @Published var toggleOn: Bool = false
     @Published var isLoading: Bool = true
     @Published var isSaved: Bool = false
+    @Published var showAlert: Bool = false
     
     private let formatter = Formatter()
     
@@ -100,11 +102,50 @@ final class CustomRdiViewModel: ObservableObject {
             return
         }
         
-        let fatValue = Double(fat) ?? 0
-        let carbValue = Double(carbohydrate) ?? 0
-        let protValue = Double(protein) ?? 0
+        let fatValue = Double(fat.sanitizedForDouble) ?? 0
+        let carbValue = Double(carbohydrate.sanitizedForDouble) ?? 0
+        let protValue = Double(protein.sanitizedForDouble) ?? 0
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         calories = formatter.formattedValue(totalCalories, unit: .empty)
+    }
+    
+    // MARK: - Input Validation
+    func validateInputs() -> String? {
+        var errorMessages: [String] = []
+        
+        if calories.sanitizedForDouble.isEmpty || Double(calories.sanitizedForDouble) == nil {
+            errorMessages.append("Enter a valid calorie value.")
+        }
+        
+        if toggleOn {
+            let macronutrients: [(String, String)] = [
+                (fat.sanitizedForDouble, "Enter a valid fat value."),
+                (carbohydrate.sanitizedForDouble, "Enter a valid carbohydrate value."),
+                (protein.sanitizedForDouble, "Enter a valid protein value.")
+            ]
+            
+            for (value, errorMessage) in macronutrients {
+                if value.isEmpty || Double(value) == nil {
+                    errorMessages.append(errorMessage)
+                }
+            }
+        }
+        
+        if errorMessages.isEmpty {
+            return nil
+        } else {
+            return errorMessages.joined(separator: "\n")
+        }
+    }
+    
+    func handleSave() -> Bool {
+        if let errors = validateInputs() {
+            alertMessage = errors
+            showAlert = true
+            return false
+        } else {
+            return true
+        }
     }
     
     // MARK: - UI Helpers

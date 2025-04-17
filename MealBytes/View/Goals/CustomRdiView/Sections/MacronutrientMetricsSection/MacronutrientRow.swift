@@ -19,6 +19,7 @@ struct MacronutrientRow: View {
             ServingTextFieldView(
                 text: $textFieldBinding,
                 title: title,
+                keyboardType: .decimalPad,
                 titleColor: titleColor
             )
             .focused($focusedField)

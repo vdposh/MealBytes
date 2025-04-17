@@ -52,8 +52,7 @@ struct RdiView: View {
                         }
                     }
                 }
-                .alert(rdiViewModel.alertTitle(),
-                       isPresented: $rdiViewModel.showAlert) {
+                .alert("Error", isPresented: $rdiViewModel.showAlert) {
                     Button("OK", role: .none) {
                         rdiViewModel.showAlert = false
                     }
