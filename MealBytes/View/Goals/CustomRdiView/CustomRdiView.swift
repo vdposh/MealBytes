@@ -19,7 +19,7 @@ struct CustomRdiView: View {
             } else {
                 List {
                     Section {
-                        Text("Calculate your daily calorie intake by distributing macronutrients (fats, carbohydrates, and proteins) in percentages or grams, depending on your preference.")
+                        Text("Set your daily RDI by entering calories directly or calculate it using macronutrient distribution (fats, carbohydrates, and proteins).")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -32,10 +32,25 @@ struct CustomRdiView: View {
                         focusedField: _focusedField,
                         customRdiViewModel: customRdiViewModel
                     )
-                    MacronutrientMetricsSection(
-                        focusedField: _focusedField,
-                        customRdiViewModel: customRdiViewModel
-                    )
+                    .disabled(customRdiViewModel.toggleOn)
+                    
+                    if customRdiViewModel.toggleOn {
+                        MacronutrientMetricsSection(
+                            focusedField: _focusedField,
+                            customRdiViewModel: customRdiViewModel
+                        )
+                    }
+                    
+                    Section {
+                        Toggle(isOn: $customRdiViewModel.toggleOn) {
+                            Text("Macronutrient metrics")
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+                    } header: {
+                        Text("Macronutrients Overview")
+                    } footer: {
+                        Text("Enable this option to calculate your intake using macronutrients (fats, carbohydrates, and proteins).")
+                    }
                 }
                 .listSectionSpacing(15)
                 .scrollDismissesKeyboard(.never)
@@ -51,34 +66,23 @@ struct CustomRdiView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
-                            if let errorMessage = customRdiViewModel
-                                .validateInputs(includePercentageCheck: true) {
-                                customRdiViewModel.displayErrorAlert(
-                                    with: errorMessage)
-                            } else {
-                                Task {
-                                    await customRdiViewModel.saveCustomRdiView()
-                                }
+                            Task {
+                                await customRdiViewModel.saveCustomRdiView()
                                 dismiss()
                             }
                         }
                     }
                 }
-                .alert(customRdiViewModel.alertTitle,
-                       isPresented: $customRdiViewModel.showAlert) {
-                    Button("OK", role: .none) {
-                        customRdiViewModel.showAlert = false
-                    }
-                } message: {
-                    Text(customRdiViewModel.alertMessage)
-                }
             }
         }
         .task {
             await customRdiViewModel.loadCustomRdiView()
-            await MainActor.run {
-                customRdiViewModel.isLoading = false
-            }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CustomRdiView()
     }
 }

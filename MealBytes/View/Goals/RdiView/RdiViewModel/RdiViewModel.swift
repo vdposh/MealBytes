@@ -58,10 +58,12 @@ final class RdiViewModel: ObservableObject {
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .cm
+                isDataLoaded = true
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
+                isDataLoaded = true
             }
         }
     }

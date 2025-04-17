@@ -67,9 +67,6 @@ struct RdiView: View {
                 LoadingView()
                     .task {
                         await rdiViewModel.loadRdiView()
-                        await MainActor.run {
-                            rdiViewModel.isDataLoaded = true
-                        }
                     }
             }
         }

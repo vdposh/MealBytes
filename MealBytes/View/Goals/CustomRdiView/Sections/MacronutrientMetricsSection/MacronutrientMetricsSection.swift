@@ -18,57 +18,39 @@ struct MacronutrientMetricsSection: View {
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.fat,
                         focusedField: _focusedField,
-                        value: customRdiViewModel.oppositeValue(
-                            for: customRdiViewModel.fat, factor: 9),
-                        unitRight: customRdiViewModel.unitSymbol(
-                            inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Fat",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.fat)
+                            for: customRdiViewModel.fat),
+                        customRdiViewModel: customRdiViewModel
                     )
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.carbohydrate,
                         focusedField: _focusedField,
-                        value: customRdiViewModel.oppositeValue(
-                            for: customRdiViewModel.carbohydrate, factor: 4),
-                        unitRight: customRdiViewModel.unitSymbol(
-                            inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Carbohydrate",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.carbohydrate)
+                            for: customRdiViewModel.carbohydrate),
+                        customRdiViewModel: customRdiViewModel
                     )
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.protein,
                         focusedField: _focusedField,
-                        value: customRdiViewModel.oppositeValue(
-                            for: customRdiViewModel.protein, factor: 4),
-                        unitRight: customRdiViewModel.unitSymbol(
-                            inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(),
                         title: "Protein",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.protein)
+                            for: customRdiViewModel.protein),
+                        customRdiViewModel: customRdiViewModel
                     )
                 }
                 .padding(.bottom, 5)
-                
-                HStack {
-                    Button(action: {
-                        customRdiViewModel.togglePercentageMode()
-                    }) {
-                        Text(customRdiViewModel.toggleButtonText)
-                            .font(.headline)
-                            .foregroundColor(.customGreen)
-                    }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.vertical, 10)
-                }
             }
+            .disabled(!customRdiViewModel.toggleOn)
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CustomRdiView()
     }
 }

@@ -25,16 +25,23 @@ struct CalorieMetricsSection: View {
             ServingTextFieldView(
                 text: $customRdiViewModel.calories,
                 title: "Calories",
+                showStar: customRdiViewModel.showStar,
                 titleColor: customRdiViewModel.titleColor(
                     for: customRdiViewModel.calories),
                 textColor: customRdiViewModel.caloriesTextColor
             )
             .focused($focusedField)
-            .disabled(customRdiViewModel.isCaloriesTextFieldActive)
+            .disabled(customRdiViewModel.toggleOn)
             .padding(.trailing, 5)
             
             Text("kcal")
                 .foregroundColor(customRdiViewModel.caloriesTextColor)
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CustomRdiView()
     }
 }

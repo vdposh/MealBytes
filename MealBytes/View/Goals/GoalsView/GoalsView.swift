@@ -59,7 +59,7 @@ struct GoalsView: View {
                     }
                 }
             } footer: {
-                Text("You can also calculate your RDI manually by entering calories and macronutrient values such as fats, carbohydrates and proteins.")
+                Text("You can also calculate your RDI manually by entering calories or macronutrient values such as fats, carbohydrates and proteins.")
             }
         }
         .navigationBarTitle("Goals", displayMode: .inline)

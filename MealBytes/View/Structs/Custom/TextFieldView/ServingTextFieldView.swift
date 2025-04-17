@@ -10,6 +10,8 @@ import SwiftUI
 struct ServingTextFieldView: View {
     @Binding var text: String
     let title: String
+    let star: String = "*"
+    var showStar: Bool = true
     var placeholder: String = "Enter value"
     var keyboardType: UIKeyboardType = .decimalPad
     var titleColor: Color = .secondary
@@ -19,10 +21,16 @@ struct ServingTextFieldView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(titleColor) + Text("*")
-                .foregroundColor(.customRed)
+            HStack(spacing: 0) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(titleColor)
+                if showStar {
+                    Text(star)
+                        .foregroundColor(.customRed)
+                }
+            }
+            .frame(height: 15)
             
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
