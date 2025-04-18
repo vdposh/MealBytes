@@ -20,7 +20,8 @@ struct MacronutrientRow: View {
                 text: $textFieldBinding,
                 title: title,
                 keyboardType: .decimalPad,
-                titleColor: titleColor
+                titleColor: titleColor,
+                maxIntegerDigits: 3
             )
             .focused($focusedField)
             .padding(.trailing, 5)

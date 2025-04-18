@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SecureFieldView: View {
     @Binding var text: String
+    @FocusState private var isFocused: Bool
     let title: String
     var placeholder: String = "Enter value"
     var titleColor: Color = .primary
@@ -25,10 +26,12 @@ struct SecureFieldView: View {
                 .frame(height: 35)
                 .lineLimit(1)
                 .foregroundColor(textColor)
+                .focused($isFocused)
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .foregroundColor(.secondary),
+                        .foregroundColor(isFocused ? .customGreen : .secondary)
+                        .animation(.easeInOut, value: isFocused),
                     alignment: .bottom
                 )
         }

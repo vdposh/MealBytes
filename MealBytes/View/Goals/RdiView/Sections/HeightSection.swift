@@ -19,7 +19,8 @@ struct HeightSection: View {
                     title: "Height",
                     keyboardType: .decimalPad,
                     titleColor: rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.height)
+                        for: rdiViewModel.height),
+                    maxIntegerDigits: 3
                 )
                 .focused($focusedField)
                 

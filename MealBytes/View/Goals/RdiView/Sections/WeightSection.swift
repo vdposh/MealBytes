@@ -19,7 +19,8 @@ struct WeightSection: View {
                     title: "Weight",
                     keyboardType: .decimalPad,
                     titleColor: rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.weight)
+                        for: rdiViewModel.weight),
+                    maxIntegerDigits: 3
                 )
                 .focused($focusedField)
                 

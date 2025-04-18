@@ -19,6 +19,7 @@ struct ServingTextFieldView: View {
     var textColor: Color = .primary
     var maxInteger: Int = 100000
     var maxFractionalDigits: Int = 2
+    var maxIntegerDigits: Int = 4
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -56,8 +57,8 @@ struct ServingTextFieldView: View {
         input = input.replacingOccurrences(of: ".", with: ",")
         let components = input.split(separator: ",")
         
-        if let intPart = components.first, intPart.count > 5 {
-            input = String(intPart.prefix(5))
+        if let intPart = components.first, intPart.count > maxIntegerDigits {
+            input = String(intPart.prefix(maxIntegerDigits))
             return
         }
         

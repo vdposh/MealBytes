@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginTextFieldView: View {
     @Binding var text: String
+    @FocusState private var isFocused: Bool
     var title: String = "Email"
     var placeholder: String = "Enter your email"
     var keyboardType: UIKeyboardType = .emailAddress
@@ -27,10 +28,12 @@ struct LoginTextFieldView: View {
                 .disableAutocorrection(true)
                 .frame(height: 35)
                 .lineLimit(1)
+                .focused($isFocused)
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .foregroundColor(.secondary),
+                        .foregroundColor(isFocused ? .customGreen : .secondary)
+                        .animation(.easeInOut, value: isFocused),
                     alignment: .bottom
                 )
         }
