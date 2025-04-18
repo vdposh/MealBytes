@@ -12,11 +12,15 @@ struct CalorieMetricsSection: View {
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
-        Section(header: Text("Calorie Metrics")) {
+        Section {
             VStack {
                 calorieInputRow
             }
             .padding(.bottom, 5)
+        } header: {
+            Text("Calorie Metrics")
+        } footer: {
+            Text(customRdiViewModel.footerText)
         }
     }
     
@@ -33,7 +37,6 @@ struct CalorieMetricsSection: View {
                 textColor: customRdiViewModel.caloriesTextColor
             )
             .focused($focusedField)
-            .disabled(customRdiViewModel.toggleOn)
             .padding(.trailing, 5)
             
             Text("kcal")

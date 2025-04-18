@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ServingTextFieldView: View {
     @Binding var text: String
+    @FocusState private var isFocused: Bool
     let title: String
     let star: String = "*"
     var showStar: Bool = true
@@ -37,13 +38,15 @@ struct ServingTextFieldView: View {
                 .frame(height: 35)
                 .lineLimit(1)
                 .foregroundColor(textColor)
+                .focused($isFocused)
                 .onChange(of: text) {
                     validateInput(&text)
                 }
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .foregroundColor(.secondary),
+                        .foregroundColor(isFocused ? .customGreen : .secondary)
+                        .animation(.easeInOut, value: isFocused),
                     alignment: .bottom
                 )
         }

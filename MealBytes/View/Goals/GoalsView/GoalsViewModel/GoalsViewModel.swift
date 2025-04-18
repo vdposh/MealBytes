@@ -31,8 +31,8 @@ final class GoalsViewModel: ObservableObject {
     }
     
     func customRdiText() -> String {
-        customRdiViewModel.isSaved
-        ? "\(customRdiViewModel.calories) calories"
-        : "Fill in the data"
+        customRdiViewModel.calories.isEmpty
+        ? "Fill in the data"
+        : "\(customRdiViewModel.calories) calories"
     }
 }

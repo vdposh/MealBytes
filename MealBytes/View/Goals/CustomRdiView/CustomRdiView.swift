@@ -19,7 +19,7 @@ struct CustomRdiView: View {
             } else {
                 List {
                     Section {
-                        Text("Set your daily RDI by entering calories directly or calculate it using macronutrient distribution (fats, carbohydrates, and proteins).")
+                        Text("Set your daily RDI by entering calories directly or calculate it using macronutrient distribution.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -33,6 +33,7 @@ struct CustomRdiView: View {
                         customRdiViewModel: customRdiViewModel
                     )
                     .disabled(customRdiViewModel.toggleOn)
+                    .id(customRdiViewModel.toggleOn)
                     
                     if customRdiViewModel.toggleOn {
                         MacronutrientMetricsSection(
@@ -46,13 +47,10 @@ struct CustomRdiView: View {
                             Text("Macronutrient metrics")
                         }
                         .toggleStyle(SwitchToggleStyle(tint: .customGreen))
-                    } header: {
-                        Text("Macronutrients Overview")
                     } footer: {
-                        Text("Enable this option to calculate your intake using macronutrients (fats, carbohydrates, and proteins).")
+                        Text("Enable this option to calculate your intake using macronutrients.")
                     }
                 }
-                .listSectionSpacing(15)
                 .scrollDismissesKeyboard(.never)
                 .navigationBarTitle("Custom RDI", displayMode: .inline)
                 .toolbar {

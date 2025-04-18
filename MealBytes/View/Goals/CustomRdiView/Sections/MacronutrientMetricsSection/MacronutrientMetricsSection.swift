@@ -12,7 +12,7 @@ struct MacronutrientMetricsSection: View {
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
-        Section(header: Text("Macronutrient Metrics")) {
+        Section {
             VStack {
                 VStack(spacing: 15) {
                     MacronutrientRow(
@@ -44,7 +44,10 @@ struct MacronutrientMetricsSection: View {
                 }
                 .padding(.bottom, 5)
             }
-            .disabled(!customRdiViewModel.toggleOn)
+        } header: {
+            Text("Macronutrient Metrics")
+        } footer: {
+            Text("Enter values for macronutrients. These inputs will be used to calculate your daily calorie intake precisely.")
         }
     }
 }

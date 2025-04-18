@@ -15,9 +15,18 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
-    @Published var toggleOn: Bool = false
+    @Published var toggleOn: Bool = false {
+        didSet {
+            if !toggleOn {
+                fat = ""
+                carbohydrate = ""
+                protein = ""
+            } else if calories.isEmpty {
+                calories = "0"
+            }
+        }
+    }
     @Published var isLoading: Bool = true
-    @Published var isSaved: Bool = false
     @Published var showAlert: Bool = false
     
     private let formatter = Formatter()
@@ -27,7 +36,7 @@ final class CustomRdiViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        calories = ""
+        calories = "0"
         fat = ""
         carbohydrate = ""
         protein = ""
@@ -49,7 +58,6 @@ final class CustomRdiViewModel: ObservableObject {
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
                 toggleOn = customGoalsData.isCaloriesActive
-                isSaved = !calories.isEmpty
                 isLoading = false
             }
         } catch {
@@ -73,7 +81,6 @@ final class CustomRdiViewModel: ObservableObject {
             try await firestore.saveCustomRdiFirestore(customGoalsData)
             await MainActor.run {
                 mainViewModel.rdi = calories
-                isSaved = true
             }
             await mainViewModel.saveMainRdiMainView()
         } catch {
@@ -172,6 +179,12 @@ final class CustomRdiViewModel: ObservableObject {
     
     var showStar: Bool {
         return !toggleOn
+    }
+    
+    var footerText: String {
+        toggleOn
+        ? "Calories will be calculated automatically based on the entered macronutrients."
+        : "You can enter the necessary number of calories directly."
     }
 }
 
