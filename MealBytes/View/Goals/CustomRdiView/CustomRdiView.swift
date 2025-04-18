@@ -51,23 +51,28 @@ struct CustomRdiView: View {
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
                         HStack {
-                            Button {
-                                moveFocus(.up)
-                            } label: {
-                                Image(systemName: "chevron.up")
-                                    .foregroundColor(colorForFocus(
-                                        isActive: canMoveFocus(.up)))
+                            if focusMacronutrients != nil {
+                                Button {
+                                    moveFocus(.up)
+                                } label: {
+                                    Image(systemName: "chevron.up")
+                                        .foregroundColor(colorForFocus(
+                                            isActive: canMoveFocus(.up)))
+                                }
+                                .disabled(!canMoveFocus(.up))
+                                
+                                Button {
+                                    moveFocus(.down)
+                                } label: {
+                                    Image(systemName: "chevron.down")
+                                        .foregroundColor(colorForFocus(
+                                            isActive: canMoveFocus(.down)))
+                                }
+                                .disabled(!canMoveFocus(.down))
+                            } else if focusCalories != nil {
+                                Text("Enter value")
+                                    .foregroundColor(.secondary)
                             }
-                            .disabled(!canMoveFocus(.up))
-                            
-                            Button {
-                                moveFocus(.down)
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(colorForFocus(
-                                        isActive: canMoveFocus(.down)))
-                            }
-                            .disabled(!canMoveFocus(.down))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
