@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CustomRdiView: View {
     @Environment(\.dismiss) private var dismiss
-    @FocusState private var focusedField: Bool
-    @FocusState private var focus: CustomRdiFocus?
+    @FocusState private var focusCalories: CustomRdiFocus?
+    @FocusState private var focusMacronutrients: MacronutrientsFocus?
     @StateObject private var customRdiViewModel = CustomRdiViewModel()
     
     var body: some View {
@@ -20,24 +20,19 @@ struct CustomRdiView: View {
             } else {
                 List {
                     Section {
+                    } footer: {
                         Text("Set your daily RDI by entering calories directly or calculate it using macronutrient distribution.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(.horizontal)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
                     
                     CalorieMetricsSection(
-                        focusedField: _focus,
+                        focusedField: _focusCalories,
                         customRdiViewModel: customRdiViewModel
                     )
                     .disabled(customRdiViewModel.toggleOn)
                     
                     if customRdiViewModel.toggleOn {
                         MacronutrientMetricsSection(
-                            focusedField: _focusedField,
+                            focusedField: _focusMacronutrients,
                             customRdiViewModel: customRdiViewModel
                         )
                     }
@@ -55,14 +50,34 @@ struct CustomRdiView: View {
                 .navigationBarTitle("Custom RDI", displayMode: .inline)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
-                        Text("Enter value")
-                            .foregroundColor(.secondary)
+                        HStack {
+                            Button {
+                                moveFocus(.up)
+                            } label: {
+                                Image(systemName: "chevron.up")
+                                    .foregroundColor(colorForFocus(
+                                        isActive: canMoveFocus(.up)))
+                            }
+                            .disabled(!canMoveFocus(.up))
+                            
+                            Button {
+                                moveFocus(.down)
+                            } label: {
+                                Image(systemName: "chevron.down")
+                                    .foregroundColor(colorForFocus(
+                                        isActive: canMoveFocus(.down)))
+                            }
+                            .disabled(!canMoveFocus(.down))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
                         Button("Done") {
-                            focusedField = false
-                            focus = nil
+                            focusCalories = nil
+                            focusMacronutrients = nil
                         }
                         .font(.headline)
                     }
+                    
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
                             if customRdiViewModel.handleSave() {
@@ -86,6 +101,52 @@ struct CustomRdiView: View {
         .task {
             await customRdiViewModel.loadCustomRdiView()
         }
+    }
+    
+    // MARK: - Keyboard
+    private func moveFocus(_ direction: FocusDirection) {
+        guard canMoveFocus(direction) else { return }
+        switch direction {
+        case .up:
+            switch focusMacronutrients {
+            case .carbohydrate:
+                focusMacronutrients = .fat
+            case .protein:
+                focusMacronutrients = .carbohydrate
+            default:
+                break
+            }
+        case .down:
+            switch focusMacronutrients {
+            case .fat:
+                focusMacronutrients = .carbohydrate
+            case .carbohydrate:
+                focusMacronutrients = .protein
+            case .protein:
+                focusMacronutrients = nil
+            default:
+                break
+            }
+        }
+    }
+    
+    private enum FocusDirection {
+        case up
+        case down
+    }
+    
+    private func canMoveFocus(_ direction: FocusDirection) -> Bool {
+        guard let focus = focusMacronutrients else { return false }
+        switch direction {
+        case .up:
+            return focus != .fat
+        case .down:
+            return focus != .protein
+        }
+    }
+    
+    private func colorForFocus(isActive: Bool) -> Color {
+        isActive ? .customGreen : .secondary
     }
 }
 

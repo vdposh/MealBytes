@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MacronutrientMetricsSection: View {
-    @FocusState var focusedField: Bool
+    @FocusState var focusedField: MacronutrientsFocus?
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
@@ -17,30 +17,33 @@ struct MacronutrientMetricsSection: View {
                 VStack(spacing: 15) {
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.fat,
-                        focusedField: _focusedField,
+                        focusedField: $focusedField,
                         title: "Fat",
                         titleColor: customRdiViewModel.titleColor(
                             for: customRdiViewModel.fat),
                         customRdiViewModel: customRdiViewModel
                     )
+                    .focused($focusedField, equals: .fat)
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.carbohydrate,
-                        focusedField: _focusedField,
+                        focusedField: $focusedField,
                         title: "Carbohydrate",
                         titleColor: customRdiViewModel.titleColor(
                             for: customRdiViewModel.carbohydrate),
                         customRdiViewModel: customRdiViewModel
                     )
+                    .focused($focusedField, equals: .carbohydrate)
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.protein,
-                        focusedField: _focusedField,
+                        focusedField: $focusedField,
                         title: "Protein",
                         titleColor: customRdiViewModel.titleColor(
                             for: customRdiViewModel.protein),
                         customRdiViewModel: customRdiViewModel
                     )
+                    .focused($focusedField, equals: .protein)
                 }
                 .padding(.bottom, 5)
             }
@@ -50,6 +53,10 @@ struct MacronutrientMetricsSection: View {
             Text("Enter values for macronutrients. These inputs will be used to calculate your daily calorie intake precisely.")
         }
     }
+}
+
+enum MacronutrientsFocus: Hashable {
+    case fat, carbohydrate, protein
 }
 
 #Preview {

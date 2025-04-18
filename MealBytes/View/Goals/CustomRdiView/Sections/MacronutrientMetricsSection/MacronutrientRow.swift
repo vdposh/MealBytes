@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MacronutrientRow: View {
     @Binding var textFieldBinding: String
-    @FocusState var focusedField: Bool
+    var focusedField: FocusState<MacronutrientsFocus?>.Binding
     let title: String
     let titleColor: Color
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
@@ -23,10 +23,23 @@ struct MacronutrientRow: View {
                 titleColor: titleColor,
                 maxIntegerDigits: 3
             )
-            .focused($focusedField)
+            .focused(focusedField, equals: focusValue)
             .padding(.trailing, 5)
             
             Text("g")
+        }
+    }
+    
+    private var focusValue: MacronutrientsFocus {
+        switch title {
+        case "Fat":
+            return .fat
+        case "Carbohydrate":
+            return .carbohydrate
+        case "Protein":
+            return .protein
+        default:
+            return .fat
         }
     }
 }
