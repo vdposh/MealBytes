@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomRdiView: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: Bool
+    @FocusState private var focus: CustomRdiFocus?
     @StateObject private var customRdiViewModel = CustomRdiViewModel()
     
     var body: some View {
@@ -29,11 +30,10 @@ struct CustomRdiView: View {
                     .listRowBackground(Color.clear)
                     
                     CalorieMetricsSection(
-                        focusedField: _focusedField,
+                        focusedField: _focus,
                         customRdiViewModel: customRdiViewModel
                     )
                     .disabled(customRdiViewModel.toggleOn)
-                    .id(customRdiViewModel.toggleOn)
                     
                     if customRdiViewModel.toggleOn {
                         MacronutrientMetricsSection(
@@ -59,6 +59,7 @@ struct CustomRdiView: View {
                             .foregroundColor(.secondary)
                         Button("Done") {
                             focusedField = false
+                            focus = nil
                         }
                         .font(.headline)
                     }

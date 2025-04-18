@@ -15,19 +15,19 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
+    @Published var isLoading: Bool = true
+    @Published var showAlert: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
-            if !toggleOn {
-                fat = ""
-                carbohydrate = ""
-                protein = ""
+            if toggleOn {
+                calculateCalories(fat: fat,
+                                  carbohydrate: carbohydrate,
+                                  protein: protein)
             } else if calories.isEmpty {
                 calories = "0"
             }
         }
     }
-    @Published var isLoading: Bool = true
-    @Published var showAlert: Bool = false
     
     private let formatter = Formatter()
     
@@ -97,6 +97,18 @@ final class CustomRdiViewModel: ObservableObject {
                 self?.calculateCalories(fat: fat,
                                         carbohydrate: carb,
                                         protein: protein)
+            }
+            .store(in: &cancellables)
+        
+        $toggleOn
+            .sink { [weak self] isToggleOn in
+                if isToggleOn {
+                    self?.calculateCalories(
+                        fat: self?.fat ?? "",
+                        carbohydrate: self?.carbohydrate ?? "",
+                        protein: self?.protein ?? ""
+                    )
+                }
             }
             .store(in: &cancellables)
     }
