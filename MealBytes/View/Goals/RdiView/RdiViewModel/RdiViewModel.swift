@@ -227,11 +227,8 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    func color(for calculatedRdi: String) -> Color {
-        switch calculatedRdi.isEmpty {
-        case true: .secondary
-        case false: .primary
-        }
+    func color(for calculatedRdi: String) -> Color? {
+        return calculatedRdi.isEmpty ? nil : .primary
     }
 }
 
@@ -276,4 +273,10 @@ enum WeightUnit: String, CaseIterable {
 enum HeightUnit: String, CaseIterable {
     case cm = "cm"
     case inches = "inches"
+}
+
+#Preview {
+    NavigationStack {
+        RdiView()
+    }
 }

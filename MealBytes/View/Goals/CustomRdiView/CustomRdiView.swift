@@ -74,7 +74,6 @@ struct CustomRdiView: View {
                                     .foregroundColor(.secondary)
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Button("Done") {
                             focusCalories = nil
@@ -135,11 +134,6 @@ struct CustomRdiView: View {
         }
     }
     
-    private enum FocusDirection {
-        case up
-        case down
-    }
-    
     private func canMoveFocus(_ direction: FocusDirection) -> Bool {
         guard let focus = focusMacronutrients else { return false }
         switch direction {
@@ -148,6 +142,11 @@ struct CustomRdiView: View {
         case .down:
             return focus != .protein
         }
+    }
+    
+    private enum FocusDirection {
+        case up
+        case down
     }
     
     private func colorForFocus(isActive: Bool) -> Color {

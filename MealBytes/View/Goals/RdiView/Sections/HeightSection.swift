@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HeightSection: View {
-    @FocusState var focusedField: Bool
+    @FocusState var focusedField: RdiFocus?
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
@@ -22,7 +22,7 @@ struct HeightSection: View {
                         for: rdiViewModel.height),
                     maxIntegerDigits: 3
                 )
-                .focused($focusedField)
+                .focused($focusedField, equals: .height)
                 
                 Picker("Unit", selection: $rdiViewModel.selectedHeightUnit) {
                     ForEach(HeightUnit.allCases, id: \.self) { unit in
@@ -32,5 +32,11 @@ struct HeightSection: View {
                 .pickerStyle(.menu)
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        RdiView()
     }
 }
