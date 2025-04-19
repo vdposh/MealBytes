@@ -19,9 +19,9 @@ struct MainView: View {
                 }
                 .zIndex(2)
                 
-                Button(action: {
+                Button {
                     mainViewModel.isExpandedCalendar = false
-                }) {
+                } label: {
                     Color.primary
                         .opacity(0.4)
                         .ignoresSafeArea()
@@ -44,9 +44,9 @@ struct MainView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Button(action: {
+                Button {
                     mainViewModel.isExpandedCalendar.toggle()
-                }) {
+                } label: {
                     Text(mainViewModel.formattedDate())
                         .font(.headline)
                 }
@@ -67,10 +67,10 @@ struct MainView: View {
         Section {
             HStack {
                 ForEach(-3...3, id: \.self) { offset in
-                    Button(action: {
+                    Button {
                         mainViewModel.date = mainViewModel
                             .dateByAddingOffset(for: offset)
-                    }) {
+                    } label: {
                         dateView(for: mainViewModel
                             .dateByAddingOffset(for: offset))
                     }

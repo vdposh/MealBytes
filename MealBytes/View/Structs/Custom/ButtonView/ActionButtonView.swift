@@ -14,7 +14,9 @@ struct ActionButtonView: View {
     var isEnabled: Bool = true
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Text(title)
                 .frame(maxWidth: .infinity)
                 .padding()

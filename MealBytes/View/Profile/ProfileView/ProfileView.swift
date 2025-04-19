@@ -58,9 +58,9 @@ struct ProfileView: View {
             }
             
             Section {
-                Button(action: {
+                Button {
                     profileViewModel.prepareAlert(for: .changePassword)
-                }) {
+                } label: {
                     if profileViewModel.isPasswordChanging {
                         HStack {
                             LoadingView()
@@ -95,9 +95,9 @@ struct ProfileView: View {
                         Text("Do you want to")
                             .foregroundColor(.secondary)
                         
-                        Button(action: {
+                        Button {
                             profileViewModel.prepareAlert(for: .deleteAccount)
-                        }) {
+                        } label: {
                             Text("remove")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.customRed)

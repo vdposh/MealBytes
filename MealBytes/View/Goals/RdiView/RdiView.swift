@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RdiView: View {
     @Environment(\.dismiss) private var dismiss
-    @FocusState var focusedField: RdiFocus?
+    @FocusState private var focusedField: RdiFocus?
     @StateObject private var rdiViewModel = RdiViewModel()
     
     var body: some View {

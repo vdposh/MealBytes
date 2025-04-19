@@ -91,9 +91,9 @@ struct SearchView: View {
             .toolbar {
                 ToolbarItem(placement: .status) {
                     VStack(alignment: .center, spacing: 1) {
-                        Button(action: {
+                        Button {
                             searchViewModel.showMealType = true
-                        }) {
+                        } label: {
                             HStack {
                                 Image(systemName: mealType.iconName)
                                     .font(.system(size: 13))
@@ -110,9 +110,9 @@ struct SearchView: View {
                             titleVisibility: .visible
                         ) {
                             ForEach(MealType.allCases, id: \.self) { meal in
-                                Button(action: {
+                                Button {
                                     mealType = meal
-                                }) {
+                                } label: {
                                     Text(meal.rawValue)
                                 }
                             }
@@ -143,9 +143,9 @@ struct SearchView: View {
     private func pageButton(direction:
                             SearchViewModel.PageDirection) -> some View {
         if searchViewModel.canLoadPage(direction: direction) {
-            Button(action: {
+            Button {
                 searchViewModel.loadPage(direction: direction)
-            }) {
+            } label: {
                 switch direction {
                 case .next:
                     HStack {

@@ -23,10 +23,10 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            Button(action: {
+            Button {
                 mainViewModel.searchViewModel.query = ""
                 isPresentingSheet = true
-            }) {
+            } label: {
                 HStack {
                     VStack(spacing: 15) {
                         HStack {
@@ -105,8 +105,7 @@ struct MealHeaderView: View {
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
-    )
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
 }

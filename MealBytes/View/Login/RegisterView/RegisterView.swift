@@ -48,12 +48,12 @@ struct RegisterView: View {
                         HStack(spacing: 4) {
                             Text("Didn't receive the email?")
                             
-                            Button(action: {
+                            Button {
                                 Task {
                                     await registerViewModel
                                         .resendEmailVerification()
                                 }
-                            }) {
+                            } label: {
                                 Text("Resend")
                                     .fontWeight(.semibold)
                                     .foregroundColor(

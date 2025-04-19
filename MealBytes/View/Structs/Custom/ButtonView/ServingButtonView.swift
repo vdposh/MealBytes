@@ -18,7 +18,9 @@ struct ServingButtonView: View {
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
-            Button(action: action) {
+            Button {
+                action()
+            } label: {
                 HStack {
                     Text(description)
                         .frame(maxWidth: .infinity, alignment: .leading)

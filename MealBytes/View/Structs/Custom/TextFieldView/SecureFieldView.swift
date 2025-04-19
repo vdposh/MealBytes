@@ -30,8 +30,7 @@ struct SecureFieldView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .foregroundColor(isFocused ? .customGreen : .secondary)
-                        .animation(.easeInOut, value: isFocused),
+                        .foregroundColor(isFocused ? .customGreen : .secondary),
                     alignment: .bottom
                 )
         }

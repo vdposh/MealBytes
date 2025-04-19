@@ -11,11 +11,11 @@ struct ShowHideButtonView: View {
     @Binding var isExpanded: Bool
     
     var body: some View {
-        Button(action: {
+        Button {
             withAnimation {
                 isExpanded.toggle()
             }
-        }) {
+        } label: {
             HStack {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .foregroundColor(.customGreen)
