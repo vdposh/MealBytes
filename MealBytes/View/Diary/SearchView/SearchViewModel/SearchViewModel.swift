@@ -13,6 +13,8 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
+    @Published var foodToRemove: Food?
+    @Published var showBookmarkAlert: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var query: String = "" {
@@ -111,7 +113,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Bookmark fill
+    // MARK: - Bookmark Fill
     func toggleBookmarkSearchView(for food: Food) {
         Task {
             let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
@@ -150,8 +152,44 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Bookmark Alert
     func isBookmarkedSearchView(_ food: Food) -> Bool {
         bookmarkedFoods.contains(food.searchFoodId)
+    }
+    
+    func handleBookmarkAction(for food: Food) {
+        if isBookmarkedSearchView(food) {
+            foodToRemove = food
+            showBookmarkAlert = true
+        } else {
+            toggleBookmarkSearchView(for: food)
+        }
+    }
+    
+    func handleBookmarkAlert(action: BookmarkAction) {
+        switch action {
+        case .cancel:
+            showBookmarkAlert = false
+            foodToRemove = nil
+        case .remove:
+            if let foodToRemove {
+                toggleBookmarkSearchView(for: foodToRemove)
+            }
+            showBookmarkAlert = false
+            foodToRemove = nil
+        }
+    }
+    
+    enum BookmarkAction {
+        case cancel
+        case remove
+    }
+    
+    var bookmarkAlertMessage: String {
+        guard let foodName = foodToRemove?.searchFoodName else {
+            return ""
+        }
+        return "Do you want to remove \"\(foodName)\" from your favorite foods?"
     }
     
     // MARK: - Pagination
@@ -192,9 +230,7 @@ final class SearchViewModel: ObservableObject {
 }
 
 #Preview {
-    SearchView(
-        isPresented: .constant(true),
-        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-        mealType: .breakfast
-    )
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
 }

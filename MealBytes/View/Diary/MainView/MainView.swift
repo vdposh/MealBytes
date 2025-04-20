@@ -123,3 +123,9 @@ struct MainView: View {
         )
     }
 }
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+}

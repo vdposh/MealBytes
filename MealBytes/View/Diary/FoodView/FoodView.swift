@@ -85,6 +85,15 @@ struct FoodView: View {
         .task {
             await foodViewModel.fetchFoodDetails()
         }
+        .alert("Remove Bookmark",
+               isPresented: $foodViewModel.showBookmarkAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Remove", role: .destructive) {
+                foodViewModel.toggleBookmarkFoodView()
+            }
+        } message: {
+            Text("Do you want to remove \"\(foodViewModel.food.searchFoodName)\" from your favorite foods list?")
+        }
     }
     
     private var servingSizeSection: some View {
@@ -186,7 +195,11 @@ struct FoodView: View {
                         
                         BookmarkButtonView(
                             action: {
-                                foodViewModel.toggleBookmarkFoodView()
+                                if foodViewModel.isBookmarkFilled {
+                                    foodViewModel.showBookmarkAlert = true
+                                } else {
+                                    foodViewModel.toggleBookmarkFoodView()
+                                }
                             },
                             isFilled: foodViewModel.isBookmarkFilled,
                             width: 55,
@@ -242,7 +255,7 @@ struct FoodView: View {
 
 #Preview {
     FoodView(
-        isDismissed: .constant(false),
+        isDismissed: .constant(true),
         navigationTitle: "Add to Diary",
         food: Food(
             searchFoodId: 3092,
@@ -254,9 +267,9 @@ struct FoodView: View {
         mealType: .breakfast,
         amount: "1",
         measurementDescription: "Grams",
-        showAddButton: false,
-        showSaveRemoveButton: true,
-        showMealTypeButton: true,
+        showAddButton: true,
+        showSaveRemoveButton: false,
+        showMealTypeButton: false,
         originalMealItemId: UUID()
     )
 }

@@ -20,6 +20,7 @@ final class FoodViewModel: ObservableObject {
     @Published var isBookmarkFilled: Bool = false
     @Published var showServingDialog: Bool = false
     @Published var showMealTypeDialog: Bool = false
+    @Published var showBookmarkAlert: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -321,4 +322,25 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     case grams = "Grams"
     
     var id: String { self.rawValue }
+}
+
+#Preview {
+    FoodView(
+        isDismissed: .constant(true),
+        navigationTitle: "Add to Diary",
+        food: Food(
+            searchFoodId: 3092,
+            searchFoodName: "Egg",
+            searchFoodDescription: "1 cup"
+        ),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "1",
+        measurementDescription: "Grams",
+        showAddButton: true,
+        showSaveRemoveButton: false,
+        showMealTypeButton: false,
+        originalMealItemId: UUID()
+    )
 }

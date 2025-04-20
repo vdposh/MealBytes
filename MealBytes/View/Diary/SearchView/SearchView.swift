@@ -61,8 +61,7 @@ struct SearchView: View {
                                     BookmarkButtonView(
                                         action: {
                                             searchViewModel
-                                                .toggleBookmarkSearchView(
-                                                    for: food)
+                                                .handleBookmarkAction(for: food)
                                         },
                                         isFilled: searchViewModel
                                             .isBookmarkedSearchView(food),
@@ -130,11 +129,21 @@ struct SearchView: View {
                     }
                 }
             }
+            .alert("Remove Bookmark",
+                   isPresented: $searchViewModel.showBookmarkAlert) {
+                Button("Cancel", role: .cancel) {
+                    searchViewModel.handleBookmarkAlert(action: .cancel)
+                }
+                Button("Remove", role: .destructive) {
+                    searchViewModel.handleBookmarkAlert(action: .remove)
+                }
+            } message: {
+                Text(searchViewModel.bookmarkAlertMessage)
+            }
             .searchable(
                 text: $searchViewModel.query,
                 prompt: "Enter a food name"
             )
-            
         }
         .scrollDismissesKeyboard(.immediately)
     }
@@ -167,9 +176,7 @@ struct SearchView: View {
 }
 
 #Preview {
-    SearchView(
-        isPresented: .constant(true),
-        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-        mealType: .breakfast
-    )
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
 }

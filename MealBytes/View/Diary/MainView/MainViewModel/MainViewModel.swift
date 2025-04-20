@@ -463,3 +463,9 @@ enum DisplayElement {
     case day
     case weekday
 }
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
+    }
+}
