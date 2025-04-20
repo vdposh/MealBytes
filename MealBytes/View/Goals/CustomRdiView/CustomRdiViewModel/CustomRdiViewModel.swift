@@ -134,7 +134,8 @@ final class CustomRdiViewModel: ObservableObject {
         
         if !toggleOn {
             if calories.sanitizedForDouble.isEmpty ||
-                Double(calories.sanitizedForDouble) == nil {
+                Double(calories.sanitizedForDouble) == nil ||
+                Double(calories.sanitizedForDouble) == 0 {
                 errorMessages.append("Enter a valid calorie value.")
             }
         } else {
@@ -147,7 +148,7 @@ final class CustomRdiViewModel: ObservableObject {
                  "Enter a valid protein value.")
             ]
             for (value, errorMessage) in macronutrients {
-                if value.isEmpty || Double(value) == nil {
+                if value.isEmpty || Double(value) == nil || Double(value) == 0 {
                     errorMessages.append(errorMessage)
                 }
             }
@@ -175,7 +176,9 @@ final class CustomRdiViewModel: ObservableObject {
                     isCalorie: Bool = false) -> Color {
         if isCalorie && toggleOn {
             return Color.secondary
-        } else if value.isEmpty {
+        } else if value.isEmpty ||
+                    Double(value.sanitizedForDouble) == nil ||
+                    Double(value.sanitizedForDouble) == 0 {
             return Color.customRed
         } else {
             return Color.secondary

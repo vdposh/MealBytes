@@ -104,7 +104,6 @@ final class RdiViewModel: ObservableObject {
                                          $selectedHeightUnit)
             )
         )
-        .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
         .sink { [weak self] combined1, combined2 in
             let (age, weight) = combined1.0
             let (height, gender) = combined1.1
