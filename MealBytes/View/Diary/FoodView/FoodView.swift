@@ -87,12 +87,14 @@ struct FoodView: View {
         }
         .alert("Remove Bookmark",
                isPresented: $foodViewModel.showBookmarkAlert) {
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                foodViewModel.handleAlertAction(.cancel)
+            }
             Button("Remove", role: .destructive) {
-                foodViewModel.toggleBookmarkFoodView()
+                foodViewModel.handleAlertAction(.remove)
             }
         } message: {
-            Text("Do you want to remove \"\(foodViewModel.food.searchFoodName)\" from your favorite foods list?")
+            Text(foodViewModel.bookmarkAlertMessage)
         }
     }
     
@@ -195,11 +197,7 @@ struct FoodView: View {
                         
                         BookmarkButtonView(
                             action: {
-                                if foodViewModel.isBookmarkFilled {
-                                    foodViewModel.showBookmarkAlert = true
-                                } else {
-                                    foodViewModel.toggleBookmarkFoodView()
-                                }
+                                foodViewModel.handleBookmarkAction()
                             },
                             isFilled: foodViewModel.isBookmarkFilled,
                             width: 55,

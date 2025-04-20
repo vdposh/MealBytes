@@ -203,6 +203,33 @@ final class FoodViewModel: ObservableObject {
         searchViewModel.toggleBookmarkSearchView(for: food)
     }
     
+    func handleBookmarkAction() {
+        if isBookmarkFilled {
+            showBookmarkAlert = true
+        } else {
+            toggleBookmarkFoodView()
+        }
+    }
+    
+    func handleAlertAction(_ action: BookmarkAlertAction) {
+        switch action {
+        case .cancel:
+            showBookmarkAlert = false
+        case .remove:
+            toggleBookmarkFoodView()
+            showBookmarkAlert = false
+        }
+    }
+    
+    enum BookmarkAlertAction {
+        case cancel
+        case remove
+    }
+    
+    var bookmarkAlertMessage: String {
+        return "Do you want to remove \"\(food.searchFoodName)\" from your favorite foods?"
+    }
+    
     // MARK: - Serving Selection and Amount Setting
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving

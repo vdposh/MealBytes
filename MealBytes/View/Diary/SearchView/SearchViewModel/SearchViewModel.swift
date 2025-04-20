@@ -152,7 +152,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Bookmark Alert
+    // MARK: - Bookmark Management
     func isBookmarkedSearchView(_ food: Food) -> Bool {
         bookmarkedFoods.contains(food.searchFoodId)
     }
@@ -189,7 +189,7 @@ final class SearchViewModel: ObservableObject {
         guard let foodName = foodToRemove?.searchFoodName else {
             return ""
         }
-        return "Do you want to remove \"\(foodName)\" from your favorite foods?"
+        return "Do you want to remove \"\(foodName)\" from your favorite foods list?"
     }
     
     // MARK: - Pagination
