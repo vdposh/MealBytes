@@ -50,7 +50,7 @@ struct CustomRdiView: View {
                 .navigationBarTitle("Custom RDI", displayMode: .inline)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
-                        HStack {
+                        HStack(spacing: 0) {
                             if focusMacronutrients != nil {
                                 Button {
                                     moveFocus(.up)

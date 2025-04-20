@@ -34,7 +34,7 @@ struct RdiView: View {
                 .scrollDismissesKeyboard(.never)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
-                        HStack {
+                        HStack(spacing: 0) {
                             Button {
                                 moveFocus(.up)
                             } label: {

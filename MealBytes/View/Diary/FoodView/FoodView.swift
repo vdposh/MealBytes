@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FoodView: View {
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState private var fieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
     @Binding private var isDismissed: Bool
     
@@ -77,7 +77,7 @@ struct FoodView: View {
                 Text("Enter serving size")
                     .foregroundColor(.secondary)
                 Button("Done") {
-                    isTextFieldFocused = false
+                    fieldFocused = false
                 }
                 .font(.headline)
             }
@@ -112,8 +112,8 @@ struct FoodView: View {
                     placeholder: "Enter serving size",
                     keyboardType: .decimalPad
                 )
-                .focused($isTextFieldFocused)
-                .onChange(of: isTextFieldFocused) { oldValue, newValue in
+                .focused($fieldFocused)
+                .onChange(of: fieldFocused) { oldValue, newValue in
                     foodViewModel.handleFocusChange(from: oldValue,
                                                     to: newValue)
                 }
@@ -123,7 +123,7 @@ struct FoodView: View {
                     title: "Serving",
                     description: foodViewModel.servingDescription
                 ) {
-                    isTextFieldFocused = false
+                    fieldFocused = false
                     foodViewModel.showServingDialog.toggle()
                 }
                 .confirmationDialog(
@@ -148,7 +148,7 @@ struct FoodView: View {
                         title: "Meal Type",
                         description: foodViewModel.mealType.rawValue
                     ) {
-                        isTextFieldFocused = false
+                        fieldFocused = false
                         foodViewModel.showMealTypeDialog.toggle()
                     }
                     .confirmationDialog(
