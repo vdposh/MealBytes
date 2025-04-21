@@ -133,6 +133,7 @@ final class RdiViewModel: ObservableObject {
         guard let ageValue = Double(age.sanitizedForDouble),
               let weightValue = Double(weight.sanitizedForDouble),
               let heightValue = Double(height.sanitizedForDouble),
+              ageValue > 0, weightValue > 0, heightValue > 0,
               gender != .notSelected, activity != .notSelected else {
             self.calculatedRdi = ""
             return
@@ -216,13 +217,18 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Text Style
+    // MARK: - Text
     func text(for calculatedRdi: String) -> String {
-        switch calculatedRdi.isEmpty {
-        case true:
-            "Fill in the data"
-        case false:
-            "\(calculatedRdi) calories"
+        guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
+              rdiValue > 0 else {
+            return "Fill in the data"
+        }
+        
+        switch rdiValue {
+        case 1:
+            return "\(calculatedRdi) calorie"
+        default:
+            return "\(calculatedRdi) calories"
         }
     }
     

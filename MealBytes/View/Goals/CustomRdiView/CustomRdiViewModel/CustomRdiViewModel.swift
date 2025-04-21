@@ -171,6 +171,21 @@ final class CustomRdiViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Text
+    func text(for calculatedRdi: String) -> String {
+        guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
+              rdiValue > 0 else {
+            return "Fill in the data"
+        }
+        
+        switch rdiValue {
+        case 1:
+            return "\(calculatedRdi) calorie"
+        default:
+            return "\(calculatedRdi) calories"
+        }
+    }
+    
     // MARK: - UI Helpers
     func titleColor(for value: String,
                     isCalorie: Bool = false) -> Color {

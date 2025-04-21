@@ -241,14 +241,6 @@ struct FoodView: View {
             nutrientDetails: foodViewModel.nutrientDetails
         )
     }
-    
-    private func servingButtons(servings: [Serving]) -> some View {
-        ForEach(servings, id: \.self) { serving in
-            Button(foodViewModel.servingDescription(for: serving)) {
-                foodViewModel.updateServing(serving)
-            }
-        }
-    }
 }
 
 #Preview {
