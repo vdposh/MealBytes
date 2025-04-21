@@ -20,7 +20,7 @@ final class FoodViewModel: ObservableObject {
     @Published var isBookmarkFilled: Bool = false
     @Published var showServingDialog: Bool = false
     @Published var showMealTypeDialog: Bool = false
-    @Published var showBookmarkAlert: Bool = false
+    @Published var showBookmarkDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -205,29 +205,10 @@ final class FoodViewModel: ObservableObject {
     
     func handleBookmarkAction() {
         if isBookmarkFilled {
-            showBookmarkAlert = true
+            showBookmarkDialog = true
         } else {
             toggleBookmarkFoodView()
         }
-    }
-    
-    func handleAlertAction(_ action: BookmarkAlertAction) {
-        switch action {
-        case .cancel:
-            showBookmarkAlert = false
-        case .remove:
-            toggleBookmarkFoodView()
-            showBookmarkAlert = false
-        }
-    }
-    
-    enum BookmarkAlertAction {
-        case cancel
-        case remove
-    }
-    
-    var bookmarkAlertMessage: String {
-        return "Do you want to remove \"\(food.searchFoodName)\" from your favorite foods?"
     }
     
     // MARK: - Serving Selection and Amount Setting

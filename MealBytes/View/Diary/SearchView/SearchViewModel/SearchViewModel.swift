@@ -14,7 +14,7 @@ final class SearchViewModel: ObservableObject {
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
-    @Published var showBookmarkAlert: Bool = false
+    @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var query: String = "" {
@@ -160,36 +160,24 @@ final class SearchViewModel: ObservableObject {
     func handleBookmarkAction(for food: Food) {
         if isBookmarkedSearchView(food) {
             foodToRemove = food
-            showBookmarkAlert = true
+            showBookmarkDialog = true
         } else {
             toggleBookmarkSearchView(for: food)
         }
     }
     
-    func handleBookmarkAlert(action: BookmarkAction) {
-        switch action {
-        case .cancel:
-            showBookmarkAlert = false
-            foodToRemove = nil
-        case .remove:
-            if let foodToRemove {
-                toggleBookmarkSearchView(for: foodToRemove)
-            }
-            showBookmarkAlert = false
-            foodToRemove = nil
+    func confirmRemoveBookmark() {
+        if let foodToRemove {
+            toggleBookmarkSearchView(for: foodToRemove)
         }
+        foodToRemove = nil
     }
     
-    enum BookmarkAction {
-        case cancel
-        case remove
-    }
-    
-    var bookmarkAlertMessage: String {
+    var bookmarkTitle: String {
         guard let foodName = foodToRemove?.searchFoodName else {
             return ""
         }
-        return "Do you want to remove \"\(foodName)\" from your favorite foods list?"
+        return "Remove \"\(foodName)\" from your favorite foods list."
     }
     
     // MARK: - Pagination

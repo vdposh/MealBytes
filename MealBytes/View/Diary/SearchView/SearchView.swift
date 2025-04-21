@@ -129,16 +129,14 @@ struct SearchView: View {
                     }
                 }
             }
-            .alert("Remove Bookmark",
-                   isPresented: $searchViewModel.showBookmarkAlert) {
-                Button("Cancel", role: .cancel) {
-                    searchViewModel.handleBookmarkAlert(action: .cancel)
-                }
+            .confirmationDialog(
+                searchViewModel.bookmarkTitle,
+                isPresented: $searchViewModel.showBookmarkDialog,
+                titleVisibility: .visible
+            ) {
                 Button("Remove", role: .destructive) {
-                    searchViewModel.handleBookmarkAlert(action: .remove)
+                    searchViewModel.confirmRemoveBookmark()
                 }
-            } message: {
-                Text(searchViewModel.bookmarkAlertMessage)
             }
             .searchable(
                 text: $searchViewModel.query,

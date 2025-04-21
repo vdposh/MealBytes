@@ -85,16 +85,14 @@ struct FoodView: View {
         .task {
             await foodViewModel.fetchFoodDetails()
         }
-        .alert("Remove Bookmark",
-               isPresented: $foodViewModel.showBookmarkAlert) {
-            Button("Cancel", role: .cancel) {
-                foodViewModel.handleAlertAction(.cancel)
+        .confirmationDialog(
+            "Remove \"\(foodViewModel.food.searchFoodName)\" from your favorite foods.",
+            isPresented: $foodViewModel.showBookmarkDialog,
+            titleVisibility: .visible
+        ) {
+            Button("Remove bookmark", role: .destructive) {
+                foodViewModel.toggleBookmarkFoodView()
             }
-            Button("Remove", role: .destructive) {
-                foodViewModel.handleAlertAction(.remove)
-            }
-        } message: {
-            Text(foodViewModel.bookmarkAlertMessage)
         }
     }
     
@@ -123,7 +121,6 @@ struct FoodView: View {
                     title: "Serving",
                     description: foodViewModel.servingDescription
                 ) {
-                    fieldFocused = false
                     foodViewModel.showServingDialog.toggle()
                 }
                 .confirmationDialog(
@@ -148,7 +145,6 @@ struct FoodView: View {
                         title: "Meal Type",
                         description: foodViewModel.mealType.rawValue
                     ) {
-                        fieldFocused = false
                         foodViewModel.showMealTypeDialog.toggle()
                     }
                     .confirmationDialog(
