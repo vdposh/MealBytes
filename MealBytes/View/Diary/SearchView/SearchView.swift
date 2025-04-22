@@ -104,7 +104,7 @@ struct SearchView: View {
                             .frame(width: 150)
                         }
                         .confirmationDialog(
-                            "Select Meal Type",
+                            "Choose a Meal",
                             isPresented: $searchViewModel.showMealType,
                             titleVisibility: .visible
                         ) {
@@ -134,7 +134,7 @@ struct SearchView: View {
                 isPresented: $searchViewModel.showBookmarkDialog,
                 titleVisibility: .visible
             ) {
-                Button("Remove", role: .destructive) {
+                Button("Remove bookmark", role: .destructive) {
                     searchViewModel.confirmRemoveBookmark()
                 }
             }

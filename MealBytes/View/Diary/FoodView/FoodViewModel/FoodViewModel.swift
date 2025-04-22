@@ -264,7 +264,7 @@ final class FoodViewModel: ObservableObject {
     
     var servingDescription: String {
         guard let selectedServing else {
-            return "Select Serving"
+            return "Select a Serving"
         }
         return servingDescription(for: selectedServing)
     }

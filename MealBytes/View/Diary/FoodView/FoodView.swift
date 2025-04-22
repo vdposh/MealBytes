@@ -86,7 +86,7 @@ struct FoodView: View {
             await foodViewModel.fetchFoodDetails()
         }
         .confirmationDialog(
-            "Remove \"\(foodViewModel.food.searchFoodName)\" from your favorite foods.",
+            "Remove \"\(foodViewModel.food.searchFoodName)\" from your favorite foods?",
             isPresented: $foodViewModel.showBookmarkDialog,
             titleVisibility: .visible
         ) {
@@ -124,7 +124,7 @@ struct FoodView: View {
                     foodViewModel.showServingDialog.toggle()
                 }
                 .confirmationDialog(
-                    "Select Serving",
+                    "Select a Serving",
                     isPresented: $foodViewModel.showServingDialog,
                     titleVisibility: .visible
                 ) {
@@ -148,7 +148,7 @@ struct FoodView: View {
                         foodViewModel.showMealTypeDialog.toggle()
                     }
                     .confirmationDialog(
-                        "Select Meal Type",
+                        "Choose a Meal",
                         isPresented: $foodViewModel.showMealTypeDialog,
                         titleVisibility: .visible
                     ) {
