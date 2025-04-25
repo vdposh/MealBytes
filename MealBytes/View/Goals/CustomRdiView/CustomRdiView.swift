@@ -21,7 +21,7 @@ struct CustomRdiView: View {
                 List {
                     Section {
                     } footer: {
-                        Text("Set your daily RDI by entering calories directly or calculate it using macronutrient distribution.")
+                        Text("Set RDI by entering calories directly or calculate it based on macronutrient distribution.")
                     }
                     
                     CalorieMetricsSection(
@@ -43,7 +43,7 @@ struct CustomRdiView: View {
                         }
                         .toggleStyle(SwitchToggleStyle(tint: .customGreen))
                     } footer: {
-                        Text("Enable this option to calculate your intake using macronutrients.")
+                        Text("Enable this option to calculate intake using macronutrients.")
                     }
                 }
                 .scrollDismissesKeyboard(.never)

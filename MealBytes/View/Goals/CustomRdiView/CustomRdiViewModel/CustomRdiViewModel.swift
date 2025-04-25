@@ -214,7 +214,7 @@ final class CustomRdiViewModel: ObservableObject {
     var footerText: String {
         toggleOn
         ? "Calories will be calculated automatically based on the entered macronutrients."
-        : "You can enter the necessary number of calories directly."
+        : "Necessary calorie amount can be entered directly."
     }
 }
 

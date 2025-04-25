@@ -26,7 +26,7 @@ struct LoginView: View {
                 SecureFieldView(
                     text: $loginViewModel.password,
                     title: "Password",
-                    placeholder: "Enter your password",
+                    placeholder: "Enter password",
                     titleColor: loginViewModel.titleColor(
                         for: loginViewModel.password)
                 )
@@ -72,5 +72,11 @@ struct LoginView: View {
                 loginViewModel.getLoginErrorAlert()
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        LoginView(loginViewModel: LoginViewModel())
     }
 }

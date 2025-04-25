@@ -62,7 +62,7 @@ final class ResetViewModel: ObservableObject {
         if success {
             return Alert(
                 title: Text("Done"),
-                message: Text("A password reset link has been sent to your email."),
+                message: Text("A reset link for the password has been sent to the email."),
                 dismissButton: .default(Text("OK"))
             )
         } else {

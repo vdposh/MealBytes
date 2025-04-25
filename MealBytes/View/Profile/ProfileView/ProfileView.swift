@@ -31,7 +31,7 @@ struct ProfileView: View {
                             .lineLimit(1)
                     }
                 } else {
-                    Text("You have been disconnected.")
+                    Text("Account disconnected.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -54,7 +54,7 @@ struct ProfileView: View {
                 )
                 .toggleStyle(SwitchToggleStyle(tint: .customGreen))
             } footer: {
-                Text("Enable this option to display your Recommended Daily Intake (RDI) in the Diary.")
+                Text("Enable this option to display Recommended Daily Intake (RDI) in the Diary.")
             }
             
             Section {
@@ -73,7 +73,7 @@ struct ProfileView: View {
                 }
                 .disabled(profileViewModel.isPasswordChanging)
             } footer: {
-                Text("Use this option to update your account password for improved security.")
+                Text("Use this option to update the account password for improved security.")
                     .padding(.bottom)
             }
             
@@ -98,13 +98,13 @@ struct ProfileView: View {
                         Button {
                             profileViewModel.prepareAlert(for: .deleteAccount)
                         } label: {
-                            Text("remove")
+                            Text("delete")
                                 .fontWeight(.semibold)
                                 .foregroundColor(.customRed)
                         }
                         .buttonStyle(.plain)
                         
-                        Text("your account?")
+                        Text("the account?")
                             .foregroundColor(.secondary)
                     }
                     .multilineTextAlignment(.center)
@@ -122,7 +122,7 @@ struct ProfileView: View {
             isPresented: $profileViewModel.showAlert,
             actions: {
                 if profileViewModel.alertType == .deleteAccount {
-                    SecureField("Enter your password",
+                    SecureField("Enter password",
                                 text: $profileViewModel.password)
                     .font(.callout)
                     .textContentType(.password)

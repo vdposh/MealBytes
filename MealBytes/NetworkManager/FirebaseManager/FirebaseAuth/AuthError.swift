@@ -26,29 +26,29 @@ enum AuthError: Error, Identifiable, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidEmail:
-            "The email address entered is invalid. Please check and try again."
+            "The entered email address is invalid. Check and try again."
         case .incorrectCredentials:
-            "Incorrect email or password. Please try again."
+            "Incorrect email or password. Check and try again."
         case .emailAlreadyInUse:
-            "The email address is already in use. Please try another one."
+            "The email address is already in use."
         case .userNotFound:
             "No user found with the specified email address."
         case .userNotVerified:
             """
-            Your email is not verified.
-            Please check your inbox and verify your email address.
+            Email is not verified.
+            Check the inbox and verify the email address.
             """
         case .weakPassword:
             "The password must be at least 6 characters long."
         case .networkError:
             """
-            A network error occurred. 
-            Please check your internet connection and try again.
+            A network error occurred.
+            Check the internet connection and try again.
             """
         case .sessionExpired:
             """
             You have been disconnected.
-            Please log in again to regain access and continue.
+            Log in again to restore access and continue.
             """
         case .offlineMode:
             """
@@ -56,7 +56,7 @@ enum AuthError: Error, Identifiable, LocalizedError {
             Local changes are saved and will sync automatically when the network connection is restored.
             """
         case .unknownError:
-            "Something went wrong while processing your request. Please try again in a moment."
+            "Something went wrong while processing the request. Try again."
         }
     }
 }

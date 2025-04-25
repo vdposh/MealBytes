@@ -346,9 +346,9 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
         mealType: .breakfast,
         amount: "1",
         measurementDescription: "Grams",
-        showAddButton: true,
-        showSaveRemoveButton: false,
-        showMealTypeButton: false,
+        showAddButton: false,
+        showSaveRemoveButton: true,
+        showMealTypeButton: true,
         originalMealItemId: UUID()
     )
 }

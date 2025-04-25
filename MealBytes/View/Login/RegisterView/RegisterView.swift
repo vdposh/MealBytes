@@ -26,7 +26,7 @@ struct RegisterView: View {
                 SecureFieldView(
                     text: $registerViewModel.password,
                     title: "Password",
-                    placeholder: "Enter your password",
+                    placeholder: "Enter password",
                     titleColor: registerViewModel.titleColor(
                         for: registerViewModel.password)
                 )
@@ -34,7 +34,7 @@ struct RegisterView: View {
                 SecureFieldView(
                     text: $registerViewModel.confirmPassword,
                     title: "Confirm Password",
-                    placeholder: "Re-enter your password",
+                    placeholder: "Re-enter password",
                     titleColor: registerViewModel.titleColor(
                         for: registerViewModel.confirmPassword)
                 )
@@ -93,14 +93,20 @@ struct RegisterView: View {
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
             
-            Text("To register, please provide a valid email address and create a password that is at least 6 characters long. After completing the registration form, an email will be sent to the provided address containing a verification link.")
+            Text("To register, provide a valid email address and create a password that is at least 6 characters long. Once done, you'll receive a verification email.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 30)
             
                 .alert(isPresented: $registerViewModel.showAlert) {
                     registerViewModel.getAlert()
                 }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        RegisterView()
     }
 }

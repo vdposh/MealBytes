@@ -130,20 +130,20 @@ final class ProfileViewModel: ObservableObject {
                 switch type {
                 case .signOut:
                     alertTitle = "Sign Out"
-                    alertMessage = "You will need to sign in again to access your account."
+                    alertMessage = "Signing out will require signing in again to access the account."
                     destructiveButtonTitle = "Sign Out"
                     
                 case .deleteAccount:
                     alertTitle = "Delete Account"
                     alertMessage = """
-                    To delete your account, please enter the password associated with your account.
-                    Your data and account details will be permanently erased. This action cannot be undone.
+                    To delete the account, enter the password associated with it.
+                    Data and account details will be permanently erased. This action cannot be undone.
                     """
                     destructiveButtonTitle = "Delete"
                     
                 case .changePassword:
                     alertTitle = "Change Password"
-                    alertMessage = "Please provide your current password and a new password to update your account credentials."
+                    alertMessage = "Provide the current password and a new password to update account credentials."
                     destructiveButtonTitle = "Update Password"
                 }
             }
@@ -187,8 +187,8 @@ final class ProfileViewModel: ObservableObject {
                 await MainActor.run {
                     alertTitle = "Delete Account"
                     alertMessage = """
-                    The password you entered is incorrect.
-                    To delete your account, please provide the correct password.
+                    The password entered is incorrect.
+                    To delete the account, provide the correct password.
                     """
                     showAlert = true
                     isDeletingAccount = false
@@ -231,7 +231,7 @@ final class ProfileViewModel: ObservableObject {
                                          newPassword: newPassword)
                 await MainActor.run {
                     alertTitle = "Done"
-                    alertMessage = "Your password has been successfully updated."
+                    alertMessage = "Password has been successfully updated."
                     showAlert = true
                     isPasswordChanging = false
                 }
@@ -240,7 +240,7 @@ final class ProfileViewModel: ObservableObject {
                     alertTitle = "Change Password"
                     alertMessage = """
                     Failed to update the password.
-                    Please check your current password and try again.
+                    Check the current password and try again.
                     """
                     showAlert = true
                     isPasswordChanging = false

@@ -177,7 +177,7 @@ final class SearchViewModel: ObservableObject {
         guard let foodName = foodToRemove?.searchFoodName else {
             return ""
         }
-        return "Remove \"\(foodName)\" from your favorite foods?"
+        return "Remove \"\(foodName)\" from favorite foods?"
     }
     
     // MARK: - Pagination

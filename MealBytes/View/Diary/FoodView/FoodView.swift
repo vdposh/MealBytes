@@ -86,7 +86,7 @@ struct FoodView: View {
             await foodViewModel.fetchFoodDetails()
         }
         .confirmationDialog(
-            "Remove \"\(foodViewModel.food.searchFoodName)\" from your favorite foods?",
+            "Remove \"\(foodViewModel.food.searchFoodName)\" from favorite foods?",
             isPresented: $foodViewModel.showBookmarkDialog,
             titleVisibility: .visible
         ) {
@@ -253,9 +253,9 @@ struct FoodView: View {
         mealType: .breakfast,
         amount: "1",
         measurementDescription: "Grams",
-        showAddButton: true,
-        showSaveRemoveButton: false,
-        showMealTypeButton: false,
+        showAddButton: false,
+        showSaveRemoveButton: true,
+        showMealTypeButton: true,
         originalMealItemId: UUID()
     )
 }

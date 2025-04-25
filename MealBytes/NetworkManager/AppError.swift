@@ -21,15 +21,18 @@ enum AppError: Error, Identifiable, LocalizedError {
     var errorDescription: String {
         switch self {
         case .network:
-            "There was a problem connecting to the network. Please check your internet connection and try again."
+            """
+            Unable to connect to the network.
+            Ensure internet access and try again.
+            """
         case .decoding:
-            "There was a problem reading the data. Please ensure everything is correct and try again."
+            "There was a problem reading the data. Ensure your connection is stable and try again later."
         case .results:
             ""
         case .noBookmarks:
             "No bookmarks yet"
         case .disconnected:
-            "Your account is disconnected. Please log out and log back in to sync your data."
+            "Account disconnected. Log out and log back in to restore data sync."
         }
     }
 }

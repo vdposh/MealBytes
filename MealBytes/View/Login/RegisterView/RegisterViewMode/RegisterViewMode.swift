@@ -128,7 +128,7 @@ final class RegisterViewModel: ObservableObject {
         } else {
             return Alert(
                 title: Text("Done"),
-                message: Text("A confirmation email has been sent to your email address."),
+                message: Text("A confirmation email has been sent to the email address."),
                 dismissButton: .default(Text("OK"))
             )
         }

@@ -50,7 +50,7 @@ struct MacronutrientMetricsSection: View {
         } header: {
             Text("Macronutrient Metrics")
         } footer: {
-            Text("Enter values for macronutrients. These inputs will be used to calculate your daily calorie intake precisely.")
+            Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
         }
     }
 }

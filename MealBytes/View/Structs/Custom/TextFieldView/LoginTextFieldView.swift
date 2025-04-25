@@ -11,7 +11,7 @@ struct LoginTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
     var title: String = "Email"
-    var placeholder: String = "Enter your email"
+    var placeholder: String = "Enter email"
     var keyboardType: UIKeyboardType = .emailAddress
     var titleColor: Color = .primary
     

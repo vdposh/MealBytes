@@ -14,7 +14,7 @@ struct OverviewSection: View {
         Section {
         } footer: {
             VStack(alignment: .leading) {
-                Text("The RDI calculation is based on unique factors, including your age, weight, height, gender, and activity level.")
+                Text("The RDI calculation is based on unique factors, including age, weight, height, gender, and activity level.")
                     .padding(.bottom)
                 
                 Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))

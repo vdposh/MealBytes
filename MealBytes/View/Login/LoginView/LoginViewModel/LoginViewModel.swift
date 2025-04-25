@@ -175,7 +175,7 @@ final class LoginViewModel: ObservableObject {
     private func commonErrorAlert() -> Alert {
         return Alert(
             title: Text("Error"),
-            message: Text("Something went wrong while processing your request. Please try again in a moment."),
+            message: Text("Something went wrong while processing the request. Try again."),
             dismissButton: .default(Text("OK"))
         )
     }
