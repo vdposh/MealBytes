@@ -94,6 +94,18 @@ struct FoodView: View {
                 foodViewModel.toggleBookmarkFoodView()
             }
         }
+        .confirmationDialog(
+            "Remove \"\(foodViewModel.food.searchFoodName)\" from Diary?",
+            isPresented: $foodViewModel.showRemoveDialog,
+            titleVisibility: .visible
+        ) {
+            Button("Remove", role: .destructive) {
+                Task {
+                    await foodViewModel.deleteMealItemFoodView()
+                    dismiss()
+                }
+            }
+        }
     }
     
     private var servingSizeSection: some View {
@@ -203,10 +215,7 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Remove",
                             action: {
-                                Task {
-                                    await foodViewModel.deleteMealItemFoodView()
-                                    dismiss()
-                                }
+                                foodViewModel.showRemoveDialog = true
                             },
                             backgroundColor: .customRed
                         )

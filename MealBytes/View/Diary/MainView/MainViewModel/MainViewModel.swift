@@ -18,6 +18,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     @Published var mealItems: [MealType: [MealItem]]
+    @Published var selectedMealItem: MealItem?
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var uniqueID = UUID()
@@ -27,6 +28,7 @@ final class MainViewModel: ObservableObject {
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var shouldDisplayRdi: Bool = true
+    @Published var showRemoveDialog: Bool = false
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -136,6 +138,12 @@ final class MainViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func confirmRemoveMealItem() {
+        guard let item = selectedMealItem else { return }
+        deleteMealItemMainView(with: item.id, for: item.mealType)
+        selectedMealItem = nil
     }
     
     // MARK: - Load RDI

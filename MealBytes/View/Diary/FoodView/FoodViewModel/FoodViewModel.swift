@@ -21,6 +21,7 @@ final class FoodViewModel: ObservableObject {
     @Published var showServingDialog: Bool = false
     @Published var showMealTypeDialog: Bool = false
     @Published var showBookmarkDialog: Bool = false
+    @Published var showRemoveDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil

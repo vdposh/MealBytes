@@ -80,17 +80,13 @@ struct MealHeaderView: View {
                             mainViewModel: mainViewModel
                         )
                         .swipeActions {
-                            Button(role: .destructive) {
-                                Task {
-                                    mainViewModel.deleteMealItemMainView(
-                                        with: item.id,
-                                        for: mealType
-                                    )
-                                }
-                                mainViewModel.uniqueID = UUID()
+                            Button {
+                                mainViewModel.selectedMealItem = item
+                                mainViewModel.showRemoveDialog = true
                             } label: {
                                 Image(systemName: "trash")
                             }
+                            .tint(.red)
                         }
                     }
                 }
@@ -100,6 +96,15 @@ struct MealHeaderView: View {
                 get: { mainViewModel.expandedSections[mealType] ?? false },
                 set: { mainViewModel.expandedSections[mealType] = $0 }
             ))
+        }
+        .confirmationDialog(
+            "Remove \"\(mainViewModel.selectedMealItem?.foodName ?? "")\" from Diary?",
+            isPresented: $mainViewModel.showRemoveDialog,
+            titleVisibility: .visible
+        ) {
+            Button("Remove", role: .destructive) {
+                mainViewModel.confirmRemoveMealItem()
+            }
         }
     }
 }
