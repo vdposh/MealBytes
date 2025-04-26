@@ -42,14 +42,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         let snapshot = try await firestore.collection("users")
             .document(uid)
             .collection("meals")
-            .order(by: "creationDate", descending: false)
             .getDocuments()
-        
-        let loadedItems = try snapshot.documents.compactMap { document in
+        return try snapshot.documents.compactMap { document in
             try document.data(as: MealItem.self)
         }
-        
-        return loadedItems
     }
     
     // MARK: - Save Data
@@ -57,14 +53,11 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        var updatedMealItem = mealItem
-        updatedMealItem.creationDate = Date()
-        
         let documentReference = firestore.collection("users")
             .document(uid)
             .collection("meals")
-            .document(updatedMealItem.id.uuidString)
-        try documentReference.setData(from: updatedMealItem)
+            .document(mealItem.id.uuidString)
+        try documentReference.setData(from: mealItem)
     }
     
     // MARK: - Update Data
@@ -76,19 +69,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(uid)
             .collection("meals")
             .document(mealItem.id.uuidString)
-        
-        let updatedFields: [String: Any] = [
-            "foodId": mealItem.foodId,
-            "foodName": mealItem.foodName,
-            "portionUnit": mealItem.portionUnit,
-            "nutrients": mealItem.nutrients.mapKeys { $0.rawValue },
-            "measurementDescription": mealItem.measurementDescription,
-            "amount": mealItem.amount,
-            "date": mealItem.date,
-            "mealType": mealItem.mealType.rawValue
-        ]
-        
-        documentReference.updateData(updatedFields)
+        try documentReference.setData(from: mealItem, merge: true)
     }
     
     // MARK: - Delete Data

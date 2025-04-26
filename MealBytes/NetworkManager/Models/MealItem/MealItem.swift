@@ -17,7 +17,6 @@ struct MealItem: Codable, Identifiable {
     let measurementDescription: String
     let amount: Double
     let date: Date
-    var creationDate: Date
     let mealType: MealType
     
     init(id: UUID = UUID(),
@@ -28,7 +27,6 @@ struct MealItem: Codable, Identifiable {
          measurementDescription: String,
          amount: Double,
          date: Date = Date(),
-         creationDate: Date = Date(),
          mealType: MealType) {
         self.id = id
         self.foodId = foodId
@@ -38,7 +36,6 @@ struct MealItem: Codable, Identifiable {
         self.measurementDescription = measurementDescription
         self.amount = amount
         self.date = date
-        self.creationDate = creationDate
         self.mealType = mealType
     }
     
@@ -51,7 +48,6 @@ struct MealItem: Codable, Identifiable {
              measurementDescription,
              amount,
              date,
-             creationDate, // 🔹 Добавляем сюда
              mealType
     }
     
@@ -65,7 +61,6 @@ struct MealItem: Codable, Identifiable {
                              forKey: .measurementDescription)
         try container.encode(amount, forKey: .amount)
         try container.encode(date, forKey: .date)
-        try container.encode(creationDate, forKey: .creationDate)
         try container.encode(mealType, forKey: .mealType)
         let stringNutrients = nutrients.mapKeys { $0.rawValue }
         try container.encode(stringNutrients, forKey: .nutrients)
@@ -81,7 +76,6 @@ struct MealItem: Codable, Identifiable {
             String.self, forKey: .measurementDescription)
         amount = try container.decode(Double.self, forKey: .amount)
         date = try container.decode(Date.self, forKey: .date)
-        creationDate = try container.decode(Date.self, forKey: .creationDate)
         mealType = try container.decode(MealType.self, forKey: .mealType)
         
         let stringNutrients = try container.decode([String: Double].self,
