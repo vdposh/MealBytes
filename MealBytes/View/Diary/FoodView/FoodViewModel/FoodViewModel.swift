@@ -20,8 +20,6 @@ final class FoodViewModel: ObservableObject {
     @Published var isBookmarkFilled: Bool = false
     @Published var showServingDialog: Bool = false
     @Published var showMealTypeDialog: Bool = false
-    @Published var showBookmarkDialog: Bool = false
-    @Published var showRemoveDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -202,14 +200,6 @@ final class FoodViewModel: ObservableObject {
     func toggleBookmarkFoodView() {
         isBookmarkFilled.toggle()
         searchViewModel.toggleBookmarkSearchView(for: food)
-    }
-    
-    func handleBookmarkAction() {
-        if isBookmarkFilled {
-            showBookmarkDialog = true
-        } else {
-            toggleBookmarkFoodView()
-        }
     }
     
     // MARK: - Serving Selection and Amount Setting

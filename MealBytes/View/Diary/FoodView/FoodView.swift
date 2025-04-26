@@ -85,27 +85,6 @@ struct FoodView: View {
         .task {
             await foodViewModel.fetchFoodDetails()
         }
-        .confirmationDialog(
-            "Remove \"\(foodViewModel.food.searchFoodName)\" from favorite foods?",
-            isPresented: $foodViewModel.showBookmarkDialog,
-            titleVisibility: .visible
-        ) {
-            Button("Remove bookmark", role: .destructive) {
-                foodViewModel.toggleBookmarkFoodView()
-            }
-        }
-        .confirmationDialog(
-            "Remove \"\(foodViewModel.food.searchFoodName)\" from Diary?",
-            isPresented: $foodViewModel.showRemoveDialog,
-            titleVisibility: .visible
-        ) {
-            Button("Remove", role: .destructive) {
-                Task {
-                    await foodViewModel.deleteMealItemFoodView()
-                    dismiss()
-                }
-            }
-        }
     }
     
     private var servingSizeSection: some View {
@@ -205,7 +184,7 @@ struct FoodView: View {
                         
                         BookmarkButtonView(
                             action: {
-                                foodViewModel.handleBookmarkAction()
+                                foodViewModel.toggleBookmarkFoodView()
                             },
                             isFilled: foodViewModel.isBookmarkFilled,
                             width: 55,
@@ -215,7 +194,10 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Remove",
                             action: {
-                                foodViewModel.showRemoveDialog = true
+                                Task {
+                                    await foodViewModel.deleteMealItemFoodView()
+                                    dismiss()
+                                }
                             },
                             backgroundColor: .customRed
                         )
