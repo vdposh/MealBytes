@@ -87,7 +87,7 @@ final class SearchViewModel: ObservableObject {
             }
     }
     
-    // MARK: - Delete Meal Item
+    // MARK: - Load Bookmarks
     func loadBookmarksSearchView() async {
         do {
             let favoriteFoods = try await firestore
@@ -113,7 +113,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Bookmark Fill
+    // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) {
         Task {
             let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
