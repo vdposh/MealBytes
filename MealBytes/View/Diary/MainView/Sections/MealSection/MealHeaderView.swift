@@ -80,26 +80,30 @@ struct MealHeaderView: View {
                             mainViewModel: mainViewModel
                         )
                         .swipeActions {
-                            Button(role: .destructive) {
+                            Button(role: mainViewModel.deletionButtonRole(
+                                for: mealType
+                            )) {
                                 Task {
                                     mainViewModel.deleteMealItemMainView(
                                         with: item.id,
                                         for: mealType
                                     )
                                 }
-                                mainViewModel.uniqueID = UUID()
                             } label: {
                                 Image(systemName: "trash")
                             }
+                            .tint(.red)
                         }
                     }
                 }
             }
             
-            ShowHideButtonView(isExpanded: Binding(
-                get: { mainViewModel.expandedSections[mealType] ?? false },
-                set: { mainViewModel.expandedSections[mealType] = $0 }
-            ))
+            if !foodItems.isEmpty {
+                ShowHideButtonView(isExpanded: Binding(
+                    get: { mainViewModel.expandedSections[mealType] ?? false },
+                    set: { mainViewModel.expandedSections[mealType] = $0 }
+                ))
+            }
         }
     }
 }

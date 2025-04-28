@@ -138,6 +138,13 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func deletionButtonRole(for mealType: MealType) -> ButtonRole? {
+        return filteredMealItems(
+            for: mealType,
+            on: date
+        ).count == 1 ? nil : .destructive
+    }
+    
     // MARK: - Load RDI
     private func loadMainRdiMainView() async {
         do {
