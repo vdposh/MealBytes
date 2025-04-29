@@ -45,49 +45,64 @@ struct FoodItemRow: View {
                             .lineLimit(1)
                             .font(.callout)
                             .fontWeight(.medium)
+                        
                         HStack(spacing: 2) {
-                            Text(mainViewModel.formattedServingSize(for: mealItem))
+                            Text(
+                                mainViewModel
+                                    .formattedServingSize(for: mealItem)
+                            )
                             Text(mealItem.portionUnit)
                         }
                         .lineLimit(1)
                         .font(.callout)
                         .foregroundColor(.secondary)
                         
-                        Text(mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.calories],
-                            unit: .empty,
-                            alwaysRoundUp: true
-                        ))
+                        Text(
+                            mainViewModel.formatter.formattedValue(
+                                mealItem.nutrients[.calories],
+                                unit: .empty,
+                                alwaysRoundUp: true
+                            )
+                        )
                         .lineLimit(1)
                         .font(.callout)
                         .fontWeight(.medium)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
+                    
                     HStack {
                         NutrientLabel(
                             label: "F",
-                            formattedValue: mainViewModel.formatter.formattedValue(
-                                mealItem.nutrients[.fat],
-                                unit: .empty
-                            )
+                            formattedValue:
+                                mainViewModel.formatter.formattedValue(
+                                    mealItem.nutrients[.fat], unit: .empty
+                                )
                         )
+                        
                         NutrientLabel(
                             label: "C",
-                            formattedValue: mainViewModel.formatter.formattedValue(
-                                mealItem.nutrients[.carbohydrate],
-                                unit: .empty
-                            )
+                            formattedValue:
+                                mainViewModel.formatter.formattedValue(
+                                    mealItem.nutrients[.carbohydrate],
+                                    unit: .empty
+                                )
                         )
+                        
                         NutrientLabel(
                             label: "P",
-                            formattedValue: mainViewModel.formatter.formattedValue(
-                                mealItem.nutrients[.protein],
-                                unit: .empty
-                            )
+                            formattedValue:
+                                mainViewModel.formatter.formattedValue(
+                                    mealItem.nutrients[.protein],
+                                    unit: .empty
+                                )
                         )
+                        
                         if mainViewModel.canDisplayRdi() {
-                            Text(mainViewModel.rdiPercentageText(
-                                for: mealItem.nutrients[.calories]))
+                            Text(
+                                mainViewModel.rdiPercentageText(
+                                    for: mealItem.nutrients[.calories]
+                                )
+                            )
                             .lineLimit(1)
                             .foregroundColor(.secondary)
                             .font(.subheadline)
@@ -97,7 +112,7 @@ struct FoodItemRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 5)
                 }
-                .padding(.top, -5)
+                .padding(.top, -3)
                 .padding(.trailing, 5)
             }
         }
