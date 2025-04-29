@@ -89,7 +89,6 @@ struct MealHeaderView: View {
                                         for: mealType
                                     )
                                 }
-                                mainViewModel.uniqueID = UUID()
                             } label: {
                                 Image(systemName: "trash")
                             }
@@ -107,4 +106,11 @@ struct MealHeaderView: View {
             }
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
