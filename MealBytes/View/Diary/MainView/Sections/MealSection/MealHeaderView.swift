@@ -20,6 +20,7 @@ struct MealHeaderView: View {
     @State private var isPresentingSheet: Bool = false
     @State private var isFoodViewPresented: Bool = false
     @ObservedObject var mainViewModel: MainViewModel
+    @State private var sectionID = UUID()
     
     var body: some View {
         Section {
@@ -79,7 +80,7 @@ struct MealHeaderView: View {
                             mealType: mealType,
                             mainViewModel: mainViewModel
                         )
-                        .swipeActions {
+                        .swipeActions(allowsFullSwipe: false) {
                             Button(role: mainViewModel.deletionButtonRole(
                                 for: mealType
                             )) {
@@ -89,6 +90,7 @@ struct MealHeaderView: View {
                                         for: mealType
                                     )
                                 }
+                                mainViewModel.uniqueID = UUID()
                             } label: {
                                 Image(systemName: "trash")
                             }
