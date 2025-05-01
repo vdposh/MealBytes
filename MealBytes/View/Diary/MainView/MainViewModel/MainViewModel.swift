@@ -20,6 +20,7 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
+    @Published var uniqueID = UUID()
     @Published var appError: AppError?
     @Published var rdiProgress: Double = 0.0
     @Published var rdi: String = ""
