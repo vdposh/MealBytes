@@ -33,18 +33,15 @@ struct SearchView: View {
                 } else {
                     List {
                         if !searchViewModel.foods.isEmpty {
-                            ForEach(searchViewModel.foods,
-                                    id: \.searchFoodId) { food in
+                            ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
                                 HStack {
                                     NavigationLink(
                                         destination: FoodView(
                                             isDismissed: $isPresented,
-                                            navigationTitle:
-                                                "Add to \(mealType.rawValue)",
+                                            navigationTitle: "Add to \(mealType.rawValue)",
                                             food: food,
                                             searchViewModel: searchViewModel,
-                                            mainViewModel: searchViewModel
-                                                .mainViewModel,
+                                            mainViewModel: searchViewModel.mainViewModel,
                                             mealType: mealType,
                                             amount: "",
                                             measurementDescription: "",
@@ -53,20 +50,14 @@ struct SearchView: View {
                                             showMealTypeButton: false
                                         )
                                     ) {
-                                        FoodDetailView(
-                                            food: food,
-                                            searchViewModel: searchViewModel
-                                        )
+                                        FoodDetailView(food: food, searchViewModel: searchViewModel)
                                     }
                                     BookmarkButtonView(
                                         action: {
-                                            searchViewModel
-                                                .handleBookmarkAction(for: food)
+                                            searchViewModel.handleBookmarkAction(for: food)
                                         },
-                                        isFilled: searchViewModel
-                                            .isBookmarkedSearchView(food),
-                                        width: 45,
-                                        height: 24
+                                        isFilled: searchViewModel.isBookmarkedSearchView(food),
+                                        width: 45, height: 24
                                     )
                                 }
                             }
@@ -142,6 +133,11 @@ struct SearchView: View {
                 text: $searchViewModel.query,
                 prompt: "Enter a food name"
             )
+        }
+        .task {
+            await MainActor.run {
+                searchViewModel.mainViewModel.isLoadingSearchView = false
+            }
         }
         .scrollDismissesKeyboard(.immediately)
     }
