@@ -34,19 +34,15 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
         ) {
-            VStack(spacing: 10) {
+            VStack(spacing: 8) {
                 HStack {
-                    Text(mealItem.foodName)
-                        .lineLimit(1)
-                        .font(.callout)
-                        .fontWeight(.medium)
-                    HStack(spacing: 2) {
-                        Text(mainViewModel.formattedServingSize(for: mealItem))
-                        Text(mealItem.portionUnit)
+                    VStack(alignment: .leading) {
+                        Text(mealItem.foodName)
+                        Text("\(mainViewModel.formattedServingSize(for: mealItem))\(mealItem.portionUnit)")
+                            .lineLimit(1)
+                            .foregroundColor(.customGreen)
                     }
-                    .lineLimit(1)
-                    .font(.callout)
-                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(mainViewModel.formatter.formattedValue(
                         mealItem.nutrients[.calories],
@@ -54,10 +50,12 @@ struct FoodItemRow: View {
                         alwaysRoundUp: true
                     ))
                     .lineLimit(1)
-                    .font(.callout)
                     .fontWeight(.medium)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .foregroundColor(.secondary)
+                    .frame(width: 60, alignment: .trailing)
                 }
+                .font(.callout)
+                
                 HStack {
                     NutrientLabel(
                         label: "F",
@@ -91,7 +89,6 @@ struct FoodItemRow: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.vertical, 5)
             .padding(.trailing, 5)
         }
     }

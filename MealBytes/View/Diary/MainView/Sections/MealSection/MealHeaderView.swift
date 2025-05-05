@@ -53,8 +53,8 @@ struct MealHeaderView: View {
                     .padding(.vertical, 5)
                     .padding(.trailing, 5)
                     
-                    Text("+")
-                        .font(.title)
+                    Image(systemName: "plus")
+                        .font(.headline)
                 }
             }
             .fullScreenCover(isPresented: $isPresentingSheet) {
