@@ -318,6 +318,26 @@ final class MainViewModel: ObservableObject {
                                         unit: .empty)
     }
     
+    func formattedMeasurement(for mealItem: MealItem) -> String {
+        if mealItem.measurementDescription.starts(with: "serving (") {
+            return "serving"
+        } else {
+            return mealItem.measurementDescription
+        }
+    }
+    
+    func formattedMealText(for mealItem: MealItem) -> String {
+        let formattedAmount = formatter.formattedValue(mealItem.amount,
+                                                       unit: .empty)
+        let measurement = formattedMeasurement(for: mealItem)
+        
+        if measurement == "g" || measurement == "ml" {
+            return "\(formattedServingSize(for: mealItem))\(mealItem.portionUnit)"
+        }
+        
+        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem))\(mealItem.portionUnit))"
+    }
+    
     // MARK: - Format Calories
     func formattedCalories(_ calories: Double) -> String {
         return formatter.formattedValue(calories,

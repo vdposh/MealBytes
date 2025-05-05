@@ -39,7 +39,7 @@ struct MealHeaderView: View {
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
                                 .font(.callout)
-                                .fontWeight(.medium)
+                                .fontWeight(.semibold)
                                 .foregroundColor(.primary)
                         }
                         NutrientSummaryRow(
