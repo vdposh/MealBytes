@@ -36,9 +36,10 @@ struct FoodItemRow: View {
         ) {
             VStack(spacing: 8) {
                 HStack {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(mealItem.foodName)
                         Text(mainViewModel.formattedMealText(for: mealItem))
+                            .font(.subheadline)
                             .foregroundColor(.customGreen)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -49,11 +50,11 @@ struct FoodItemRow: View {
                         alwaysRoundUp: true
                     ))
                     .lineLimit(1)
+                    .font(.callout)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
                     .frame(width: 60, alignment: .trailing)
                 }
-                .font(.callout)
                 
                 HStack {
                     NutrientLabel(
