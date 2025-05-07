@@ -69,6 +69,7 @@ struct ProfileView: View {
                         }
                     } else {
                         Text("Change Password")
+                            .foregroundStyle(.customGreen)
                     }
                 }
                 .disabled(profileViewModel.isPasswordChanging)

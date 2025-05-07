@@ -15,8 +15,17 @@ struct FoodDetailView: View {
         VStack(alignment: .leading) {
             Text(food.searchFoodName)
             if let parsedDescription = food.parsedDescription {
-                Text(parsedDescription).foregroundColor(.secondary)
+                Text(parsedDescription)
+                    .foregroundColor(.customGreen)
+                    .font(.subheadline)
             }
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

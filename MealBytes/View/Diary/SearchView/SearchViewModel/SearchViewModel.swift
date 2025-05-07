@@ -218,7 +218,8 @@ final class SearchViewModel: ObservableObject {
 }
 
 #Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

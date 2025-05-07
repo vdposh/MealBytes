@@ -29,3 +29,10 @@ struct ShowHideButtonView: View {
         .listRowSeparator(.hidden)
     }
 }
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
+}

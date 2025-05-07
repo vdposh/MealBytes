@@ -28,14 +28,15 @@ final class FoodViewModel: ObservableObject {
     
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
+    private let formatter = Formatter()
+    private let originalMealType: MealType
+    private let originalMealItemId: UUID
     let food: Food
     var mealType: MealType
-    let originalMealType: MealType
-    let originalMealItemId: UUID
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    var searchViewModel: SearchViewModel
+    private var searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
     init(food: Food,
@@ -240,16 +241,19 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
         let description = serving.measurementDescription
-        let metricAmount = Int(serving.metricServingAmount)
+        let metricAmountFormatted = formatter.formattedValue(
+            serving.metricServingAmount,
+            unit: .empty
+        )
         let metricUnit = serving.metricServingUnit
         
         switch serving.isMetricMeasurement {
         case true:
             return description
-        case false where description.contains("serving (\(metricAmount)g"):
+        case false where description.contains("serving (\(metricAmountFormatted)g"):
             return description
         default:
-            return "\(description) (\(metricAmount)\(metricUnit))"
+            return "\(description) (\(metricAmountFormatted)\(metricUnit))"
         }
     }
     
