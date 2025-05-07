@@ -79,9 +79,9 @@ enum NutrientType: String, Identifiable, CaseIterable {
     func unit(for serving: Serving) -> String {
         switch self {
         case .servingSize:
-            serving.metricServingUnit
+            return serving.metricServingUnit.isEmpty ? "ml" : serving.metricServingUnit
         default:
-            baseUnit
+            return baseUnit
         }
     }
     

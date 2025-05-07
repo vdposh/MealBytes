@@ -29,17 +29,25 @@ struct NutrientDetail: Identifiable {
 
 extension NutrientDetail {
     var formattedValue: String {
-        Formatter().formattedValue(
+        let unit: Formatter.Unit = {
+            switch type {
+            case .calories:
+                    .empty
+            case .servingSize where serving.metricServingUnit.isEmpty:
+                    .empty
+            default:
+                Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
+            }
+        }()
+        
+        let formatted = Formatter().formattedValue(
             value,
-            unit: {
-                switch type {
-                case .calories:
-                        .empty
-                default:
-                    Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
-                }
-            }(),
+            unit: unit,
             alwaysRoundUp: type == .calories
         )
+        
+        return type ==
+            .servingSize && unit ==
+            .empty ? "\(formatted) ml" : formatted
     }
 }
