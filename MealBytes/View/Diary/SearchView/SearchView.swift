@@ -11,7 +11,7 @@ struct SearchView: View {
     @State private var mealType: MealType
     @Binding private var isPresented: Bool
     
-    @ObservedObject private var searchViewModel: SearchViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     
     init(isPresented: Binding<Bool>,
          searchViewModel: SearchViewModel,
