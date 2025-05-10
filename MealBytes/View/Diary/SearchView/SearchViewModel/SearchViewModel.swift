@@ -17,8 +17,6 @@ final class SearchViewModel: ObservableObject {
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
-    @Published var isRestoringSearch: Bool = false
-    @Published var searchIsActive: Bool = false
     @Published var query: String = "" {
         didSet {
             guard query != oldValue else { return }
@@ -99,8 +97,7 @@ final class SearchViewModel: ObservableObject {
             await MainActor.run {
                 self.favoriteFoods = favoriteFoods
                 self.bookmarkedFoods = bookmarked
-                
-                if query.isEmpty && !isRestoringSearch {
+                if query.isEmpty {
                     self.foods = favoriteFoods
                 }
                 
