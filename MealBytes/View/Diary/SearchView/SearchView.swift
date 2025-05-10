@@ -139,6 +139,7 @@ struct SearchView: View {
             }
             .searchable(
                 text: $searchViewModel.query,
+                isPresented: $searchViewModel.searchIsActive,
                 prompt: "Enter a food name"
             )
         }

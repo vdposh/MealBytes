@@ -18,6 +18,7 @@ final class SearchViewModel: ObservableObject {
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var isRestoringSearch: Bool = false
+    @Published var searchIsActive: Bool = false
     @Published var query: String = "" {
         didSet {
             guard query != oldValue else { return }
@@ -93,7 +94,6 @@ final class SearchViewModel: ObservableObject {
         do {
             let favoriteFoods = try await firestore
                 .loadBookmarksFirestore()
-            
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
             
             await MainActor.run {
