@@ -27,7 +27,6 @@ final class MainViewModel: ObservableObject {
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var shouldDisplayRdi: Bool = true
-    @Published var isLoadingSearchView: Bool = true
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -200,11 +199,7 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Load Data
-    func loadMainData() async {
-        await MainActor.run {
-            isLoadingSearchView = true
-        }
-        
+    func loadMainData() async {        
         async let mealItemsTask: () = loadMealItemsMainView()
         async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
         async let mainRdiTask: () = loadMainRdiMainView()

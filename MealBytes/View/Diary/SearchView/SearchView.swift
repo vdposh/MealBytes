@@ -9,14 +9,10 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
-    @Binding private var isPresented: Bool
-    
     @ObservedObject var searchViewModel: SearchViewModel
     
-    init(isPresented: Binding<Bool>,
-         searchViewModel: SearchViewModel,
+    init(searchViewModel: SearchViewModel,
          mealType: MealType) {
-        self._isPresented = isPresented
         self.searchViewModel = searchViewModel
         self._mealType = State(initialValue: mealType)
     }
@@ -38,7 +34,6 @@ struct SearchView: View {
                                 HStack {
                                     NavigationLink(
                                         destination: FoodView(
-                                            isDismissed: $isPresented,
                                             navigationTitle:
                                                 "Add to \(mealType.rawValue)",
                                             food: food,
@@ -87,44 +82,31 @@ struct SearchView: View {
             }
             .navigationBarTitle("Search", displayMode: .large)
             .toolbar {
-                ToolbarItem(placement: .status) {
-                    VStack(alignment: .center, spacing: 1) {
-                        Button {
-                            searchViewModel.showMealType = true
-                        } label: {
-                            HStack {
-                                Image(systemName: mealType.iconName)
-                                    .font(.system(size: 13))
-                                    .frame(width: 15, height: 5)
-                                    .foregroundColor(mealType.color)
-                                Text(mealType.rawValue)
-                                    .font(.headline)
-                            }
-                            .frame(width: 150)
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        searchViewModel.showMealType = true
+                    } label: {
+                        HStack {
+                            Image(systemName: mealType.iconName)
+                                .font(.system(size: 13))
+                                .frame(width: 15, height: 5)
+                                .foregroundColor(mealType.color)
+                            Text(mealType.rawValue)
+                                .font(.headline)
                         }
-                        .confirmationDialog(
-                            "Choose a Meal",
-                            isPresented: $searchViewModel.showMealType,
-                            titleVisibility: .visible
-                        ) {
-                            ForEach(MealType.allCases, id: \.self) { meal in
-                                Button {
-                                    mealType = meal
-                                } label: {
-                                    Text(meal.rawValue)
-                                }
-                            }
-                            
-                        }
-                        Text(searchViewModel.mainViewModel.formattedDate())
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
                     }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        isPresented = false
+                    .confirmationDialog(
+                        "Choose a Meal",
+                        isPresented: $searchViewModel.showMealType,
+                        titleVisibility: .visible
+                    ) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Button {
+                                mealType = meal
+                            } label: {
+                                Text(meal.rawValue)
+                            }
+                        }
                     }
                 }
             }
@@ -141,11 +123,6 @@ struct SearchView: View {
                 text: $searchViewModel.query,
                 prompt: "Enter a food name"
             )
-        }
-        .task {
-            await MainActor.run {
-                searchViewModel.mainViewModel.isLoadingSearchView = false
-            }
         }
         .scrollDismissesKeyboard(.immediately)
     }
