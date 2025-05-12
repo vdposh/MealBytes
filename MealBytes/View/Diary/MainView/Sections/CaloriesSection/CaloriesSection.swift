@@ -80,10 +80,3 @@ struct CaloriesSection: View {
         }
     }
 }
-
-#Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
-    )
-}

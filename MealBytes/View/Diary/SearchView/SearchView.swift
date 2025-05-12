@@ -9,10 +9,14 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
+    @Binding private var isPresented: Bool
+    
     @ObservedObject var searchViewModel: SearchViewModel
     
-    init(searchViewModel: SearchViewModel,
+    init(isPresented: Binding<Bool>,
+         searchViewModel: SearchViewModel,
          mealType: MealType) {
+        self._isPresented = isPresented
         self.searchViewModel = searchViewModel
         self._mealType = State(initialValue: mealType)
     }
@@ -33,6 +37,7 @@ struct SearchView: View {
                             HStack {
                                 NavigationLink(
                                     destination: FoodView(
+                                        isDismissed: $isPresented,
                                         navigationTitle:
                                             "Add to \(mealType.rawValue)",
                                         food: food,
@@ -81,31 +86,44 @@ struct SearchView: View {
         }
         .navigationBarTitle("Search", displayMode: .large)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Button {
-                    searchViewModel.showMealType = true
-                } label: {
-                    HStack {
-                        Image(systemName: mealType.iconName)
-                            .font(.system(size: 13))
-                            .frame(width: 15, height: 5)
-                            .foregroundColor(mealType.color)
-                        Text(mealType.rawValue)
-                            .font(.headline)
-                    }
-                }
-                .confirmationDialog(
-                    "Choose a Meal",
-                    isPresented: $searchViewModel.showMealType,
-                    titleVisibility: .visible
-                ) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Button {
-                            mealType = meal
-                        } label: {
-                            Text(meal.rawValue)
+            ToolbarItem(placement: .status) {
+                VStack(alignment: .center, spacing: 1) {
+                    Button {
+                        searchViewModel.showMealType = true
+                    } label: {
+                        HStack {
+                            Image(systemName: mealType.iconName)
+                                .font(.system(size: 13))
+                                .frame(width: 15, height: 5)
+                                .foregroundColor(mealType.color)
+                            Text(mealType.rawValue)
+                                .font(.headline)
                         }
+                        .frame(width: 150)
                     }
+                    .confirmationDialog(
+                        "Choose a Meal",
+                        isPresented: $searchViewModel.showMealType,
+                        titleVisibility: .visible
+                    ) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Button {
+                                mealType = meal
+                            } label: {
+                                Text(meal.rawValue)
+                            }
+                        }
+                        
+                    }
+                    Text(searchViewModel.mainViewModel.formattedDate())
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") {
+                    isPresented = false
                 }
             }
         }

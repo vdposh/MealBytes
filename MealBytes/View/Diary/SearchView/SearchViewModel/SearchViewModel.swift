@@ -90,8 +90,7 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Load Bookmarks
     func loadBookmarksSearchView() async {
         do {
-            let favoriteFoods = try await firestore
-                .loadBookmarksFirestore()
+            let favoriteFoods = try await firestore.loadBookmarksFirestore()
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
             
             await MainActor.run {

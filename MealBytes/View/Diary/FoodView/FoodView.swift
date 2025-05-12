@@ -10,6 +10,7 @@ import SwiftUI
 struct FoodView: View {
     @FocusState private var fieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    @Binding private var isDismissed: Bool
     
     private let navigationTitle: String
     private let showAddButton: Bool
@@ -18,7 +19,8 @@ struct FoodView: View {
     
     @StateObject private var foodViewModel: FoodViewModel
     
-    init(navigationTitle: String,
+    init(isDismissed: Binding<Bool>,
+         navigationTitle: String,
          food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
@@ -29,6 +31,7 @@ struct FoodView: View {
          showSaveRemoveButton: Bool,
          showMealTypeButton: Bool,
          originalMealItemId: UUID? = nil) {
+        self._isDismissed = isDismissed
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
@@ -173,7 +176,7 @@ struct FoodView: View {
                                     in: foodViewModel.mealType,
                                     for: foodViewModel.mainViewModel.date
                                 )
-                                dismiss()
+                                isDismissed = false
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
@@ -229,6 +232,7 @@ struct FoodView: View {
 
 #Preview {
     FoodView(
+        isDismissed: .constant(true),
         navigationTitle: "Add to Diary",
         food: Food(
             searchFoodId: 3092,
