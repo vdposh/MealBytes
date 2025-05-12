@@ -43,3 +43,10 @@ struct MealBytesApp: App {
         }
     }
 }
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
+}

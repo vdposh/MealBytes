@@ -39,7 +39,7 @@ struct CaloriesSection: View {
                             }
                         }
                         .font(.callout)
-                        .fontWeight(.semibold)
+                        .fontWeight(.medium)
                     }
                     
                     if mainViewModel.canDisplayRdi() {
@@ -79,4 +79,11 @@ struct CaloriesSection: View {
             .padding(.vertical, 5)
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

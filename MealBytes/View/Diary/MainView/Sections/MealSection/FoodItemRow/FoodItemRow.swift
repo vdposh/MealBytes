@@ -49,7 +49,7 @@ struct FoodItemRow: View {
                     ))
                     .lineLimit(1)
                     .font(.callout)
-                    .fontWeight(.semibold)
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
                     .frame(width: 60, alignment: .trailing)
                 }
