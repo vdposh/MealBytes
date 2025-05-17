@@ -78,6 +78,11 @@ struct FoodView: View {
                 }
                 .font(.headline)
             }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") {
+                    dismiss()
+                }
+            }
         }
         .task {
             await foodViewModel.fetchFoodDetails()
@@ -204,7 +209,8 @@ struct FoodView: View {
                             action: {
                                 Task {
                                     await foodViewModel.updateMealItemFoodView(
-                                        for: foodViewModel.mainViewModel.date)
+                                        for: foodViewModel.mainViewModel.date
+                                    )
                                     dismiss()
                                 }
                             },

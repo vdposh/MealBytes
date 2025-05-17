@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
+    @State private var showFoodView = false
+    @State private var selectedFood: Food?
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -32,22 +34,10 @@ struct SearchView: View {
                         ForEach(searchViewModel.foods,
                                 id: \.searchFoodId) { food in
                             HStack {
-                                NavigationLink(
-                                    destination: FoodView(
-                                        navigationTitle:
-                                            "Add to \(mealType.rawValue)",
-                                        food: food,
-                                        searchViewModel: searchViewModel,
-                                        mainViewModel:
-                                            searchViewModel.mainViewModel,
-                                        mealType: mealType,
-                                        amount: "",
-                                        measurementDescription: "",
-                                        showAddButton: true,
-                                        showSaveRemoveButton: false,
-                                        showMealTypeButton: false
-                                    )
-                                ) {
+                                Button {
+                                    selectedFood = food
+                                    showFoodView = true
+                                } label: {
                                     FoodDetailView(
                                         food: food,
                                         searchViewModel: searchViewModel
@@ -57,10 +47,14 @@ struct SearchView: View {
                                         alignment: .leading
                                     )
                                 }
+                                .onChange(of: showFoodView) {
+                                    selectedFood = selectedFood
+                                }
                                 BookmarkButtonView(
                                     action: {
-                                        searchViewModel
-                                            .handleBookmarkAction(for: food)
+                                        searchViewModel.handleBookmarkAction(
+                                            for: food
+                                        )
                                     },
                                     isFilled: searchViewModel
                                         .isBookmarkedSearchView(food),
@@ -84,7 +78,6 @@ struct SearchView: View {
                 )
             }
         }
-        .navigationBarTitle("Search", displayMode: .large)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Button {
@@ -97,6 +90,7 @@ struct SearchView: View {
                             .foregroundColor(mealType.color)
                         Text(mealType.rawValue)
                             .font(.headline)
+                            .foregroundStyle(.customGreen)
                     }
                 }
                 .confirmationDialog(
@@ -128,6 +122,24 @@ struct SearchView: View {
             prompt: "Enter a food name"
         )
         .scrollDismissesKeyboard(.immediately)
+        .sheet(isPresented: $showFoodView) {
+            if let food = selectedFood {
+                NavigationStack {
+                    FoodView(
+                        navigationTitle: "Add to \(mealType.rawValue)",
+                        food: food,
+                        searchViewModel: searchViewModel,
+                        mainViewModel: searchViewModel.mainViewModel,
+                        mealType: mealType,
+                        amount: "",
+                        measurementDescription: "",
+                        showAddButton: true,
+                        showSaveRemoveButton: false,
+                        showMealTypeButton: false
+                    )
+                }
+            }
+        }
     }
     
     @ViewBuilder
