@@ -57,7 +57,7 @@ struct MealHeaderView: View {
                     .padding(.trailing, 5)
                     
                     Image(systemName: "plus")
-                        .font(.headline)
+                        .fontWeight(.bold)
                         .foregroundStyle(.customGreen)
                 }
             }

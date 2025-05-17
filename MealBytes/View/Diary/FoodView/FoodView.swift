@@ -78,9 +78,11 @@ struct FoodView: View {
                 }
                 .font(.headline)
             }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done") {
-                    dismiss()
+            if showAddButton {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
                 }
             }
         }
@@ -234,21 +236,8 @@ struct FoodView: View {
 }
 
 #Preview {
-    FoodView(
-        navigationTitle: "Add to Diary",
-        food: Food(
-            searchFoodId: 3092,
-            searchFoodName: "Egg",
-            searchFoodDescription: "1 cup"
-        ),
-        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        amount: "1",
-        measurementDescription: "Grams",
-        showAddButton: false,
-        showSaveRemoveButton: true,
-        showMealTypeButton: true,
-        originalMealItemId: UUID()
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
     )
 }
