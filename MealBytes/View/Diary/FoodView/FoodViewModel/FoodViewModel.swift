@@ -329,7 +329,6 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
 
 #Preview {
     FoodView(
-        isDismissed: .constant(true),
         navigationTitle: "Add to Diary",
         food: Food(
             searchFoodId: 3092,

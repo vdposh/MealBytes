@@ -17,16 +17,21 @@ struct MealHeaderView: View {
     let protein: Double
     let carbohydrate: Double
     let foodItems: [MealItem]
-    @State private var isPresentingSheet: Bool = false
-    @State private var isFoodViewPresented: Bool = false
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
-            Button {
-                mainViewModel.searchViewModel.query = ""
-                isPresentingSheet = true
-            } label: {
+            ZStack {
+                NavigationLink(
+                    destination: SearchView(
+                        searchViewModel: mainViewModel.searchViewModel,
+                        mealType: mealType
+                    )
+                ) {
+                    EmptyView()
+                }
+                .opacity(0)
+                
                 HStack {
                     VStack(spacing: 15) {
                         HStack {
@@ -34,13 +39,11 @@ struct MealHeaderView: View {
                                 .foregroundColor(color)
                             Text(title)
                                 .fontWeight(.medium)
-                                .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
                                 .font(.callout)
                                 .fontWeight(.medium)
-                                .foregroundColor(.primary)
                         }
                         NutrientSummaryRow(
                             fat: fat,
@@ -55,15 +58,7 @@ struct MealHeaderView: View {
                     
                     Image(systemName: "plus")
                         .font(.headline)
-                }
-            }
-            .fullScreenCover(isPresented: $isPresentingSheet) {
-                NavigationStack {
-                    SearchView(
-                        isPresented: $isPresentingSheet,
-                        searchViewModel: mainViewModel.searchViewModel,
-                        mealType: mealType
-                    )
+                        .foregroundStyle(.customGreen)
                 }
             }
             
@@ -76,7 +71,6 @@ struct MealHeaderView: View {
                 if !foodItems.isEmpty {
                     ForEach(foodItems, id: \.id) { item in
                         FoodItemRow(
-                            isDismissed: $isFoodViewPresented,
                             mealItem: item,
                             mealType: mealType,
                             mainViewModel: mainViewModel

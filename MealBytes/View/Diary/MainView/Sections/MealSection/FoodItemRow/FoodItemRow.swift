@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct FoodItemRow: View {
-    @Binding var isDismissed: Bool
     let mealItem: MealItem
     let mealType: MealType
     @ObservedObject var mainViewModel: MainViewModel
@@ -16,7 +15,6 @@ struct FoodItemRow: View {
     var body: some View {
         NavigationLink(
             destination: FoodView(
-                isDismissed: $isDismissed,
                 navigationTitle: "Edit in Diary",
                 food: Food(
                     searchFoodId: mealItem.foodId,
