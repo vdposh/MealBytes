@@ -11,6 +11,7 @@ struct SearchView: View {
     @State private var mealType: MealType
     @State private var showFoodView = false
     @State private var selectedFood: Food?
+    @State private var midY: CGFloat = 0.0
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -78,8 +79,12 @@ struct SearchView: View {
                 )
             }
         }
+        .navigationBarTitle(
+            searchViewModel.mainViewModel.formattedDateShort(),
+            displayMode: .large
+        )
         .toolbar {
-            ToolbarItem(placement: .principal) {
+            ToolbarItem(placement: .confirmationAction) {
                 Button {
                     searchViewModel.showMealType = true
                 } label: {
@@ -119,6 +124,7 @@ struct SearchView: View {
         }
         .searchable(
             text: $searchViewModel.query,
+            placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Enter a food name"
         )
         .scrollDismissesKeyboard(.immediately)

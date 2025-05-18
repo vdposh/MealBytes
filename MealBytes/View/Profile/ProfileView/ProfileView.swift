@@ -187,3 +187,10 @@ struct ProfileView: View {
         )
     }
 }
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
+}

@@ -403,6 +403,19 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func formattedDateShort() -> String {
+        switch calendar.isDate(date,
+                               equalTo: Date(),
+                               toGranularity: .year) {
+        case true:
+            date.formatted(.dateTime.month(.wide).day().weekday(.abbreviated))
+        case false:
+            date.formatted(
+                .dateTime.month(.abbreviated).day().weekday(.abbreviated).year()
+            )
+        }
+    }
+    
     // MARK: - Color for Calendar
     func color(for element: DisplayElement,
                date: Date? = nil,
@@ -492,7 +505,8 @@ enum DisplayElement {
 }
 
 #Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

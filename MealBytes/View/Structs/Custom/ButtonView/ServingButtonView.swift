@@ -14,13 +14,14 @@ struct ServingButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Button {
-                action()
-            } label: {
+        Button(action: {
+            action()
+        }) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
                 HStack {
                     Text(description)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -37,7 +38,15 @@ struct ServingButtonView: View {
                     alignment: .bottom
                 )
             }
-            .buttonStyle(.plain)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

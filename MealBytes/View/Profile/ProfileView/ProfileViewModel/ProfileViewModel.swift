@@ -255,3 +255,10 @@ final class ProfileViewModel: ObservableObject {
         case changePassword
     }
 }
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
+}

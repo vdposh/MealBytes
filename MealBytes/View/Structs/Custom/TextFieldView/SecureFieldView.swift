@@ -17,11 +17,22 @@ struct SecureFieldView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(titleColor) + Text("*")
-                .foregroundColor(.customRed)
-            
+            Button(action: {
+                isFocused = true
+            }) {
+                HStack(spacing: 0) {
+                    Text(title)
+                        .font(.caption)
+                        .foregroundColor(titleColor)
+                    Text("*")
+                        .foregroundColor(.customRed)
+                }
+                .frame(height: 15)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
             SecureField(placeholder, text: $text)
                 .frame(height: 35)
                 .lineLimit(1)

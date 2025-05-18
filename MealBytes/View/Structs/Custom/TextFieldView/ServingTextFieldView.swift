@@ -11,7 +11,6 @@ struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
     let title: String
-    let star: String = "*"
     var showStar: Bool = true
     var placeholder: String = "Enter value"
     var keyboardType: UIKeyboardType = .decimalPad
@@ -23,16 +22,23 @@ struct ServingTextFieldView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 0) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(titleColor)
-                if showStar {
-                    Text(star)
-                        .foregroundColor(.customRed)
+            Button(action: {
+                isFocused = true
+            }) {
+                HStack(spacing: 0) {
+                    Text(title)
+                        .font(.caption)
+                        .foregroundColor(titleColor)
+                    if showStar {
+                        Text("*")
+                            .foregroundColor(.customRed)
+                    }
                 }
+                .frame(height: 15)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
             }
-            .frame(height: 15)
+            .buttonStyle(.plain)
             
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
@@ -76,4 +82,11 @@ struct ServingTextFieldView: View {
             input.removeLast(3)
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
