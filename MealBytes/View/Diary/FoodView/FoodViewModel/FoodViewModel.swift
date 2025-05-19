@@ -36,7 +36,7 @@ final class FoodViewModel: ObservableObject {
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    private let searchViewModel: SearchViewModel
+    let searchViewModel: SearchViewModel
     let mainViewModel: MainViewModel
     
     init(food: Food,

@@ -79,6 +79,9 @@ struct SearchView: View {
                 )
             }
         }
+        .overlay(
+            FoodAddedAlertView(isVisible: $searchViewModel.showFoodAddedAlert)
+        )
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
             displayMode: .large
@@ -127,6 +130,9 @@ struct SearchView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Enter a food name"
         )
+        .onChange(of: searchViewModel.query) {
+            searchViewModel.showFoodAddedAlert = false
+        }
         .scrollDismissesKeyboard(.immediately)
         .sheet(isPresented: $showFoodView) {
             if let food = selectedFood {
@@ -143,6 +149,13 @@ struct SearchView: View {
                         showSaveRemoveButton: false,
                         showMealTypeButton: false
                     )
+                }
+            }
+        }
+        .onChange(of: showFoodView) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if showFoodView {
+                    searchViewModel.showFoodAddedAlert = false
                 }
             }
         }

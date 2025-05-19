@@ -181,6 +181,8 @@ struct FoodView: View {
                                     for: foodViewModel.mainViewModel.date
                                 )
                                 dismiss()
+                                foodViewModel.searchViewModel
+                                    .showFoodAddedAlert = true
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
