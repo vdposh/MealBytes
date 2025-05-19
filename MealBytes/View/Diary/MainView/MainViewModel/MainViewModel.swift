@@ -392,26 +392,25 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Formatted year for Calendar
-    func formattedDate() -> String {
-        switch calendar.isDate(date,
-                               equalTo: Date(),
-                               toGranularity: .year) {
-        case true:
-            date.formatted(.dateTime.month(.wide).day().weekday(.wide))
-        case false:
-            date.formatted(.dateTime.month(.wide).day().weekday(.wide).year())
+    func formattedDate(isAbbreviated: Bool) -> String {
+        var monthFormat: Date.FormatStyle.Symbol.Month
+        var weekdayFormat: Date.FormatStyle.Symbol.Weekday
+        
+        if isAbbreviated {
+            monthFormat = .abbreviated
+            weekdayFormat = .abbreviated
+        } else {
+            monthFormat = .wide
+            weekdayFormat = .wide
         }
-    }
-    
-    func formattedDateShort() -> String {
-        switch calendar.isDate(date,
-                               equalTo: Date(),
-                               toGranularity: .year) {
-        case true:
-            date.formatted(.dateTime.month(.wide).day().weekday(.abbreviated))
-        case false:
-            date.formatted(
-                .dateTime.month(.abbreviated).day().weekday(.abbreviated).year()
+        
+        if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
+            return date.formatted(
+                .dateTime.weekday(weekdayFormat).day().month(.wide)
+            )
+        } else {
+            return date.formatted(
+                .dateTime.weekday(weekdayFormat).day().month(monthFormat).year()
             )
         }
     }

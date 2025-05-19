@@ -80,7 +80,7 @@ struct SearchView: View {
             }
         }
         .navigationBarTitle(
-            searchViewModel.mainViewModel.formattedDateShort(),
+            searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
             displayMode: .large
         )
         .toolbar {

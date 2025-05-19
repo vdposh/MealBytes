@@ -47,7 +47,7 @@ struct MainView: View {
                 Button {
                     mainViewModel.isExpandedCalendar.toggle()
                 } label: {
-                    Text(mainViewModel.formattedDate())
+                    Text(mainViewModel.formattedDate(isAbbreviated: false))
                         .font(.headline)
                 }
             }
