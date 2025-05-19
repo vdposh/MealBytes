@@ -80,7 +80,7 @@ struct SearchView: View {
             }
         }
         .overlay(
-            FoodAddedAlertView(isVisible: $searchViewModel.showFoodAddedAlert)
+            CustomAlertView(isVisible: $searchViewModel.showFoodAddedAlert)
         )
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
