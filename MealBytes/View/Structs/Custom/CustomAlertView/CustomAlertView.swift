@@ -11,6 +11,7 @@ struct CustomAlertView: View {
     @Binding var isVisible: Bool
     var iconName: String = "checkmark"
     var message: String = "Added to Diary"
+    var weight: Font.Weight = .bold
     var foregroundColor: Color = .customGreen.opacity(0.85)
     var backgroundFill: Color = Color.customGreen.opacity(0.12)
     
@@ -18,7 +19,7 @@ struct CustomAlertView: View {
         if isVisible {
             HStack {
                 Image(systemName: iconName)
-                    .fontWeight(.bold)
+                    .fontWeight(weight)
                 Text(message)
                     .font(.callout)
                     .fontWeight(.semibold)

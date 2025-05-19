@@ -38,6 +38,22 @@ struct MainView: View {
             }
             .listSectionSpacing(15)
         }
+        .overlay(
+            CustomAlertView(
+                isVisible: $mainViewModel.showFoodSavedAlert,
+                message: "Changes Saved"
+            )
+        )
+        .overlay(
+            CustomAlertView(
+                isVisible: $mainViewModel.showFoodRemovedAlert,
+                iconName: "trash",
+                message: "Food Removed",
+                weight: .medium,
+                foregroundColor: .customRed.opacity(0.85),
+                backgroundFill: Color.customRed.opacity(0.12)
+            )
+        )
         .task {
             await mainViewModel.loadMainData()
         }

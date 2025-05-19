@@ -27,6 +27,8 @@ final class MainViewModel: ObservableObject {
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var shouldDisplayRdi: Bool = true
+    @Published var showFoodSavedAlert = false
+    @Published var showFoodRemovedAlert = false
     
     let calendar = Calendar.current
     let formatter = Formatter()

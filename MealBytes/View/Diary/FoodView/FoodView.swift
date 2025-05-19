@@ -203,6 +203,8 @@ struct FoodView: View {
                                 Task {
                                     await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
+                                    foodViewModel.mainViewModel
+                                        .showFoodRemovedAlert = true
                                 }
                             },
                             backgroundColor: .customRed
@@ -216,6 +218,8 @@ struct FoodView: View {
                                         for: foodViewModel.mainViewModel.date
                                     )
                                     dismiss()
+                                    foodViewModel.mainViewModel
+                                        .showFoodSavedAlert = true
                                 }
                             },
                             backgroundColor: .customGreen,
