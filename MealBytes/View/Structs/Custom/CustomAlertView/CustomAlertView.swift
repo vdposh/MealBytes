@@ -13,7 +13,7 @@ struct CustomAlertView: View {
     var message: String = "Added to Diary"
     var weight: Font.Weight = .bold
     var foregroundColor: Color = .customGreen.opacity(0.85)
-    var backgroundFill: Color = Color.customGreen.opacity(0.12)
+    var backgroundFill: Color = Color.customGreen.opacity(0.1)
     
     var body: some View {
         if isVisible {
@@ -30,7 +30,7 @@ struct CustomAlertView: View {
             .background(
                 Rectangle()
                     .fill(backgroundFill)
-                    .background(Material.bar)
+                    .background(.bar)
             )
             .cornerRadius(15)
             .frame(
@@ -52,10 +52,7 @@ struct CustomAlertView: View {
 
 #Preview {
     NavigationStack {
-        SearchView(
-            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-            mealType: .breakfast
-        )
+        MainView(mainViewModel: MainViewModel())
     }
 }
 
@@ -64,4 +61,13 @@ struct CustomAlertView: View {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+}
+
+#Preview {
+    NavigationStack {
+        SearchView(
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mealType: .breakfast
+        )
+    }
 }

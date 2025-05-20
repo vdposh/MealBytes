@@ -41,7 +41,7 @@ struct MainView: View {
         .overlay(
             CustomAlertView(
                 isVisible: $mainViewModel.showFoodSavedAlert,
-                message: "Changes Saved"
+                message: "Food Saved"
             )
         )
         .overlay(
@@ -51,7 +51,7 @@ struct MainView: View {
                 message: "Food Removed",
                 weight: .medium,
                 foregroundColor: .customRed.opacity(0.85),
-                backgroundFill: Color.customRed.opacity(0.12)
+                backgroundFill: Color.customRed.opacity(0.1)
             )
         )
         .task {
@@ -75,6 +75,10 @@ struct MainView: View {
             DatePickerView(selectedDate: $mainViewModel.date,
                            isPresented: $mainViewModel.isExpandedCalendar,
                            mainViewModel: mainViewModel)
+            .task {
+                mainViewModel.showFoodSavedAlert = false
+                mainViewModel.showFoodRemovedAlert = false
+            }
         }
         .background(Color(.systemBackground))
     }
