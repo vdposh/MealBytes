@@ -51,7 +51,7 @@ struct MainView: View {
                 message: "Food Removed",
                 weight: .medium,
                 foregroundColor: .customRed.opacity(0.85),
-                backgroundFill: Color.customRed.opacity(0.1)
+                backgroundFill: .customRed.opacity(0.15)
             )
         )
         .task {

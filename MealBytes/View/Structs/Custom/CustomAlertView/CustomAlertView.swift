@@ -13,16 +13,17 @@ struct CustomAlertView: View {
     var message: String = "Added to Diary"
     var weight: Font.Weight = .bold
     var foregroundColor: Color = .customGreen.opacity(0.85)
-    var backgroundFill: Color = Color.customGreen.opacity(0.1)
+    var backgroundFill: Color = .customGreen.opacity(0.15)
     
     var body: some View {
         if isVisible {
             HStack {
                 Image(systemName: iconName)
                     .fontWeight(weight)
+                    .symbolEffect(.bounce, options: .nonRepeating)
                 Text(message)
                     .font(.callout)
-                    .fontWeight(.semibold)
+                    .fontWeight(.medium)
             }
             .foregroundColor(foregroundColor)
             .padding(.vertical, 15)
@@ -37,11 +38,11 @@ struct CustomAlertView: View {
                 maxHeight: .infinity,
                 alignment: .bottom
             )
-            .padding(.bottom, 40)
+            .padding(.bottom, 60)
             .allowsHitTesting(false)
             .task {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    withAnimation(.easeOut(duration: 0.5)) {
+                    withAnimation(.easeOut(duration: 0.6)) {
                         isVisible = false
                     }
                 }

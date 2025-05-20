@@ -181,8 +181,12 @@ struct FoodView: View {
                                     for: foodViewModel.mainViewModel.date
                                 )
                                 dismiss()
-                                foodViewModel.searchViewModel
-                                    .showFoodAddedAlert = true
+                                DispatchQueue.main.asyncAfter(
+                                    deadline: .now() + 0.21
+                                ) {
+                                    foodViewModel.searchViewModel
+                                        .showFoodAddedAlert = true
+                                }
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
@@ -203,8 +207,12 @@ struct FoodView: View {
                                 Task {
                                     await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
-                                    foodViewModel.mainViewModel
-                                        .showFoodRemovedAlert = true
+                                    DispatchQueue.main.asyncAfter(
+                                        deadline: .now() + 0.12
+                                    ) {
+                                        foodViewModel.mainViewModel
+                                            .showFoodRemovedAlert = true
+                                    }
                                 }
                             },
                             backgroundColor: .customRed
@@ -218,8 +226,12 @@ struct FoodView: View {
                                         for: foodViewModel.mainViewModel.date
                                     )
                                     dismiss()
-                                    foodViewModel.mainViewModel
-                                        .showFoodSavedAlert = true
+                                    DispatchQueue.main.asyncAfter(
+                                        deadline: .now() + 0.12
+                                    ) {
+                                        foodViewModel.mainViewModel
+                                            .showFoodSavedAlert = true
+                                    }
                                 }
                             },
                             backgroundColor: .customGreen,
