@@ -500,6 +500,7 @@ final class MainViewModel: ObservableObject {
             self.showFoodSavedAlert = false
             self.showFoodRemovedAlert = false
         }
+        self.searchViewModel.showFoodAddedAlert = false
     }
 }
 
