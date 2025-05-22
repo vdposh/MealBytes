@@ -181,12 +181,11 @@ struct FoodView: View {
                                     for: foodViewModel.mainViewModel.date
                                 )
                                 dismiss()
-                                DispatchQueue.main.asyncAfter(
-                                    deadline: .now() + 0.21
-                                ) {
-                                    foodViewModel.searchViewModel
-                                        .showFoodAddedAlert = true
-                                }
+                                foodViewModel.showAlerts(
+                                    after: 0.21,
+                                    $foodViewModel.searchViewModel
+                                        .showFoodAddedAlert
+                                )
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
@@ -207,12 +206,11 @@ struct FoodView: View {
                                 Task {
                                     await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
-                                    DispatchQueue.main.asyncAfter(
-                                        deadline: .now() + 0.12
-                                    ) {
-                                        foodViewModel.mainViewModel
-                                            .showFoodRemovedAlert = true
-                                    }
+                                    foodViewModel.showAlerts(
+                                        after: 0.12,
+                                        $foodViewModel.mainViewModel
+                                            .showFoodRemovedAlert
+                                    )
                                 }
                             },
                             backgroundColor: .customRed
@@ -226,12 +224,11 @@ struct FoodView: View {
                                         for: foodViewModel.mainViewModel.date
                                     )
                                     dismiss()
-                                    DispatchQueue.main.asyncAfter(
-                                        deadline: .now() + 0.12
-                                    ) {
-                                        foodViewModel.mainViewModel
-                                            .showFoodSavedAlert = true
-                                    }
+                                    foodViewModel.showAlerts(
+                                        after: 0.12,
+                                        $foodViewModel.mainViewModel
+                                            .showFoodSavedAlert
+                                    )
                                 }
                             },
                             backgroundColor: .customGreen,

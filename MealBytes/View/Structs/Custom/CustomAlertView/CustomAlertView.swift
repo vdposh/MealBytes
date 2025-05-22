@@ -20,7 +20,6 @@ struct CustomAlertView: View {
             HStack {
                 Image(systemName: iconName)
                     .fontWeight(weight)
-                    .symbolEffect(.bounce, options: .nonRepeating)
                 Text(message)
                     .font(.callout)
                     .fontWeight(.medium)

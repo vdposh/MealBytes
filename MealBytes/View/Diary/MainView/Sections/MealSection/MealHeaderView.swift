@@ -28,10 +28,7 @@ struct MealHeaderView: View {
                         mealType: mealType
                     )
                     .task {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            mainViewModel.showFoodSavedAlert = false
-                            mainViewModel.showFoodRemovedAlert = false
-                        }
+                        mainViewModel.hideAlerts()
                     }
                 ) {
                     EmptyView()

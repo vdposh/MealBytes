@@ -32,10 +32,7 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
             .task {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    mainViewModel.showFoodSavedAlert = false
-                    mainViewModel.showFoodRemovedAlert = false
-                }
+                mainViewModel.hideAlerts()
             }
         ) {
             VStack(spacing: 8) {

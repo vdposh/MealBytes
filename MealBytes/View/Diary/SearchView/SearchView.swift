@@ -81,6 +81,7 @@ struct SearchView: View {
         }
         .overlay(
             CustomAlertView(isVisible: $searchViewModel.showFoodAddedAlert)
+                .symbolEffect(.bounce, options: .nonRepeating)
         )
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
@@ -153,10 +154,8 @@ struct SearchView: View {
             }
         }
         .onChange(of: showFoodView) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if showFoodView {
-                    searchViewModel.showFoodAddedAlert = false
-                }
+            if showFoodView {
+                searchViewModel.hideFoodAddedAlert(after: 0.3)
             }
         }
     }

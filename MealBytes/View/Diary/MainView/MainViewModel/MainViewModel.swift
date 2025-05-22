@@ -493,6 +493,14 @@ final class MainViewModel: ObservableObject {
             expandedSections[key] = false
         }
     }
+    
+    //MARK: - Alerts
+    func hideAlerts() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.showFoodSavedAlert = false
+            self.showFoodRemovedAlert = false
+        }
+    }
 }
 
 enum NutrientSource {
