@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BasicInfoSection: View {
-    @FocusState var focusedField: Bool
+    @FocusState var focusedField: RdiFocus?
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
@@ -19,9 +19,10 @@ struct BasicInfoSection: View {
                     title: "Age",
                     keyboardType: .decimalPad,
                     titleColor: rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.age)
+                        for: rdiViewModel.age),
+                    maxIntegerDigits: 3
                 )
-                .focused($focusedField)
+                .focused($focusedField, equals: .age)
                 
                 VStack {
                     HStack {
@@ -57,5 +58,11 @@ struct BasicInfoSection: View {
                 }
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        RdiView()
     }
 }

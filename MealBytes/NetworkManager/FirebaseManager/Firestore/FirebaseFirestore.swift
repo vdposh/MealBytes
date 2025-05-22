@@ -42,10 +42,14 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         let snapshot = try await firestore.collection("users")
             .document(uid)
             .collection("meals")
+            .order(by: "createdAt")
             .getDocuments()
-        return try snapshot.documents.compactMap { document in
+        
+        let mealItems = try snapshot.documents.compactMap { document in
             try document.data(as: MealItem.self)
         }
+        
+        return mealItems
     }
     
     // MARK: - Save Data

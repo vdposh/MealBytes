@@ -8,19 +8,17 @@
 import SwiftUI
 
 struct FoodView: View {
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState private var fieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
-    @Binding private var isDismissed: Bool
     
     private let navigationTitle: String
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
-    private let showCloseButton: Bool
+    private let showMealTypeButton: Bool
     
     @StateObject private var foodViewModel: FoodViewModel
     
-    init(isDismissed: Binding<Bool>,
-         navigationTitle: String,
+    init(navigationTitle: String,
          food: Food,
          searchViewModel: SearchViewModel,
          mainViewModel: MainViewModel,
@@ -29,13 +27,12 @@ struct FoodView: View {
          measurementDescription: String,
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
-         showCloseButton: Bool,
+         showMealTypeButton: Bool,
          originalMealItemId: UUID? = nil) {
-        self._isDismissed = isDismissed
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
-        self.showCloseButton = showCloseButton
+        self.showMealTypeButton = showMealTypeButton
         _foodViewModel = StateObject(wrappedValue: FoodViewModel(
             food: food,
             mealType: mealType,
@@ -72,27 +69,19 @@ struct FoodView: View {
             }
         }
         .navigationBarTitle(navigationTitle, displayMode: .inline)
-        .confirmationDialog(
-            "Select Serving",
-            isPresented: $foodViewModel.showActionSheet,
-            titleVisibility: .visible
-        ) {
-            if let servings = foodViewModel.foodDetail?.servings.serving {
-                servingButtons(servings: servings)
-            }
-        }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Text("Enter serving size")
                     .foregroundColor(.secondary)
                 Button("Done") {
-                    isTextFieldFocused = false
+                    fieldFocused = false
                 }
+                .font(.headline)
             }
-            if showCloseButton {
+            if showAddButton {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
-                        isDismissed = false
+                        dismiss()
                     }
                 }
             }
@@ -116,19 +105,54 @@ struct FoodView: View {
                     placeholder: "Enter serving size",
                     keyboardType: .decimalPad
                 )
-                .focused($isTextFieldFocused)
-                .onChange(of: isTextFieldFocused) { oldValue, newValue in
+                .focused($fieldFocused)
+                .onChange(of: fieldFocused) { oldValue, newValue in
                     foodViewModel.handleFocusChange(from: oldValue,
                                                     to: newValue)
                 }
                 
                 ServingButtonView(
-                    showActionSheet: $foodViewModel.showActionSheet,
+                    showActionSheet: $foodViewModel.showServingDialog,
                     title: "Serving",
                     description: foodViewModel.servingDescription
                 ) {
-                    isTextFieldFocused = false
-                    foodViewModel.showActionSheet.toggle()
+                    foodViewModel.showServingDialog.toggle()
+                }
+                .confirmationDialog(
+                    "Select a Serving",
+                    isPresented: $foodViewModel.showServingDialog,
+                    titleVisibility: .visible
+                ) {
+                    if let servings = foodViewModel
+                        .foodDetail?.servings.serving {
+                        ForEach(servings, id: \.self) { serving in
+                            Button(foodViewModel.servingDescription(
+                                for: serving)) {
+                                    foodViewModel.updateServing(serving)
+                                }
+                        }
+                    }
+                }
+                
+                if showMealTypeButton {
+                    ServingButtonView(
+                        showActionSheet: $foodViewModel.showMealTypeDialog,
+                        title: "Meal Type",
+                        description: foodViewModel.mealType.rawValue
+                    ) {
+                        foodViewModel.showMealTypeDialog.toggle()
+                    }
+                    .confirmationDialog(
+                        "Choose a Meal",
+                        isPresented: $foodViewModel.showMealTypeDialog,
+                        titleVisibility: .visible
+                    ) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Button(meal.rawValue) {
+                                foodViewModel.mealType = meal
+                            }
+                        }
+                    }
                 }
             }
             .padding(.bottom, 10)
@@ -152,12 +176,16 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Add",
                             action: {
-                                foodViewModel.shouldUseOriginalAmount = true
                                 foodViewModel.addMealItemFoodView(
                                     in: foodViewModel.mealType,
                                     for: foodViewModel.mainViewModel.date
                                 )
-                                isDismissed = false
+                                dismiss()
+                                foodViewModel.showAlerts(
+                                    after: 0.21,
+                                    $foodViewModel.searchViewModel
+                                        .showFoodAddedAlert
+                                )
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
@@ -178,6 +206,11 @@ struct FoodView: View {
                                 Task {
                                     await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
+                                    foodViewModel.showAlerts(
+                                        after: 0.1,
+                                        $foodViewModel.mainViewModel
+                                            .showFoodRemovedAlert
+                                    )
                                 }
                             },
                             backgroundColor: .customRed
@@ -186,11 +219,16 @@ struct FoodView: View {
                         ActionButtonView(
                             title: "Save",
                             action: {
-                                foodViewModel.shouldUseOriginalAmount = true
                                 Task {
                                     await foodViewModel.updateMealItemFoodView(
-                                        for: foodViewModel.mainViewModel.date)
+                                        for: foodViewModel.mainViewModel.date
+                                    )
                                     dismiss()
+                                    foodViewModel.showAlerts(
+                                        after: 0.1,
+                                        $foodViewModel.mainViewModel
+                                            .showFoodSavedAlert
+                                    )
                                 }
                             },
                             backgroundColor: .customGreen,
@@ -210,12 +248,11 @@ struct FoodView: View {
             nutrientDetails: foodViewModel.nutrientDetails
         )
     }
-    
-    private func servingButtons(servings: [Serving]) -> some View {
-        ForEach(servings, id: \.self) { serving in
-            Button(foodViewModel.servingDescription(for: serving)) {
-                foodViewModel.updateServing(serving)
-            }
-        }
-    }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

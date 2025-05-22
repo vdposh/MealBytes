@@ -11,26 +11,21 @@ import FirebaseAuth
 final class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var isAuthenticated: Bool = false
     @Published var showAlert: Bool = false
+    @Published var showErrorAlert: Bool = false
     @Published var isLoggedIn: Bool = false
     @Published var isLoading: Bool = true
+    @Published var isSignIn: Bool = false
     
     private var error: AuthError?
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     
-    init() {
-        Task {
-            await loadLoginData()
-        }
-    }
-    
     // MARK: - Sign In
     func signIn() async {
         await MainActor.run {
-            isLoading = true
+            isSignIn = true
         }
         
         do {
@@ -40,7 +35,7 @@ final class LoginViewModel: ObservableObject {
             if !user.isEmailVerified {
                 await MainActor.run {
                     self.error = .userNotVerified
-                    self.isLoading = false
+                    self.isSignIn = false
                     updateAlertState()
                 }
                 return
@@ -52,23 +47,23 @@ final class LoginViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.error = .networkError
-                    self.isLoading = false
+                    self.isSignIn = false
                     updateAlertState()
                 }
                 return
             }
             
             await MainActor.run {
-                isAuthenticated = true
                 self.error = nil
-                self.isLoading = false
+                self.isSignIn = false
                 updateAlertState()
                 isLoggedIn = true
+                showErrorAlert = false
             }
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
-                self.isLoading = false
+                self.isSignIn = false
                 updateAlertState()
             }
         }
@@ -76,32 +71,34 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadLoginData() async {
-        await MainActor.run {
-            isLoading = true
-        }
-        
         async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
         async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
         
         do {
             let (_, isAuthenticated) = try await (tokenTask, authTask)
+            let (email,
+                 isLoggedIn) = try await firestore.loadLoginDataFirestore()
             
+            await MainActor.run {
+                self.isLoggedIn = isAuthenticated && isLoggedIn
+                self.email = email
+            }
+        } catch {
             do {
-                let (email, isLoggedIn) = try await firestore
-                    .loadLoginDataFirestore()
+                let (email,
+                     isLoggedIn) = try await firestore.loadLoginDataFirestore()
+                
                 await MainActor.run {
-                    self.isLoggedIn = isAuthenticated && isLoggedIn
                     self.email = email
+                    self.isLoggedIn = isLoggedIn
+                    self.error = .offlineMode
+                    self.showErrorAlert = true
                 }
             } catch {
                 await MainActor.run {
-                    self.error = .networkError
-                    updateAlertState()
+                    self.error = .sessionExpired
+                    self.showErrorAlert = true
                 }
-            }
-        } catch {
-            await MainActor.run {
-                self.isLoggedIn = false
             }
         }
         
@@ -119,20 +116,68 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    func getAlert() -> Alert {
+    func getErrorAlert() -> Alert {
         if let error {
-            return Alert(
-                title: Text("Error"),
-                message: Text(error.errorDescription ?? "Unknown error"),
-                dismissButton: .default(Text("OK"))
-            )
+            switch error {
+            case .offlineMode:
+                return Alert(
+                    title: Text("Warning!"),
+                    message: Text(error.errorDescription ?? ""),
+                    dismissButton: .default(Text("OK"))
+                )
+            case .sessionExpired:
+                return Alert(
+                    title: Text("Session Expired"),
+                    message: Text(error.errorDescription ?? ""),
+                    dismissButton: .default(Text("OK")) {
+                        Task {
+                            await MainActor.run {
+                                self.isLoggedIn = false
+                            }
+                        }
+                    }
+                )
+            default:
+                return commonErrorAlert()
+            }
         } else {
-            return Alert(
-                title: Text("Unknown"),
-                message: Text("Something went wrong"),
-                dismissButton: .default(Text("OK"))
-            )
+            return commonErrorAlert()
         }
+    }
+    
+    func getLoginErrorAlert() -> Alert {
+        if let error {
+            switch error {
+            case .userNotVerified:
+                return Alert(
+                    title: Text("Verification Error"),
+                    message: Text(error.errorDescription ?? ""),
+                    dismissButton: .default(Text("OK"))
+                )
+            case .networkError:
+                return Alert(
+                    title: Text("Network Error"),
+                    message: Text(error.errorDescription ?? ""),
+                    dismissButton: .default(Text("OK"))
+                )
+            default:
+                return Alert(
+                    title: Text("Error"),
+                    message: Text(error.errorDescription ?? ""),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+        } else {
+            return commonErrorAlert()
+        }
+    }
+    
+    private func commonErrorAlert() -> Alert {
+        return Alert(
+            title: Text("Error"),
+            message: Text("Something went wrong while processing the request. Try again."),
+            dismissButton: .default(Text("OK"))
+        )
     }
     
     // MARK: - Button State
@@ -142,7 +187,7 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Colors
     func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .primary
+        return text.isEmpty ? .customRed : .secondary
     }
     
     // MARK: - Error

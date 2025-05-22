@@ -12,9 +12,9 @@ struct SignOutButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: {
+        Button {
             action()
-        }) {
+        } label: {
             Text(title)
                 .foregroundColor(.customRed)
         }

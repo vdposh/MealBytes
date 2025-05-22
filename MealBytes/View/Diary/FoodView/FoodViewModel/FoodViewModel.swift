@@ -15,11 +15,11 @@ final class FoodViewModel: ObservableObject {
     @Published var originalAmount: String = ""
     @Published var appError: AppError?
     @Published var unit: MeasurementUnit = .grams
-    @Published var showActionSheet: Bool = false
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
-    @Published var shouldUseOriginalAmount: Bool = false
+    @Published var showServingDialog: Bool = false
+    @Published var showMealTypeDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -28,14 +28,16 @@ final class FoodViewModel: ObservableObject {
     
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
+    private let formatter = Formatter()
+    private let originalMealType: MealType
+    private let originalMealItemId: UUID
     let food: Food
-    let mealType: MealType
-    let originalMealItemId: UUID
+    var mealType: MealType
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    let searchViewModel: SearchViewModel
-    let mainViewModel: MainViewModel
+    var searchViewModel: SearchViewModel
+    var mainViewModel: MainViewModel
     
     init(food: Food,
          mealType: MealType,
@@ -53,6 +55,7 @@ final class FoodViewModel: ObservableObject {
         
         self.food = food
         self.mealType = mealType
+        self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
         self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
@@ -134,25 +137,55 @@ final class FoodViewModel: ObservableObject {
             foodName: food.searchFoodName,
             portionUnit: selectedServing.metricServingUnit,
             nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
-                result, detail in
-                result[detail.type] = detail.value
+                result, detail in result[detail.type] = detail.value
             },
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.sanitizedForDouble) ?? 0,
-            date: date, mealType: mealType
+            date: date,
+            mealType: mealType
         )
         
         Task {
             do {
-                mainViewModel.updateMealItemMainView(
-                    updatedMealItem,
-                    for: mealType,
-                    on: date
-                )
-                try await firestore.updateMealItemFirestore(updatedMealItem)
+                if originalMealType == mealType {
+                    await MainActor.run {
+                        mainViewModel.updateMealItemMainView(
+                            updatedMealItem,
+                            for: mealType,
+                            on: date
+                        )
+                    }
+                    try await firestore.updateMealItemFirestore(updatedMealItem)
+                } else {
+                    await MainActor.run {
+                        mainViewModel.deleteMealItemMainView(
+                            with: originalMealItemId,
+                            for: originalMealType
+                        )
+                    }
+                    
+                    if mainViewModel.filteredMealItems(for: originalMealType,
+                                                       on: date).isEmpty {
+                        await MainActor.run {
+                            mainViewModel
+                                .expandedSections[originalMealType] = false
+                        }
+                    }
+                    
+                    await MainActor.run {
+                        mainViewModel.addMealItemMainView(
+                            updatedMealItem,
+                            to: mealType,
+                            for: date
+                        )
+                        mainViewModel.expandedSections[mealType] = true
+                    }
+                    
+                    try await firestore.updateMealItemFirestore(updatedMealItem)
+                }
             } catch {
                 await MainActor.run {
-                    print(error.localizedDescription)
+                    appError = .disconnected
                 }
             }
         }
@@ -161,7 +194,7 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Delete food
     func deleteMealItemFoodView() async {
         mainViewModel.deleteMealItemMainView(with: originalMealItemId,
-                                             for: mealType)
+                                             for: originalMealType)
     }
     
     // MARK: - Bookmark Management
@@ -197,7 +230,7 @@ final class FoodViewModel: ObservableObject {
             amount = ""
         } else {
             if let newAmount = Double(amount.sanitizedForDouble),
-                newAmount > 0 {
+               newAmount > 0 {
                 originalAmount = amount
             } else {
                 amount = originalAmount
@@ -208,22 +241,25 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
         let description = serving.measurementDescription
-        let metricAmount = Int(serving.metricServingAmount)
+        let metricAmountFormatted = formatter.formattedValue(
+            serving.metricServingAmount,
+            unit: .empty
+        )
         let metricUnit = serving.metricServingUnit
         
         switch serving.isMetricMeasurement {
         case true:
             return description
-        case false where description.contains("serving (\(metricAmount)g"):
+        case false where description.contains("serving (\(metricAmountFormatted)g"):
             return description
         default:
-            return "\(description) (\(metricAmount)\(metricUnit))"
+            return "\(description) (\(metricAmountFormatted)\(metricUnit))"
         }
     }
     
     var servingDescription: String {
         guard let selectedServing else {
-            return "Select Serving"
+            return "Select a Serving"
         }
         return servingDescription(for: selectedServing)
     }
@@ -232,6 +268,15 @@ final class FoodViewModel: ObservableObject {
     var canAddFood: Bool {
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
         return amountValue > 0
+    }
+    
+    // MARK: - Alerts
+    func showAlerts(after delay: Double, _ alerts: Binding<Bool>...) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            for alert in alerts {
+                alert.wrappedValue = true
+            }
+        }
     }
     
     // MARK: - Nutrient Calculation
@@ -289,4 +334,24 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     case grams = "Grams"
     
     var id: String { self.rawValue }
+}
+
+#Preview {
+    FoodView(
+        navigationTitle: "Add to Diary",
+        food: Food(
+            searchFoodId: 3092,
+            searchFoodName: "Egg",
+            searchFoodDescription: "1 cup"
+        ),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "1",
+        measurementDescription: "Grams",
+        showAddButton: false,
+        showSaveRemoveButton: true,
+        showMealTypeButton: true,
+        originalMealItemId: UUID()
+    )
 }

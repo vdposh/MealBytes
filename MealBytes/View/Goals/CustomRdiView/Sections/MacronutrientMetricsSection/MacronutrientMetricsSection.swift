@@ -8,67 +8,59 @@
 import SwiftUI
 
 struct MacronutrientMetricsSection: View {
-    @FocusState var focusedField: Bool
+    @FocusState var focusedField: MacronutrientsFocus?
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
-        Section(header: Text("Macronutrient Metrics")) {
+        Section {
             VStack {
                 VStack(spacing: 15) {
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.fat,
-                        focusedField: _focusedField,
-                        value: customRdiViewModel.oppositeValue(
-                            for: customRdiViewModel.fat, factor: 9),
-                        unitRight: customRdiViewModel.unitSymbol(
-                            inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(),
+                        focusedField: $focusedField,
                         title: "Fat",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.fat)
+                            for: customRdiViewModel.fat),
+                        customRdiViewModel: customRdiViewModel
                     )
+                    .focused($focusedField, equals: .fat)
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.carbohydrate,
-                        focusedField: _focusedField,
-                        value: customRdiViewModel.oppositeValue(
-                            for: customRdiViewModel.carbohydrate, factor: 4),
-                        unitRight: customRdiViewModel.unitSymbol(
-                            inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(),
+                        focusedField: $focusedField,
                         title: "Carbohydrate",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.carbohydrate)
+                            for: customRdiViewModel.carbohydrate),
+                        customRdiViewModel: customRdiViewModel
                     )
+                    .focused($focusedField, equals: .carbohydrate)
                     
                     MacronutrientRow(
                         textFieldBinding: $customRdiViewModel.protein,
-                        focusedField: _focusedField,
-                        value: customRdiViewModel.oppositeValue(
-                            for: customRdiViewModel.protein, factor: 4),
-                        unitRight: customRdiViewModel.unitSymbol(
-                            inverted: true),
-                        unitLeft: customRdiViewModel.unitSymbol(),
+                        focusedField: $focusedField,
                         title: "Protein",
                         titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.protein)
+                            for: customRdiViewModel.protein),
+                        customRdiViewModel: customRdiViewModel
                     )
+                    .focused($focusedField, equals: .protein)
                 }
                 .padding(.bottom, 5)
-                
-                HStack {
-                    Button(action: {
-                        customRdiViewModel.togglePercentageMode()
-                    }) {
-                        Text(customRdiViewModel.toggleButtonText)
-                            .font(.headline)
-                            .foregroundColor(.customGreen)
-                    }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.vertical, 10)
-                }
             }
+        } header: {
+            Text("Macronutrient Metrics")
+        } footer: {
+            Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
         }
+    }
+}
+
+enum MacronutrientsFocus: Hashable {
+    case fat, carbohydrate, protein
+}
+
+#Preview {
+    NavigationStack {
+        CustomRdiView()
     }
 }

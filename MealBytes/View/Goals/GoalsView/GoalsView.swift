@@ -25,6 +25,7 @@ struct GoalsView: View {
                             }
                         }
                     }
+                    .disabled(goalsViewModel.isDataLoaded == false)
                 } else {
                     HStack {
                         LoadingView()
@@ -33,7 +34,7 @@ struct GoalsView: View {
                     }
                 }
             } footer: {
-                Text("MealBytes calculates your Recommended Daily Intake (RDI) to provide you with a daily calorie target tailored to help you achieve your desired weight.")
+                Text("MealBytes calculates the Recommended Daily Intake (RDI) to provide a daily calorie target tailored to help achieve the desired weight.")
             }
             
             Section {
@@ -49,6 +50,7 @@ struct GoalsView: View {
                             }
                         }
                     }
+                    .disabled(goalsViewModel.isDataLoaded == false)
                 } else {
                     HStack {
                         LoadingView()
@@ -57,7 +59,7 @@ struct GoalsView: View {
                     }
                 }
             } footer: {
-                Text("You can also calculate your RDI manually by entering calories and macronutrient values such as fats, carbohydrates and proteins.")
+                Text("RDI can be set by entering the required number of calories or calculated using macronutrient values such as fats, carbohydrates, and proteins.")
             }
         }
         .navigationBarTitle("Goals", displayMode: .inline)

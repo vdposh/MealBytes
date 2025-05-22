@@ -17,21 +17,23 @@ struct ResetView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                ServingTextFieldView(
+                LoginTextFieldView(
                     text: $resetViewModel.email,
-                    title: "Email",
-                    placeholder: "Enter your email",
-                    keyboardType: .emailAddress,
                     titleColor: resetViewModel.titleColor(
                         for: resetViewModel.email)
                 )
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
                 
                 if resetViewModel.isLoading {
                     LoadingView()
                         .frame(height: 50)
                         .frame(maxWidth: .infinity)
+                } else if resetViewModel.isEmailSent {
+                    Text("A reset link has been sent to the email \"\(resetViewModel.sentEmail)\".")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
                 } else {
                     ActionButtonView(
                         title: "Send reset link on email",
@@ -43,19 +45,26 @@ struct ResetView: View {
                         backgroundColor: .customGreen,
                         isEnabled: resetViewModel.isResetEnabled()
                     )
+                    .frame(height: 50)
                 }
             }
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
             
-            Text("Enter the email address you used during registration. A message will be sent to this email containing instructions to reset your password. By following the link in the email, you will be able to create a new password and regain access to your account.")
+            Text("Enter the email used during registration. A reset link will be sent to this email with instructions on how to create a new password and regain access to your account.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 30)
             
                 .alert(isPresented: $resetViewModel.showAlert) {
                     resetViewModel.getAlert()
                 }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ResetView()
     }
 }

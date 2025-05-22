@@ -35,7 +35,6 @@ struct DetailedInformationSection: View {
                         .lineLimit(1)
                 }
             }
-            
             ShowHideButtonView(isExpanded: $isExpanded)
         }
     }

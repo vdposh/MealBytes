@@ -19,9 +19,9 @@ struct MainView: View {
                 }
                 .zIndex(2)
                 
-                Button(action: {
+                Button {
                     mainViewModel.isExpandedCalendar = false
-                }) {
+                } label: {
                     Color.primary
                         .opacity(0.4)
                         .ignoresSafeArea()
@@ -38,16 +38,32 @@ struct MainView: View {
             }
             .listSectionSpacing(15)
         }
+        .overlay(
+            CustomAlertView(
+                isVisible: $mainViewModel.showFoodSavedAlert,
+                message: "Food Saved"
+            )
+        )
+        .overlay(
+            CustomAlertView(
+                isVisible: $mainViewModel.showFoodRemovedAlert,
+                iconName: "trash",
+                message: "Food Removed",
+                weight: .medium,
+                foregroundColor: .customRed.opacity(0.85),
+                backgroundFill: .customRed.opacity(0.15)
+            )
+        )
         .task {
             await mainViewModel.loadMainData()
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Button(action: {
+                Button {
                     mainViewModel.isExpandedCalendar.toggle()
-                }) {
-                    Text(mainViewModel.formattedDate())
+                } label: {
+                    Text(mainViewModel.formattedDate(isAbbreviated: false))
                         .font(.headline)
                 }
             }
@@ -59,6 +75,10 @@ struct MainView: View {
             DatePickerView(selectedDate: $mainViewModel.date,
                            isPresented: $mainViewModel.isExpandedCalendar,
                            mainViewModel: mainViewModel)
+            .task {
+                mainViewModel.showFoodSavedAlert = false
+                mainViewModel.showFoodRemovedAlert = false
+            }
         }
         .background(Color(.systemBackground))
     }
@@ -67,10 +87,10 @@ struct MainView: View {
         Section {
             HStack {
                 ForEach(-3...3, id: \.self) { offset in
-                    Button(action: {
+                    Button {
                         mainViewModel.date = mainViewModel
                             .dateByAddingOffset(for: offset)
-                    }) {
+                    } label: {
                         dateView(for: mainViewModel
                             .dateByAddingOffset(for: offset))
                     }
@@ -121,5 +141,11 @@ struct MainView: View {
             isExpanded: $mainViewModel.isExpanded,
             nutrients: mainViewModel.filteredNutrients
         )
+    }
+}
+
+#Preview {
+    NavigationStack {
+        MainView(mainViewModel: MainViewModel())
     }
 }

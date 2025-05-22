@@ -15,7 +15,9 @@ struct BookmarkButtonView: View {
     var isEnabled: Bool = true
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Image(isFilled ? "bookmarkFill" : "bookmarkEmpty")
                 .resizable()
                 .scaledToFit()

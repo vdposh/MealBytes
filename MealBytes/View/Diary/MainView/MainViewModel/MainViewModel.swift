@@ -26,8 +26,9 @@ final class MainViewModel: ObservableObject {
     @Published var rdi: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
-    @Published var isLoading: Bool = true
     @Published var shouldDisplayRdi: Bool = true
+    @Published var showFoodSavedAlert = false
+    @Published var showFoodRemovedAlert = false
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -139,6 +140,13 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func deletionButtonRole(for mealType: MealType) -> ButtonRole? {
+        return filteredMealItems(
+            for: mealType,
+            on: date
+        ).count == 1 ? nil : .destructive
+    }
+    
     // MARK: - Load RDI
     private func loadMainRdiMainView() async {
         do {
@@ -203,7 +211,6 @@ final class MainViewModel: ObservableObject {
         
         await MainActor.run {
             updateProgress()
-            isLoading = false
         }
     }
     
@@ -308,6 +315,26 @@ final class MainViewModel: ObservableObject {
                                         unit: .empty)
     }
     
+    func formattedMeasurement(for mealItem: MealItem) -> String {
+        if mealItem.measurementDescription.starts(with: "serving (") {
+            return "serving"
+        } else {
+            return mealItem.measurementDescription
+        }
+    }
+    
+    func formattedMealText(for mealItem: MealItem) -> String {
+        let formattedAmount = formatter.formattedValue(mealItem.amount,
+                                                       unit: .empty)
+        let measurement = formattedMeasurement(for: mealItem)
+        
+        if measurement == "g" || measurement == "ml" {
+            return "\(formattedServingSize(for: mealItem))\(mealItem.portionUnit)"
+        }
+        
+        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem))\(mealItem.portionUnit))"
+    }
+    
     // MARK: - Format Calories
     func formattedCalories(_ calories: Double) -> String {
         return formatter.formattedValue(calories,
@@ -367,14 +394,26 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Formatted year for Calendar
-    func formattedDate() -> String {
-        switch calendar.isDate(date,
-                               equalTo: Date(),
-                               toGranularity: .year) {
-        case true:
-            date.formatted(.dateTime.month(.wide).day().weekday(.wide))
-        case false:
-            date.formatted(.dateTime.month(.wide).day().weekday(.wide).year())
+    func formattedDate(isAbbreviated: Bool) -> String {
+        var monthFormat: Date.FormatStyle.Symbol.Month
+        var weekdayFormat: Date.FormatStyle.Symbol.Weekday
+        
+        if isAbbreviated {
+            monthFormat = .abbreviated
+            weekdayFormat = .abbreviated
+        } else {
+            monthFormat = .wide
+            weekdayFormat = .wide
+        }
+        
+        if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
+            return date.formatted(
+                .dateTime.weekday(weekdayFormat).day().month(.wide)
+            )
+        } else {
+            return date.formatted(
+                .dateTime.weekday(weekdayFormat).day().month(monthFormat).year()
+            )
         }
     }
     
@@ -454,6 +493,15 @@ final class MainViewModel: ObservableObject {
             expandedSections[key] = false
         }
     }
+    
+    //MARK: - Alerts
+    func hideAlerts() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.showFoodSavedAlert = false
+            self.showFoodRemovedAlert = false
+        }
+        self.searchViewModel.showFoodAddedAlert = false
+    }
 }
 
 enum NutrientSource {
@@ -464,4 +512,11 @@ enum NutrientSource {
 enum DisplayElement {
     case day
     case weekday
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

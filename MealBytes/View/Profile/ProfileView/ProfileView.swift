@@ -31,10 +31,9 @@ struct ProfileView: View {
                             .lineLimit(1)
                     }
                 } else {
-                    Text("Unable to retrieve email.")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.customRed)
+                    Text("Account disconnected.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
             }
             .padding(.bottom)
@@ -55,13 +54,13 @@ struct ProfileView: View {
                 )
                 .toggleStyle(SwitchToggleStyle(tint: .customGreen))
             } footer: {
-                Text("Enable this option to display your Recommended Daily Intake (RDI) in the Diary.")
+                Text("Enable this option to display Recommended Daily Intake (RDI) in the Diary.")
             }
             
             Section {
-                Button(action: {
+                Button {
                     profileViewModel.prepareAlert(for: .changePassword)
-                }) {
+                } label: {
                     if profileViewModel.isPasswordChanging {
                         HStack {
                             LoadingView()
@@ -70,10 +69,12 @@ struct ProfileView: View {
                         }
                     } else {
                         Text("Change Password")
+                            .foregroundStyle(.customGreen)
                     }
                 }
+                .disabled(profileViewModel.isPasswordChanging)
             } footer: {
-                Text("Use this option to update your account password for improved security.")
+                Text("Use this option to update the account password for improved security.")
                     .padding(.bottom)
             }
             
@@ -84,24 +85,33 @@ struct ProfileView: View {
                     profileViewModel.prepareAlert(for: .signOut)
                 }
             } footer: {
-                HStack(spacing: 4) {
-                    Text("Do you want to")
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        profileViewModel.prepareAlert(for: .deleteAccount)
-                    }) {
-                        Text("remove")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.customRed)
+                if profileViewModel.isDeletingAccount {
+                    HStack {
+                        ProgressView()
                     }
-                    .buttonStyle(.plain)
-                    
-                    Text("your account?")
-                        .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                } else {
+                    HStack(spacing: 4) {
+                        Text("Do you want to")
+                            .foregroundColor(.secondary)
+                        
+                        Button {
+                            profileViewModel.prepareAlert(for: .deleteAccount)
+                        } label: {
+                            Text("delete")
+                                .fontWeight(.semibold)
+                                .foregroundColor(.customRed)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Text("the account?")
+                            .foregroundColor(.secondary)
+                    }
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
                 }
-                .padding(.top)
-                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
         .navigationBarTitle("Profile", displayMode: .inline)
@@ -113,8 +123,9 @@ struct ProfileView: View {
             isPresented: $profileViewModel.showAlert,
             actions: {
                 if profileViewModel.alertType == .deleteAccount {
-                    SecureField("Enter your password",
+                    SecureField("Enter password",
                                 text: $profileViewModel.password)
+                    .font(.callout)
                     .textContentType(.password)
                     
                     Button(profileViewModel.destructiveButtonTitle,
@@ -140,10 +151,20 @@ struct ProfileView: View {
                     } else {
                         SecureField("Current Password",
                                     text: $profileViewModel.password)
+                        
+                        .font(.callout)
                         .textContentType(.password)
                         
                         SecureField("New Password",
                                     text: $profileViewModel.newPassword)
+                        
+                        .font(.callout)
+                        .textContentType(.newPassword)
+                        
+                        SecureField("Confirm New Password",
+                                    text: $profileViewModel.confirmPassword)
+                        
+                        .font(.callout)
                         .textContentType(.newPassword)
                         
                         Group {
@@ -165,4 +186,11 @@ struct ProfileView: View {
             }
         )
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

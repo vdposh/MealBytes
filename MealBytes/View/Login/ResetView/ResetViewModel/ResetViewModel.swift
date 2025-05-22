@@ -10,9 +10,11 @@ import FirebaseAuth
 
 final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
+    @Published var sentEmail: String = ""
     @Published var success: Bool = false
     @Published var showAlert: Bool = false
     @Published var isLoading: Bool = false
+    @Published var isEmailSent = false
     
     private var error: AuthError?
     
@@ -26,6 +28,10 @@ final class ResetViewModel: ObservableObject {
         
         do {
             try await firebaseAuth.resetPasswordAuth(email: email)
+            await MainActor.run {
+                isEmailSent = true
+                sentEmail = email
+            }
             await handleResult(success: true, error: nil)
         } catch {
             await handleResult(
@@ -56,13 +62,13 @@ final class ResetViewModel: ObservableObject {
         if success {
             return Alert(
                 title: Text("Done"),
-                message: Text("A password reset link has been sent to your email."),
+                message: Text("A reset link for the password has been sent to the email."),
                 dismissButton: .default(Text("OK"))
             )
         } else {
             return Alert(
                 title: Text("Error"),
-                message: Text(error?.errorDescription ?? "Unknown error"),
+                message: Text(error?.errorDescription ?? ""),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -75,7 +81,7 @@ final class ResetViewModel: ObservableObject {
     
     // MARK: - Colors
     func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .primary
+        return text.isEmpty ? .customRed : .secondary
     }
     
     // MARK: - Error

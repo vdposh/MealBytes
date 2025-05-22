@@ -48,7 +48,11 @@ struct TabBarView: View {
                 if mainViewModel.isExpandedCalendar {
                     mainViewModel.isExpandedCalendar = false
                 }
+                mainViewModel.searchViewModel.showFoodAddedAlert = false
             }
+        }
+        .alert(isPresented: $loginViewModel.showErrorAlert) {
+            loginViewModel.getErrorAlert()
         }
         .task {
             selectedTab = 0

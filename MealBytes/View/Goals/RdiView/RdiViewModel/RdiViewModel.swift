@@ -21,7 +21,6 @@ final class RdiViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var isDataLoaded: Bool = false
-    @Published var isError: Bool = false
     
     private let formatter = Formatter()
     
@@ -58,10 +57,12 @@ final class RdiViewModel: ObservableObject {
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .cm
+                isDataLoaded = true
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
+                isDataLoaded = true
             }
         }
     }
@@ -88,6 +89,92 @@ final class RdiViewModel: ObservableObject {
         } catch {
             appError = .decoding
         }
+    }
+    
+    // MARK: - RDI Calculation
+    private func setupDataObserver() {
+        Publishers.CombineLatest(
+            Publishers.CombineLatest($age, $weight),
+            Publishers.CombineLatest($height, $selectedGender)
+        )
+        .combineLatest(
+            Publishers.CombineLatest(
+                $selectedActivity,
+                Publishers.CombineLatest($selectedWeightUnit,
+                                         $selectedHeightUnit)
+            )
+        )
+        .sink { [weak self] combined1, combined2 in
+            let (age, weight) = combined1.0
+            let (height, gender) = combined1.1
+            let (activity, units) = combined2
+            let (weightUnit, heightUnit) = units
+            
+            self?.recalculateRdi(
+                age: age,
+                weight: weight,
+                height: height,
+                gender: gender,
+                activity: activity,
+                weightUnit: weightUnit,
+                heightUnit: heightUnit
+            )
+        }
+        .store(in: &cancellables)
+    }
+    
+    private func recalculateRdi(age: String,
+                                weight: String,
+                                height: String,
+                                gender: Gender,
+                                activity: ActivityLevel,
+                                weightUnit: WeightUnit,
+                                heightUnit: HeightUnit) {
+        guard let ageValue = Double(age.sanitizedForDouble),
+              let weightValue = Double(weight.sanitizedForDouble),
+              let heightValue = Double(height.sanitizedForDouble),
+              ageValue > 0, weightValue > 0, heightValue > 0,
+              gender != .notSelected, activity != .notSelected else {
+            self.calculatedRdi = ""
+            return
+        }
+        
+        let weightInKg = weightUnit ==
+            .lbs ? weightValue * 0.453592 : weightValue
+        let heightInCm = heightUnit ==
+            .inches ? heightValue * 2.54 : heightValue
+        
+        let bmr: Double
+        switch gender {
+        case .male:
+            bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue + 5
+        case .female:
+            bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
+        case .notSelected:
+            return
+        }
+        
+        let activityFactor: Double
+        switch activity {
+        case .sedentary: activityFactor = 1.2
+        case .lightlyActive: activityFactor = 1.375
+        case .moderatelyActive: activityFactor = 1.55
+        case .veryActive: activityFactor = 1.725
+        case .extraActive: activityFactor = 1.9
+        case .notSelected:
+            return
+        }
+        
+        self.calculatedRdi = formatter.roundedValue(bmr * activityFactor)
+    }
+    
+    // MARK: - Field Title Styling
+    func fieldTitleColor(for field: String) -> Color {
+        let sanitizedField = field.sanitizedForDouble
+        guard let value = Double(sanitizedField), value > 0 else {
+            return .customRed
+        }
+        return .secondary
     }
     
     // MARK: - Input Validation
@@ -120,113 +207,33 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    // MARK: - RDI Calculation
-    private func setupDataObserver() {
-        Publishers.CombineLatest4(
-            $age,
-            $weight,
-            $height,
-            Publishers.CombineLatest($selectedGender, $selectedActivity)
-        )
-        .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-        .sink { [weak self] age, weight, height, combined in
-            let (gender, activity) = combined
-            self?.recalculateRdi(age: age,
-                                 weight: weight,
-                                 height: height,
-                                 gender: gender,
-                                 activity: activity)
-        }
-        .store(in: &cancellables)
-    }
-    
-    private func recalculateRdi(age: String,
-                                weight: String,
-                                height: String,
-                                gender: Gender,
-                                activity: ActivityLevel) {
-        guard let ageValue = Double(age.sanitizedForDouble),
-              let weightValue = Double(weight.sanitizedForDouble),
-              let heightValue = Double(height.sanitizedForDouble),
-              gender != .notSelected, activity != .notSelected else {
-            self.calculatedRdi = ""
-            return
-        }
-        
-        let weightInKg = selectedWeightUnit == .lbs ? weightValue * 0.453592 : weightValue
-        let heightInCm = selectedHeightUnit == .inches ? heightValue * 2.54 : heightValue
-        
-        let bmr: Double
-        switch gender {
-        case .male:
-            bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue + 5
-        case .female:
-            bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
-        case .notSelected:
-            return
-        }
-        
-        let activityFactor: Double
-        switch activity {
-        case .sedentary: activityFactor = 1.2
-        case .lightlyActive: activityFactor = 1.375
-        case .moderatelyActive: activityFactor = 1.55
-        case .veryActive: activityFactor = 1.725
-        case .extraActive: activityFactor = 1.9
-        case .notSelected:
-            return
-        }
-        
-        self.calculatedRdi = formatter.roundedValue(bmr * activityFactor)
-    }
-    
-    // MARK: - Field Title Styling
-    func fieldTitleColor(for field: String) -> Color {
-        let sanitizedField = field.sanitizedForDouble
-        guard let value = Double(sanitizedField), value > 0 else {
-            return .customRed
-        }
-        return .primary
-    }
-    
-    // MARK: - Save Goals
     func handleSave() -> Bool {
         if let errors = validateInputs() {
-            isError = true
             alertMessage = errors
             showAlert = true
             return false
         } else {
-            isError = false
             return true
         }
     }
     
-    func alertTitle() -> String {
-        if isError {
-            return "Error"
-        } else {
-            return "Done"
-        }
-    }
-    
-    // MARK: - Text Style
+    // MARK: - Text
     func text(for calculatedRdi: String) -> String {
-        switch calculatedRdi.isEmpty {
-        case true:
-            "Fill in the data"
-        case false:
-            "\(calculatedRdi) calories"
+        guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
+              rdiValue > 0 else {
+            return "Fill in the data"
+        }
+        
+        switch rdiValue {
+        case 1:
+            return "\(calculatedRdi) calorie"
+        default:
+            return "\(calculatedRdi) calories"
         }
     }
     
-    func color(for calculatedRdi: String) -> Color {
-        switch calculatedRdi.isEmpty {
-        case true:
-                .secondary
-        case false:
-                .primary
-        }
+    func color(for calculatedRdi: String) -> Color? {
+        return calculatedRdi.isEmpty ? nil : .primary
     }
 }
 
@@ -234,7 +241,7 @@ enum Gender: String, CaseIterable {
     case notSelected = "Not selected"
     case male = "Male"
     case female = "Female"
-
+    
     var accentColor: Color {
         switch self {
         case .notSelected:
@@ -252,7 +259,7 @@ enum ActivityLevel: String, CaseIterable {
     case moderatelyActive = "Moderately Active"
     case veryActive = "Very Active"
     case extraActive = "Extra Active"
-
+    
     var accentColor: Color {
         switch self {
         case .notSelected:
@@ -271,4 +278,10 @@ enum WeightUnit: String, CaseIterable {
 enum HeightUnit: String, CaseIterable {
     case cm = "cm"
     case inches = "inches"
+}
+
+#Preview {
+    NavigationStack {
+        RdiView()
+    }
 }

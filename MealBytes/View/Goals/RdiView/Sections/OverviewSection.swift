@@ -12,23 +12,23 @@ struct OverviewSection: View {
     
     var body: some View {
         Section {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("The RDI calculation is based on unique factors, including your age, weight, height, gender, and activity level.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .padding(.bottom, 5)
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("The RDI calculation is based on unique factors, including age, weight, height, gender, and activity level.")
+                    .padding(.bottom)
                 
-                HStack {
-                    Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
-                        .lineLimit(1)
-                        .font(.headline)
-                        .foregroundColor(rdiViewModel.color(
-                            for: rdiViewModel.calculatedRdi))
-                }
+                Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
+                    .lineLimit(1)
+                    .font(.headline)
+                    .foregroundColor(rdiViewModel.color(
+                        for: rdiViewModel.calculatedRdi))
             }
         }
-        .padding(.horizontal)
-        .listRowInsets(EdgeInsets())
-        .listRowBackground(Color.clear)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        RdiView()
     }
 }

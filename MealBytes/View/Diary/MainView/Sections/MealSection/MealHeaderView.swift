@@ -17,16 +17,24 @@ struct MealHeaderView: View {
     let protein: Double
     let carbohydrate: Double
     let foodItems: [MealItem]
-    @State private var isPresentingSheet: Bool = false
-    @State private var isFoodViewPresented: Bool = false
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
-            Button(action: {
-                mainViewModel.searchViewModel.query = ""
-                isPresentingSheet = true
-            }) {
+            ZStack {
+                NavigationLink(
+                    destination: SearchView(
+                        searchViewModel: mainViewModel.searchViewModel,
+                        mealType: mealType
+                    )
+                    .task {
+                        mainViewModel.hideAlerts()
+                    }
+                ) {
+                    EmptyView()
+                }
+                .opacity(0)
+                
                 HStack {
                     VStack(spacing: 15) {
                         HStack {
@@ -34,13 +42,11 @@ struct MealHeaderView: View {
                                 .foregroundColor(color)
                             Text(title)
                                 .fontWeight(.medium)
-                                .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
                                 .font(.callout)
                                 .fontWeight(.medium)
-                                .foregroundColor(.primary)
                         }
                         NutrientSummaryRow(
                             fat: fat,
@@ -53,17 +59,12 @@ struct MealHeaderView: View {
                     .padding(.vertical, 5)
                     .padding(.trailing, 5)
                     
-                    Text("+")
-                        .font(.title)
+                    Image(systemName: "plus")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.customGreen)
                 }
             }
-            .fullScreenCover(isPresented: $isPresentingSheet) {
-                SearchView(
-                    isPresented: $isPresentingSheet,
-                    searchViewModel: mainViewModel.searchViewModel,
-                    mealType: mealType
-                )
-            }
+            .navigationBarTitle("Diary")
             
             if mainViewModel.expandedSections[mealType] == true {
                 let foodItems = mainViewModel.filteredMealItems(
@@ -74,13 +75,14 @@ struct MealHeaderView: View {
                 if !foodItems.isEmpty {
                     ForEach(foodItems, id: \.id) { item in
                         FoodItemRow(
-                            isDismissed: $isFoodViewPresented,
                             mealItem: item,
                             mealType: mealType,
                             mainViewModel: mainViewModel
                         )
-                        .swipeActions {
-                            Button(role: .destructive) {
+                        .swipeActions(allowsFullSwipe: false) {
+                            Button(role: mainViewModel.deletionButtonRole(
+                                for: mealType
+                            )) {
                                 Task {
                                     mainViewModel.deleteMealItemMainView(
                                         with: item.id,
@@ -91,15 +93,25 @@ struct MealHeaderView: View {
                             } label: {
                                 Image(systemName: "trash")
                             }
+                            .tint(.red)
                         }
                     }
                 }
             }
             
-            ShowHideButtonView(isExpanded: Binding(
-                get: { mainViewModel.expandedSections[mealType] ?? false },
-                set: { mainViewModel.expandedSections[mealType] = $0 }
-            ))
+            if !foodItems.isEmpty {
+                ShowHideButtonView(isExpanded: Binding(
+                    get: { mainViewModel.expandedSections[mealType] ?? false },
+                    set: { mainViewModel.expandedSections[mealType] = $0 }
+                ))
+            }
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

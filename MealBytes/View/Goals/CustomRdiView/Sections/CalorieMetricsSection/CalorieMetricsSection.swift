@@ -8,15 +8,19 @@
 import SwiftUI
 
 struct CalorieMetricsSection: View {
-    @FocusState var focusedField: Bool
+    @FocusState var focusedField: CustomRdiFocus?
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
-        Section(header: Text("Calorie Metrics")) {
+        Section {
             VStack {
                 calorieInputRow
             }
             .padding(.bottom, 5)
+        } header: {
+            Text("Calorie Metrics")
+        } footer: {
+            Text(customRdiViewModel.footerText)
         }
     }
     
@@ -25,16 +29,29 @@ struct CalorieMetricsSection: View {
             ServingTextFieldView(
                 text: $customRdiViewModel.calories,
                 title: "Calories",
+                showStar: customRdiViewModel.showStar,
+                keyboardType: .decimalPad,
                 titleColor: customRdiViewModel.titleColor(
-                    for: customRdiViewModel.calories),
-                textColor: customRdiViewModel.caloriesTextColor
+                    for: customRdiViewModel.calories,
+                    isCalorie: true),
+                textColor: customRdiViewModel.caloriesTextColor,
+                maxIntegerDigits: 5
             )
-            .focused($focusedField)
-            .disabled(customRdiViewModel.isCaloriesTextFieldActive)
+            .focused($focusedField, equals: .calories)
             .padding(.trailing, 5)
             
             Text("kcal")
                 .foregroundColor(customRdiViewModel.caloriesTextColor)
         }
+    }
+}
+
+enum CustomRdiFocus: Hashable {
+    case calories
+}
+
+#Preview {
+    NavigationStack {
+        CustomRdiView()
     }
 }

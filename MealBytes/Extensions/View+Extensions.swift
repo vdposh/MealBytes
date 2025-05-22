@@ -49,9 +49,9 @@ extension View {
         } description: {
             switch error {
             case .noBookmarks:
-                Text("Add your favorite dishes to bookmarks, and they'll appear here.")
+                Text("Mark favorite food items as bookmarks, and they’ll be displayed here.")
             case .disconnected:
-                Text("Your account is disconnected. Please log out and log back in to sync your data.")
+                Text("Account disconnected. Log out and log back in to restore data sync.")
             default:
                 Text(error.errorDescription)
             }

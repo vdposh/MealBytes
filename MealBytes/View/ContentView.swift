@@ -9,13 +9,15 @@ import SwiftUI
 import FirebaseAuth
 
 struct ContentView: View {
-    @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var mainViewModel = MainViewModel()
+    @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         ZStack {
-            if loginViewModel.isLoading {
+            if loginViewModel.isSignIn {
                 LoginLoadingView()
+            } else if loginViewModel.isLoading {
+                LoginLogoView()
             } else if loginViewModel.isLoggedIn {
                 TabBarView(loginViewModel: loginViewModel,
                            mainViewModel: mainViewModel)
@@ -23,5 +25,16 @@ struct ContentView: View {
                 LoginView(loginViewModel: loginViewModel)
             }
         }
+        .task {
+            await mainViewModel.loadMainData()
+            await loginViewModel.loadLoginData()
+        }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

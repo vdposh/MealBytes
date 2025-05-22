@@ -19,6 +19,7 @@ struct CaloriesSection: View {
                         Text("Calories")
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        
                         HStack(spacing: 5) {
                             Text(
                                 mainViewModel.formatter.formattedValue(

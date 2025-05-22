@@ -12,6 +12,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var password: String = ""
     @Published var newPassword: String = ""
+    @Published var confirmPassword: String = ""
     @Published var alertTitle: String = ""
     @Published var alertMessage: String = ""
     @Published var destructiveButtonTitle: String = ""
@@ -20,6 +21,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var isToggleUpdating: Bool = false
     @Published var isPasswordChanging: Bool = false
+    @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
@@ -89,21 +91,12 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Change Password
-    func changePassword(currentPassword: String, newPassword: String) async {
-        guard !currentPassword.isEmpty, !newPassword.isEmpty else {
-            return
-        }
-        
-        do {
-            try await firebaseAuth.changePasswordAuth(
-                currentPassword: currentPassword,
-                newPassword: newPassword
-            )
-        } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
-        }
+    func changePassword(currentPassword: String,
+                        newPassword: String) async throws {
+        try await firebaseAuth.changePasswordAuth(
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        )
     }
     
     // MARK: - Load Data
@@ -127,26 +120,30 @@ final class ProfileViewModel: ObservableObject {
     func prepareAlert(for type: AlertType) {
         Task {
             await MainActor.run {
+                password = ""
+                newPassword = ""
+                confirmPassword = ""
+                
                 alertType = type
                 showAlert = true
                 
                 switch type {
                 case .signOut:
                     alertTitle = "Sign Out"
-                    alertMessage = "You will need to sign in again to access your account."
+                    alertMessage = "Signing out will require signing in again to access the account."
                     destructiveButtonTitle = "Sign Out"
                     
                 case .deleteAccount:
                     alertTitle = "Delete Account"
                     alertMessage = """
-                    To delete your account, please enter the password associated with your account.
-                    Your data and account details will be permanently erased. This action cannot be undone.
+                    To delete the account, enter the password associated with it.
+                    Data and account details will be permanently erased. This action cannot be undone.
                     """
                     destructiveButtonTitle = "Delete"
                     
                 case .changePassword:
                     alertTitle = "Change Password"
-                    alertMessage = "Please provide your current password and a new password to update your account credentials."
+                    alertMessage = "Provide the current password and a new password to update account credentials."
                     destructiveButtonTitle = "Update Password"
                 }
             }
@@ -161,10 +158,17 @@ final class ProfileViewModel: ObservableObject {
             signOut()
             
         case .deleteAccount:
+            await MainActor.run {
+                isDeletingAccount = true
+            }
+            
             guard let email = email, !email.isEmpty else {
-                alertTitle = "Delete Account"
-                alertMessage = "Email is missing."
-                showAlert = true
+                await MainActor.run {
+                    alertTitle = "Delete Account"
+                    alertMessage = "Email is missing."
+                    showAlert = true
+                    isDeletingAccount = true
+                }
                 return
             }
             
@@ -173,14 +177,22 @@ final class ProfileViewModel: ObservableObject {
                     email: email,
                     password: password
                 )
+                
                 await deleteAccount(email: email, password: password)
+                
+                await MainActor.run {
+                    isDeletingAccount = false
+                }
             } catch {
-                alertTitle = "Delete Account"
-                alertMessage = """
-                The password you entered is incorrect.
-                To delete your account, please provide the correct password.
-                """
-                showAlert = true
+                await MainActor.run {
+                    alertTitle = "Delete Account"
+                    alertMessage = """
+                    The password entered is incorrect.
+                    To delete the account, provide the correct password.
+                    """
+                    showAlert = true
+                    isDeletingAccount = false
+                }
             }
             
         case .changePassword:
@@ -188,23 +200,51 @@ final class ProfileViewModel: ObservableObject {
                 isPasswordChanging = true
             }
             
+            guard newPassword.count >= 6 else {
+                await MainActor.run {
+                    alertTitle = "Change Password"
+                    alertMessage = """
+                    Failed to update the password.
+                    The password must be at least 6 characters long.
+                    """
+                    showAlert = true
+                    isPasswordChanging = false
+                }
+                return
+            }
+            
+            guard newPassword == confirmPassword else {
+                await MainActor.run {
+                    alertTitle = "Change Password"
+                    alertMessage = """
+                    Failed to update the password.
+                    New password and confirmation do not match.
+                    """
+                    showAlert = true
+                    isPasswordChanging = false
+                }
+                return
+            }
+            
             do {
-                try await firebaseAuth.changePasswordAuth(
-                    currentPassword: password,
-                    newPassword: newPassword
-                )
-                alertTitle = "Done"
-                alertMessage = "Your password has been successfully updated."
-                showAlert = true
-                isPasswordChanging = false
+                try await changePassword(currentPassword: password,
+                                         newPassword: newPassword)
+                await MainActor.run {
+                    alertTitle = "Done"
+                    alertMessage = "Password has been successfully updated."
+                    showAlert = true
+                    isPasswordChanging = false
+                }
             } catch {
-                alertTitle = "Change Password"
-                alertMessage = """
-                Failed to update the password.
-                Please check your current password and try again.
-                """
-                showAlert = true
-                isPasswordChanging = false
+                await MainActor.run {
+                    alertTitle = "Change Password"
+                    alertMessage = """
+                    Failed to update the password.
+                    Check the current password and try again.
+                    """
+                    showAlert = true
+                    isPasswordChanging = false
+                }
             }
         }
     }
@@ -214,4 +254,11 @@ final class ProfileViewModel: ObservableObject {
         case deleteAccount
         case changePassword
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }

@@ -58,6 +58,11 @@ final class RegisterViewModel: ObservableObject {
     // MARK: - Resend Email Verification
     func resendEmailVerification() async {
         guard isResendEnabled else { return }
+        
+        await MainActor.run {
+            self.isRegisterLoading = true
+        }
+        
         do {
             try await firebaseAuth.resendVerificationAuth()
             await startResendTimer()
@@ -66,6 +71,10 @@ final class RegisterViewModel: ObservableObject {
             await MainActor.run {
                 self.error = authError
             }
+        }
+        
+        await MainActor.run {
+            self.isRegisterLoading = false
         }
     }
     
@@ -113,13 +122,13 @@ final class RegisterViewModel: ObservableObject {
         if let error {
             return Alert(
                 title: Text("Error"),
-                message: Text(error.errorDescription ?? "Unknown error"),
+                message: Text(error.errorDescription ?? ""),
                 dismissButton: .default(Text("OK"))
             )
         } else {
             return Alert(
                 title: Text("Done"),
-                message: Text("A confirmation email has been sent to your email address."),
+                message: Text("A confirmation email has been sent to the email address."),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -135,7 +144,7 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Color
     func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .primary
+        return text.isEmpty ? .customRed : .secondary
     }
     
     // MARK: - Button State
@@ -153,6 +162,8 @@ final class RegisterViewModel: ObservableObject {
                 return .invalidEmail
             case .emailAlreadyInUse:
                 return .emailAlreadyInUse
+            case .weakPassword:
+                return .weakPassword
             case .networkError:
                 return .networkError
             default:
