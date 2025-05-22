@@ -207,7 +207,7 @@ struct FoodView: View {
                                     await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
                                     foodViewModel.showAlerts(
-                                        after: 0.12,
+                                        after: 0.1,
                                         $foodViewModel.mainViewModel
                                             .showFoodRemovedAlert
                                     )
@@ -225,7 +225,7 @@ struct FoodView: View {
                                     )
                                     dismiss()
                                     foodViewModel.showAlerts(
-                                        after: 0.12,
+                                        after: 0.1,
                                         $foodViewModel.mainViewModel
                                             .showFoodSavedAlert
                                     )
