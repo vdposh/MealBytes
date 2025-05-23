@@ -40,19 +40,13 @@ struct CustomAlertView: View {
             .padding(.bottom, 60)
             .allowsHitTesting(false)
             .task {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    withAnimation(.easeOut(duration: 0.6)) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation(.easeOut(duration: 0.5)) {
                         isVisible = false
                     }
                 }
             }
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
     }
 }
 

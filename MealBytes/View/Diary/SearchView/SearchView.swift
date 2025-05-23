@@ -81,7 +81,6 @@ struct SearchView: View {
         }
         .overlay(
             CustomAlertView(isVisible: $searchViewModel.showFoodAddedAlert)
-                .symbolEffect(.bounce, options: .nonRepeating)
         )
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),

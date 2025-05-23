@@ -273,8 +273,10 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Alerts
     func showAlerts(after delay: Double, _ alerts: Binding<Bool>...) {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            for alert in alerts {
-                alert.wrappedValue = true
+            withAnimation(.easeIn(duration: 0.3)) {
+                for alert in alerts {
+                    alert.wrappedValue = true
+                }
             }
         }
     }
@@ -334,6 +336,13 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     case grams = "Grams"
     
     var id: String { self.rawValue }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
 
 #Preview {
