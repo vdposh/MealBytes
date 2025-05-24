@@ -39,15 +39,13 @@ struct SearchView: View {
                                     selectedFood = food
                                     showFoodView = true
                                 } label: {
-                                    FoodDetailView(
-                                        food: food,
-                                        searchViewModel: searchViewModel
-                                    )
+                                    FoodDetailView(food: food)
                                     .frame(
                                         maxWidth: .infinity,
                                         alignment: .leading
                                     )
                                 }
+                                .padding(.vertical, 1)
                                 .onChange(of: showFoodView) {
                                     selectedFood = selectedFood
                                 }
@@ -154,7 +152,7 @@ struct SearchView: View {
         }
         .onChange(of: showFoodView) {
             if showFoodView {
-                searchViewModel.hideFoodAddedAlert(after: 0.3)
+                searchViewModel.showFoodAddedAlert = false
             }
         }
     }

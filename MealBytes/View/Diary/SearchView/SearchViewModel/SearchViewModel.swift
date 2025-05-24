@@ -216,13 +216,13 @@ final class SearchViewModel: ObservableObject {
         appError = nil
         isLoading = false
     }
-    
-    // MARK: - Alerts
-    func hideFoodAddedAlert(after delay: Double) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.showFoodAddedAlert = false
-        }
-    }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
 
 #Preview {
