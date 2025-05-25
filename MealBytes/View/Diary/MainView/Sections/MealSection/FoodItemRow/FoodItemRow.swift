@@ -31,9 +31,6 @@ struct FoodItemRow: View {
                 showMealTypeButton: true,
                 originalMealItemId: mealItem.id
             )
-            .task {
-                mainViewModel.hideAlerts()
-            }
         ) {
             VStack(spacing: 8) {
                 HStack {

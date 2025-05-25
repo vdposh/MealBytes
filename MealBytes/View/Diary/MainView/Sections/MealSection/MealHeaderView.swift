@@ -27,9 +27,6 @@ struct MealHeaderView: View {
                         searchViewModel: mainViewModel.searchViewModel,
                         mealType: mealType
                     )
-                    .task {
-                        mainViewModel.hideAlerts()
-                    }
                 ) {
                     EmptyView()
                 }
@@ -39,6 +36,7 @@ struct MealHeaderView: View {
                     VStack(spacing: 15) {
                         HStack {
                             Image(systemName: iconName)
+                                .frame(width: 22)
                                 .foregroundColor(color)
                             Text(title)
                                 .fontWeight(.medium)

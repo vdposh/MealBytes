@@ -36,8 +36,8 @@ final class FoodViewModel: ObservableObject {
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    var searchViewModel: SearchViewModel
-    var mainViewModel: MainViewModel
+    let searchViewModel: SearchViewModel
+    let mainViewModel: MainViewModel
     
     init(food: Food,
          mealType: MealType,
@@ -268,17 +268,6 @@ final class FoodViewModel: ObservableObject {
     var canAddFood: Bool {
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
         return amountValue > 0
-    }
-    
-    // MARK: - Alerts
-    func showAlerts(after delay: Double, _ alerts: Binding<Bool>...) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            withAnimation(.easeIn(duration: 0.3)) {
-                for alert in alerts {
-                    alert.wrappedValue = true
-                }
-            }
-        }
     }
     
     // MARK: - Nutrient Calculation

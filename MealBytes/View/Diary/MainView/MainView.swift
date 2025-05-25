@@ -38,25 +38,6 @@ struct MainView: View {
             }
             .listSectionSpacing(15)
         }
-        .overlay(
-            CustomAlertView(
-                isVisible: $mainViewModel.showFoodSavedAlert,
-                message: "Food Saved"
-            )
-        )
-        .overlay(
-            CustomAlertView(
-                isVisible: $mainViewModel.showFoodRemovedAlert,
-                iconName: "trash",
-                message: "Food Removed",
-                weight: .medium,
-                foregroundColor: .customRed.opacity(0.85),
-                backgroundFill: .customRed.opacity(0.15)
-            )
-        )
-        .task {
-            await mainViewModel.loadMainData()
-        }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -68,6 +49,9 @@ struct MainView: View {
                 }
             }
         }
+        .task {
+            await mainViewModel.loadMainData()
+        }
     }
     
     private var datePickerView: some View {
@@ -75,10 +59,6 @@ struct MainView: View {
             DatePickerView(selectedDate: $mainViewModel.date,
                            isPresented: $mainViewModel.isExpandedCalendar,
                            mainViewModel: mainViewModel)
-            .task {
-                mainViewModel.showFoodSavedAlert = false
-                mainViewModel.showFoodRemovedAlert = false
-            }
         }
         .background(Color(.systemBackground))
     }

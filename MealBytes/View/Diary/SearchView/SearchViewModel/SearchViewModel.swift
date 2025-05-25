@@ -14,7 +14,6 @@ final class SearchViewModel: ObservableObject {
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
-    @Published var showFoodAddedAlert = false
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false

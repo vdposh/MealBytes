@@ -27,8 +27,6 @@ final class MainViewModel: ObservableObject {
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var shouldDisplayRdi: Bool = true
-    @Published var showFoodSavedAlert = false
-    @Published var showFoodRemovedAlert = false
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -492,15 +490,6 @@ final class MainViewModel: ObservableObject {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
-    }
-    
-    //MARK: - Alerts
-    func hideAlerts() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.showFoodSavedAlert = false
-            self.showFoodRemovedAlert = false
-        }
-        self.searchViewModel.showFoodAddedAlert = false
     }
 }
 

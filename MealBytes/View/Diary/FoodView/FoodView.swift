@@ -181,11 +181,6 @@ struct FoodView: View {
                                     for: foodViewModel.mainViewModel.date
                                 )
                                 dismiss()
-                                foodViewModel.showAlerts(
-                                    after: 0.21,
-                                    $foodViewModel.searchViewModel
-                                        .showFoodAddedAlert
-                                )
                             },
                             backgroundColor: .customGreen,
                             isEnabled: foodViewModel.canAddFood
@@ -206,11 +201,6 @@ struct FoodView: View {
                                 Task {
                                     await foodViewModel.deleteMealItemFoodView()
                                     dismiss()
-                                    foodViewModel.showAlerts(
-                                        after: 0.1,
-                                        $foodViewModel.mainViewModel
-                                            .showFoodRemovedAlert
-                                    )
                                 }
                             },
                             backgroundColor: .customRed
@@ -224,11 +214,6 @@ struct FoodView: View {
                                         for: foodViewModel.mainViewModel.date
                                     )
                                     dismiss()
-                                    foodViewModel.showAlerts(
-                                        after: 0.1,
-                                        $foodViewModel.mainViewModel
-                                            .showFoodSavedAlert
-                                    )
                                 }
                             },
                             backgroundColor: .customGreen,
