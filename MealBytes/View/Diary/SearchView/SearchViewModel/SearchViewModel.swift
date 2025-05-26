@@ -14,7 +14,6 @@ final class SearchViewModel: ObservableObject {
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
-    @Published var showFoodAddedAlert = false
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
@@ -216,13 +215,13 @@ final class SearchViewModel: ObservableObject {
         appError = nil
         isLoading = false
     }
-    
-    // MARK: - Alerts
-    func hideFoodAddedAlert(after delay: Double) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.showFoodAddedAlert = false
-        }
-    }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
 
 #Preview {

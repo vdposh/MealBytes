@@ -36,8 +36,8 @@ final class FoodViewModel: ObservableObject {
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    var searchViewModel: SearchViewModel
-    var mainViewModel: MainViewModel
+    let searchViewModel: SearchViewModel
+    let mainViewModel: MainViewModel
     
     init(food: Food,
          mealType: MealType,
@@ -270,15 +270,6 @@ final class FoodViewModel: ObservableObject {
         return amountValue > 0
     }
     
-    // MARK: - Alerts
-    func showAlerts(after delay: Double, _ alerts: Binding<Bool>...) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            for alert in alerts {
-                alert.wrappedValue = true
-            }
-        }
-    }
-    
     // MARK: - Nutrient Calculation
     private func calculateSelectedAmountValue() -> Double {
         guard let selectedServing else { return 1 }
@@ -334,6 +325,13 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     case grams = "Grams"
     
     var id: String { self.rawValue }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
 
 #Preview {

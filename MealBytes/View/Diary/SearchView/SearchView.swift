@@ -9,9 +9,8 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
-    @State private var showFoodView = false
     @State private var selectedFood: Food?
-    @State private var midY: CGFloat = 0.0
+    @State private var showFoodView = false
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -39,15 +38,13 @@ struct SearchView: View {
                                     selectedFood = food
                                     showFoodView = true
                                 } label: {
-                                    FoodDetailView(
-                                        food: food,
-                                        searchViewModel: searchViewModel
-                                    )
+                                    FoodDetailView(food: food)
                                     .frame(
                                         maxWidth: .infinity,
                                         alignment: .leading
                                     )
                                 }
+                                .padding(.vertical, 1)
                                 .onChange(of: showFoodView) {
                                     selectedFood = selectedFood
                                 }
@@ -79,10 +76,7 @@ struct SearchView: View {
                 )
             }
         }
-        .overlay(
-            CustomAlertView(isVisible: $searchViewModel.showFoodAddedAlert)
-                .symbolEffect(.bounce, options: .nonRepeating)
-        )
+        .scrollDismissesKeyboard(.immediately)
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
             displayMode: .large
@@ -131,10 +125,6 @@ struct SearchView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Enter a food name"
         )
-        .onChange(of: searchViewModel.query) {
-            searchViewModel.showFoodAddedAlert = false
-        }
-        .scrollDismissesKeyboard(.immediately)
         .sheet(isPresented: $showFoodView) {
             if let food = selectedFood {
                 NavigationStack {
@@ -151,11 +141,6 @@ struct SearchView: View {
                         showMealTypeButton: false
                     )
                 }
-            }
-        }
-        .onChange(of: showFoodView) {
-            if showFoodView {
-                searchViewModel.hideFoodAddedAlert(after: 0.3)
             }
         }
     }

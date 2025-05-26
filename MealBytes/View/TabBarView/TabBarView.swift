@@ -48,7 +48,6 @@ struct TabBarView: View {
                 if mainViewModel.isExpandedCalendar {
                     mainViewModel.isExpandedCalendar = false
                 }
-                mainViewModel.searchViewModel.showFoodAddedAlert = false
             }
         }
         .alert(isPresented: $loginViewModel.showErrorAlert) {
@@ -58,4 +57,11 @@ struct TabBarView: View {
             selectedTab = 0
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel()
+    )
 }
