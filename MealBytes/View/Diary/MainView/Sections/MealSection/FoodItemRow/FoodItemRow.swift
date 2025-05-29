@@ -89,7 +89,6 @@ struct FoodItemRow: View {
             }
             .padding(.trailing, 5)
         }
-        .navigationBarTitle("Diary")
     }
 }
 

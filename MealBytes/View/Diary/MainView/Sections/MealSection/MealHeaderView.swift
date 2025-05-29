@@ -62,7 +62,6 @@ struct MealHeaderView: View {
                         .foregroundStyle(.customGreen)
                 }
             }
-            .navigationBarTitle("Diary")
             
             if mainViewModel.expandedSections[mealType] == true {
                 let foodItems = mainViewModel.filteredMealItems(
