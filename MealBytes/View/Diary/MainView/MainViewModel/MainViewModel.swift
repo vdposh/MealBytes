@@ -440,6 +440,12 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Date (calendar) Management Methods
+    func hasMealItems(for date: Date) -> Bool {
+        mealItems.values.contains { items in
+            items.contains { calendar.isDate($0.date, inSameDayAs: date) }
+        }
+    }
+    
     func selectDate(_ date: Date,
                     selectedDate: inout Date,
                     isPresented: inout Bool) {

@@ -63,29 +63,35 @@ struct DatePickerView: View {
                             isPresented: &isPresented
                         )
                     } label: {
-                        Text("\(mainViewModel.dayComponent(for: date))")
-                            .foregroundColor(mainViewModel.color(
+                        VStack(spacing: 3) {
+                            Text("\(mainViewModel.dayComponent(for: date))")
+                                .foregroundColor(mainViewModel.color(
+                                    for: .day,
+                                    date: date,
+                                    isSelected: mainViewModel.calendar.isDate(
+                                        selectedDate, inSameDayAs: date),
+                                    isToday: mainViewModel
+                                        .calendar.isDateInToday(date)
+                                ))
+                                .font(.callout)
+                            
+                            if mainViewModel.hasMealItems(for: date) {
+                                Circle()
+                                    .frame(width: 5, height: 5)
+                                    .foregroundColor(.customGreen)
+                            }
+                        }
+                        .frame(width: 40, height: 40)
+                        .background(
+                            mainViewModel.color(
                                 for: .day,
                                 date: date,
                                 isSelected: mainViewModel.calendar.isDate(
-                                    selectedDate,
-                                    inSameDayAs: date
-                                ),
-                                isToday: mainViewModel.calendar
-                                    .isDateInToday(date)
-                            ))
-                            .frame(width: 40, height: 40)
-                            .background(mainViewModel.color(
-                                for: .day,
-                                date: date,
-                                isSelected: mainViewModel.calendar.isDate(
-                                    selectedDate,
-                                    inSameDayAs: date
-                                ),
+                                    selectedDate, inSameDayAs: date),
                                 forBackground: true
-                            ))
-                            .cornerRadius(12)
-                            .font(.callout)
+                            )
+                        )
+                        .cornerRadius(12)
                     }
                 }
             }
