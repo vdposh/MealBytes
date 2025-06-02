@@ -441,9 +441,9 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Date (calendar) Management Methods
     func hasMealItems(for date: Date) -> Bool {
-        mealItems.values.contains { items in
-            items.contains { calendar.isDate($0.date, inSameDayAs: date) }
-        }
+        return mealItems.values.first { items in
+            items.first { calendar.isDate($0.date, inSameDayAs: date) } != nil
+        } != nil
     }
     
     func selectDate(_ date: Date,
