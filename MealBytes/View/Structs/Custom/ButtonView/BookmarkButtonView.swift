@@ -2,7 +2,7 @@
 //  BookmarkButtonView.swift
 //  MealBytes
 //
-//  Created by Porshe on 12/03/2025.
+//  Created by Vlad Posherstnik on 12/03/2025.
 //
 
 import SwiftUI

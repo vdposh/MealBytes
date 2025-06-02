@@ -2,7 +2,7 @@
 //  LoginLoadingView.swift
 //  MealBytes
 //
-//  Created by Porshe on 06/04/2025.
+//  Created by Vlad Posherstnik on 06/04/2025.
 //
 
 import SwiftUI

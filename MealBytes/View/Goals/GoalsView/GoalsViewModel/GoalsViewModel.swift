@@ -2,7 +2,7 @@
 //  GoalsViewModel.swift
 //  MealBytes
 //
-//  Created by Porshe on 05/04/2025.
+//  Created by Vlad Posherstnik on 05/04/2025.
 //
 
 import SwiftUI

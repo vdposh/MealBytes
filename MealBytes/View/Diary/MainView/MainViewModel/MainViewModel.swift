@@ -2,7 +2,7 @@
 //  MainViewModel.swift
 //  MealBytes
 //
-//  Created by Porshe on 14/03/2025.
+//  Created by Vlad Posherstnik on 14/03/2025.
 //
 
 import SwiftUI
@@ -440,6 +440,12 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Date (calendar) Management Methods
+    func hasMealItems(for date: Date) -> Bool {
+        return mealItems.values.first { items in
+            items.first { calendar.isDate($0.date, inSameDayAs: date) } != nil
+        } != nil
+    }
+    
     func selectDate(_ date: Date,
                     selectedDate: inout Date,
                     isPresented: inout Bool) {
