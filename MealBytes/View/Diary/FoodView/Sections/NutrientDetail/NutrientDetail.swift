@@ -2,7 +2,7 @@
 //  NutrientDetail.swift
 //  MealBytes
 //
-//  Created by Porshe on 09/03/2025.
+//  Created by Vlad Posherstnik on 09/03/2025.
 //
 
 import SwiftUI

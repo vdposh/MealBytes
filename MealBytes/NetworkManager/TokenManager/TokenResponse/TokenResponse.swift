@@ -2,7 +2,7 @@
 //  TokenResponse.swift
 //  MealBytes
 //
-//  Created by Porshe on 14/04/2025.
+//  Created by Vlad Posherstnik on 14/04/2025.
 //
 
 import SwiftUI

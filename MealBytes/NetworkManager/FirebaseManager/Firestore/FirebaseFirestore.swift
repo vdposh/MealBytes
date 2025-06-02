@@ -2,7 +2,7 @@
 //  FirebaseFirestore.swift
 //  MealBytes
 //
-//  Created by Porshe on 21/03/2025.
+//  Created by Vlad Posherstnik on 21/03/2025.
 //
 
 import SwiftUI

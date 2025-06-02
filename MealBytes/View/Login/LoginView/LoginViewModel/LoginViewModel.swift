@@ -2,7 +2,7 @@
 //  LoginViewModel.swift
 //  MealBytes
 //
-//  Created by Porshe on 29/03/2025.
+//  Created by Vlad Posherstnik on 29/03/2025.
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  MealType.swift
 //  MealBytes
 //
-//  Created by Porshe on 17/03/2025.
+//  Created by Vlad Posherstnik on 17/03/2025.
 //
 
 import SwiftUI

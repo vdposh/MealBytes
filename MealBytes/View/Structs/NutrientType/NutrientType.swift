@@ -2,7 +2,7 @@
 //  NutrientType.swift
 //  MealBytes
 //
-//  Created by Porshe on 08/03/2025.
+//  Created by Vlad Posherstnik on 08/03/2025.
 //
 
 enum NutrientType: String, Identifiable, CaseIterable {
