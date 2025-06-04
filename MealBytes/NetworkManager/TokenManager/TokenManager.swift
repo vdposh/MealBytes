@@ -25,23 +25,21 @@ final class TokenManager {
         let body = "grant_type=client_credentials&client_id=\(clientID)&client_secret=\(clientSecret)"
         request.httpBody = body.data(using: .utf8)
         
-        do {
-            let (data, response) = try await URLSession.shared.data(
-                for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw URLError(.badServerResponse)
-            }
-            
-            if httpResponse.statusCode != 200 {
-                throw URLError(.badServerResponse)
-            }
-            
-            let decodedResponse = try JSONDecoder().decode(TokenResponse.self,
-                                                           from: data)
-            self.accessToken = decodedResponse.accessToken
-        } catch {
-            throw AppError.network
+        let (data, response) = try await URLSession.shared.data(
+            for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
         }
+        
+        if httpResponse.statusCode != 200 {
+            throw URLError(.badServerResponse)
+        }
+        
+        let decodedResponse = try JSONDecoder().decode(
+            TokenResponse.self,
+            from: data
+        )
+        self.accessToken = decodedResponse.accessToken
     }
 }

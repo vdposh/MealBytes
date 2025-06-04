@@ -35,6 +35,7 @@ struct MealBytesApp: App {
             .onChange(of: scenePhase) {
                 if scenePhase == .active {
                     Task {
+                        try await TokenManager.shared.fetchToken()
                         await mainViewModel.loadMainData()
                         await loginViewModel.loadLoginData()
                     }
