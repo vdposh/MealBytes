@@ -21,6 +21,8 @@ final class NetworkManager: NetworkManagerProtocol {
         _ target: FatSecretAPI,
         responseType: T.Type
     ) async throws -> T {
+        try await ensureValidToken()
+        
         return try await withCheckedThrowingContinuation { continuation in
             provider.request(target) { result in
                 switch result {
@@ -43,6 +45,15 @@ final class NetworkManager: NetworkManagerProtocol {
                     continuation.resume(throwing: AppError.network)
                 }
             }
+        }
+    }
+    
+    private func ensureValidToken() async throws {
+        if TokenManager.shared.accessToken == nil {
+            try await TokenManager.shared.fetchToken()
+            print("New token from fetch: \(TokenManager.shared.accessToken ?? "Error")")
+        } else {
+            print("Token already active")
         }
     }
     

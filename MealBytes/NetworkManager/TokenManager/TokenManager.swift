@@ -9,12 +9,13 @@ import SwiftUI
 
 final class TokenManager {
     
-    static let shared = TokenManager()
+    @Published var accessToken: String?
     
     private let tokenURL = URL(string: "https://oauth.fatsecret.com/connect/token")!
     private let clientID = "b9f183e691a64e54b1181a8cdae19a4f"
     private let clientSecret = "bf1b1b039b8f435bbd5a724220d5e333"
-    @Published var accessToken: String?
+    
+    static let shared = TokenManager()
     
     func fetchToken() async throws {
         var request = URLRequest(url: tokenURL)
@@ -41,5 +42,6 @@ final class TokenManager {
             from: data
         )
         self.accessToken = decodedResponse.accessToken
+        print("New token: \(decodedResponse.accessToken)")
     }
 }
