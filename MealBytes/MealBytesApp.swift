@@ -22,9 +22,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MealBytesApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var systemColorScheme
     
     @StateObject private var mainViewModel = MainViewModel()
     @StateObject private var loginViewModel = LoginViewModel()
+    @StateObject private var themeManager = ThemeManager()
     
     var body: some Scene {
         WindowGroup {
@@ -32,6 +34,8 @@ struct MealBytesApp: App {
                 loginViewModel: loginViewModel,
                 mainViewModel: mainViewModel
             )
+            .environmentObject(themeManager)
+            .preferredColorScheme(themeManager.appliedColorScheme)
             .onChange(of: scenePhase) {
                 if scenePhase == .active {
                     Task {
