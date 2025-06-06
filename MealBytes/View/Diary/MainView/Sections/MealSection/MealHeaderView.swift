@@ -111,4 +111,5 @@ struct MealHeaderView: View {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }

@@ -54,4 +54,5 @@ struct MealBytesApp: App {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }

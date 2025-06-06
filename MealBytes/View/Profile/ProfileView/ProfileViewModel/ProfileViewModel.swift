@@ -261,4 +261,5 @@ final class ProfileViewModel: ObservableObject {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }

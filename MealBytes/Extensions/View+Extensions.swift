@@ -71,4 +71,5 @@ extension View {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }

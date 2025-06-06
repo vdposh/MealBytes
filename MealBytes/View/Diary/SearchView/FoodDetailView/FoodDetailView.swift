@@ -27,4 +27,5 @@ struct FoodDetailView: View {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }

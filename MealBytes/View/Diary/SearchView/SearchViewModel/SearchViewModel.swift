@@ -222,6 +222,7 @@ final class SearchViewModel: ObservableObject {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

@@ -332,6 +332,7 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

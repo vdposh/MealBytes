@@ -49,4 +49,5 @@ struct ServingButtonView: View {
         loginViewModel: LoginViewModel(),
         mainViewModel: MainViewModel()
     )
+    .environmentObject(ThemeManager())
 }
