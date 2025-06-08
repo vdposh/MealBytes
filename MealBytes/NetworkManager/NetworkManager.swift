@@ -51,9 +51,6 @@ final class NetworkManager: NetworkManagerProtocol {
     private func ensureValidToken() async throws {
         if TokenManager.shared.accessToken == nil {
             try await TokenManager.shared.fetchToken()
-            print("New token from fetch: \(TokenManager.shared.accessToken ?? "Error")")
-        } else {
-            print("Token already active")
         }
     }
     

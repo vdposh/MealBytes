@@ -42,6 +42,5 @@ final class TokenManager {
             from: data
         )
         self.accessToken = decodedResponse.accessToken
-        print("New token: \(decodedResponse.accessToken)")
     }
 }
