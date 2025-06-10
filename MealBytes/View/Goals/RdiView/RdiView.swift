@@ -21,6 +21,9 @@ struct RdiView: View {
                         focusedField: _focusedField,
                         rdiViewModel: rdiViewModel
                     )
+                    ActivitySection(
+                        selectedActivity: $rdiViewModel.selectedActivity
+                    )
                     WeightSection(
                         focusedField: _focusedField,
                         rdiViewModel: rdiViewModel

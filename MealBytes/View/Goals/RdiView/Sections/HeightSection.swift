@@ -12,8 +12,8 @@ struct HeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section(header: Text("Height")) {
-            VStack(alignment: .leading, spacing: 15) {
+        Section {
+            VStack(alignment: .leading, spacing: 11) {
                 ServingTextFieldView(
                     text: $rdiViewModel.height,
                     title: "Height",
@@ -31,6 +31,10 @@ struct HeightSection: View {
                 }
                 .pickerStyle(.menu)
             }
+        } header: {
+            Text("Height")
+        } footer: {
+            Text("Adjust the height and unit (cm or inches).")
         }
     }
 }

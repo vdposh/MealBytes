@@ -12,8 +12,8 @@ struct WeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section(header: Text("Weight")) {
-            VStack(alignment: .leading, spacing: 15) {
+        Section {
+            VStack(alignment: .leading, spacing: 11) {
                 ServingTextFieldView(
                     text: $rdiViewModel.weight,
                     title: "Weight",
@@ -31,6 +31,10 @@ struct WeightSection: View {
                 }
                 .pickerStyle(.menu)
             }
+        } header: {
+            Text("Weight")
+        } footer: {
+            Text("Set the weight and unit (kg or lbs).")
         }
     }
 }

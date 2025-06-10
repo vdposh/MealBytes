@@ -463,7 +463,11 @@ final class MainViewModel: ObservableObject {
     
     func daysForCurrentMonth(selectedDate: Date) -> [Date] {
         guard let startOfMonth = calendar.date(
-            from: calendar.dateComponents([.year, .month], from: selectedDate)
+            from: DateComponents(
+                year: calendar.component(.year, from: selectedDate),
+                month: calendar.component(.month, from: selectedDate),
+                day: 1
+            )
         ),
               let range = calendar.range(of: .day,
                                          in: .month,
@@ -481,7 +485,7 @@ final class MainViewModel: ObservableObject {
         }
         
         let firstWeekday = calendar.component(.weekday, from: startOfMonth) - 1
-        let adjustedWeekday = (firstWeekday - calendar.firstWeekday + 7) % 7
+        let adjustedWeekday = firstWeekday == 0 ? 6 : (firstWeekday - 1)
         
         let prevDays = prevMonthRange.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)

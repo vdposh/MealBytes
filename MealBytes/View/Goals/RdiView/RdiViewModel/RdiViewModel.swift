@@ -192,6 +192,10 @@ final class RdiViewModel: ObservableObject {
             }
         }
         
+        if let ageValue = Double(age.sanitizedForDouble), ageValue > 120 {
+            errorMessages.append("Enter a valid Age.")
+        }
+        
         if selectedGender == .notSelected {
             errorMessages.append("Select a Gender.")
         }
@@ -221,6 +225,10 @@ final class RdiViewModel: ObservableObject {
     func text(for calculatedRdi: String) -> String {
         guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
               rdiValue > 0 else {
+            return "Fill in the data"
+        }
+        
+        if let ageValue = Double(age.sanitizedForDouble), ageValue > 120 {
             return "Fill in the data"
         }
         
