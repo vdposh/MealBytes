@@ -25,16 +25,17 @@ struct BasicInfoSection: View {
                 )
                 .focused($focusedField, equals: .age)
                 
-                Picker("Gender",
-                       selection: $rdiViewModel.selectedGender) {
-                    ForEach(Gender.allCases, id: \.self) { gender in
-                        Text(gender.rawValue)
+                Picker("Gender", selection: $rdiViewModel.selectedGender) {
+                    if rdiViewModel.selectedGender == .notSelected {
+                        Text("Not Selected").tag(Gender.notSelected)
+                    }
+                    ForEach(Gender.allCases.filter { $0 != .notSelected },
+                            id: \.self) { gender in
+                        Text(gender.rawValue).tag(gender)
                     }
                 }
-                       .pickerStyle(.menu)
-                       .accentColor(
-                        rdiViewModel.selectedGender.accentColor
-                       )
+                .pickerStyle(.menu)
+                .accentColor(rdiViewModel.selectedGender.accentColor)
             }
         } header: {
             Text("Basic Information")

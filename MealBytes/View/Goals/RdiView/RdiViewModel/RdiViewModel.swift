@@ -14,7 +14,7 @@ final class RdiViewModel: ObservableObject {
     @Published var weight: String = ""
     @Published var age: String = ""
     @Published var selectedGender: Gender = .notSelected
-    @Published var selectedActivity: ActivityLevel = .notSelected
+    @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
     @Published var calculatedRdi: String = ""
@@ -46,7 +46,7 @@ final class RdiViewModel: ObservableObject {
                 self.selectedGender = Gender(
                     rawValue: rdiData.selectedGender
                 ) ?? .notSelected
-                self.selectedActivity = ActivityLevel(
+                self.selectedActivity = Activity(
                     rawValue: rdiData.selectedActivity
                 ) ?? .notSelected
                 self.weight = rdiData.weight
@@ -127,7 +127,7 @@ final class RdiViewModel: ObservableObject {
                                 weight: String,
                                 height: String,
                                 gender: Gender,
-                                activity: ActivityLevel,
+                                activity: Activity,
                                 weightUnit: WeightUnit,
                                 heightUnit: HeightUnit) {
         guard let ageValue = Double(age.sanitizedForDouble),
@@ -260,7 +260,7 @@ enum Gender: String, CaseIterable {
     }
 }
 
-enum ActivityLevel: String, CaseIterable {
+enum Activity: String, CaseIterable {
     case notSelected = "Not selected"
     case sedentary = "Sedentary"
     case lightlyActive = "Lightly Active"

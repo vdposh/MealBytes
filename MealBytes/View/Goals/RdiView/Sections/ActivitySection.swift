@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ActivitySection: View {
-    @Binding var selectedActivity: ActivityLevel
-
+    @Binding var selectedActivity: Activity
+    
     var body: some View {
         Section {
             HStack {
                 Picker("Activity", selection: $selectedActivity) {
-                    ForEach(ActivityLevel.allCases, id: \.self) { level in
-                        Text(level.rawValue)
+                    if selectedActivity == .notSelected {
+                        Text("Not Selected").tag(Activity.notSelected)
+                    }
+                    ForEach(Activity.allCases.filter { $0 != .notSelected },
+                            id: \.self) { level in
+                        Text(level.rawValue).tag(level)
                     }
                 }
                 .pickerStyle(.menu)
