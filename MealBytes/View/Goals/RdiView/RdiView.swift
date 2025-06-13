@@ -17,10 +17,11 @@ struct RdiView: View {
             if rdiViewModel.isDataLoaded {
                 List {
                     OverviewSection(rdiViewModel: rdiViewModel)
-                    BasicInfoSection(
+                    AgeSection(
                         focusedField: _focusedField,
                         rdiViewModel: rdiViewModel
                     )
+                    GenderSection(rdiViewModel: rdiViewModel)
                     ActivitySection(
                         selectedActivity: $rdiViewModel.selectedActivity
                     )
@@ -80,9 +81,6 @@ struct RdiView: View {
                     }
                 } message: {
                     Text(rdiViewModel.alertMessage)
-                }
-                .task {
-                    await rdiViewModel.loadRdiView()
                 }
             } else {
                 LoadingView()

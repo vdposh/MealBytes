@@ -24,17 +24,21 @@ struct WeightSection: View {
                 )
                 .focused($focusedField, equals: .weight)
                 
-                Picker("Unit", selection: $rdiViewModel.selectedWeightUnit) {
+                Picker(
+                    "Weight unit",
+                    selection: $rdiViewModel.selectedWeightUnit
+                ) {
                     ForEach(WeightUnit.allCases, id: \.self) { unit in
                         Text(unit.rawValue)
                     }
                 }
                 .pickerStyle(.menu)
+                .accentColor(.secondary)
             }
         } header: {
-            Text("Weight")
+            Text("Weight Details")
         } footer: {
-            Text("Set the weight and unit (kg or lbs).")
+            Text("Enter weight and adjust the unit as needed (kilograms or pounds).")
         }
     }
 }

@@ -13,10 +13,7 @@ struct CalorieMetricsSection: View {
     
     var body: some View {
         Section {
-            VStack {
-                calorieInputRow
-            }
-            .padding(.bottom, 5)
+            calorieInputRow
         } header: {
             Text("Calorie Metrics")
         } footer: {
@@ -43,6 +40,7 @@ struct CalorieMetricsSection: View {
             Text("kcal")
                 .foregroundColor(customRdiViewModel.caloriesTextColor)
         }
+        .padding(.bottom, 5)
     }
 }
 

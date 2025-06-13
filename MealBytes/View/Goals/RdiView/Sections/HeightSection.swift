@@ -24,17 +24,21 @@ struct HeightSection: View {
                 )
                 .focused($focusedField, equals: .height)
                 
-                Picker("Unit", selection: $rdiViewModel.selectedHeightUnit) {
+                Picker(
+                    "Height unit",
+                    selection: $rdiViewModel.selectedHeightUnit
+                ) {
                     ForEach(HeightUnit.allCases, id: \.self) { unit in
                         Text(unit.rawValue)
                     }
                 }
                 .pickerStyle(.menu)
+                .accentColor(.secondary)
             }
         } header: {
-            Text("Height")
+            Text("Height Details")
         } footer: {
-            Text("Adjust the height and unit (cm or inches).")
+            Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
         }
     }
 }

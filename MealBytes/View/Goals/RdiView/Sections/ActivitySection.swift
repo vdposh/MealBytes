@@ -22,8 +22,7 @@ struct ActivitySection: View {
                         Text(level.rawValue).tag(level)
                     }
                 }
-                .pickerStyle(.menu)
-                .accentColor(selectedActivity.accentColor)
+                .pickerStyle(.navigationLink)
             }
         } header: {
             Text("Activity Level")
