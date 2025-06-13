@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct ActivitySection: View {
-    @Binding var selectedActivity: Activity
+    @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
         Section {
             HStack {
-                Picker("Activity", selection: $selectedActivity) {
-                    if selectedActivity == .notSelected {
+                Picker("Activity", selection: $rdiViewModel.selectedActivity) {
+                    if rdiViewModel.selectedActivity == .notSelected {
                         Text("Not Selected").tag(Activity.notSelected)
                     }
                     ForEach(Activity.allCases.filter { $0 != .notSelected },
@@ -22,7 +22,8 @@ struct ActivitySection: View {
                         Text(level.rawValue).tag(level)
                     }
                 }
-                .pickerStyle(.navigationLink)
+                .pickerStyle(.menu)
+                .accentColor(rdiViewModel.selectedActivity.accentColor)
             }
         } header: {
             Text("Activity Level")

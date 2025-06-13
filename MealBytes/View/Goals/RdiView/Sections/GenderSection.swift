@@ -21,7 +21,8 @@ struct GenderSection: View {
                     Text(gender.rawValue).tag(gender)
                 }
             }
-            .pickerStyle(.navigationLink)
+            .pickerStyle(.menu)
+            .accentColor(rdiViewModel.selectedGender.accentColor)
         } header: {
             Text("Set Gender")
         } footer: {

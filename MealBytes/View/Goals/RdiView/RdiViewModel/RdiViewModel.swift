@@ -253,9 +253,9 @@ enum Gender: String, CaseIterable {
     var accentColor: Color {
         switch self {
         case .notSelected:
-            return .secondary
+            return .customRed
         case .male, .female:
-            return .customGreen
+            return .secondary
         }
     }
 }
@@ -271,9 +271,9 @@ enum Activity: String, CaseIterable {
     var accentColor: Color {
         switch self {
         case .notSelected:
-            return .secondary
+            return .customRed
         default:
-            return .customGreen
+            return .secondary
         }
     }
 }
