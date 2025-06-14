@@ -73,9 +73,9 @@ struct RdiView: View {
     // MARK: - Keyboard
     private var toolbarTitle: String {
         switch focusedField {
-        case .age: "Enter Age"
-        case .weight: "Enter Weight"
-        case .height: "Enter Height"
+        case .age: "Age"
+        case .weight: "Weight"
+        case .height: "Height"
         default: ""
         }
     }

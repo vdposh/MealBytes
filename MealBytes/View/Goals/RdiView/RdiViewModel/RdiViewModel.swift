@@ -15,8 +15,8 @@ final class RdiViewModel: ObservableObject {
     @Published var age: String = ""
     @Published var selectedGender: Gender = .notSelected
     @Published var selectedActivity: Activity = .notSelected
-    @Published var selectedWeightUnit: WeightUnit = .kg
-    @Published var selectedHeightUnit: HeightUnit = .cm
+    @Published var selectedWeightUnit: WeightUnit = .notSelected
+    @Published var selectedHeightUnit: HeightUnit = .notSelected
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
@@ -52,11 +52,11 @@ final class RdiViewModel: ObservableObject {
                 self.weight = rdiData.weight
                 self.selectedWeightUnit = WeightUnit(
                     rawValue: rdiData.selectedWeightUnit
-                ) ?? .kg
+                ) ?? .notSelected
                 self.height = rdiData.height
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
-                ) ?? .cm
+                ) ?? .notSelected
                 isDataLoaded = true
             }
         } catch {
@@ -255,7 +255,7 @@ enum Gender: String, CaseIterable {
         case .notSelected:
             return .customRed
         case .male, .female:
-            return .secondary
+            return .customGreen
         }
     }
 }
@@ -273,19 +273,39 @@ enum Activity: String, CaseIterable {
         case .notSelected:
             return .customRed
         default:
-            return .secondary
+            return .customGreen
         }
     }
 }
 
 enum WeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
     case kg = "kg"
     case lbs = "lbs"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
 }
 
 enum HeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
     case cm = "cm"
     case inches = "inches"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
 }
 
 #Preview {

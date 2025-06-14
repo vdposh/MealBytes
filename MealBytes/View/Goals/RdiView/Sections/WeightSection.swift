@@ -28,12 +28,16 @@ struct WeightSection: View {
                     "Weight unit",
                     selection: $rdiViewModel.selectedWeightUnit
                 ) {
-                    ForEach(WeightUnit.allCases, id: \.self) { unit in
-                        Text(unit.rawValue)
+                    if rdiViewModel.selectedWeightUnit == .notSelected {
+                        Text("Not Selected").tag(WeightUnit.notSelected)
+                    }
+                    ForEach(WeightUnit.allCases.filter { $0 != .notSelected },
+                            id: \.self) { weight in
+                        Text(weight.rawValue).tag(weight)
                     }
                 }
                 .pickerStyle(.menu)
-                .accentColor(.secondary)
+                .accentColor(rdiViewModel.selectedWeightUnit.accentColor)
             }
         } header: {
             Text("Weight Details")

@@ -28,12 +28,16 @@ struct HeightSection: View {
                     "Height unit",
                     selection: $rdiViewModel.selectedHeightUnit
                 ) {
-                    ForEach(HeightUnit.allCases, id: \.self) { unit in
-                        Text(unit.rawValue)
+                    if rdiViewModel.selectedHeightUnit == .notSelected {
+                        Text("Not Selected").tag(HeightUnit.notSelected)
+                    }
+                    ForEach(HeightUnit.allCases.filter { $0 != .notSelected },
+                            id: \.self) { height in
+                        Text(height.rawValue).tag(height)
                     }
                 }
                 .pickerStyle(.menu)
-                .accentColor(.secondary)
+                .accentColor(rdiViewModel.selectedHeightUnit.accentColor)
             }
         } header: {
             Text("Height Details")

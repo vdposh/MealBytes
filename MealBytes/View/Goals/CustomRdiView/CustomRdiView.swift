@@ -70,7 +70,7 @@ struct CustomRdiView: View {
                                 }
                                 .disabled(!canMoveFocus(.down))
                             } else if focusCalories != nil {
-                                Text("Enter value")
+                                Text("Calories")
                                     .foregroundColor(.secondary)
                             }
                         }
