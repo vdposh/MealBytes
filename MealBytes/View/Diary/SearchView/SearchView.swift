@@ -175,7 +175,8 @@ struct SearchView: View {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
     .environmentObject(ThemeManager())
 }

@@ -220,7 +220,8 @@ final class SearchViewModel: ObservableObject {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
     .environmentObject(ThemeManager())
 }

@@ -11,6 +11,7 @@ import FirebaseAuth
 struct ContentView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject var goalsViewModel: GoalsViewModel
     
     var body: some View {
         ZStack {
@@ -19,8 +20,11 @@ struct ContentView: View {
             } else if loginViewModel.isLoading {
                 LoginLogoView()
             } else if loginViewModel.isLoggedIn {
-                TabBarView(loginViewModel: loginViewModel,
-                           mainViewModel: mainViewModel)
+                TabBarView(
+                    loginViewModel: loginViewModel,
+                    mainViewModel: mainViewModel,
+                    goalsViewModel: goalsViewModel
+                )
             } else {
                 LoginView(loginViewModel: loginViewModel)
             }
@@ -35,7 +39,8 @@ struct ContentView: View {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
     .environmentObject(ThemeManager())
 }

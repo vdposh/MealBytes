@@ -34,3 +34,12 @@ final class GoalsViewModel: ObservableObject {
         customRdiViewModel.text(for: customRdiViewModel.calories)
     }
 }
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
+}

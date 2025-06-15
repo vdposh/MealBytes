@@ -26,13 +26,15 @@ struct MealBytesApp: App {
     
     @StateObject private var mainViewModel = MainViewModel()
     @StateObject private var loginViewModel = LoginViewModel()
+    @StateObject private var goalsViewModel = GoalsViewModel()
     @StateObject private var themeManager = ThemeManager()
     
     var body: some Scene {
         WindowGroup {
             ContentView(
                 loginViewModel: loginViewModel,
-                mainViewModel: mainViewModel
+                mainViewModel: mainViewModel,
+                goalsViewModel: goalsViewModel
             )
             .environmentObject(themeManager)
             .preferredColorScheme(themeManager.appliedColorScheme)
@@ -52,7 +54,8 @@ struct MealBytesApp: App {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
     .environmentObject(ThemeManager())
 }
