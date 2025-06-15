@@ -204,6 +204,14 @@ final class RdiViewModel: ObservableObject {
             errorMessages.append("Select an Activity Level.")
         }
         
+        if selectedWeightUnit == .notSelected {
+            errorMessages.append("Select a Weight Unit.")
+        }
+        
+        if self.selectedHeightUnit == .notSelected {
+            errorMessages.append("Select a Height Unit.")
+        }
+        
         if errorMessages.isEmpty {
             return nil
         } else {
@@ -232,6 +240,11 @@ final class RdiViewModel: ObservableObject {
             return "Fill in the data"
         }
         
+        if selectedWeightUnit == .notSelected ||
+            selectedHeightUnit == .notSelected {
+            return "Fill in the data"
+        }
+        
         switch rdiValue {
         case 1:
             return "\(calculatedRdi) calorie"
@@ -241,7 +254,12 @@ final class RdiViewModel: ObservableObject {
     }
     
     func color(for calculatedRdi: String) -> Color? {
-        return calculatedRdi.isEmpty ? nil : .primary
+        if calculatedRdi.isEmpty ||
+            selectedWeightUnit == .notSelected ||
+            selectedHeightUnit == .notSelected {
+            return nil
+        }
+        return .primary
     }
 }
 
