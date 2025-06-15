@@ -13,40 +13,38 @@ struct MacronutrientMetricsSection: View {
     
     var body: some View {
         Section {
-            VStack {
-                VStack(spacing: 15) {
-                    MacronutrientRow(
-                        textFieldBinding: $customRdiViewModel.fat,
-                        focusedField: $focusedField,
-                        title: "Fat",
-                        titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.fat),
-                        customRdiViewModel: customRdiViewModel
-                    )
-                    .focused($focusedField, equals: .fat)
-                    
-                    MacronutrientRow(
-                        textFieldBinding: $customRdiViewModel.carbohydrate,
-                        focusedField: $focusedField,
-                        title: "Carbohydrate",
-                        titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.carbohydrate),
-                        customRdiViewModel: customRdiViewModel
-                    )
-                    .focused($focusedField, equals: .carbohydrate)
-                    
-                    MacronutrientRow(
-                        textFieldBinding: $customRdiViewModel.protein,
-                        focusedField: $focusedField,
-                        title: "Protein",
-                        titleColor: customRdiViewModel.titleColor(
-                            for: customRdiViewModel.protein),
-                        customRdiViewModel: customRdiViewModel
-                    )
-                    .focused($focusedField, equals: .protein)
-                }
-                .padding(.bottom, 5)
+            VStack(spacing: 15) {
+                MacronutrientRow(
+                    textFieldBinding: $customRdiViewModel.fat,
+                    focusedField: $focusedField,
+                    title: "Fat",
+                    titleColor: customRdiViewModel.titleColor(
+                        for: customRdiViewModel.fat),
+                    customRdiViewModel: customRdiViewModel
+                )
+                .focused($focusedField, equals: .fat)
+                
+                MacronutrientRow(
+                    textFieldBinding: $customRdiViewModel.carbohydrate,
+                    focusedField: $focusedField,
+                    title: "Carbohydrate",
+                    titleColor: customRdiViewModel.titleColor(
+                        for: customRdiViewModel.carbohydrate),
+                    customRdiViewModel: customRdiViewModel
+                )
+                .focused($focusedField, equals: .carbohydrate)
+                
+                MacronutrientRow(
+                    textFieldBinding: $customRdiViewModel.protein,
+                    focusedField: $focusedField,
+                    title: "Protein",
+                    titleColor: customRdiViewModel.titleColor(
+                        for: customRdiViewModel.protein),
+                    customRdiViewModel: customRdiViewModel
+                )
+                .focused($focusedField, equals: .protein)
             }
+            .padding(.bottom, 5)
         } header: {
             Text("Macronutrient Metrics")
         } footer: {

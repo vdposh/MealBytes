@@ -71,7 +71,7 @@ struct FoodView: View {
         .navigationBarTitle(navigationTitle, displayMode: .inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
-                Text("Enter serving size")
+                Text("Serving size")
                     .foregroundColor(.secondary)
                 Button("Done") {
                     fieldFocused = false
@@ -238,6 +238,8 @@ struct FoodView: View {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
+    .environmentObject(ThemeManager())
 }

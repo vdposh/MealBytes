@@ -18,7 +18,7 @@ struct BookmarkButtonView: View {
         Button {
             action()
         } label: {
-            Image(isFilled ? "bookmarkFill" : "bookmarkEmpty")
+            Image(systemName: isFilled ? "bookmark.fill" : "bookmark")
                 .resizable()
                 .scaledToFit()
                 .frame(
@@ -28,5 +28,6 @@ struct BookmarkButtonView: View {
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
+        .foregroundStyle(.customGreen)
     }
 }

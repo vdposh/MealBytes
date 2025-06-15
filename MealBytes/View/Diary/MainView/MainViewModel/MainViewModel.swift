@@ -463,32 +463,44 @@ final class MainViewModel: ObservableObject {
     
     func daysForCurrentMonth(selectedDate: Date) -> [Date] {
         guard let startOfMonth = calendar.date(
-            from: calendar.dateComponents([.year, .month], from: selectedDate)
+            from: DateComponents(
+                year: calendar.component(.year, from: selectedDate),
+                month: calendar.component(.month, from: selectedDate),
+                day: 1
+            )
         ),
               let range = calendar.range(of: .day,
                                          in: .month,
-                                         for: startOfMonth)
+                                         for: startOfMonth),
+              let prevMonth = calendar.date(byAdding: .month,
+                                            value: -1,
+                                            to: startOfMonth),
+              let prevMonthRange = calendar.range(of: .day,
+                                                  in: .month,
+                                                  for: prevMonth)
         else { return [] }
         
-        let daysInMonth = range.compactMap {
+        let days = range.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
         }
         
-        let firstWeekday = max(calendar.component(.weekday,
-                                                  from: startOfMonth) - 2, 0)
-        let previousMonthDates = (0..<firstWeekday).reversed().compactMap {
-            calendar.date(byAdding: .day, value: -$0 - 1, to: startOfMonth)
-        }
+        let firstWeekday = calendar.component(.weekday, from: startOfMonth) - 1
+        let adjustedWeekday = firstWeekday == 0 ? 6 : (firstWeekday - 1)
         
-        let remainingDays = max(0, (7 - (daysInMonth.count + firstWeekday) % 7))
-        let nextMonthDates: [Date] = remainingDays > 0
-        ? (1...remainingDays).compactMap { offset in
-            guard let lastDay = daysInMonth.last else { return nil }
-            return calendar.date(byAdding: .day, value: offset, to: lastDay)
+        let prevDays = prevMonthRange.compactMap {
+            calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)
+        }
+            .suffix(adjustedWeekday)
+        
+        let nextDays: [Date] = max(0,
+                                   (7 - (days.count + adjustedWeekday) % 7)) > 0
+        ? (1...max(0, (7 - (days.count + adjustedWeekday) % 7))).compactMap {
+            guard let last = days.last else { return nil }
+            return calendar.date(byAdding: .day, value: $0, to: last)
         }
         : []
         
-        return previousMonthDates + daysInMonth + nextMonthDates
+        return Array(prevDays) + days + nextDays
     }
     
     //MARK: - Close all sections
@@ -512,6 +524,8 @@ enum DisplayElement {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
+    .environmentObject(ThemeManager())
 }

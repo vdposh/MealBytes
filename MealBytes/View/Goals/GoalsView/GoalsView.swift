@@ -68,3 +68,12 @@ struct GoalsView: View {
         }
     }
 }
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
+}

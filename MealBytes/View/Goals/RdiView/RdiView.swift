@@ -17,10 +17,12 @@ struct RdiView: View {
             if rdiViewModel.isDataLoaded {
                 List {
                     OverviewSection(rdiViewModel: rdiViewModel)
-                    BasicInfoSection(
+                    AgeSection(
                         focusedField: _focusedField,
                         rdiViewModel: rdiViewModel
                     )
+                    GenderSection(rdiViewModel: rdiViewModel)
+                    ActivitySection(rdiViewModel: rdiViewModel)
                     WeightSection(
                         focusedField: _focusedField,
                         rdiViewModel: rdiViewModel
@@ -34,26 +36,8 @@ struct RdiView: View {
                 .scrollDismissesKeyboard(.never)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
-                        HStack(spacing: 0) {
-                            Button {
-                                moveFocus(.up)
-                            } label: {
-                                Image(systemName: "chevron.up")
-                                    .foregroundColor(colorForFocus(
-                                        isActive: canMoveFocus(.up)))
-                            }
-                            .disabled(!canMoveFocus(.up))
-                            
-                            Button {
-                                moveFocus(.down)
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(colorForFocus(
-                                        isActive: canMoveFocus(.down)))
-                            }
-                            .disabled(!canMoveFocus(.down))
-                        }
-                        
+                        Text(toolbarTitle)
+                            .foregroundColor(.secondary)
                         Button("Done") {
                             focusedField = nil
                         }
@@ -78,9 +62,6 @@ struct RdiView: View {
                 } message: {
                     Text(rdiViewModel.alertMessage)
                 }
-                .task {
-                    await rdiViewModel.loadRdiView()
-                }
             } else {
                 LoadingView()
                     .task {
@@ -89,49 +70,14 @@ struct RdiView: View {
             }
         }
     }
-    
     // MARK: - Keyboard
-    private func moveFocus(_ direction: FocusDirection) {
-        guard let currentFocus = focusedField else { return }
-        switch direction {
-        case .up:
-            switch currentFocus {
-            case .weight:
-                focusedField = .age
-            case .height:
-                focusedField = .weight
-            default:
-                break
-            }
-        case .down:
-            switch currentFocus {
-            case .age:
-                focusedField = .weight
-            case .weight:
-                focusedField = .height
-            default:
-                break
-            }
+    private var toolbarTitle: String {
+        switch focusedField {
+        case .age: "Age"
+        case .weight: "Weight"
+        case .height: "Height"
+        default: ""
         }
-    }
-    
-    private func canMoveFocus(_ direction: FocusDirection) -> Bool {
-        guard let currentFocus = focusedField else { return false }
-        switch direction {
-        case .up:
-            return currentFocus != .age
-        case .down:
-            return currentFocus != .height
-        }
-    }
-    
-    private enum FocusDirection {
-        case up
-        case down
-    }
-    
-    private func colorForFocus(isActive: Bool) -> Color {
-        isActive ? .customGreen : .secondary
     }
 }
 

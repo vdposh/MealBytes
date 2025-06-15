@@ -121,7 +121,7 @@ final class FoodViewModel: ObservableObject {
                 try await firestore.addMealItemFirestore(newItem)
             } catch {
                 await MainActor.run {
-                    print(error.localizedDescription)
+                    appError = .disconnected
                 }
             }
         }
@@ -330,8 +330,10 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

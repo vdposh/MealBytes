@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject private var profileViewModel: ProfileViewModel
+    @EnvironmentObject var themeManager: ThemeManager
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModel) {
@@ -55,6 +56,17 @@ struct ProfileView: View {
                 .toggleStyle(SwitchToggleStyle(tint: .customGreen))
             } footer: {
                 Text("Enable this option to display Recommended Daily Intake (RDI) in the Diary.")
+            }
+            
+            Section {
+                Picker("App Theme", selection: $themeManager.selectedTheme) {
+                    Text("Automatic").tag(ThemeMode.automatic)
+                    Text("Dark").tag(ThemeMode.dark)
+                    Text("Light").tag(ThemeMode.light)
+                }
+                .pickerStyle(.navigationLink)
+            } footer: {
+                Text("Choose a theme to customize the app's appearance. The automatic mode follows system settings.")
             }
             
             Section {
@@ -191,6 +203,8 @@ struct ProfileView: View {
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel()
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
     )
+    .environmentObject(ThemeManager())
 }

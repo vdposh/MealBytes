@@ -12,8 +12,8 @@ struct HeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section(header: Text("Height")) {
-            VStack(alignment: .leading, spacing: 15) {
+        Section {
+            VStack(alignment: .leading, spacing: 11) {
                 ServingTextFieldView(
                     text: $rdiViewModel.height,
                     title: "Height",
@@ -24,13 +24,25 @@ struct HeightSection: View {
                 )
                 .focused($focusedField, equals: .height)
                 
-                Picker("Unit", selection: $rdiViewModel.selectedHeightUnit) {
-                    ForEach(HeightUnit.allCases, id: \.self) { unit in
-                        Text(unit.rawValue)
+                Picker(
+                    "Height unit",
+                    selection: $rdiViewModel.selectedHeightUnit
+                ) {
+                    if rdiViewModel.selectedHeightUnit == .notSelected {
+                        Text("Not Selected").tag(HeightUnit.notSelected)
+                    }
+                    ForEach(HeightUnit.allCases.filter { $0 != .notSelected },
+                            id: \.self) { height in
+                        Text(height.rawValue).tag(height)
                     }
                 }
                 .pickerStyle(.menu)
+                .accentColor(rdiViewModel.selectedHeightUnit.accentColor)
             }
+        } header: {
+            Text("Height Details")
+        } footer: {
+            Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
         }
     }
 }

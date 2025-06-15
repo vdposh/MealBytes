@@ -14,9 +14,9 @@ final class RdiViewModel: ObservableObject {
     @Published var weight: String = ""
     @Published var age: String = ""
     @Published var selectedGender: Gender = .notSelected
-    @Published var selectedActivity: ActivityLevel = .notSelected
-    @Published var selectedWeightUnit: WeightUnit = .kg
-    @Published var selectedHeightUnit: HeightUnit = .cm
+    @Published var selectedActivity: Activity = .notSelected
+    @Published var selectedWeightUnit: WeightUnit = .notSelected
+    @Published var selectedHeightUnit: HeightUnit = .notSelected
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
@@ -46,17 +46,17 @@ final class RdiViewModel: ObservableObject {
                 self.selectedGender = Gender(
                     rawValue: rdiData.selectedGender
                 ) ?? .notSelected
-                self.selectedActivity = ActivityLevel(
+                self.selectedActivity = Activity(
                     rawValue: rdiData.selectedActivity
                 ) ?? .notSelected
                 self.weight = rdiData.weight
                 self.selectedWeightUnit = WeightUnit(
                     rawValue: rdiData.selectedWeightUnit
-                ) ?? .kg
+                ) ?? .notSelected
                 self.height = rdiData.height
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
-                ) ?? .cm
+                ) ?? .notSelected
                 isDataLoaded = true
             }
         } catch {
@@ -127,7 +127,7 @@ final class RdiViewModel: ObservableObject {
                                 weight: String,
                                 height: String,
                                 gender: Gender,
-                                activity: ActivityLevel,
+                                activity: Activity,
                                 weightUnit: WeightUnit,
                                 heightUnit: HeightUnit) {
         guard let ageValue = Double(age.sanitizedForDouble),
@@ -192,12 +192,24 @@ final class RdiViewModel: ObservableObject {
             }
         }
         
+        if let ageValue = Double(age.sanitizedForDouble), ageValue > 120 {
+            errorMessages.append("Enter a valid Age.")
+        }
+        
         if selectedGender == .notSelected {
             errorMessages.append("Select a Gender.")
         }
         
         if selectedActivity == .notSelected {
             errorMessages.append("Select an Activity Level.")
+        }
+        
+        if selectedWeightUnit == .notSelected {
+            errorMessages.append("Select a Weight Unit.")
+        }
+        
+        if self.selectedHeightUnit == .notSelected {
+            errorMessages.append("Select a Height Unit.")
         }
         
         if errorMessages.isEmpty {
@@ -224,6 +236,15 @@ final class RdiViewModel: ObservableObject {
             return "Fill in the data"
         }
         
+        if let ageValue = Double(age.sanitizedForDouble), ageValue > 120 {
+            return "Fill in the data"
+        }
+        
+        if selectedWeightUnit == .notSelected ||
+            selectedHeightUnit == .notSelected {
+            return "Fill in the data"
+        }
+        
         switch rdiValue {
         case 1:
             return "\(calculatedRdi) calorie"
@@ -233,7 +254,12 @@ final class RdiViewModel: ObservableObject {
     }
     
     func color(for calculatedRdi: String) -> Color? {
-        return calculatedRdi.isEmpty ? nil : .primary
+        if calculatedRdi.isEmpty ||
+            selectedWeightUnit == .notSelected ||
+            selectedHeightUnit == .notSelected {
+            return nil
+        }
+        return .primary
     }
 }
 
@@ -245,14 +271,14 @@ enum Gender: String, CaseIterable {
     var accentColor: Color {
         switch self {
         case .notSelected:
-            return .secondary
+            return .customRed
         case .male, .female:
             return .customGreen
         }
     }
 }
 
-enum ActivityLevel: String, CaseIterable {
+enum Activity: String, CaseIterable {
     case notSelected = "Not selected"
     case sedentary = "Sedentary"
     case lightlyActive = "Lightly Active"
@@ -263,7 +289,7 @@ enum ActivityLevel: String, CaseIterable {
     var accentColor: Color {
         switch self {
         case .notSelected:
-            return .secondary
+            return .customRed
         default:
             return .customGreen
         }
@@ -271,13 +297,33 @@ enum ActivityLevel: String, CaseIterable {
 }
 
 enum WeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
     case kg = "kg"
     case lbs = "lbs"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
 }
 
 enum HeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
     case cm = "cm"
     case inches = "inches"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
 }
 
 #Preview {
