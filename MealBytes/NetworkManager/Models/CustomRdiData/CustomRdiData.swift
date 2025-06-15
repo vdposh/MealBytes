@@ -12,5 +12,5 @@ struct CustomRdiData: Codable {
     var fat: String
     var carbohydrate: String
     var protein: String
-    var isCaloriesActive: Bool
+    var macronutrientMetrics: Bool
 }

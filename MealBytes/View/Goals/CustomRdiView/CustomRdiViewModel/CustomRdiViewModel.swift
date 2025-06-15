@@ -57,7 +57,7 @@ final class CustomRdiViewModel: ObservableObject {
                 fat = customGoalsData.fat
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
-                toggleOn = customGoalsData.isCaloriesActive
+                toggleOn = customGoalsData.macronutrientMetrics
                 isLoading = false
             }
         } catch {
@@ -75,7 +75,7 @@ final class CustomRdiViewModel: ObservableObject {
             fat: fat,
             carbohydrate: carbohydrate,
             protein: protein,
-            isCaloriesActive: toggleOn
+            macronutrientMetrics: toggleOn
         )
         do {
             try await firestore.saveCustomRdiFirestore(customGoalsData)
