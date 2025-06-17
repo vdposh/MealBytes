@@ -30,50 +30,43 @@ struct SearchView: View {
                 }
             } else {
                 List {
-                    if !searchViewModel.foods.isEmpty {
-                        ForEach(searchViewModel.foods,
-                                id: \.searchFoodId) { food in
-                            HStack {
-                                Button {
-                                    selectedFood = food
-                                    showFoodView = true
-                                } label: {
-                                    FoodDetailView(food: food)
+                    ForEach(searchViewModel.foods,
+                            id: \.searchFoodId) { food in
+                        HStack {
+                            Button {
+                                selectedFood = food
+                                showFoodView = true
+                            } label: {
+                                FoodDetailView(food: food)
                                     .frame(
                                         maxWidth: .infinity,
                                         alignment: .leading
                                     )
-                                }
-                                .padding(.vertical, 1)
-                                .onChange(of: showFoodView) {
-                                    selectedFood = selectedFood
-                                }
-                                BookmarkButtonView(
-                                    action: {
-                                        searchViewModel.handleBookmarkAction(
-                                            for: food
-                                        )
-                                    },
-                                    isFilled: searchViewModel
-                                        .isBookmarkedSearchView(food),
-                                    width: 45, height: 24
-                                )
                             }
+                            .padding(.vertical, 1)
+                            .onChange(of: showFoodView) {
+                                selectedFood = selectedFood
+                            }
+                            BookmarkButtonView(
+                                action: {
+                                    searchViewModel
+                                        .handleBookmarkAction(for: food)
+                                },
+                                isFilled: searchViewModel
+                                    .isBookmarkedSearchView(food),
+                                width: 45, height: 24
+                            )
                         }
-                        pageButton(direction: .next)
-                        pageButton(direction: .previous)
                     }
+                    pageButton(direction: .next)
+                    pageButton(direction: .previous)
                 }
                 .listStyle(.plain)
-                .background(
-                    Group {
-                        if searchViewModel.foods.isEmpty {
-                            contentUnavailableView(for: .noBookmarks) { }
-                        } else {
-                            EmptyView()
-                        }
+                .background {
+                    if searchViewModel.foods.isEmpty {
+                        contentUnavailableView(for: .noBookmarks) { }
                     }
-                )
+                }
             }
         }
         .scrollDismissesKeyboard(.immediately)

@@ -20,6 +20,7 @@ final class SearchViewModel: ObservableObject {
     @Published var query: String = "" {
         didSet {
             guard query != oldValue else { return }
+            currentPage = 0
             switch query.isEmpty {
             case true:
                 resetSearch()
@@ -98,12 +99,6 @@ final class SearchViewModel: ObservableObject {
                 self.bookmarkedFoods = bookmarked
                 if query.isEmpty {
                     self.foods = favoriteFoods
-                }
-                
-                if favoriteFoods.isEmpty {
-                    self.appError = .noBookmarks
-                } else {
-                    self.appError = nil
                 }
             }
         } catch {
