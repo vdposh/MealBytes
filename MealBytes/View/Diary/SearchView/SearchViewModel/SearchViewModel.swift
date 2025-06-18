@@ -35,6 +35,7 @@ final class SearchViewModel: ObservableObject {
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModel
     
     private var searchCancellable: AnyCancellable?
@@ -90,6 +91,10 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Load Bookmarks
     func loadBookmarksSearchView() async {
+        guard firebaseAuth.currentUserExists() else {
+            return
+        }
+        
         do {
             let favoriteFoods = try await firestore.loadBookmarksFirestore()
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
