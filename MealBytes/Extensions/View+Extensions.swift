@@ -11,6 +11,7 @@ extension View {
     @ViewBuilder
     func contentUnavailableView(
         for error: AppError,
+        mealType: MealType,
         query: String = "",
         action: @escaping () -> Void
     ) -> some View {
@@ -49,7 +50,7 @@ extension View {
         } description: {
             switch error {
             case .noBookmarks:
-                Text("Mark favorite food items as bookmarks, and they’ll be displayed here.")
+                Text("Mark favorite food items as bookmarks for \(mealType.rawValue), and they’ll be displayed here.")
             case .disconnected:
                 Text("Account disconnected. Log out and log back in to restore data sync.")
             default:

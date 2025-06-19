@@ -48,7 +48,10 @@ struct FoodView: View {
     var body: some View {
         ZStack {
             if let error = foodViewModel.appError {
-                contentUnavailableView(for: error) {
+                contentUnavailableView(
+                    for: error,
+                    mealType: foodViewModel.mealType
+                ) {
                     Task {
                         foodViewModel.appError = nil
                         await foodViewModel.fetchFoodDetails()

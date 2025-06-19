@@ -14,6 +14,7 @@ final class SearchViewModel: ObservableObject {
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
+    @Published var selectedMealType: MealType = .breakfast
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
@@ -90,13 +91,24 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Load Bookmarks
-    func loadBookmarksSearchView() async {
+    func loadBookmarksSearchView(for mealType: MealType) async {
         guard firebaseAuth.currentUserExists() else {
             return
         }
         
+        guard selectedMealType != mealType else {
+            return
+        }
+        
+        await MainActor.run {
+            query = ""
+            selectedMealType = mealType
+            isLoading = true
+        }
+        
         do {
-            let favoriteFoods = try await firestore.loadBookmarksFirestore()
+            let favoriteFoods = try await firestore
+                .loadBookmarksFirestore(for: mealType)
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
             
             await MainActor.run {
@@ -105,10 +117,12 @@ final class SearchViewModel: ObservableObject {
                 if query.isEmpty {
                     self.foods = favoriteFoods
                 }
+                self.isLoading = false
             }
         } catch {
             await MainActor.run {
                 self.appError = .disconnected
+                self.isLoading = false
             }
         }
     }
@@ -148,7 +162,8 @@ final class SearchViewModel: ObservableObject {
                 }
             }
             
-            try await firestore.addBookmarkFirestore(updatedFavorites)
+            try await firestore.addBookmarkFirestore(updatedFavorites,
+                                                     for: selectedMealType)
         }
     }
     

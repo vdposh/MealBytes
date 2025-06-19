@@ -201,11 +201,10 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
-        async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
         async let mainRdiTask: () = loadMainRdiMainView()
         async let displayRdiTask: () = loadDisplayRdiMainView()
         
-        _ = await (mealItemsTask, bookmarksTask, mainRdiTask, displayRdiTask)
+        _ = await (mealItemsTask, mainRdiTask, displayRdiTask)
         
         await MainActor.run {
             updateProgress()

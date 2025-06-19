@@ -25,7 +25,7 @@ struct SearchView: View {
             if searchViewModel.isLoading {
                 LoadingView()
             } else if let error = searchViewModel.appError {
-                contentUnavailableView(for: error) {
+                contentUnavailableView(for: error, mealType: mealType) {
                     searchViewModel.queueSearch(searchViewModel.query)
                 }
             } else {
@@ -64,7 +64,10 @@ struct SearchView: View {
                 .listStyle(.plain)
                 .background {
                     if searchViewModel.foods.isEmpty {
-                        contentUnavailableView(for: .noBookmarks) { }
+                        contentUnavailableView(
+                            for: .noBookmarks,
+                            mealType: mealType
+                        ) { }
                     }
                 }
             }
@@ -97,12 +100,19 @@ struct SearchView: View {
                     ForEach(MealType.allCases, id: \.self) { meal in
                         Button {
                             mealType = meal
+                            Task {
+                                await searchViewModel.loadBookmarksSearchView(
+                                    for: meal)
+                            }
                         } label: {
                             Text(meal.rawValue)
                         }
                     }
                 }
             }
+        }
+        .task {
+            await searchViewModel.loadBookmarksSearchView(for: mealType)
         }
         .confirmationDialog(
             searchViewModel.bookmarkTitle,
