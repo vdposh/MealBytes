@@ -35,7 +35,7 @@ extension View {
                 ContentUnavailableView.search(text: query)
             case .noBookmarks:
                 Label {
-                    Text("No bookmarks yet")
+                    Text("No \(mealType.rawValue) bookmarks yet")
                 } icon: {
                     Image(systemName: "bookmark")
                 }
@@ -50,7 +50,7 @@ extension View {
         } description: {
             switch error {
             case .noBookmarks:
-                Text("Mark favorite food items as bookmarks for \(mealType.rawValue), and they’ll be displayed here.")
+                Text("Mark favorite food items as bookmarks, and they’ll be displayed here.")
             case .disconnected:
                 Text("Account disconnected. Log out and log back in to restore data sync.")
             default:

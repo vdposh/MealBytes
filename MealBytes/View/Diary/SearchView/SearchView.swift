@@ -61,7 +61,6 @@ struct SearchView: View {
                     pageButton(direction: .next)
                     pageButton(direction: .previous)
                 }
-                .listStyle(.plain)
                 .background {
                     if searchViewModel.foods.isEmpty {
                         contentUnavailableView(
@@ -70,9 +69,10 @@ struct SearchView: View {
                         ) { }
                     }
                 }
+                .listStyle(.plain)
+                .scrollDismissesKeyboard(.immediately)
             }
         }
-        .scrollDismissesKeyboard(.immediately)
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
             displayMode: .large
@@ -111,9 +111,6 @@ struct SearchView: View {
                 }
             }
         }
-        .task {
-            await searchViewModel.loadBookmarksSearchView(for: mealType)
-        }
         .confirmationDialog(
             searchViewModel.bookmarkTitle,
             isPresented: $searchViewModel.showBookmarkDialog,
@@ -122,6 +119,9 @@ struct SearchView: View {
             Button("Remove bookmark", role: .destructive) {
                 searchViewModel.confirmRemoveBookmark()
             }
+        }
+        .task {
+            await searchViewModel.loadBookmarksSearchView(for: mealType)
         }
         .searchable(
             text: $searchViewModel.query,
