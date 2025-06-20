@@ -100,6 +100,7 @@ struct SearchView: View {
                     ForEach(MealType.allCases, id: \.self) { meal in
                         Button {
                             mealType = meal
+                            searchViewModel.isLoading = true
                             Task {
                                 await searchViewModel.loadBookmarksSearchView(
                                     for: meal)
