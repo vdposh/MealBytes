@@ -92,13 +92,14 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Load Bookmarks
     func loadBookmarksSearchView(for mealType: MealType) async {
-        guard firebaseAuth.currentUserExists() else {
-            return
-        }
+        guard firebaseAuth.currentUserExists() else { return }
         
-        guard selectedMealType != mealType else {
-            return
-        }
+//        guard selectedMealType != mealType || foods.isEmpty else {
+//            await MainActor.run {
+//                isLoading = false
+//            }
+//            return
+//        }
         
         await MainActor.run {
             query = ""
@@ -118,6 +119,7 @@ final class SearchViewModel: ObservableObject {
                     self.foods = favoriteFoods
                 }
                 self.isLoading = false
+                self.appError = nil
             }
         } catch {
             await MainActor.run {

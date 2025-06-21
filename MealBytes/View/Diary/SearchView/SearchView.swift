@@ -99,6 +99,8 @@ struct SearchView: View {
                 ) {
                     ForEach(MealType.allCases, id: \.self) { meal in
                         Button {
+                            guard meal != searchViewModel
+                                .selectedMealType else { return }
                             mealType = meal
                             searchViewModel.isLoading = true
                             Task {
