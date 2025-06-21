@@ -95,17 +95,9 @@ final class SearchViewModel: ObservableObject {
     func loadBookmarksSearchView(for mealType: MealType) async {
         guard firebaseAuth.currentUserExists() else { return }
         
-        guard selectedMealType != mealType || foods.isEmpty else {
-            await MainActor.run {
-                isLoading = false
-            }
-            return
-        }
-        
         await MainActor.run {
             query = ""
             selectedMealType = mealType
-            isLoading = true
         }
         
         do {
@@ -131,13 +123,23 @@ final class SearchViewModel: ObservableObject {
     }
     
     func loadBookmarksData(for mealType: MealType) async {
+        shouldResetQuery = true
+        
         if shouldResetQuery {
             await MainActor.run {
                 query = ""
+                isLoading = true
             }
             shouldResetQuery = false
         }
+        
         await loadBookmarksSearchView(for: mealType)
+    }
+    
+    func mealSwitch(to meal: MealType) -> Bool {
+        guard meal != selectedMealType else { return false }
+        isLoading = true
+        return true
     }
     
     // MARK: - Toggle Bookmark

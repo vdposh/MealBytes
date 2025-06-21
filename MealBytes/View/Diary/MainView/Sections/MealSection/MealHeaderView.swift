@@ -23,7 +23,10 @@ struct MealHeaderView: View {
         Section {
             ZStack {
                 Button {
-                    mainViewModel.searchViewModel.shouldResetQuery = true
+                    Task {
+                        await mainViewModel.searchViewModel
+                            .loadBookmarksData(for: mealType)
+                    }
                 } label: {
                     HStack {
                         VStack(spacing: 15) {

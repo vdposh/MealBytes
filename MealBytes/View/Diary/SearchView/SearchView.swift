@@ -99,13 +99,12 @@ struct SearchView: View {
                 ) {
                     ForEach(MealType.allCases, id: \.self) { meal in
                         Button {
-                            guard meal != searchViewModel
-                                .selectedMealType else { return }
-                            mealType = meal
-                            searchViewModel.isLoading = true
-                            Task {
-                                await searchViewModel.loadBookmarksSearchView(
-                                    for: meal)
+                            if searchViewModel.mealSwitch(to: meal) {
+                                mealType = meal
+                                Task {
+                                    await searchViewModel
+                                        .loadBookmarksSearchView(for: meal)
+                                }
                             }
                         } label: {
                             Text(meal.rawValue)
@@ -122,9 +121,6 @@ struct SearchView: View {
             Button("Remove bookmark", role: .destructive) {
                 searchViewModel.confirmRemoveBookmark()
             }
-        }
-        .task {
-            await searchViewModel.loadBookmarksData(for: mealType)
         }
         .searchable(
             text: $searchViewModel.query,
