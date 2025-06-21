@@ -96,7 +96,6 @@ final class SearchViewModel: ObservableObject {
         guard firebaseAuth.currentUserExists() else { return }
         
         await MainActor.run {
-            query = ""
             selectedMealType = mealType
         }
         

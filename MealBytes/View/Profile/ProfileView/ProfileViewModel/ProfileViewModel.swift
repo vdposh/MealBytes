@@ -61,7 +61,6 @@ final class ProfileViewModel: ObservableObject {
                 }
             }
             
-            mainViewModel.searchViewModel.query = ""
             loginViewModel.isLoggedIn = false
         } catch {
             appError = .decoding
