@@ -31,6 +31,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    var shouldResetQuery = false
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
     
@@ -94,12 +95,12 @@ final class SearchViewModel: ObservableObject {
     func loadBookmarksSearchView(for mealType: MealType) async {
         guard firebaseAuth.currentUserExists() else { return }
         
-//        guard selectedMealType != mealType || foods.isEmpty else {
-//            await MainActor.run {
-//                isLoading = false
-//            }
-//            return
-//        }
+        guard selectedMealType != mealType || foods.isEmpty else {
+            await MainActor.run {
+                isLoading = false
+            }
+            return
+        }
         
         await MainActor.run {
             query = ""
@@ -127,6 +128,16 @@ final class SearchViewModel: ObservableObject {
                 self.isLoading = false
             }
         }
+    }
+    
+    func loadBookmarksData(for mealType: MealType) async {
+        if shouldResetQuery {
+            await MainActor.run {
+                query = ""
+            }
+            shouldResetQuery = false
+        }
+        await loadBookmarksSearchView(for: mealType)
     }
     
     // MARK: - Toggle Bookmark

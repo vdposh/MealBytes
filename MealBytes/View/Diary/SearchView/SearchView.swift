@@ -124,7 +124,7 @@ struct SearchView: View {
             }
         }
         .task {
-            await searchViewModel.loadBookmarksSearchView(for: mealType)
+            await searchViewModel.loadBookmarksData(for: mealType)
         }
         .searchable(
             text: $searchViewModel.query,

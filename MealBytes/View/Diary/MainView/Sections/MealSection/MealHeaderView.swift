@@ -22,45 +22,54 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             ZStack {
-                NavigationLink(
-                    destination: SearchView(
-                        searchViewModel: mainViewModel.searchViewModel,
-                        mealType: mealType
-                    )
-                ) {
-                    EmptyView()
-                }
-                .opacity(0)
-                
-                HStack {
-                    VStack(spacing: 15) {
-                        HStack {
-                            Image(systemName: iconName)
-                                .frame(width: 22)
-                                .foregroundColor(color)
-                            Text(title)
-                                .fontWeight(.medium)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(mainViewModel.formattedCalories(calories))
-                                .lineLimit(1)
-                                .font(.callout)
-                                .fontWeight(.medium)
+                Button {
+                    mainViewModel.searchViewModel.shouldResetQuery = true
+                } label: {
+                    HStack {
+                        VStack(spacing: 15) {
+                            HStack {
+                                Image(systemName: iconName)
+                                    .frame(width: 22)
+                                    .foregroundColor(color)
+                                Text(title)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                    .frame(
+                                        maxWidth: .infinity,
+                                        alignment: .leading
+                                    )
+                                Text(mainViewModel.formattedCalories(calories))
+                                    .lineLimit(1)
+                                    .font(.callout)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                            }
+                            NutrientSummaryRow(
+                                fat: fat,
+                                carbohydrate: carbohydrate,
+                                protein: protein,
+                                calories: calories,
+                                mainViewModel: mainViewModel
+                            )
                         }
-                        NutrientSummaryRow(
-                            fat: fat,
-                            carbohydrate: carbohydrate,
-                            protein: protein,
-                            calories: calories,
-                            mainViewModel: mainViewModel
-                        )
+                        .padding(.vertical, 5)
+                        .padding(.trailing, 5)
+                        
+                        Image(systemName: "plus")
+                            .fontWeight(.bold)
                     }
-                    .padding(.vertical, 5)
-                    .padding(.trailing, 5)
-                    
-                    Image(systemName: "plus")
-                        .fontWeight(.bold)
-                        .foregroundStyle(.customGreen)
                 }
+                .background(
+                    NavigationLink(
+                        destination: SearchView(
+                            searchViewModel: mainViewModel.searchViewModel,
+                            mealType: mealType
+                        )
+                    ) {
+                        EmptyView()
+                    }
+                        .opacity(0)
+                )
             }
             
             if mainViewModel.expandedSections[mealType] == true {
