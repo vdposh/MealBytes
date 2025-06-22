@@ -66,6 +66,7 @@ final class SearchViewModel: ObservableObject {
                 }
                 
                 self.isLoading = true
+                
                 Task {
                     do {
                         let foods = try await self.networkManager

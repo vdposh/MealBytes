@@ -69,6 +69,7 @@ final class FoodViewModel: ObservableObject {
     @MainActor
     func fetchFoodDetails() async {
         isLoading = true
+        
         do {
             let fetchedFoodDetail = try await networkManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
@@ -116,6 +117,7 @@ final class FoodViewModel: ObservableObject {
             date: date, mealType: mealType
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
+        
         Task {
             do {
                 try await firestore.addMealItemFirestore(newItem)

@@ -121,11 +121,8 @@ final class MainViewModel: ObservableObject {
                 await MainActor.run {
                     mealItems[mealType] = updatedItems
                     recalculateNutrients(for: date)
-                    
-                    if filteredMealItems(for: mealType, on: date).isEmpty {
-                        expandedSections[mealType] = false
-                    }
                 }
+                
                 do {
                     try await firestore
                         .deleteMealItemFirestore(itemToDelete)
@@ -189,6 +186,7 @@ final class MainViewModel: ObservableObject {
         await MainActor.run {
             shouldDisplayRdi = newValue
         }
+        
         do {
             try await firestore.saveDisplayRdiFirestore(newValue)
         } catch {

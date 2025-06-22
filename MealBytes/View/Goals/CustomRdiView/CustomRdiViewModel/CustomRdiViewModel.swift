@@ -77,6 +77,7 @@ final class CustomRdiViewModel: ObservableObject {
             protein: protein,
             macronutrientMetrics: toggleOn
         )
+        
         do {
             try await firestore.saveCustomRdiFirestore(customGoalsData)
             await MainActor.run {
