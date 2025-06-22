@@ -93,7 +93,7 @@ struct SearchView: View {
                     }
                 }
                 .confirmationDialog(
-                    "Choose a Meal",
+                    "Select a Meal Type",
                     isPresented: $searchViewModel.showMealType,
                     titleVisibility: .visible
                 ) {

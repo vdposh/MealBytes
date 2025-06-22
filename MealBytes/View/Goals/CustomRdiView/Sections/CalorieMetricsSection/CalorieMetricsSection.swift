@@ -38,7 +38,11 @@ struct CalorieMetricsSection: View {
             .padding(.trailing, 5)
             
             Text("kcal")
-                .foregroundColor(customRdiViewModel.caloriesTextColor)
+                .foregroundStyle(
+                    focusedField == .calories
+                    ? .customGreen
+                    : Color.secondary.opacity(0.8)
+                )
         }
         .padding(.bottom, 5)
     }

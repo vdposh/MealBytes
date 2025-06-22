@@ -29,11 +29,13 @@ struct ServingButtonView: View {
                     Image(systemName: "chevron.down")
                         .resizable()
                         .frame(width: 10, height: 6)
+                        .opacity(0.6)
                 }
                 .frame(height: 35)
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
+                        .opacity(0.6)
                         .foregroundColor(.secondary),
                     alignment: .bottom
                 )

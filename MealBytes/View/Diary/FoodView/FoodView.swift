@@ -146,7 +146,7 @@ struct FoodView: View {
                         foodViewModel.showMealTypeDialog.toggle()
                     }
                     .confirmationDialog(
-                        "Choose a Meal",
+                        "Select a Meal Type",
                         isPresented: $foodViewModel.showMealTypeDialog,
                         titleVisibility: .visible
                     ) {
