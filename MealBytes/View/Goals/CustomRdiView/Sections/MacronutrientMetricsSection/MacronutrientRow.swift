@@ -27,11 +27,6 @@ struct MacronutrientRow: View {
             .padding(.trailing, 5)
             
             Text("g")
-                .foregroundStyle(
-                    focusedField.wrappedValue == focusValue
-                    ? .customGreen
-                    : Color.secondary.opacity(0.8)
-                )
         }
     }
     
@@ -47,6 +42,15 @@ struct MacronutrientRow: View {
             return .fat
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

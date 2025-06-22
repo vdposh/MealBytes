@@ -489,13 +489,22 @@ final class MainViewModel: ObservableObject {
         }
             .suffix(adjustedWeekday)
         
-        let nextDays: [Date] = max(0,
-                                   (7 - (days.count + adjustedWeekday) % 7)) > 0
-        ? (1...max(0, (7 - (days.count + adjustedWeekday) % 7))).compactMap {
+        let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
+        
+        let nextDays: [Date] = (fillerCount > 0
+                                ? Array(1...fillerCount)
+                                : []
+        ).compactMap {
             guard let last = days.last else { return nil }
-            return calendar.date(byAdding: .day, value: $0, to: last)
+            let candidate = calendar.date(byAdding: .day, value: $0, to: last)
+            
+            guard let date = candidate else { return nil }
+            
+            return calendar.isDate(date,
+                                   equalTo: startOfMonth,
+                                   toGranularity: .month)
+            ? nil : date
         }
-        : []
         
         return Array(prevDays) + days + nextDays
     }

@@ -38,11 +38,7 @@ struct CalorieMetricsSection: View {
             .padding(.trailing, 5)
             
             Text("kcal")
-                .foregroundStyle(
-                    focusedField == .calories
-                    ? .customGreen
-                    : Color.secondary.opacity(0.8)
-                )
+                .foregroundColor(customRdiViewModel.caloriesTextColor)
         }
         .padding(.bottom, 5)
     }
@@ -50,6 +46,15 @@ struct CalorieMetricsSection: View {
 
 enum CustomRdiFocus: Hashable {
     case calories
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {
