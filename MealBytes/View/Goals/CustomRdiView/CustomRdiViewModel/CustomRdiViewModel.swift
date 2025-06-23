@@ -15,8 +15,8 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
-    @Published var isLoading: Bool = true
     @Published var showAlert: Bool = false
+    @Published var isDataLoaded: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
             if toggleOn {
@@ -58,12 +58,12 @@ final class CustomRdiViewModel: ObservableObject {
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
                 toggleOn = customGoalsData.macronutrientMetrics
-                isLoading = false
+                isDataLoaded = true
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
-                isLoading = false
+                isDataLoaded = true
             }
         }
     }

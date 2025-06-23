@@ -15,9 +15,7 @@ struct CustomRdiView: View {
     
     var body: some View {
         ZStack {
-            if customRdiViewModel.isLoading {
-                LoadingView()
-            } else {
+            if customRdiViewModel.isDataLoaded {
                 List {
                     Section {
                     } footer: {
@@ -93,17 +91,19 @@ struct CustomRdiView: View {
                         }
                     }
                 }
+                .alert("Error", isPresented: $customRdiViewModel.showAlert) {
+                    Button("OK", role: .none) {
+                        customRdiViewModel.showAlert = false
+                    }
+                } message: {
+                    Text(customRdiViewModel.alertMessage)
+                }
+            } else {
+                LoadingView()
+                    .task {
+                        await customRdiViewModel.loadCustomRdiView()
+                    }
             }
-        }
-        .alert("Error", isPresented: $customRdiViewModel.showAlert) {
-            Button("OK", role: .none) {
-                customRdiViewModel.showAlert = false
-            }
-        } message: {
-            Text(customRdiViewModel.alertMessage)
-        }
-        .task {
-            await customRdiViewModel.loadCustomRdiView()
         }
     }
     
