@@ -16,6 +16,7 @@ struct ServingTextFieldView: View {
     var keyboardType: UIKeyboardType = .decimalPad
     var titleColor: Color = .secondary
     var textColor: Color = .primary
+    var opacity: Double = 1.0
     var maxInteger: Int = 100000
     var maxFractionalDigits: Int = 2
     var maxIntegerDigits: Int = 4
@@ -52,7 +53,7 @@ struct ServingTextFieldView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .opacity(isFocused ? 1 : 0.6)
+                        .opacity(opacity)
                         .foregroundColor(isFocused ? .customGreen : .secondary),
                     alignment: .bottom
                 )

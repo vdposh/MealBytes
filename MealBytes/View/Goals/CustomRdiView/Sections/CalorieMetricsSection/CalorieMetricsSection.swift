@@ -32,6 +32,7 @@ struct CalorieMetricsSection: View {
                     for: customRdiViewModel.calories,
                     isCalorie: true),
                 textColor: customRdiViewModel.caloriesTextColor,
+                opacity: customRdiViewModel.underlineOpacity,
                 maxIntegerDigits: 5
             )
             .focused($focusedField, equals: .calories)

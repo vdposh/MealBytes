@@ -41,7 +41,6 @@ struct SecureFieldView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .opacity(isFocused ? 1 : 0.6)
                         .foregroundColor(isFocused ? .customGreen : .secondary),
                     alignment: .bottom
                 )
