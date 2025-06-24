@@ -53,11 +53,11 @@ final class CustomRdiViewModel: ObservableObject {
             let customGoalsData = try await firestore
                 .loadCustomRdiFirestore()
             await MainActor.run {
+                toggleOn = customGoalsData.macronutrientMetrics
                 calories = customGoalsData.calories
                 fat = customGoalsData.fat
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
-                toggleOn = customGoalsData.macronutrientMetrics
                 isDataLoaded = true
             }
         } catch {
