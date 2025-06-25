@@ -19,7 +19,7 @@ struct MacronutrientRow: View {
             ServingTextFieldView(
                 text: $textFieldBinding,
                 title: title,
-                keyboardType: .decimalPad,
+                keyboardType: .numberPad,
                 titleColor: titleColor,
                 maxIntegerDigits: 3
             )

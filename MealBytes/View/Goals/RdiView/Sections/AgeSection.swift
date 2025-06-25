@@ -16,7 +16,7 @@ struct AgeSection: View {
             ServingTextFieldView(
                 text: $rdiViewModel.age,
                 title: "Age",
-                keyboardType: .decimalPad,
+                keyboardType: .numberPad,
                 titleColor: rdiViewModel.fieldTitleColor(
                     for: rdiViewModel.age),
                 maxFractionalDigits: 1,

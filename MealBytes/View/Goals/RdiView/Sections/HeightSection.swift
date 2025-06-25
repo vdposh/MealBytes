@@ -17,7 +17,6 @@ struct HeightSection: View {
                 ServingTextFieldView(
                     text: $rdiViewModel.height,
                     title: "Height",
-                    keyboardType: .decimalPad,
                     titleColor: rdiViewModel.fieldTitleColor(
                         for: rdiViewModel.height),
                     maxIntegerDigits: 3

@@ -17,7 +17,6 @@ struct WeightSection: View {
                 ServingTextFieldView(
                     text: $rdiViewModel.weight,
                     title: "Weight",
-                    keyboardType: .decimalPad,
                     titleColor: rdiViewModel.fieldTitleColor(
                         for: rdiViewModel.weight),
                     maxIntegerDigits: 3

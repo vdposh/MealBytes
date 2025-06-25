@@ -105,8 +105,7 @@ struct FoodView: View {
                 ServingTextFieldView(
                     text: $foodViewModel.amount,
                     title: "Size",
-                    placeholder: "Enter serving size",
-                    keyboardType: .decimalPad
+                    placeholder: "Enter serving size"
                 )
                 .focused($fieldFocused)
                 .onChange(of: fieldFocused) { oldValue, newValue in
