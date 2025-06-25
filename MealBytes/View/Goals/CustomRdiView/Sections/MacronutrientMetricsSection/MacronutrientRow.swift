@@ -20,6 +20,7 @@ struct MacronutrientRow: View {
                 text: $textFieldBinding,
                 title: title,
                 keyboardType: .numberPad,
+                inputMode: .integer,
                 titleColor: titleColor,
                 maxIntegerDigits: 3
             )

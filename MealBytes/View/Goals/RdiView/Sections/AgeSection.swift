@@ -17,9 +17,9 @@ struct AgeSection: View {
                 text: $rdiViewModel.age,
                 title: "Age",
                 keyboardType: .numberPad,
+                inputMode: .integer,
                 titleColor: rdiViewModel.fieldTitleColor(
                     for: rdiViewModel.age),
-                maxFractionalDigits: 1,
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .age)

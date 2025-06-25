@@ -126,7 +126,8 @@ final class CustomRdiViewModel: ObservableObject {
         let carbValue = Double(carbohydrate.sanitizedForDouble) ?? 0
         let protValue = Double(protein.sanitizedForDouble) ?? 0
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
-        calories = formatter.formattedValue(totalCalories, unit: .empty)
+        
+        calories = formatter.roundedValue(totalCalories)
     }
     
     // MARK: - Input Validation

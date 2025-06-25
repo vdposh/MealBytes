@@ -28,6 +28,7 @@ struct CalorieMetricsSection: View {
                 title: "Calories",
                 showStar: customRdiViewModel.showStar,
                 keyboardType: .numberPad,
+                inputMode: .integer,
                 titleColor: customRdiViewModel.titleColor(
                     for: customRdiViewModel.calories,
                     isCalorie: true),

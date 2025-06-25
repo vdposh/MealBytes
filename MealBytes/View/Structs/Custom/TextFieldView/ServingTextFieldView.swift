@@ -14,6 +14,7 @@ struct ServingTextFieldView: View {
     var showStar: Bool = true
     var placeholder: String = "Enter value"
     var keyboardType: UIKeyboardType = .decimalPad
+    var inputMode: InputMode = .decimal
     var titleColor: Color = .secondary
     var textColor: Color = .primary
     var opacity: Double = 1.0
@@ -50,6 +51,11 @@ struct ServingTextFieldView: View {
                 .onChange(of: text) {
                     validateInput(&text)
                 }
+                .onChange(of: isFocused) {
+                    if !isFocused {
+                        finalizeInput(&text)
+                    }
+                }
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
@@ -61,29 +67,79 @@ struct ServingTextFieldView: View {
     }
     
     private func validateInput(_ input: inout String) {
-        input = input.replacingOccurrences(of: ".", with: ",")
-        let components = input.split(separator: ",")
-        
-        if let intPart = components.first, intPart.count > maxIntegerDigits {
-            input = String(intPart.prefix(maxIntegerDigits))
-            return
-        }
-        
-        if components.count > 1 {
-            let fracPart = components.last ?? ""
-            input = "\(components.first!),\(fracPart.prefix(maxFractionalDigits))"
-        }
-        
-        let sanitizedInput = input.replacingOccurrences(of: ",", with: ".")
-        if let doubleValue = Double(sanitizedInput),
-           doubleValue > Double(maxInteger) {
-            input = "\(maxInteger)".replacingOccurrences(of: ".", with: ",")
-        }
-        
-        if input.hasSuffix(",00") {
-            input.removeLast(3)
+        switch inputMode {
+        case .decimal:
+            input = input.replacingOccurrences(of: ".", with: ",")
+            let components = input.split(separator: ",")
+            
+            if let intPart = components.first,
+               intPart.count > maxIntegerDigits {
+                input = String(intPart.prefix(maxIntegerDigits))
+                return
+            }
+            
+            if components.count > 1 {
+                let fracPart = components.last ?? ""
+                input = "\(components.first!),\(fracPart.prefix(maxFractionalDigits))"
+            }
+            
+            let sanitized = input.replacingOccurrences(of: ",", with: ".")
+            if let doubleVal = Double(sanitized),
+               doubleVal > Double(maxInteger) {
+                input = "\(maxInteger)".replacingOccurrences(of: ".", with: ",")
+            }
+            
+        case .integer:
+            let separators: [Character] = [",", "."]
+            if let separatorIndex = input.firstIndex(where: { separators.contains($0) }) {
+                input = String(input[..<separatorIndex])
+            }
+            
+            input = input.filter { $0.isNumber }
+            
+            if input.count > maxIntegerDigits {
+                input = String(input.prefix(maxIntegerDigits))
+            }
+            
+            if let intVal = Int(input),
+               intVal > maxInteger {
+                input = "\(maxInteger)"
+            }
         }
     }
+    
+    private func finalizeInput(_ input: inout String) {
+        switch inputMode {
+        case .decimal:
+            if input.hasSuffix(",") || input.hasSuffix(".") {
+                input.removeLast()
+                return
+            }
+
+            let suffixesToTrim = [",00", ".00", ",0", ".0"]
+            for suffix in suffixesToTrim {
+                if input.hasSuffix(suffix) {
+                    input.removeLast(suffix.count)
+                    return
+                }
+            }
+
+            if let commaIndex = input.firstIndex(of: ",") {
+                let fractional = input[commaIndex...]
+                if fractional.hasSuffix("0") && fractional.count == 3 {
+                    input.removeLast()
+                }
+            }
+
+        case .integer:
+            break
+        }
+    }
+}
+
+enum InputMode {
+    case decimal
+    case integer
 }
 
 #Preview {
