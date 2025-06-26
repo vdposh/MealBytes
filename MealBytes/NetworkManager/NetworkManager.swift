@@ -36,7 +36,7 @@ final class NetworkManager: NetworkManagerProtocol {
                     } catch {
                         switch target {
                         case .searchFoods:
-                            continuation.resume(throwing: AppError.results)
+                            continuation.resume(throwing: AppError.decoding)
                         case .getFoodDetails:
                             continuation.resume(throwing: AppError.decoding)
                         }
@@ -59,6 +59,11 @@ final class NetworkManager: NetworkManagerProtocol {
             .searchFoods(query: query, page: page),
             responseType: FoodResponse.self
         )
+        
+        guard !response.foods.isEmpty else {
+            throw AppError.results
+        }
+        
         return response.foods
     }
     
