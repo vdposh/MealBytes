@@ -319,9 +319,13 @@ final class MainViewModel: ObservableObject {
     }
     
     func formattedMealText(for mealItem: MealItem) -> String {
-        let formattedAmount = formatter.formattedValue(mealItem.amount,
-                                                       unit: .empty)
+        let formattedAmount = formatter.formattedValue(
+            mealItem.amount,
+            unit: .empty
+        )
+        
         let measurement = formattedMeasurement(for: mealItem)
+            .pluralized(for: mealItem.amount)
         
         if measurement == "g" || measurement == "ml" {
             return "\(formattedServingSize(for: mealItem))\(mealItem.portionUnit)"
