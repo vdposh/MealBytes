@@ -242,21 +242,24 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
-        let description = serving.measurementDescription
+        var description = serving.measurementDescription
         let metricAmountFormatted = formatter.formattedValue(
             serving.metricServingAmount,
             unit: .empty
         )
         let metricUnit = serving.metricServingUnit
         
-        switch serving.isMetricMeasurement {
-        case true:
+        if serving.isMetricMeasurement {
             return description
-        case false where description.contains("serving (\(metricAmountFormatted)g"):
-            return description
-        default:
-            return "\(description) (\(metricAmountFormatted)\(metricUnit))"
         }
+        
+        if description.hasPrefix("serving"),
+           let range = description.range(of: #"serving\s*\([^)]+\)"#,
+                                         options: .regularExpression) {
+            description.replaceSubrange(range, with: "serving")
+        }
+        
+        return "\(description) (\(metricAmountFormatted)\(metricUnit))"
     }
     
     var servingDescription: String {

@@ -12,6 +12,10 @@ extension String {
         self.replacingOccurrences(of: ",", with: ".")
     }
     
+    var preparedForLocaleDecimal: String {
+        self.replacingOccurrences(of: ".", with: ",")
+    }
+    
     func pluralized(for amount: Double) -> String {
         guard amount != 1 else { return self }
         

@@ -69,7 +69,7 @@ struct ServingTextFieldView: View {
     private func validateInput(_ input: inout String) {
         switch inputMode {
         case .decimal:
-            input = input.replacingOccurrences(of: ".", with: ",")
+            input = input.preparedForLocaleDecimal
             let components = input.split(separator: ",")
             
             if let intPart = components.first,
@@ -83,10 +83,10 @@ struct ServingTextFieldView: View {
                 input = "\(components.first!),\(fracPart.prefix(maxFractionalDigits))"
             }
             
-            let sanitized = input.replacingOccurrences(of: ",", with: ".")
+            let sanitized = input.sanitizedForDouble
             if let doubleVal = Double(sanitized),
                doubleVal > Double(maxInteger) {
-                input = "\(maxInteger)".replacingOccurrences(of: ".", with: ",")
+                input = "\(maxInteger)".preparedForLocaleDecimal
             }
             
         case .integer:

@@ -48,7 +48,7 @@ struct Formatter {
             valueString = String(format: "%.2f", roundedValue)
         }
         
-        let finalValue = valueString.replacingOccurrences(of: ".", with: ",")
+        let finalValue = valueString.preparedForLocaleDecimal
         
         switch unit {
         case .empty:
