@@ -67,7 +67,6 @@ struct FoodView: View {
                         nutrientDetailSection
                     }
                     .listSectionSpacing(15)
-                    .scrollDismissesKeyboard(.never)
                 }
             }
         }

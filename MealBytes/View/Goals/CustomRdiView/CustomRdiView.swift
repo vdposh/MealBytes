@@ -44,7 +44,6 @@ struct CustomRdiView: View {
                         Text("Enable this option to calculate intake using macronutrients.")
                     }
                 }
-                .scrollDismissesKeyboard(.never)
                 .navigationBarTitle("Custom RDI", displayMode: .inline)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
@@ -152,6 +151,12 @@ struct CustomRdiView: View {
     private func colorForFocus(isActive: Bool) -> Color {
         isActive ? .customGreen : .secondary
     }
+}
+
+enum MacronutrientsFocus: Hashable {
+    case fat
+    case carbohydrate
+    case protein
 }
 
 #Preview {

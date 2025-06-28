@@ -70,6 +70,7 @@ struct RdiView: View {
             }
         }
     }
+    
     // MARK: - Keyboard
     private var toolbarTitle: String {
         switch focusedField {
@@ -85,6 +86,15 @@ enum RdiFocus: Hashable {
     case age
     case height
     case weight
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {
