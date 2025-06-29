@@ -24,6 +24,7 @@ struct AgeSection: View {
             )
             .focused($focusedField, equals: .age)
             .padding(.bottom, 5)
+            .id("ageField")
         } header: {
             Text("Age Details")
         } footer: {

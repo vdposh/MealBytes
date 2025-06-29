@@ -25,6 +25,7 @@ struct ActivitySection: View {
                 .pickerStyle(.menu)
                 .accentColor(rdiViewModel.selectedActivity.accentColor)
             }
+            .id("weightField")
         } header: {
             Text("Activity Level")
         } footer: {

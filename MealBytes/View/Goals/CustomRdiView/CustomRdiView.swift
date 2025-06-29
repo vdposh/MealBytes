@@ -16,86 +16,99 @@ struct CustomRdiView: View {
     var body: some View {
         ZStack {
             if customRdiViewModel.isDataLoaded {
-                List {
-                    Section {
-                    } footer: {
-                        Text("Set RDI by entering calories directly or calculate it based on macronutrient distribution.")
-                    }
-                    
-                    CalorieMetricsSection(
-                        focusedField: _focusCalories,
-                        customRdiViewModel: customRdiViewModel
-                    )
-                    .disabled(customRdiViewModel.toggleOn)
-                    
-                    if customRdiViewModel.toggleOn {
-                        MacronutrientMetricsSection(
-                            focusedField: _focusMacronutrients,
-                            customRdiViewModel: customRdiViewModel
-                        )
-                    }
-                    
-                    Section {
-                        Toggle(isOn: $customRdiViewModel.toggleOn) {
-                            Text("Macronutrient metrics")
-                        }
-                        .toggleStyle(SwitchToggleStyle(tint: .customGreen))
-                    } footer: {
-                        Text("Enable this option to calculate intake using macronutrients.")
-                    }
-                }
-                .navigationBarTitle("Custom RDI", displayMode: .inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        HStack(spacing: 0) {
-                            if focusMacronutrients != nil {
-                                Button {
-                                    moveFocus(.up)
-                                } label: {
-                                    Image(systemName: "chevron.up")
-                                        .foregroundColor(colorForFocus(
-                                            isActive: canMoveFocus(.up)))
-                                }
-                                .disabled(!canMoveFocus(.up))
-                                
-                                Button {
-                                    moveFocus(.down)
-                                } label: {
-                                    Image(systemName: "chevron.down")
-                                        .foregroundColor(colorForFocus(
-                                            isActive: canMoveFocus(.down)))
-                                }
-                                .disabled(!canMoveFocus(.down))
-                            } else if focusCalories != nil {
-                                Text("Calories")
-                                    .foregroundColor(.secondary)
-                            }
+                ScrollViewReader { proxy in
+                    List {
+                        Section {
+                        } footer: {
+                            Text("Set RDI by entering calories directly or calculate it based on macronutrient distribution.")
                         }
                         
-                        Button("Done") {
-                            focusCalories = nil
-                            focusMacronutrients = nil
+                        CalorieMetricsSection(
+                            focusedField: _focusCalories,
+                            customRdiViewModel: customRdiViewModel
+                        )
+                        .disabled(customRdiViewModel.toggleOn)
+                        
+                        if customRdiViewModel.toggleOn {
+                            MacronutrientMetricsSection(
+                                focusedField: _focusMacronutrients,
+                                customRdiViewModel: customRdiViewModel
+                            )
                         }
-                        .font(.headline)
+                        
+                        Section {
+                            Toggle(isOn: $customRdiViewModel.toggleOn) {
+                                Text("Macronutrient metrics")
+                            }
+                            .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+                        } footer: {
+                            Text("Enable this option to calculate intake using macronutrients.")
+                        }
                     }
-                    
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            if customRdiViewModel.handleSave() {
-                                Task {
-                                    await customRdiViewModel.saveCustomRdiView()
+                    .navigationBarTitle("Custom RDI", displayMode: .inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            HStack(spacing: 0) {
+                                if focusMacronutrients != nil {
+                                    Button {
+                                        moveFocus(.up)
+                                    } label: {
+                                        Image(systemName: "chevron.up")
+                                            .foregroundColor(colorForFocus(
+                                                isActive: canMoveFocus(.up)))
+                                    }
+                                    .disabled(!canMoveFocus(.up))
+                                    
+                                    Button {
+                                        moveFocus(.down)
+                                    } label: {
+                                        Image(systemName: "chevron.down")
+                                            .foregroundColor(colorForFocus(
+                                                isActive: canMoveFocus(.down)))
+                                    }
+                                    .disabled(!canMoveFocus(.down))
+                                } else if focusCalories != nil {
+                                    Text("Calories")
+                                        .foregroundColor(.secondary)
                                 }
-                                dismiss()
+                            }
+                            
+                            Button("Done") {
+                                focusCalories = nil
+                                focusMacronutrients = nil
+                            }
+                            .font(.headline)
+                        }
+                        
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Save") {
+                                if customRdiViewModel.handleSave() {
+                                    Task {
+                                        await customRdiViewModel
+                                            .saveCustomRdiView()
+                                    }
+                                    dismiss()
+                                }
                             }
                         }
                     }
-                }
-                .alert("Error", isPresented: $customRdiViewModel.showAlert) {
-                    Button("OK", role: .none) {
-                        customRdiViewModel.showAlert = false
+                    .onChange(of: focusMacronutrients) {
+                        guard let field = focusMacronutrients else { return }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            withAnimation {
+                                proxy.scrollTo(field.scrollID,
+                                               anchor: field.scrollAnchor)
+                            }
+                        }
                     }
-                } message: {
-                    Text(customRdiViewModel.alertMessage)
+                    .alert("Error",
+                           isPresented: $customRdiViewModel.showAlert) {
+                        Button("OK") {
+                            customRdiViewModel.showAlert = false
+                        }
+                    } message: {
+                        Text(customRdiViewModel.alertMessage)
+                    }
                 }
             } else {
                 LoadingView()
@@ -157,6 +170,18 @@ enum MacronutrientsFocus: Hashable {
     case fat
     case carbohydrate
     case protein
+    
+    var scrollID: String {
+        switch self {
+        case .fat: "fatField"
+        case .carbohydrate: "fatField"
+        case .protein: "fatField"
+        }
+    }
+    
+    var scrollAnchor: UnitPoint {
+        .top
+    }
 }
 
 #Preview {

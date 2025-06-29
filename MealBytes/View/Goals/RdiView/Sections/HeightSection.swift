@@ -38,10 +38,21 @@ struct HeightSection: View {
                 .pickerStyle(.menu)
                 .accentColor(rdiViewModel.selectedHeightUnit.accentColor)
             }
+            .id("heightField")
         } header: {
             Text("Height Details")
         } footer: {
             Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
+        }
+        
+        Section {
+            Text("RDI is an estimate and not medical advice.\nMealBytes")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .opacity(0.6)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .listRowBackground(Color.clear)
         }
     }
 }
