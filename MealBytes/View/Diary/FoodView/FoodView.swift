@@ -82,9 +82,10 @@ struct FoodView: View {
             }
             if showAddButton {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button("Cancel") {
                         dismiss()
                     }
+                    .font(.body)
                 }
             }
         }
@@ -234,6 +235,26 @@ struct FoodView: View {
             nutrientDetails: foodViewModel.nutrientDetails
         )
     }
+}
+
+#Preview {
+    FoodView(
+        navigationTitle: "Add to Diary",
+        food: Food(
+            searchFoodId: 3092,
+            searchFoodName: "Egg",
+            searchFoodDescription: "1 cup"
+        ),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "1",
+        measurementDescription: "Grams",
+        showAddButton: false,
+        showSaveRemoveButton: true,
+        showMealTypeButton: true,
+        originalMealItemId: UUID()
+    )
 }
 
 #Preview {

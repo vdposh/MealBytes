@@ -211,10 +211,10 @@ final class MainViewModel: ObservableObject {
     
     //MARK: - RDI % calculation
     private func calculateRdiPercentage(from calories: Double?) -> String {
-        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
+        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "0%" }
         let safeCalories = calories ?? 0.0
         let percentage = round((safeCalories / rdiValue) * 100)
-        return "RDI \(Int(percentage))%"
+        return "\(Int(percentage))%"
     }
     
     private func updateRdiProgress(calories: Double) {

@@ -57,6 +57,17 @@ enum Pluralizer {
         "skewer": "skewers",
         "kebab": "kebabs",
         "pop": "pops",
+        "taco": "tacos",
+        "burrito": "burritos",
+        "dumpling": "dumplings",
+        "omelet": "omelets",
+        "salad": "salads",
+        "curry": "curries",
+        "stew": "stews",
+        "soup": "soups",
+        "quesadilla": "quesadillas",
+        "wrap": "wraps",
+        "bowl": "bowls",
         
         // 🥦 Fruits and vegetables
         "apple": "apples",
@@ -75,6 +86,9 @@ enum Pluralizer {
         "leaf": "leaves",
         "globe": "globes",
         "clove": "cloves",
+        "sprout": "sprouts",
+        "berry": "berries",
+        "stalk": "stalks",
         
         // 🧀 Shapes and chunks
         "cube": "cubes",
@@ -87,6 +101,10 @@ enum Pluralizer {
         "half": "halves",
         "quarter": "quarters",
         "third": "thirds",
+        "ring": "rings",
+        "square": "squares",
+        "dome": "domes",
+        "rectangle": "rectangles",
         
         // 🍞 Baked goods and snacks
         "loaf": "loaves",
@@ -97,6 +115,16 @@ enum Pluralizer {
         "muffin": "muffins",
         "bun": "buns",
         "bar": "bars",
+        "sandwich": "sandwiches",
+        "pizza": "pizzas",
+        "waffle": "waffles",
+        "pancake": "pancakes",
+        "crepe": "crepes",
+        "cupcake": "cupcakes",
+        "tart": "tarts",
+        "brownie": "brownies",
+        "éclair": "éclairs",
+        "pastry": "pastries",
         
         // 🥣 Containers and packaging
         "serving": "servings",
@@ -115,6 +143,13 @@ enum Pluralizer {
         "pack": "packs",
         "tray": "trays",
         "dropper": "droppers",
+        "tub": "tubs",
+        "sleeve": "sleeves",
+        "pod": "pods",
+        "ampoule": "ampoules",
+        "vial": "vials",
+        "blister": "blisters",
+        "strip pack": "strip packs",
         
         // 🥄 Doses and small units
         "scoop": "scoops",
@@ -128,6 +163,9 @@ enum Pluralizer {
         "chewable": "chewables",
         "gummy": "gummies",
         "spray": "sprays",
+        "shot": "shots",
+        "patch": "patches",
+        "inhaler": "inhalers",
         
         // 🧂 Spices and seasonings
         "pinch": "pinches",
@@ -142,6 +180,12 @@ enum Pluralizer {
         "unit": "units",
         "portion": "portions",
         "piece": "pieces",
-        "bundle": "bundles"
+        "bundle": "bundles",
+        "inch": "inches",
+        "ounce": "ounces",
+        "liter": "liters",
+        "portion pack": "portion packs",
+        "bite": "bites",
+        "stack": "stacks"
     ]
 }

@@ -78,5 +78,6 @@ struct CaloriesSection: View {
             }
             .padding(.vertical, 5)
         }
+        .id(mainViewModel.shouldDisplayRdi)
     }
 }
