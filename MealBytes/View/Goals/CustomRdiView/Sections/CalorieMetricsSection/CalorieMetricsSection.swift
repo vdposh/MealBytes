@@ -14,7 +14,6 @@ struct CalorieMetricsSection: View {
     var body: some View {
         Section {
             calorieInputRow
-                .id("fatField")
         } header: {
             Text("Calorie Metrics")
         } footer: {

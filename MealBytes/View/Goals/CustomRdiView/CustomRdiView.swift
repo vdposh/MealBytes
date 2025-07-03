@@ -180,7 +180,11 @@ enum MacronutrientsFocus: Hashable {
     }
     
     var scrollAnchor: UnitPoint {
-        .top
+        switch self {
+        case .fat: .bottom
+        case .carbohydrate: .center
+        case .protein: .top
+        }
     }
 }
 

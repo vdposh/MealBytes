@@ -38,6 +38,7 @@ struct WeightSection: View {
                 .pickerStyle(.menu)
                 .accentColor(rdiViewModel.selectedWeightUnit.accentColor)
             }
+            .id("weightField")
         } header: {
             Text("Weight Details")
         } footer: {

@@ -45,6 +45,7 @@ struct MacronutrientMetricsSection: View {
                 .focused($focusedField, equals: .protein)
             }
             .padding(.bottom, 5)
+            .id("fatField")
         } header: {
             Text("Macronutrient Metrics")
         } footer: {

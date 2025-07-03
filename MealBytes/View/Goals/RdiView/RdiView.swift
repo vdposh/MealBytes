@@ -109,7 +109,7 @@ enum RdiFocus: Hashable {
     var scrollAnchor: UnitPoint {
         switch self {
         case .age: .bottom
-        case .weight: .top
+        case .weight: .center
         case .height: .top
         }
     }
