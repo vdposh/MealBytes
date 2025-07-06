@@ -34,6 +34,9 @@ final class FoodViewModel: ObservableObject {
     private let originalMealItemId: UUID
     let food: Food
     var mealType: MealType
+    var didChangeMealType: Bool {
+        mealType != originalMealType
+    }
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
@@ -136,6 +139,8 @@ final class FoodViewModel: ObservableObject {
     func updateMealItemFoodView(for date: Date) async {
         guard let selectedServing else { return }
         
+        let createdAt = didChangeMealType ? Date() : originalCreatedAt
+        
         let updatedMealItem = MealItem(
             id: originalMealItemId,
             foodId: food.searchFoodId,
@@ -148,7 +153,7 @@ final class FoodViewModel: ObservableObject {
             amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date,
             mealType: mealType,
-            createdAt: originalCreatedAt
+            createdAt: createdAt
         )
         
         Task {
