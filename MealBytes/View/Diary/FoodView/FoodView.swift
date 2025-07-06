@@ -119,6 +119,7 @@ struct FoodView: View {
                     description: foodViewModel.servingDescription
                 ) {
                     foodViewModel.showServingDialog.toggle()
+                    fieldFocused = false
                 }
                 .confirmationDialog(
                     "Select a Serving",
@@ -143,6 +144,7 @@ struct FoodView: View {
                         description: foodViewModel.mealType.rawValue
                     ) {
                         foodViewModel.showMealTypeDialog.toggle()
+                        fieldFocused = false
                     }
                     .confirmationDialog(
                         "Select a Meal Type",
@@ -237,6 +239,16 @@ struct FoodView: View {
     }
 }
 
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
+}
+
 #Preview {
     FoodView(
         navigationTitle: "Add to Diary",
@@ -255,13 +267,4 @@ struct FoodView: View {
         showMealTypeButton: true,
         originalMealItemId: UUID()
     )
-}
-
-#Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
 }

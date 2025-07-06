@@ -19,6 +19,7 @@ struct CalorieMetricsSection: View {
         } footer: {
             Text(customRdiViewModel.footerText)
         }
+        .id("fatField")
     }
     
     private var calorieInputRow: some View {

@@ -143,6 +143,8 @@ struct SearchView: View {
                         showMealTypeButton: false
                     )
                 }
+                .presentationCornerRadius(16)
+                .interactiveDismissDisabled(true)
             }
         }
     }

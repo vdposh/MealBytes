@@ -173,17 +173,13 @@ enum MacronutrientsFocus: Hashable {
     
     var scrollID: String {
         switch self {
-        case .fat: "fatField"
-        case .carbohydrate: "fatField"
-        case .protein: "fatField"
+        default: "fatField"
         }
     }
     
     var scrollAnchor: UnitPoint {
         switch self {
-        case .fat: .bottom
-        case .carbohydrate: .center
-        case .protein: .top
+        default: .top
         }
     }
 }
