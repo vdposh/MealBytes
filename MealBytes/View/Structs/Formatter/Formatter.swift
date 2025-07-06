@@ -28,27 +28,22 @@ struct Formatter {
                         unit: Unit,
                         alwaysRoundUp: Bool = false) -> String {
         let safeValue = value ?? 0.0
-        let baseValue: Double = alwaysRoundUp ? ceil(safeValue) : safeValue
+        let baseValue = alwaysRoundUp ? ceil(safeValue) : safeValue
         
-        let scale: Double = pow(10, 2)
-        let roundedValue = (baseValue * scale).rounded() / scale
+        let rounded = (baseValue * 100).rounded() / 100
         
-        let intValue = Int(roundedValue)
-        let firstDecimal = Int(roundedValue * 10) % 10
-        let secondDecimal = Int(roundedValue * 100) % 10
+        let raw = String(format: "%.2f", rounded)
         
-        let valueString: String
-        if secondDecimal == 0 {
-            if firstDecimal == 0 {
-                valueString = "\(intValue)"
-            } else {
-                valueString = String(format: "%.1f", roundedValue)
-            }
+        let cleaned: String
+        if raw.hasSuffix("00") {
+            cleaned = "\(Int(rounded))"
+        } else if raw.hasSuffix("0") {
+            cleaned = String(raw.dropLast())
         } else {
-            valueString = String(format: "%.2f", roundedValue)
+            cleaned = raw
         }
         
-        let finalValue = valueString.preparedForLocaleDecimal
+        let finalValue = cleaned.preparedForLocaleDecimal
         
         switch unit {
         case .empty:

@@ -75,13 +75,11 @@ struct FoodView: View {
         .navigationBarTitle(navigationTitle, displayMode: .inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
-                Text("Serving size")
-                    .foregroundColor(.secondary)
-                Button("Done") {
+                DoneButtonView {
                     fieldFocused = false
                 }
-                .font(.headline)
             }
+            
             if showAddButton {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Cancel") {

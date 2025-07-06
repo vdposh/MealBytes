@@ -36,13 +36,9 @@ struct RdiView: View {
                     .navigationBarTitle("RDI", displayMode: .inline)
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
-                            Text(toolbarTitle)
-                                .foregroundColor(.secondary)
-                            
-                            Button("Done") {
+                            DoneButtonView {
                                 focusedField = nil
                             }
-                            .font(.headline)
                         }
                         
                         ToolbarItem(placement: .confirmationAction) {
@@ -79,16 +75,6 @@ struct RdiView: View {
                         await rdiViewModel.loadRdiView()
                     }
             }
-        }
-    }
-    
-    // MARK: - Keyboard
-    private var toolbarTitle: String {
-        switch focusedField {
-        case .age: "Age"
-        case .weight: "Weight"
-        case .height: "Height"
-        default: ""
         }
     }
 }
