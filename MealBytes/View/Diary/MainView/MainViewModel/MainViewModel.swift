@@ -83,22 +83,21 @@ final class MainViewModel: ObservableObject {
     func updateMealItemMainView(_ updatedItem: MealItem,
                                 for mealType: MealType,
                                 on date: Date) {
-        guard var items = mealItems[mealType] else { return }
+        guard let items = mealItems[mealType] else { return }
         
         if let index = items.firstIndex(where: {
             $0.id == updatedItem.id &&
             calendar.isDate($0.date, inSameDayAs: date)
         }) {
-            items[index] = updatedItem
+            mealItems[mealType]?[index] = updatedItem
+        } else {
+            return
         }
-        
-        let updatedItems = items
         
         Task {
             do {
                 try await firestore.updateMealItemFirestore(updatedItem)
                 await MainActor.run {
-                    mealItems[mealType] = updatedItems
                     recalculateNutrients(for: date)
                 }
             } catch {

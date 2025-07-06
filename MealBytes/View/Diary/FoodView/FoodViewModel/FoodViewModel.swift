@@ -30,6 +30,7 @@ final class FoodViewModel: ObservableObject {
     private let showSaveRemoveButton: Bool
     private let formatter = Formatter()
     private let originalMealType: MealType
+    private let originalCreatedAt: Date
     private let originalMealItemId: UUID
     let food: Food
     var mealType: MealType
@@ -46,6 +47,7 @@ final class FoodViewModel: ObservableObject {
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,
+         originalCreatedAt: Date = Date(),
          originalMealItemId: UUID? = nil) {
         let roundedAmount = Formatter().formattedValue(
             Double(initialAmount),
@@ -62,6 +64,7 @@ final class FoodViewModel: ObservableObject {
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
         self.showSaveRemoveButton = showSaveRemoveButton
+        self.originalCreatedAt = originalCreatedAt
         self.originalMealItemId = originalMealItemId ?? UUID()
     }
     
@@ -144,7 +147,8 @@ final class FoodViewModel: ObservableObject {
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date,
-            mealType: mealType
+            mealType: mealType,
+            createdAt: originalCreatedAt
         )
         
         Task {

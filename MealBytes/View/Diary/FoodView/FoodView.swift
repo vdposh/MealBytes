@@ -28,6 +28,7 @@ struct FoodView: View {
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
          showMealTypeButton: Bool,
+         originalCreatedAt: Date = Date(),
          originalMealItemId: UUID? = nil) {
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
@@ -41,6 +42,7 @@ struct FoodView: View {
             initialAmount: amount,
             initialMeasurementDescription: measurementDescription,
             showSaveRemoveButton: showSaveRemoveButton,
+            originalCreatedAt: originalCreatedAt,
             originalMealItemId: originalMealItemId
         ))
     }
