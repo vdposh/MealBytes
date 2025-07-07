@@ -29,6 +29,7 @@ struct FoodItemRow: View {
                 showAddButton: false,
                 showSaveRemoveButton: true,
                 showMealTypeButton: true,
+                originalCreatedAt: mealItem.createdAt,
                 originalMealItemId: mealItem.id
             )
         ) {
@@ -41,6 +42,7 @@ struct FoodItemRow: View {
                             .foregroundColor(.customGreen)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .layoutPriority(0)
                     
                     Text(mainViewModel.formatter.formattedValue(
                         mealItem.nutrients[.calories],
@@ -51,7 +53,7 @@ struct FoodItemRow: View {
                     .font(.callout)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
-                    .frame(width: 60, alignment: .trailing)
+                    .layoutPriority(1)
                 }
                 
                 HStack {

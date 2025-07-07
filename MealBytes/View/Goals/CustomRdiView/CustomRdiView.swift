@@ -9,101 +9,109 @@ import SwiftUI
 
 struct CustomRdiView: View {
     @Environment(\.dismiss) private var dismiss
-    @FocusState private var focusCalories: CustomRdiFocus?
+    @FocusState private var caloriesFocused: Bool
     @FocusState private var focusMacronutrients: MacronutrientsFocus?
     @StateObject private var customRdiViewModel = CustomRdiViewModel()
     
     var body: some View {
         ZStack {
-            if customRdiViewModel.isLoading {
-                LoadingView()
-            } else {
-                List {
-                    Section {
-                    } footer: {
-                        Text("Set RDI by entering calories directly or calculate it based on macronutrient distribution.")
-                    }
-                    
-                    CalorieMetricsSection(
-                        focusedField: _focusCalories,
-                        customRdiViewModel: customRdiViewModel
-                    )
-                    .disabled(customRdiViewModel.toggleOn)
-                    
-                    if customRdiViewModel.toggleOn {
-                        MacronutrientMetricsSection(
-                            focusedField: _focusMacronutrients,
+            if customRdiViewModel.isDataLoaded {
+                ScrollViewReader { proxy in
+                    List {
+                        Section {
+                        } footer: {
+                            Text("Set RDI by entering calories directly or calculate it based on macronutrient distribution.")
+                        }
+                        
+                        CalorieMetricsSection(
+                            isFocused: $caloriesFocused,
                             customRdiViewModel: customRdiViewModel
                         )
-                    }
-                    
-                    Section {
-                        Toggle(isOn: $customRdiViewModel.toggleOn) {
-                            Text("Macronutrient metrics")
+                        .disabled(customRdiViewModel.toggleOn)
+                        
+                        if customRdiViewModel.toggleOn {
+                            MacronutrientMetricsSection(
+                                focusedField: _focusMacronutrients,
+                                customRdiViewModel: customRdiViewModel
+                            )
                         }
-                        .toggleStyle(SwitchToggleStyle(tint: .customGreen))
-                    } footer: {
-                        Text("Enable this option to calculate intake using macronutrients.")
+                        
+                        Section {
+                            Toggle(isOn: $customRdiViewModel.toggleOn) {
+                                Text("Macronutrient metrics")
+                            }
+                            .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+                        } footer: {
+                            Text("Enable this option to calculate intake using macronutrients.")
+                        }
                     }
-                }
-                .scrollDismissesKeyboard(.never)
-                .navigationBarTitle("Custom RDI", displayMode: .inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        HStack(spacing: 0) {
-                            if focusMacronutrients != nil {
-                                Button {
-                                    moveFocus(.up)
-                                } label: {
-                                    Image(systemName: "chevron.up")
-                                        .foregroundColor(colorForFocus(
-                                            isActive: canMoveFocus(.up)))
+                    .navigationBarTitle("Custom RDI", displayMode: .inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            HStack(spacing: 0) {
+                                if focusMacronutrients != nil {
+                                    Button {
+                                        moveFocus(.up)
+                                    } label: {
+                                        Image(systemName: "chevron.up")
+                                            .foregroundColor(colorForFocus(
+                                                isActive: canMoveFocus(.up)))
+                                    }
+                                    .disabled(!canMoveFocus(.up))
+                                    
+                                    Button {
+                                        moveFocus(.down)
+                                    } label: {
+                                        Image(systemName: "chevron.down")
+                                            .foregroundColor(colorForFocus(
+                                                isActive: canMoveFocus(.down)))
+                                    }
+                                    .disabled(!canMoveFocus(.down))
                                 }
-                                .disabled(!canMoveFocus(.up))
-                                
-                                Button {
-                                    moveFocus(.down)
-                                } label: {
-                                    Image(systemName: "chevron.down")
-                                        .foregroundColor(colorForFocus(
-                                            isActive: canMoveFocus(.down)))
-                                }
-                                .disabled(!canMoveFocus(.down))
-                            } else if focusCalories != nil {
-                                Text("Calories")
-                                    .foregroundColor(.secondary)
+                            }
+                            
+                            DoneButtonView {
+                                caloriesFocused = false
+                                focusMacronutrients = nil
                             }
                         }
                         
-                        Button("Done") {
-                            focusCalories = nil
-                            focusMacronutrients = nil
-                        }
-                        .font(.headline)
-                    }
-                    
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            if customRdiViewModel.handleSave() {
-                                Task {
-                                    await customRdiViewModel.saveCustomRdiView()
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Save") {
+                                if customRdiViewModel.handleSave() {
+                                    Task {
+                                        await customRdiViewModel
+                                            .saveCustomRdiView()
+                                    }
+                                    dismiss()
                                 }
-                                dismiss()
                             }
                         }
                     }
+                    .onChange(of: focusMacronutrients) {
+                        guard let field = focusMacronutrients else { return }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            withAnimation {
+                                proxy.scrollTo(field.scrollID,
+                                               anchor: field.scrollAnchor)
+                            }
+                        }
+                    }
+                    .alert("Error",
+                           isPresented: $customRdiViewModel.showAlert) {
+                        Button("OK") {
+                            customRdiViewModel.showAlert = false
+                        }
+                    } message: {
+                        Text(customRdiViewModel.alertMessage)
+                    }
                 }
+            } else {
+                LoadingView()
+                    .task {
+                        await customRdiViewModel.loadCustomRdiView()
+                    }
             }
-        }
-        .alert("Error", isPresented: $customRdiViewModel.showAlert) {
-            Button("OK", role: .none) {
-                customRdiViewModel.showAlert = false
-            }
-        } message: {
-            Text(customRdiViewModel.alertMessage)
-        }
-        .task {
-            await customRdiViewModel.loadCustomRdiView()
         }
     }
     
@@ -151,6 +159,24 @@ struct CustomRdiView: View {
     
     private func colorForFocus(isActive: Bool) -> Color {
         isActive ? .customGreen : .secondary
+    }
+}
+
+enum MacronutrientsFocus: Hashable {
+    case fat
+    case carbohydrate
+    case protein
+    
+    var scrollID: String {
+        switch self {
+        default: "fatField"
+        }
+    }
+    
+    var scrollAnchor: UnitPoint {
+        switch self {
+        default: .top
+        }
     }
 }
 

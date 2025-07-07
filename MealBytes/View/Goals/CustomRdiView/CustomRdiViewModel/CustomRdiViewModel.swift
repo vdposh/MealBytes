@@ -15,8 +15,8 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
-    @Published var isLoading: Bool = true
     @Published var showAlert: Bool = false
+    @Published var isDataLoaded: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
             if toggleOn {
@@ -53,17 +53,17 @@ final class CustomRdiViewModel: ObservableObject {
             let customGoalsData = try await firestore
                 .loadCustomRdiFirestore()
             await MainActor.run {
+                toggleOn = customGoalsData.macronutrientMetrics
                 calories = customGoalsData.calories
                 fat = customGoalsData.fat
                 carbohydrate = customGoalsData.carbohydrate
                 protein = customGoalsData.protein
-                toggleOn = customGoalsData.isCaloriesActive
-                isLoading = false
+                isDataLoaded = true
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
-                isLoading = false
+                isDataLoaded = true
             }
         }
     }
@@ -75,8 +75,9 @@ final class CustomRdiViewModel: ObservableObject {
             fat: fat,
             carbohydrate: carbohydrate,
             protein: protein,
-            isCaloriesActive: toggleOn
+            macronutrientMetrics: toggleOn
         )
+        
         do {
             try await firestore.saveCustomRdiFirestore(customGoalsData)
             await MainActor.run {
@@ -125,7 +126,8 @@ final class CustomRdiViewModel: ObservableObject {
         let carbValue = Double(carbohydrate.sanitizedForDouble) ?? 0
         let protValue = Double(protein.sanitizedForDouble) ?? 0
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
-        calories = formatter.formattedValue(totalCalories, unit: .empty)
+        
+        calories = formatter.roundedValue(totalCalories)
     }
     
     // MARK: - Input Validation
@@ -205,6 +207,10 @@ final class CustomRdiViewModel: ObservableObject {
         case true: .secondary
         case false: .primary
         }
+    }
+    
+    var underlineOpacity: Double {
+        toggleOn ? 0.6 : 1.0
     }
     
     var showStar: Bool {

@@ -125,6 +125,15 @@ struct MainView: View {
 }
 
 #Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
+}
+
+#Preview {
     NavigationStack {
         MainView(mainViewModel: MainViewModel())
     }

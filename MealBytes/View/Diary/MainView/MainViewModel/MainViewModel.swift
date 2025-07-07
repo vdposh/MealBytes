@@ -83,22 +83,21 @@ final class MainViewModel: ObservableObject {
     func updateMealItemMainView(_ updatedItem: MealItem,
                                 for mealType: MealType,
                                 on date: Date) {
-        guard var items = mealItems[mealType] else { return }
+        guard let items = mealItems[mealType] else { return }
         
         if let index = items.firstIndex(where: {
             $0.id == updatedItem.id &&
             calendar.isDate($0.date, inSameDayAs: date)
         }) {
-            items[index] = updatedItem
+            mealItems[mealType]?[index] = updatedItem
+        } else {
+            return
         }
-        
-        let updatedItems = items
         
         Task {
             do {
                 try await firestore.updateMealItemFirestore(updatedItem)
                 await MainActor.run {
-                    mealItems[mealType] = updatedItems
                     recalculateNutrients(for: date)
                 }
             } catch {
@@ -121,11 +120,8 @@ final class MainViewModel: ObservableObject {
                 await MainActor.run {
                     mealItems[mealType] = updatedItems
                     recalculateNutrients(for: date)
-                    
-                    if filteredMealItems(for: mealType, on: date).isEmpty {
-                        expandedSections[mealType] = false
-                    }
                 }
+                
                 do {
                     try await firestore
                         .deleteMealItemFirestore(itemToDelete)
@@ -189,6 +185,7 @@ final class MainViewModel: ObservableObject {
         await MainActor.run {
             shouldDisplayRdi = newValue
         }
+        
         do {
             try await firestore.saveDisplayRdiFirestore(newValue)
         } catch {
@@ -201,11 +198,10 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
-        async let bookmarksTask: () = searchViewModel.loadBookmarksSearchView()
         async let mainRdiTask: () = loadMainRdiMainView()
         async let displayRdiTask: () = loadDisplayRdiMainView()
         
-        _ = await (mealItemsTask, bookmarksTask, mainRdiTask, displayRdiTask)
+        _ = await (mealItemsTask, mainRdiTask, displayRdiTask)
         
         await MainActor.run {
             updateProgress()
@@ -214,10 +210,10 @@ final class MainViewModel: ObservableObject {
     
     //MARK: - RDI % calculation
     private func calculateRdiPercentage(from calories: Double?) -> String {
-        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "RDI 0%" }
+        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "0%" }
         let safeCalories = calories ?? 0.0
         let percentage = round((safeCalories / rdiValue) * 100)
-        return "RDI \(Int(percentage))%"
+        return "\(Int(percentage))%"
     }
     
     private func updateRdiProgress(calories: Double) {
@@ -322,9 +318,13 @@ final class MainViewModel: ObservableObject {
     }
     
     func formattedMealText(for mealItem: MealItem) -> String {
-        let formattedAmount = formatter.formattedValue(mealItem.amount,
-                                                       unit: .empty)
+        let formattedAmount = formatter.formattedValue(
+            mealItem.amount,
+            unit: .empty
+        )
+        
         let measurement = formattedMeasurement(for: mealItem)
+            .pluralized(for: mealItem.amount)
         
         if measurement == "g" || measurement == "ml" {
             return "\(formattedServingSize(for: mealItem))\(mealItem.portionUnit)"
@@ -492,13 +492,22 @@ final class MainViewModel: ObservableObject {
         }
             .suffix(adjustedWeekday)
         
-        let nextDays: [Date] = max(0,
-                                   (7 - (days.count + adjustedWeekday) % 7)) > 0
-        ? (1...max(0, (7 - (days.count + adjustedWeekday) % 7))).compactMap {
+        let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
+        
+        let nextDays: [Date] = (fillerCount > 0
+                                ? Array(1...fillerCount)
+                                : []
+        ).compactMap {
             guard let last = days.last else { return nil }
-            return calendar.date(byAdding: .day, value: $0, to: last)
+            let candidate = calendar.date(byAdding: .day, value: $0, to: last)
+            
+            guard let date = candidate else { return nil }
+            
+            return calendar.isDate(date,
+                                   equalTo: startOfMonth,
+                                   toGranularity: .month)
+            ? nil : date
         }
-        : []
         
         return Array(prevDays) + days + nextDays
     }

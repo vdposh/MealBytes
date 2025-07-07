@@ -30,9 +30,13 @@ final class FoodViewModel: ObservableObject {
     private let showSaveRemoveButton: Bool
     private let formatter = Formatter()
     private let originalMealType: MealType
+    private let originalCreatedAt: Date
     private let originalMealItemId: UUID
     let food: Food
     var mealType: MealType
+    var didChangeMealType: Bool {
+        mealType != originalMealType
+    }
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
@@ -46,6 +50,7 @@ final class FoodViewModel: ObservableObject {
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,
+         originalCreatedAt: Date = Date(),
          originalMealItemId: UUID? = nil) {
         let roundedAmount = Formatter().formattedValue(
             Double(initialAmount),
@@ -62,6 +67,7 @@ final class FoodViewModel: ObservableObject {
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
         self.showSaveRemoveButton = showSaveRemoveButton
+        self.originalCreatedAt = originalCreatedAt
         self.originalMealItemId = originalMealItemId ?? UUID()
     }
     
@@ -69,6 +75,7 @@ final class FoodViewModel: ObservableObject {
     @MainActor
     func fetchFoodDetails() async {
         isLoading = true
+        
         do {
             let fetchedFoodDetail = try await networkManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
@@ -116,6 +123,7 @@ final class FoodViewModel: ObservableObject {
             date: date, mealType: mealType
         )
         mainViewModel.addMealItemMainView(newItem, to: section, for: date)
+        
         Task {
             do {
                 try await firestore.addMealItemFirestore(newItem)
@@ -131,6 +139,8 @@ final class FoodViewModel: ObservableObject {
     func updateMealItemFoodView(for date: Date) async {
         guard let selectedServing else { return }
         
+        let createdAt = didChangeMealType ? Date() : originalCreatedAt
+        
         let updatedMealItem = MealItem(
             id: originalMealItemId,
             foodId: food.searchFoodId,
@@ -142,7 +152,8 @@ final class FoodViewModel: ObservableObject {
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date,
-            mealType: mealType
+            mealType: mealType,
+            createdAt: createdAt
         )
         
         Task {
@@ -240,21 +251,24 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
-        let description = serving.measurementDescription
+        var description = serving.measurementDescription
         let metricAmountFormatted = formatter.formattedValue(
             serving.metricServingAmount,
             unit: .empty
         )
         let metricUnit = serving.metricServingUnit
         
-        switch serving.isMetricMeasurement {
-        case true:
+        if serving.isMetricMeasurement {
             return description
-        case false where description.contains("serving (\(metricAmountFormatted)g"):
-            return description
-        default:
-            return "\(description) (\(metricAmountFormatted)\(metricUnit))"
         }
+        
+        if description.hasPrefix("serving"),
+           let range = description.range(of: #"serving\s*\([^)]+\)"#,
+                                         options: .regularExpression) {
+            description.replaceSubrange(range, with: "serving")
+        }
+        
+        return "\(description) (\(metricAmountFormatted)\(metricUnit))"
     }
     
     var servingDescription: String {

@@ -12,6 +12,7 @@ protocol FirebaseAuthProtocol {
     func signInAuth(email: String, password: String) async throws -> User
     func refreshTokenAuth() async throws -> String
     func checkCurrentUserAuth() -> Bool
+    func currentUserExists() -> Bool
     func signUpAuth(email: String, password: String) async throws
     func reauthenticateAuth(email: String, password: String) async throws
     func resetPasswordAuth(email: String) async throws
@@ -110,5 +111,9 @@ final class FirebaseAuth: FirebaseAuthProtocol {
                 }
             }
         }
+    }
+    
+    func currentUserExists() -> Bool {
+        Auth.auth().currentUser != nil
     }
 }

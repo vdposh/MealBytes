@@ -19,7 +19,8 @@ struct MacronutrientRow: View {
             ServingTextFieldView(
                 text: $textFieldBinding,
                 title: title,
-                keyboardType: .decimalPad,
+                keyboardType: .numberPad,
+                inputMode: .integer,
                 titleColor: titleColor,
                 maxIntegerDigits: 3
             )
@@ -42,6 +43,15 @@ struct MacronutrientRow: View {
             return .fat
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

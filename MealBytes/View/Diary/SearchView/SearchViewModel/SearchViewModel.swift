@@ -14,12 +14,14 @@ final class SearchViewModel: ObservableObject {
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
+    @Published var selectedMealType: MealType = .breakfast
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var query: String = "" {
         didSet {
             guard query != oldValue else { return }
+            currentPage = 0
             switch query.isEmpty {
             case true:
                 resetSearch()
@@ -29,11 +31,13 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    var shouldResetQuery = false
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModel
     
     private var searchCancellable: AnyCancellable?
@@ -62,6 +66,7 @@ final class SearchViewModel: ObservableObject {
                 }
                 
                 self.isLoading = true
+                
                 Task {
                     do {
                         let foods = try await self.networkManager
@@ -88,9 +93,16 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Load Bookmarks
-    func loadBookmarksSearchView() async {
+    func loadBookmarksSearchView(for mealType: MealType) async {
+        guard firebaseAuth.currentUserExists() else { return }
+        
+        await MainActor.run {
+            selectedMealType = mealType
+        }
+        
         do {
-            let favoriteFoods = try await firestore.loadBookmarksFirestore()
+            let favoriteFoods = try await firestore
+                .loadBookmarksFirestore(for: mealType)
             let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
             
             await MainActor.run {
@@ -99,18 +111,35 @@ final class SearchViewModel: ObservableObject {
                 if query.isEmpty {
                     self.foods = favoriteFoods
                 }
-                
-                if favoriteFoods.isEmpty {
-                    self.appError = .noBookmarks
-                } else {
-                    self.appError = nil
-                }
+                self.isLoading = false
+                self.appError = nil
             }
         } catch {
             await MainActor.run {
                 self.appError = .disconnected
+                self.isLoading = false
             }
         }
+    }
+    
+    func loadBookmarksData(for mealType: MealType) async {
+        shouldResetQuery = true
+        
+        if shouldResetQuery {
+            await MainActor.run {
+                query = ""
+                isLoading = true
+            }
+            shouldResetQuery = false
+        }
+        
+        await loadBookmarksSearchView(for: mealType)
+    }
+    
+    func mealSwitch(to meal: MealType) -> Bool {
+        guard meal != selectedMealType else { return false }
+        isLoading = true
+        return true
     }
     
     // MARK: - Toggle Bookmark
@@ -148,7 +177,8 @@ final class SearchViewModel: ObservableObject {
                 }
             }
             
-            try await firestore.addBookmarkFirestore(updatedFavorites)
+            try await firestore.addBookmarkFirestore(updatedFavorites,
+                                                     for: selectedMealType)
         }
     }
     

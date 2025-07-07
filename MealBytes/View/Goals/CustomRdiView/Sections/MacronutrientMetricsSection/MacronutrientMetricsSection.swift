@@ -53,10 +53,6 @@ struct MacronutrientMetricsSection: View {
     }
 }
 
-enum MacronutrientsFocus: Hashable {
-    case fat, carbohydrate, protein
-}
-
 #Preview {
     NavigationStack {
         CustomRdiView()

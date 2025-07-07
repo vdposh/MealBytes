@@ -11,6 +11,7 @@ extension View {
     @ViewBuilder
     func contentUnavailableView(
         for error: AppError,
+        mealType: MealType,
         query: String = "",
         action: @escaping () -> Void
     ) -> some View {
@@ -34,7 +35,7 @@ extension View {
                 ContentUnavailableView.search(text: query)
             case .noBookmarks:
                 Label {
-                    Text("No bookmarks yet")
+                    Text("No \(mealType.rawValue) bookmarks yet")
                 } icon: {
                     Image(systemName: "bookmark")
                 }

@@ -25,58 +25,54 @@ struct SearchView: View {
             if searchViewModel.isLoading {
                 LoadingView()
             } else if let error = searchViewModel.appError {
-                contentUnavailableView(for: error) {
+                contentUnavailableView(for: error, mealType: mealType) {
                     searchViewModel.queueSearch(searchViewModel.query)
                 }
             } else {
                 List {
-                    if !searchViewModel.foods.isEmpty {
-                        ForEach(searchViewModel.foods,
-                                id: \.searchFoodId) { food in
-                            HStack {
-                                Button {
-                                    selectedFood = food
-                                    showFoodView = true
-                                } label: {
-                                    FoodDetailView(food: food)
+                    ForEach(searchViewModel.foods,
+                            id: \.searchFoodId) { food in
+                        HStack {
+                            Button {
+                                selectedFood = food
+                                showFoodView = true
+                            } label: {
+                                FoodDetailView(food: food)
                                     .frame(
                                         maxWidth: .infinity,
                                         alignment: .leading
                                     )
-                                }
-                                .padding(.vertical, 1)
-                                .onChange(of: showFoodView) {
-                                    selectedFood = selectedFood
-                                }
-                                BookmarkButtonView(
-                                    action: {
-                                        searchViewModel.handleBookmarkAction(
-                                            for: food
-                                        )
-                                    },
-                                    isFilled: searchViewModel
-                                        .isBookmarkedSearchView(food),
-                                    width: 45, height: 24
-                                )
                             }
+                            .padding(.vertical, 1)
+                            .onChange(of: showFoodView) {
+                                selectedFood = selectedFood
+                            }
+                            BookmarkButtonView(
+                                action: {
+                                    searchViewModel
+                                        .handleBookmarkAction(for: food)
+                                },
+                                isFilled: searchViewModel
+                                    .isBookmarkedSearchView(food),
+                                width: 45, height: 24
+                            )
                         }
-                        pageButton(direction: .next)
-                        pageButton(direction: .previous)
+                    }
+                    pageButton(direction: .next)
+                    pageButton(direction: .previous)
+                }
+                .background {
+                    if searchViewModel.foods.isEmpty {
+                        contentUnavailableView(
+                            for: .noBookmarks,
+                            mealType: mealType
+                        ) { }
                     }
                 }
                 .listStyle(.plain)
-                .background(
-                    Group {
-                        if searchViewModel.foods.isEmpty {
-                            contentUnavailableView(for: .noBookmarks) { }
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                )
+                .scrollDismissesKeyboard(.immediately)
             }
         }
-        .scrollDismissesKeyboard(.immediately)
         .navigationBarTitle(
             searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
             displayMode: .large
@@ -97,13 +93,19 @@ struct SearchView: View {
                     }
                 }
                 .confirmationDialog(
-                    "Choose a Meal",
+                    "Select a Meal Type",
                     isPresented: $searchViewModel.showMealType,
                     titleVisibility: .visible
                 ) {
                     ForEach(MealType.allCases, id: \.self) { meal in
                         Button {
-                            mealType = meal
+                            if searchViewModel.mealSwitch(to: meal) {
+                                mealType = meal
+                                Task {
+                                    await searchViewModel
+                                        .loadBookmarksSearchView(for: meal)
+                                }
+                            }
                         } label: {
                             Text(meal.rawValue)
                         }
@@ -141,6 +143,7 @@ struct SearchView: View {
                         showMealTypeButton: false
                     )
                 }
+                .interactiveDismissDisabled(true)
             }
         }
     }

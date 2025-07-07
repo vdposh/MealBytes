@@ -28,25 +28,22 @@ struct Formatter {
                         unit: Unit,
                         alwaysRoundUp: Bool = false) -> String {
         let safeValue = value ?? 0.0
-        let roundedValue: Double
+        let baseValue = alwaysRoundUp ? ceil(safeValue) : safeValue
         
-        switch alwaysRoundUp {
-        case true:
-            roundedValue = ceil(safeValue)
-        case false:
-            roundedValue = round(safeValue * 10) / 10
+        let rounded = (baseValue * 100).rounded() / 100
+        
+        let raw = String(format: "%.2f", rounded)
+        
+        let cleaned: String
+        if raw.hasSuffix("00") {
+            cleaned = "\(Int(rounded))"
+        } else if raw.hasSuffix("0") {
+            cleaned = String(raw.dropLast())
+        } else {
+            cleaned = raw
         }
         
-        var finalValue: String
-        
-        switch roundedValue.truncatingRemainder(dividingBy: 1) {
-        case 0:
-            finalValue = String(format: "%.0f", roundedValue)
-        default:
-            finalValue = String(format: "%.1f", roundedValue)
-        }
-        
-        finalValue = finalValue.replacingOccurrences(of: ".", with: ",")
+        let finalValue = cleaned.preparedForLocaleDecimal
         
         switch unit {
         case .empty:

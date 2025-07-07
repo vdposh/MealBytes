@@ -23,16 +23,19 @@ struct DatePickerView: View {
                     )
                 }
                 
-                Button {
-                    mainViewModel.changeMonth(
-                        by: -1,
-                        selectedDate: &selectedDate
-                    )
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing)
+                HStack {
+                    Button {
+                        mainViewModel.changeMonth(
+                            by: -1,
+                            selectedDate: &selectedDate
+                        )
+                    } label: {
+                        Image(systemName: "chevron.left")
+                        
+                            .padding(.trailing)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .trailing)
                 
                 Button {
                     mainViewModel.changeMonth(

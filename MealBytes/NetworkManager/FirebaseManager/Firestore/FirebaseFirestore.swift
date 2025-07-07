@@ -12,7 +12,7 @@ import FirebaseAuth
 
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
-    func loadBookmarksFirestore() async throws -> [Food]
+    func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
     func loadLoginDataFirestore() async throws -> (email: String,
                                                    isLoggedIn: Bool)
     func loadCustomRdiFirestore() async throws -> CustomRdiData
@@ -20,7 +20,8 @@ protocol FirebaseFirestoreProtocol {
     func loadMainRdiFirestore() async throws -> String
     func loadDisplayRdiFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
-    func addBookmarkFirestore(_ foods: [Food]) async throws
+    func addBookmarkFirestore(_ foods: [Food],
+                              for mealType: MealType) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
     func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
@@ -89,7 +90,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Load bookmarks
-    func loadBookmarksFirestore() async throws -> [Food] {
+    func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -100,7 +101,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .getDocument()
         
         guard let data = snapshot.data(),
-              let foodsArray = data["foods"] as? [[String: Any]] else {
+              let foodsArray = data[mealType.rawValue.lowercased()] as?
+                [[String: Any]] else {
             return []
         }
         
@@ -108,25 +110,27 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             Food(
                 searchFoodId: foodData["food_id"] as? Int ?? 0,
                 searchFoodName: foodData["food_name"] as? String ?? "",
-                searchFoodDescription: foodData[
-                    "food_description"] as? String ?? ""
+                searchFoodDescription: foodData["food_description"] as? 
+                String ?? ""
             )
         }
     }
     
     // MARK: - Add bookmarks
-    func addBookmarkFirestore(_ foods: [Food]) async throws {
+    func addBookmarkFirestore(_ foods: [Food],
+                              for mealType: MealType) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let data = try foods.map { food in
-            try Firestore.Encoder().encode(food)
-        }
+        
+        let encodedFoods = try foods.map { try Firestore.Encoder().encode($0) }
+        
         try await firestore.collection("users")
             .document(uid)
             .collection("favoriteFoods")
             .document("favorites")
-            .setData(["foods": data])
+            .setData([mealType.rawValue.lowercased(): encodedFoods],
+                     merge: true)
     }
     
     // MARK: - Load customRDI Data

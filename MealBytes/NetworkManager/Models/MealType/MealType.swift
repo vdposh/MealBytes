@@ -11,7 +11,7 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     case breakfast = "Breakfast"
     case lunch = "Lunch"
     case dinner = "Dinner"
-    case other = "Other"
+    case snacks = "Snacks"
     
     var id: String { rawValue }
     
@@ -20,7 +20,7 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         case .breakfast: "sunrise.fill"
         case .lunch: "sun.max.fill"
         case .dinner: "moon.fill"
-        case .other: "tray.fill"
+        case .snacks: "tray.fill"
         }
     }
     

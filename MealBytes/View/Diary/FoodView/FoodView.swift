@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FoodView: View {
-    @FocusState private var fieldFocused: Bool
+    @FocusState private var amountFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
     private let navigationTitle: String
@@ -28,6 +28,7 @@ struct FoodView: View {
          showAddButton: Bool,
          showSaveRemoveButton: Bool,
          showMealTypeButton: Bool,
+         originalCreatedAt: Date = Date(),
          originalMealItemId: UUID? = nil) {
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
@@ -41,6 +42,7 @@ struct FoodView: View {
             initialAmount: amount,
             initialMeasurementDescription: measurementDescription,
             showSaveRemoveButton: showSaveRemoveButton,
+            originalCreatedAt: originalCreatedAt,
             originalMealItemId: originalMealItemId
         ))
     }
@@ -48,7 +50,10 @@ struct FoodView: View {
     var body: some View {
         ZStack {
             if let error = foodViewModel.appError {
-                contentUnavailableView(for: error) {
+                contentUnavailableView(
+                    for: error,
+                    mealType: foodViewModel.mealType
+                ) {
                     Task {
                         foodViewModel.appError = nil
                         await foodViewModel.fetchFoodDetails()
@@ -64,25 +69,23 @@ struct FoodView: View {
                         nutrientDetailSection
                     }
                     .listSectionSpacing(15)
-                    .scrollDismissesKeyboard(.never)
                 }
             }
         }
         .navigationBarTitle(navigationTitle, displayMode: .inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
-                Text("Serving size")
-                    .foregroundColor(.secondary)
-                Button("Done") {
-                    fieldFocused = false
+                DoneButtonView {
+                    amountFocused = false
                 }
-                .font(.headline)
             }
+            
             if showAddButton {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button("Cancel") {
                         dismiss()
                     }
+                    .font(.body)
                 }
             }
         }
@@ -102,11 +105,10 @@ struct FoodView: View {
                 ServingTextFieldView(
                     text: $foodViewModel.amount,
                     title: "Size",
-                    placeholder: "Enter serving size",
-                    keyboardType: .decimalPad
+                    placeholder: "Enter serving size"
                 )
-                .focused($fieldFocused)
-                .onChange(of: fieldFocused) { oldValue, newValue in
+                .focused($amountFocused)
+                .onChange(of: amountFocused) { oldValue, newValue in
                     foodViewModel.handleFocusChange(from: oldValue,
                                                     to: newValue)
                 }
@@ -117,6 +119,7 @@ struct FoodView: View {
                     description: foodViewModel.servingDescription
                 ) {
                     foodViewModel.showServingDialog.toggle()
+                    amountFocused = false
                 }
                 .confirmationDialog(
                     "Select a Serving",
@@ -141,9 +144,10 @@ struct FoodView: View {
                         description: foodViewModel.mealType.rawValue
                     ) {
                         foodViewModel.showMealTypeDialog.toggle()
+                        amountFocused = false
                     }
                     .confirmationDialog(
-                        "Choose a Meal",
+                        "Select a Meal Type",
                         isPresented: $foodViewModel.showMealTypeDialog,
                         titleVisibility: .visible
                     ) {
@@ -235,6 +239,7 @@ struct FoodView: View {
     }
 }
 
+
 #Preview {
     ContentView(
         loginViewModel: LoginViewModel(),
@@ -242,4 +247,24 @@ struct FoodView: View {
         goalsViewModel: GoalsViewModel()
     )
     .environmentObject(ThemeManager())
+}
+
+#Preview {
+    FoodView(
+        navigationTitle: "Add to Diary",
+        food: Food(
+            searchFoodId: 3092,
+            searchFoodName: "Egg",
+            searchFoodDescription: "1 cup"
+        ),
+        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+        mainViewModel: MainViewModel(),
+        mealType: .breakfast,
+        amount: "1",
+        measurementDescription: "Grams",
+        showAddButton: false,
+        showSaveRemoveButton: true,
+        showMealTypeButton: true,
+        originalMealItemId: UUID()
+    )
 }
