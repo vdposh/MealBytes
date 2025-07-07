@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalorieMetricsSection: View {
-    @FocusState var focusedField: CustomRdiFocus?
+    var isFocused: FocusState<Bool>.Binding
     @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
@@ -37,7 +37,7 @@ struct CalorieMetricsSection: View {
                 opacity: customRdiViewModel.underlineOpacity,
                 maxIntegerDigits: 5
             )
-            .focused($focusedField, equals: .calories)
+            .focused(isFocused)
             .padding(.trailing, 5)
             
             Text("kcal")
@@ -45,10 +45,6 @@ struct CalorieMetricsSection: View {
         }
         .padding(.bottom, 5)
     }
-}
-
-enum CustomRdiFocus: Hashable {
-    case calories
 }
 
 #Preview {

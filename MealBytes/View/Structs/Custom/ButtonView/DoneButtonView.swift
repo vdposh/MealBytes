@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct DoneButtonView: View {
+    var label: String = "Done"
     var action: () -> Void
 
     var body: some View {
-        Button("Done") {
-            action()
-        }
-        .font(.headline)
-        .frame(maxWidth: .infinity, alignment: .trailing)
+        Button(label, action: action)
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }

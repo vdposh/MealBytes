@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FoodView: View {
-    @FocusState private var fieldFocused: Bool
+    @FocusState private var amountFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
     private let navigationTitle: String
@@ -76,7 +76,7 @@ struct FoodView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 DoneButtonView {
-                    fieldFocused = false
+                    amountFocused = false
                 }
             }
             
@@ -107,8 +107,8 @@ struct FoodView: View {
                     title: "Size",
                     placeholder: "Enter serving size"
                 )
-                .focused($fieldFocused)
-                .onChange(of: fieldFocused) { oldValue, newValue in
+                .focused($amountFocused)
+                .onChange(of: amountFocused) { oldValue, newValue in
                     foodViewModel.handleFocusChange(from: oldValue,
                                                     to: newValue)
                 }
@@ -119,7 +119,7 @@ struct FoodView: View {
                     description: foodViewModel.servingDescription
                 ) {
                     foodViewModel.showServingDialog.toggle()
-                    fieldFocused = false
+                    amountFocused = false
                 }
                 .confirmationDialog(
                     "Select a Serving",
@@ -144,7 +144,7 @@ struct FoodView: View {
                         description: foodViewModel.mealType.rawValue
                     ) {
                         foodViewModel.showMealTypeDialog.toggle()
-                        fieldFocused = false
+                        amountFocused = false
                     }
                     .confirmationDialog(
                         "Select a Meal Type",

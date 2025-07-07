@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomRdiView: View {
     @Environment(\.dismiss) private var dismiss
-    @FocusState private var focusCalories: CustomRdiFocus?
+    @FocusState private var caloriesFocused: Bool
     @FocusState private var focusMacronutrients: MacronutrientsFocus?
     @StateObject private var customRdiViewModel = CustomRdiViewModel()
     
@@ -24,7 +24,7 @@ struct CustomRdiView: View {
                         }
                         
                         CalorieMetricsSection(
-                            focusedField: _focusCalories,
+                            isFocused: $caloriesFocused,
                             customRdiViewModel: customRdiViewModel
                         )
                         .disabled(customRdiViewModel.toggleOn)
@@ -67,17 +67,13 @@ struct CustomRdiView: View {
                                                 isActive: canMoveFocus(.down)))
                                     }
                                     .disabled(!canMoveFocus(.down))
-                                } else if focusCalories != nil {
-                                    Text("Calories")
-                                        .foregroundColor(.secondary)
                                 }
                             }
                             
-                            Button("Done") {
-                                focusCalories = nil
+                            DoneButtonView {
+                                caloriesFocused = false
                                 focusMacronutrients = nil
                             }
-                            .font(.headline)
                         }
                         
                         ToolbarItem(placement: .confirmationAction) {
