@@ -31,6 +31,21 @@ struct GenderSection: View {
     }
 }
 
+enum Gender: String, CaseIterable {
+    case notSelected = "Not selected"
+    case male = "Male"
+    case female = "Female"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        case .male, .female:
+            return .customGreen
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         RdiView()

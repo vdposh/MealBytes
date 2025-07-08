@@ -21,20 +21,20 @@ final class RdiViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var isDataLoaded: Bool = false
-
+    
     private let formatter = Formatter()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     let mainViewModel = MainViewModel()
     private var cancellables = Set<AnyCancellable>()
-
+    
     init() {
         setupDataObserver()
     }
-
+    
     deinit {
         cancellables.removeAll()
     }
-
+    
     // MARK: - Load RDI Data
     func loadRdiView() async {
         do {
@@ -61,7 +61,7 @@ final class RdiViewModel: ObservableObject {
             }
         }
     }
-
+    
     // MARK: - Save RDI Data
     func saveRdiView() async {
         let rdiData = RdiData(
@@ -74,7 +74,7 @@ final class RdiViewModel: ObservableObject {
             height: height.trimmedLeadingZeros,
             selectedHeightUnit: selectedHeightUnit.rawValue
         )
-
+        
         do {
             try await firestore.saveRdiFirestore(rdiData)
             await MainActor.run {
@@ -85,7 +85,7 @@ final class RdiViewModel: ObservableObject {
             appError = .decoding
         }
     }
-
+    
     // MARK: - RDI Calculation
     private func setupDataObserver() {
         Publishers.CombineLatest(
@@ -105,7 +105,7 @@ final class RdiViewModel: ObservableObject {
             let (height, gender) = combined1.1
             let (activity, units) = combined2
             let (weightUnit, heightUnit) = units
-
+            
             self?.recalculateRdi(
                 age: age,
                 weight: weight,
@@ -118,7 +118,7 @@ final class RdiViewModel: ObservableObject {
         }
         .store(in: &cancellables)
     }
-
+    
     private func recalculateRdi(age: String,
                                 weight: String,
                                 height: String,
@@ -135,14 +135,14 @@ final class RdiViewModel: ObservableObject {
             self.calculatedRdi = ""
             return
         }
-
+        
         let weightInKg = weightUnit == .lbs
-            ? weightValue * 0.453592
-            : weightValue
+        ? weightValue * 0.453592
+        : weightValue
         let heightInCm = heightUnit == .inches
-            ? heightValue * 2.54
-            : heightValue
-
+        ? heightValue * 2.54
+        : heightValue
+        
         let bmr: Double
         switch gender {
         case .male:
@@ -152,7 +152,7 @@ final class RdiViewModel: ObservableObject {
         case .notSelected:
             return
         }
-
+        
         let activityFactor: Double
         switch activity {
         case .sedentary: activityFactor = 1.2
@@ -162,33 +162,20 @@ final class RdiViewModel: ObservableObject {
         case .extraActive: activityFactor = 1.9
         case .notSelected: return
         }
-
+        
         self.calculatedRdi = formatter.roundedValue(bmr * activityFactor)
     }
-
-    // MARK: - Field Title Styling
-    func fieldTitleColor(for field: String) -> Color {
-        let sanitized = field.sanitizedForDouble
-
-        guard let value = Double(sanitized),
-              value > 0,
-              !sanitized.hasInvalidLeadingZeros else {
-            return .customRed
-        }
-
-        return .secondary
-    }
-
+    
     // MARK: - Input Validation
     private func validateInputs() -> String? {
         var errorMessages: [String] = []
-
+        
         let inputFields: [(String, String, String)] = [
             (age, age.sanitizedForDouble, "Enter a valid Age."),
             (weight, weight.sanitizedForDouble, "Enter a valid Weight."),
             (height, height.sanitizedForDouble, "Enter a valid Height.")
         ]
-
+        
         for (_, sanitized, message) in inputFields {
             if sanitized.isEmpty ||
                 Double(sanitized) == nil ||
@@ -197,39 +184,39 @@ final class RdiViewModel: ObservableObject {
                 errorMessages.append(message)
             }
         }
-
+        
         if let ageValue = Double(age.sanitizedForDouble),
            ageValue > 120 {
             errorMessages.append("Enter a valid Age.")
         }
-
+        
         if selectedGender == .notSelected {
             errorMessages.append("Select a Gender.")
         }
-
+        
         if selectedActivity == .notSelected {
             errorMessages.append("Select an Activity Level.")
         }
-
+        
         if selectedWeightUnit == .notSelected {
             errorMessages.append("Select a Weight Unit.")
         }
-
+        
         if selectedHeightUnit == .notSelected {
             errorMessages.append("Select a Height Unit.")
         }
-
+        
         return errorMessages.isEmpty ? nil : errorMessages.joined(
             separator: "\n"
         )
     }
-
+    
     private func hasLeadingZerosInUserInputs() -> Bool {
         age.hasInvalidLeadingZeros ||
         weight.hasInvalidLeadingZeros ||
         height.hasInvalidLeadingZeros
     }
-
+    
     func handleSave() -> Bool {
         if let errors = validateInputs() {
             alertMessage = errors
@@ -238,14 +225,31 @@ final class RdiViewModel: ObservableObject {
         }
         return true
     }
-
+    
     // MARK: - Keyboard
     func normalizeInputs() {
         age = age.trimmedLeadingZeros
         weight = weight.trimmedLeadingZeros
         height = height.trimmedLeadingZeros
     }
-
+    
+    // MARK: - Field Title Styling
+    func fieldTitleColor(for field: String) -> Color {
+        let sanitized = field.sanitizedForDouble
+        
+        guard let value = Double(sanitized),
+              value > 0,
+              !sanitized.hasInvalidLeadingZeros else {
+            return .customRed
+        }
+        
+        if field == age, value > 120 {
+            return .customRed
+        }
+        
+        return .secondary
+    }
+    
     // MARK: - Text
     func text(for calculatedRdi: String) -> String {
         guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
@@ -257,12 +261,12 @@ final class RdiViewModel: ObservableObject {
               ageValue <= 120 else {
             return "Fill in the data"
         }
-
+        
         return rdiValue == 1
-            ? "\(calculatedRdi) calorie"
-            : "\(calculatedRdi) calories"
+        ? "\(calculatedRdi) calorie"
+        : "\(calculatedRdi) calories"
     }
-
+    
     func color(for calculatedRdi: String) -> Color? {
         guard !calculatedRdi.isEmpty,
               selectedWeightUnit != .notSelected,
@@ -274,69 +278,6 @@ final class RdiViewModel: ObservableObject {
         }
         
         return .primary
-    }
-}
-
-enum Gender: String, CaseIterable {
-    case notSelected = "Not selected"
-    case male = "Male"
-    case female = "Female"
-    
-    var accentColor: Color {
-        switch self {
-        case .notSelected:
-            return .customRed
-        case .male, .female:
-            return .customGreen
-        }
-    }
-}
-
-enum Activity: String, CaseIterable {
-    case notSelected = "Not selected"
-    case sedentary = "Sedentary"
-    case lightlyActive = "Lightly Active"
-    case moderatelyActive = "Moderately Active"
-    case veryActive = "Very Active"
-    case extraActive = "Extra Active"
-    
-    var accentColor: Color {
-        switch self {
-        case .notSelected:
-            return .customRed
-        default:
-            return .customGreen
-        }
-    }
-}
-
-enum WeightUnit: String, CaseIterable {
-    case notSelected = "Not selected"
-    case kg = "kg"
-    case lbs = "lbs"
-    
-    var accentColor: Color {
-        switch self {
-        case .notSelected:
-            return .customRed
-        default:
-            return .customGreen
-        }
-    }
-}
-
-enum HeightUnit: String, CaseIterable {
-    case notSelected = "Not selected"
-    case cm = "cm"
-    case inches = "inches"
-    
-    var accentColor: Color {
-        switch self {
-        case .notSelected:
-            return .customRed
-        default:
-            return .customGreen
-        }
     }
 }
 

@@ -33,6 +33,24 @@ struct ActivitySection: View {
     }
 }
 
+enum Activity: String, CaseIterable {
+    case notSelected = "Not selected"
+    case sedentary = "Sedentary"
+    case lightlyActive = "Lightly Active"
+    case moderatelyActive = "Moderately Active"
+    case veryActive = "Very Active"
+    case extraActive = "Extra Active"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         RdiView()

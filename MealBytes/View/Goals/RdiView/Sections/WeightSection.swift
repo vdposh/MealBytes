@@ -47,6 +47,21 @@ struct WeightSection: View {
     }
 }
 
+enum WeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
+    case kg = "kg"
+    case lbs = "lbs"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         RdiView()

@@ -57,6 +57,21 @@ struct HeightSection: View {
     }
 }
 
+enum HeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
+    case cm = "cm"
+    case inches = "inches"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected:
+            return .customRed
+        default:
+            return .customGreen
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         RdiView()
