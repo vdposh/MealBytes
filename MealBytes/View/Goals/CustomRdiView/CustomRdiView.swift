@@ -73,6 +73,7 @@ struct CustomRdiView: View {
                             DoneButtonView {
                                 caloriesFocused = false
                                 focusMacronutrients = nil
+                                customRdiViewModel.normalizeInputs()
                             }
                         }
                         

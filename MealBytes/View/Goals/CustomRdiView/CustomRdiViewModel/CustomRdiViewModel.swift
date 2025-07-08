@@ -19,6 +19,7 @@ final class CustomRdiViewModel: ObservableObject {
     @Published var isDataLoaded: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
+            normalizeInputs()
             if toggleOn {
                 calculateCalories(fat: fat,
                                   carbohydrate: carbohydrate,
@@ -50,8 +51,7 @@ final class CustomRdiViewModel: ObservableObject {
     // MARK: - Load CustomGoals Data
     func loadCustomRdiView() async {
         do {
-            let customGoalsData = try await firestore
-                .loadCustomRdiFirestore()
+            let customGoalsData = try await firestore.loadCustomRdiFirestore()
             await MainActor.run {
                 toggleOn = customGoalsData.macronutrientMetrics
                 calories = customGoalsData.calories
@@ -71,10 +71,10 @@ final class CustomRdiViewModel: ObservableObject {
     // MARK: - Save Textfields Info
     func saveCustomRdiView() async {
         let customGoalsData = CustomRdiData(
-            calories: calories,
-            fat: fat,
-            carbohydrate: carbohydrate,
-            protein: protein,
+            calories: calories.trimmedLeadingZeros,
+            fat: fat.trimmedLeadingZeros,
+            carbohydrate: carbohydrate.trimmedLeadingZeros,
+            protein: protein.trimmedLeadingZeros,
             macronutrientMetrics: toggleOn
         )
         
@@ -118,9 +118,7 @@ final class CustomRdiViewModel: ObservableObject {
     private func calculateCalories(fat: String,
                                    carbohydrate: String,
                                    protein: String) {
-        guard toggleOn else {
-            return
-        }
+        guard toggleOn else { return }
         
         let fatValue = Double(fat.sanitizedForDouble) ?? 0
         let carbValue = Double(carbohydrate.sanitizedForDouble) ?? 0
@@ -135,22 +133,27 @@ final class CustomRdiViewModel: ObservableObject {
         var errorMessages: [String] = []
         
         if !toggleOn {
-            if calories.sanitizedForDouble.isEmpty ||
-                Double(calories.sanitizedForDouble) == nil ||
-                Double(calories.sanitizedForDouble) == 0 {
+            let sanitized = calories.sanitizedForDouble
+            if sanitized.isEmpty ||
+                Double(sanitized) == nil ||
+                Double(sanitized) == 0 ||
+                calories.hasInvalidLeadingZeros {
                 errorMessages.append("Enter a valid calorie value.")
             }
         } else {
-            let macronutrients: [(String, String)] = [
-                (fat.sanitizedForDouble,
+            let macronutrients: [(String, String, String)] = [
+                (fat, fat.sanitizedForDouble,
                  "Enter a valid fat value."),
-                (carbohydrate.sanitizedForDouble,
+                (carbohydrate, carbohydrate.sanitizedForDouble,
                  "Enter a valid carbohydrate value."),
-                (protein.sanitizedForDouble,
+                (protein, protein.sanitizedForDouble,
                  "Enter a valid protein value.")
             ]
-            for (value, errorMessage) in macronutrients {
-                if value.isEmpty || Double(value) == nil || Double(value) == 0 {
+            for (raw, sanitized, errorMessage) in macronutrients {
+                if sanitized.isEmpty ||
+                    Double(sanitized) == nil ||
+                    Double(sanitized) == 0 ||
+                    raw.hasInvalidLeadingZeros {
                     errorMessages.append(errorMessage)
                 }
             }
@@ -163,20 +166,37 @@ final class CustomRdiViewModel: ObservableObject {
         }
     }
     
+    private func hasLeadingZerosInUserInputs() -> Bool {
+        calories.hasInvalidLeadingZeros ||
+        fat.hasInvalidLeadingZeros ||
+        carbohydrate.hasInvalidLeadingZeros ||
+        protein.hasInvalidLeadingZeros
+    }
+    
     func handleSave() -> Bool {
         if let errors = validateInputs() {
             alertMessage = errors
             showAlert = true
             return false
-        } else {
-            return true
         }
+        return true
+    }
+    
+    // MARK: - Keyboard
+    func normalizeInputs() {
+        calories = calories.trimmedLeadingZeros
+        fat = fat.trimmedLeadingZeros
+        carbohydrate = carbohydrate.trimmedLeadingZeros
+        protein = protein.trimmedLeadingZeros
     }
     
     // MARK: - Text
     func text(for calculatedRdi: String) -> String {
-        guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
-              rdiValue > 0 else {
+        let sanitized = calculatedRdi.sanitizedForDouble
+        
+        guard let rdiValue = Double(sanitized),
+              rdiValue > 0,
+              !hasLeadingZerosInUserInputs() else {
             return "Fill in the data"
         }
         
@@ -192,14 +212,16 @@ final class CustomRdiViewModel: ObservableObject {
     func titleColor(for value: String,
                     isCalorie: Bool = false) -> Color {
         if isCalorie && toggleOn {
-            return Color.secondary
-        } else if value.isEmpty ||
-                    Double(value.sanitizedForDouble) == nil ||
-                    Double(value.sanitizedForDouble) == 0 {
-            return Color.customRed
-        } else {
-            return Color.secondary
+            return .secondary
         }
+        
+        let sanitized = value.sanitizedForDouble
+        let isInvalid = sanitized.isEmpty ||
+        Double(sanitized) == nil ||
+        Double(sanitized) == 0 ||
+        value.hasInvalidLeadingZeros
+        
+        return isInvalid ? .customRed : .secondary
     }
     
     var caloriesTextColor: Color {
@@ -214,7 +236,7 @@ final class CustomRdiViewModel: ObservableObject {
     }
     
     var showStar: Bool {
-        return !toggleOn
+        !toggleOn
     }
     
     var footerText: String {

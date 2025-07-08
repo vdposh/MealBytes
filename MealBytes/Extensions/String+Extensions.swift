@@ -16,6 +16,23 @@ extension String {
         self.replacingOccurrences(of: ".", with: ",")
     }
     
+    var trimmedLeadingZeros: String {
+        let cleaned = self.sanitizedForDouble
+        if let number = Double(cleaned) {
+            return number.truncatingRemainder(dividingBy: 1) == 0
+            ? String(Int(number))
+            : String(number)
+        } else {
+            return "0"
+        }
+    }
+    
+    var hasInvalidLeadingZeros: Bool {
+        let components = self.components(separatedBy: ".")
+        guard let integerPart = components.first else { return false }
+        return integerPart.count > 1 && integerPart.hasPrefix("0")
+    }
+    
     func pluralized(for amount: Double) -> String {
         guard amount != 1 else { return self }
         

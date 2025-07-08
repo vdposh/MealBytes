@@ -280,8 +280,13 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Button States
     var canAddFood: Bool {
-        let amountValue = Double(amount.sanitizedForDouble) ?? 0
-        return amountValue > 0
+        let sanitized = amount.sanitizedForDouble
+        guard let value = Double(sanitized),
+              value > 0,
+              !sanitized.hasInvalidLeadingZeros else {
+            return false
+        }
+        return true
     }
     
     // MARK: - Nutrient Calculation
@@ -331,6 +336,11 @@ final class FoodViewModel: ObservableObject {
                     isSubValue: detail.isSubValue
                 )
             }
+    }
+    
+    //MARK: - Keyboard
+    func normalizeAmount() {
+        amount = amount.trimmedLeadingZeros
     }
 }
 

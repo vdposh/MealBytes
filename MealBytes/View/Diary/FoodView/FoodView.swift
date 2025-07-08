@@ -77,6 +77,7 @@ struct FoodView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 DoneButtonView {
                     amountFocused = false
+                    foodViewModel.normalizeAmount()
                 }
             }
             

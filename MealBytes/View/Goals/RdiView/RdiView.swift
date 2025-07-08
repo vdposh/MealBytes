@@ -38,6 +38,7 @@ struct RdiView: View {
                         ToolbarItemGroup(placement: .keyboard) {
                             DoneButtonView {
                                 focusedField = nil
+                                rdiViewModel.normalizeInputs()
                             }
                         }
                         
