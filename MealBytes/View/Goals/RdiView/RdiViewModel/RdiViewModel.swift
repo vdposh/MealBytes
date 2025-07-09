@@ -163,7 +163,9 @@ final class RdiViewModel: ObservableObject {
         case .notSelected: return
         }
         
-        self.calculatedRdi = formatter.roundedValue(bmr * activityFactor)
+        self.calculatedRdi = formatter.roundedValue(
+            max(1, bmr * activityFactor)
+        )
     }
     
     // MARK: - Input Validation
@@ -212,9 +214,9 @@ final class RdiViewModel: ObservableObject {
     }
     
     private func hasLeadingZerosInUserInputs() -> Bool {
-        age.hasInvalidLeadingZeros ||
-        weight.hasInvalidLeadingZeros ||
-        height.hasInvalidLeadingZeros
+        age.sanitizedForDouble.hasInvalidLeadingZeros ||
+        weight.sanitizedForDouble.hasInvalidLeadingZeros ||
+        height.sanitizedForDouble.hasInvalidLeadingZeros
     }
     
     func handleSave() -> Bool {
