@@ -291,10 +291,10 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Nutrient Calculation
     private func calculateSelectedAmountValue() -> Double {
-        guard let selectedServing else { return 1 }
+        guard let selectedServing, canAddFood else { return 0 }
+        
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
-        return calculateBaseAmountValue(amountValue,
-                                        serving: selectedServing)
+        return calculateBaseAmountValue(amountValue, serving: selectedServing)
     }
     
     private func calculateBaseAmountValue(_ amount: Double,
