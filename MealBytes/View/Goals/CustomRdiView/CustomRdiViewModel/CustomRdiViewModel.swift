@@ -133,44 +133,25 @@ final class CustomRdiViewModel: ObservableObject {
         var errorMessages: [String] = []
         
         if !toggleOn {
-            let sanitized = calories.sanitizedForDouble
-            if sanitized.isEmpty ||
-                Double(sanitized) == nil ||
-                Double(sanitized) == 0 ||
-                calories.hasInvalidLeadingZeros {
+            if !calories.isValidNumericInput() {
                 errorMessages.append("Enter a valid calorie value.")
             }
         } else {
-            let macronutrients: [(String, String, String)] = [
-                (fat, fat.sanitizedForDouble,
-                 "Enter a valid fat value."),
-                (carbohydrate, carbohydrate.sanitizedForDouble,
-                 "Enter a valid carbohydrate value."),
-                (protein, protein.sanitizedForDouble,
-                 "Enter a valid protein value.")
+            let macronutrients: [(String, String)] = [
+                (fat, "Enter a valid fat value."),
+                (carbohydrate, "Enter a valid carbohydrate value."),
+                (protein, "Enter a valid protein value.")
             ]
-            for (raw, sanitized, errorMessage) in macronutrients {
-                if sanitized.isEmpty ||
-                    Double(sanitized) == nil ||
-                    Double(sanitized) == 0 ||
-                    raw.hasInvalidLeadingZeros {
-                    errorMessages.append(errorMessage)
+            for (value, message) in macronutrients {
+                if !value.isValidNumericInput() {
+                    errorMessages.append(message)
                 }
             }
         }
         
-        if errorMessages.isEmpty {
-            return nil
-        } else {
-            return errorMessages.joined(separator: "\n")
-        }
-    }
-    
-    private func hasLeadingZerosInUserInputs() -> Bool {
-        calories.hasInvalidLeadingZeros ||
-        fat.hasInvalidLeadingZeros ||
-        carbohydrate.hasInvalidLeadingZeros ||
-        protein.hasInvalidLeadingZeros
+        return errorMessages.isEmpty ? nil : errorMessages.joined(
+            separator: "\n"
+        )
     }
     
     func handleSave() -> Bool {
@@ -196,7 +177,10 @@ final class CustomRdiViewModel: ObservableObject {
         
         guard let rdiValue = Double(sanitized),
               rdiValue > 0,
-              !hasLeadingZerosInUserInputs() else {
+              calories.isValidNumericInput(),
+              fat.isValidNumericInput(),
+              carbohydrate.isValidNumericInput(),
+              protein.isValidNumericInput() else {
             return "Fill in the data"
         }
         
@@ -215,13 +199,7 @@ final class CustomRdiViewModel: ObservableObject {
             return .secondary
         }
         
-        let sanitized = value.sanitizedForDouble
-        let isInvalid = sanitized.isEmpty ||
-        Double(sanitized) == nil ||
-        Double(sanitized) == 0 ||
-        value.hasInvalidLeadingZeros
-        
-        return isInvalid ? .customRed : .secondary
+        return value.isValidNumericInput() ? .secondary : .customRed
     }
     
     var caloriesTextColor: Color {

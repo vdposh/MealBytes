@@ -18,19 +18,42 @@ extension String {
     
     var trimmedLeadingZeros: String {
         let cleaned = self.sanitizedForDouble
-        if let number = Double(cleaned) {
-            return number.truncatingRemainder(dividingBy: 1) == 0
-            ? String(Int(number))
-            : String(number)
-        } else {
-            return "0"
+        guard let number = Double(cleaned),
+              self.isValidNumericInput() else {
+            return self
         }
+        
+        return number.truncatingRemainder(dividingBy: 1) == 0
+        ? String(Int(number))
+        : String(number)
     }
     
     var hasInvalidLeadingZeros: Bool {
         let components = self.components(separatedBy: ".")
         guard let integerPart = components.first else { return false }
         return integerPart.count > 1 && integerPart.hasPrefix("0")
+    }
+    
+    func isValidNumericInput(in range: ClosedRange<Double>? = nil) -> Bool {
+        let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmed.hasPrefix(".") || trimmed.hasPrefix(",") {
+            return false
+        }
+        
+        let sanitized = trimmed.sanitizedForDouble
+        
+        guard let value = Double(sanitized),
+              value > 0,
+              !sanitized.hasInvalidLeadingZeros else {
+            return false
+        }
+        
+        if let range {
+            return range.contains(value)
+        }
+        
+        return true
     }
     
     func pluralized(for amount: Double) -> String {

@@ -280,13 +280,7 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Button States
     var canAddFood: Bool {
-        let sanitized = amount.sanitizedForDouble
-        guard let value = Double(sanitized),
-              value > 0,
-              !sanitized.hasInvalidLeadingZeros else {
-            return false
-        }
-        return true
+        amount.isValidNumericInput()
     }
     
     // MARK: - Nutrient Calculation

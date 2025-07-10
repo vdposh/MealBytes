@@ -126,15 +126,16 @@ final class RdiViewModel: ObservableObject {
                                 activity: Activity,
                                 weightUnit: WeightUnit,
                                 heightUnit: HeightUnit) {
-        guard let ageValue = Double(age.sanitizedForDouble),
-              let weightValue = Double(weight.sanitizedForDouble),
-              let heightValue = Double(height.sanitizedForDouble),
-              ageValue > 0, weightValue > 0, heightValue > 0,
+        guard isInputValidForCalculation,
               gender != .notSelected,
               activity != .notSelected else {
-            self.calculatedRdi = ""
+            calculatedRdi = ""
             return
         }
+        
+        let ageValue = Double(age.sanitizedForDouble) ?? 0
+        let weightValue = Double(weight.sanitizedForDouble) ?? 0
+        let heightValue = Double(height.sanitizedForDouble) ?? 0
         
         let weightInKg = weightUnit == .lbs
         ? weightValue * 0.453592
@@ -172,24 +173,16 @@ final class RdiViewModel: ObservableObject {
     private func validateInputs() -> String? {
         var errorMessages: [String] = []
         
-        let inputFields: [(String, String, String)] = [
-            (age, age.sanitizedForDouble, "Enter a valid Age."),
-            (weight, weight.sanitizedForDouble, "Enter a valid Weight."),
-            (height, height.sanitizedForDouble, "Enter a valid Height.")
-        ]
-        
-        for (_, sanitized, message) in inputFields {
-            if sanitized.isEmpty ||
-                Double(sanitized) == nil ||
-                Double(sanitized) == 0 ||
-                sanitized.hasInvalidLeadingZeros {
-                errorMessages.append(message)
-            }
+        if !age.isValidNumericInput(in: 1...120) {
+            errorMessages.append("Enter a valid Age.")
         }
         
-        if let ageValue = Double(age.sanitizedForDouble),
-           ageValue > 120 {
-            errorMessages.append("Enter a valid Age.")
+        if !weight.isValidNumericInput() {
+            errorMessages.append("Enter a valid Weight.")
+        }
+        
+        if !height.isValidNumericInput() {
+            errorMessages.append("Enter a valid Height.")
         }
         
         if selectedGender == .notSelected {
@@ -213,10 +206,10 @@ final class RdiViewModel: ObservableObject {
         )
     }
     
-    private func hasLeadingZerosInUserInputs() -> Bool {
-        age.sanitizedForDouble.hasInvalidLeadingZeros ||
-        weight.sanitizedForDouble.hasInvalidLeadingZeros ||
-        height.sanitizedForDouble.hasInvalidLeadingZeros
+    private var isInputValidForCalculation: Bool {
+        age.isValidNumericInput(in: 1...120) &&
+        weight.isValidNumericInput() &&
+        height.isValidNumericInput()
     }
     
     func handleSave() -> Bool {
@@ -237,30 +230,23 @@ final class RdiViewModel: ObservableObject {
     
     // MARK: - Field Title Styling
     func fieldTitleColor(for field: String) -> Color {
-        let sanitized = field.sanitizedForDouble
-        
-        guard let value = Double(sanitized),
-              value > 0,
-              !sanitized.hasInvalidLeadingZeros else {
-            return .customRed
+        let isAge = field == age
+        if isAge {
+            return field.isValidNumericInput(in: 1...120) ?
+                .secondary : .customRed
+        } else {
+            return field.isValidNumericInput() ?
+                .secondary : .customRed
         }
-        
-        if field == age, value > 120 {
-            return .customRed
-        }
-        
-        return .secondary
     }
     
     // MARK: - Text
     func text(for calculatedRdi: String) -> String {
         guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
               rdiValue > 0,
-              !hasLeadingZerosInUserInputs(),
+              isInputValidForCalculation,
               selectedWeightUnit != .notSelected,
-              selectedHeightUnit != .notSelected,
-              let ageValue = Double(age.sanitizedForDouble),
-              ageValue <= 120 else {
+              selectedHeightUnit != .notSelected else {
             return "Fill in the data"
         }
         
@@ -271,11 +257,9 @@ final class RdiViewModel: ObservableObject {
     
     func color(for calculatedRdi: String) -> Color? {
         guard !calculatedRdi.isEmpty,
+              isInputValidForCalculation,
               selectedWeightUnit != .notSelected,
-              selectedHeightUnit != .notSelected,
-              !hasLeadingZerosInUserInputs(),
-              let ageValue = Double(age.sanitizedForDouble),
-              ageValue <= 120 else {
+              selectedHeightUnit != .notSelected else {
             return .secondary
         }
         
