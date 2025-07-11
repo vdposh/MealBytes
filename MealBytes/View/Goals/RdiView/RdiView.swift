@@ -50,8 +50,13 @@ struct RdiView: View {
                                     }
                                     dismiss()
                                 }
+                                focusedField = nil
+                                rdiViewModel.normalizeInputs()
                             }
                         }
+                    }
+                    .onChange(of: focusedField) {
+                        rdiViewModel.handleFocusChange(from: focusedField)
                     }
                     .onChange(of: focusedField) {
                         guard let field = focusedField else { return }

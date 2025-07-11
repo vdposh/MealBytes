@@ -106,7 +106,10 @@ struct FoodView: View {
                 ServingTextFieldView(
                     text: $foodViewModel.amount,
                     title: "Size",
-                    placeholder: "Enter serving size"
+                    placeholder: "Enter serving size",
+                    titleColor: foodViewModel.titleColor(
+                        for: foodViewModel.amount
+                    )
                 )
                 .focused($amountFocused)
                 .onChange(of: amountFocused) { oldValue, newValue in
@@ -121,6 +124,7 @@ struct FoodView: View {
                 ) {
                     foodViewModel.showServingDialog.toggle()
                     amountFocused = false
+                    foodViewModel.normalizeAmount()
                 }
                 .confirmationDialog(
                     "Select a Serving",
@@ -146,6 +150,7 @@ struct FoodView: View {
                     ) {
                         foodViewModel.showMealTypeDialog.toggle()
                         amountFocused = false
+                        foodViewModel.normalizeAmount()
                     }
                     .confirmationDialog(
                         "Select a Meal Type",

@@ -33,14 +33,10 @@ struct MacronutrientRow: View {
     
     private var focusValue: MacronutrientsFocus {
         switch title {
-        case "Fat":
-            return .fat
-        case "Carbohydrate":
-            return .carbohydrate
-        case "Protein":
-            return .protein
-        default:
-            return .fat
+        case "Fat": return .fat
+        case "Carbohydrate": return .carbohydrate
+        case "Protein": return .protein
+        default: return .fat
         }
     }
 }

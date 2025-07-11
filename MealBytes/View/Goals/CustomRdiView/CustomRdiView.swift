@@ -86,7 +86,18 @@ struct CustomRdiView: View {
                                     }
                                     dismiss()
                                 }
+                                caloriesFocused = false
+                                focusMacronutrients = nil
+                                customRdiViewModel.normalizeInputs()
                             }
+                        }
+                    }
+                    .onChange(of: focusMacronutrients) {
+                        if let focusMacronutrients {
+                            customRdiViewModel.handleMacronutrientFocusChange(
+                                focus: focusMacronutrients,
+                                didGainFocus: false
+                            )
                         }
                     }
                     .onChange(of: focusMacronutrients) {
@@ -179,6 +190,15 @@ enum MacronutrientsFocus: Hashable {
         default: .top
         }
     }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

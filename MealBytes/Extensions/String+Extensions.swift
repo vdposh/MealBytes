@@ -29,7 +29,12 @@ extension String {
     }
     
     var hasInvalidLeadingZeros: Bool {
-        let components = self.components(separatedBy: ".")
+        let sanitized = self.sanitizedForDouble
+        if Double(sanitized) != nil {
+            return false
+        }
+        
+        let components = sanitized.components(separatedBy: ".")
         guard let integerPart = components.first else { return false }
         return integerPart.count > 1 && integerPart.hasPrefix("0")
     }
@@ -37,15 +42,9 @@ extension String {
     func isValidNumericInput(in range: ClosedRange<Double>? = nil) -> Bool {
         let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if trimmed.hasPrefix(".") || trimmed.hasPrefix(",") {
-            return false
-        }
-        
         let sanitized = trimmed.sanitizedForDouble
         
-        guard let value = Double(sanitized),
-              value > 0,
-              !sanitized.hasInvalidLeadingZeros else {
+        guard let value = Double(sanitized), value > 0 else {
             return false
         }
         

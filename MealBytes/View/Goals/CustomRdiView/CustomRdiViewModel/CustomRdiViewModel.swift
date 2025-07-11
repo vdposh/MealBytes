@@ -163,14 +163,6 @@ final class CustomRdiViewModel: ObservableObject {
         return true
     }
     
-    // MARK: - Keyboard
-    func normalizeInputs() {
-        calories = calories.trimmedLeadingZeros
-        fat = fat.trimmedLeadingZeros
-        carbohydrate = carbohydrate.trimmedLeadingZeros
-        protein = protein.trimmedLeadingZeros
-    }
-    
     // MARK: - Text
     func text(for calculatedRdi: String) -> String {
         let sanitized = calculatedRdi.sanitizedForDouble
@@ -222,6 +214,49 @@ final class CustomRdiViewModel: ObservableObject {
         ? "Calories will be calculated automatically based on the entered macronutrients."
         : "Necessary calorie amount can be entered directly."
     }
+    
+    // MARK: - Keyboard
+    func normalizeInputs() {
+        calories = calories.trimmedLeadingZeros
+        fat = fat.trimmedLeadingZeros
+        carbohydrate = carbohydrate.trimmedLeadingZeros
+        protein = protein.trimmedLeadingZeros
+    }
+    
+    // MARK: - Focus
+    func handleMacronutrientFocusChange(focus: MacronutrientsFocus,
+                                        didGainFocus: Bool) {
+        normalizeInputs()
+        
+        switch focus {
+        case .fat:
+            if didGainFocus {
+            } else if fat.isValidNumericInput() {
+                fat = fat.trimmedLeadingZeros
+            }
+            
+        case .carbohydrate:
+            if didGainFocus {
+            } else if carbohydrate.isValidNumericInput() {
+                carbohydrate = carbohydrate.trimmedLeadingZeros
+            }
+            
+        case .protein:
+            if didGainFocus {
+            } else if protein.isValidNumericInput() {
+                protein = protein.trimmedLeadingZeros
+            }
+        }
+    }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

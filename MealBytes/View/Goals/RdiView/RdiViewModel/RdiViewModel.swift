@@ -10,9 +10,9 @@ import Combine
 
 final class RdiViewModel: ObservableObject {
     @Published var appError: AppError?
-    @Published var height: String = ""
-    @Published var weight: String = ""
     @Published var age: String = ""
+    @Published var weight: String = ""
+    @Published var height: String = ""
     @Published var selectedGender: Gender = .notSelected
     @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .notSelected
@@ -171,45 +171,64 @@ final class RdiViewModel: ObservableObject {
     
     // MARK: - Input Validation
     private func validateInputs() -> String? {
-        var errorMessages: [String] = []
+        var invalidFields: [String] = []
+        var missingSelections: [String] = []
+        var missingUnits: [String] = []
         
         if !age.isValidNumericInput(in: 1...120) {
-            errorMessages.append("Enter a valid Age.")
+            invalidFields.append("Age")
         }
-        
         if !weight.isValidNumericInput() {
-            errorMessages.append("Enter a valid Weight.")
+            invalidFields.append("Weight")
         }
-        
         if !height.isValidNumericInput() {
-            errorMessages.append("Enter a valid Height.")
+            invalidFields.append("Height")
         }
         
         if selectedGender == .notSelected {
-            errorMessages.append("Select a Gender.")
+            missingSelections.append("Gender")
         }
-        
         if selectedActivity == .notSelected {
-            errorMessages.append("Select an Activity Level.")
+            missingSelections.append("Activity Level")
         }
         
         if selectedWeightUnit == .notSelected {
-            errorMessages.append("Select a Weight Unit.")
+            missingUnits.append("Weight")
         }
-        
         if selectedHeightUnit == .notSelected {
-            errorMessages.append("Select a Height Unit.")
+            missingUnits.append("Height")
         }
         
-        return errorMessages.isEmpty ? nil : errorMessages.joined(
-            separator: "\n"
-        )
+        var messages: [String] = []
+        
+        if !invalidFields.isEmpty {
+            messages.append("Enter a valid \(formatList(invalidFields))")
+        }
+        
+        if !missingSelections.isEmpty {
+            messages.append("Select \(formatList(missingSelections))")
+        }
+        
+        if !missingUnits.isEmpty {
+            let isPlural = missingUnits.count != 1
+            let unitMessage = isPlural
+            ? "Specify units for \(formatList(missingUnits))"
+            : "Specify unit for \(formatList(missingUnits))"
+            messages.append(unitMessage)
+        }
+        
+        return messages.isEmpty ? nil : messages.joined(separator: "\n")
     }
     
-    private var isInputValidForCalculation: Bool {
-        age.isValidNumericInput(in: 1...120) &&
-        weight.isValidNumericInput() &&
-        height.isValidNumericInput()
+    private func formatList(_ items: [String]) -> String {
+        switch items.count {
+        case 0: return ""
+        case 1: return items[0]
+        case 2: return items.joined(separator: " and ")
+        default:
+            let allExceptLast = items.dropLast().joined(separator: ", ")
+            return "\(allExceptLast) and \(items.last ?? "")"
+        }
     }
     
     func handleSave() -> Bool {
@@ -221,23 +240,10 @@ final class RdiViewModel: ObservableObject {
         return true
     }
     
-    // MARK: - Keyboard
-    func normalizeInputs() {
-        age = age.trimmedLeadingZeros
-        weight = weight.trimmedLeadingZeros
-        height = height.trimmedLeadingZeros
-    }
-    
-    // MARK: - Field Title Styling
-    func fieldTitleColor(for field: String) -> Color {
-        let isAge = field == age
-        if isAge {
-            return field.isValidNumericInput(in: 1...120) ?
-                .secondary : .customRed
-        } else {
-            return field.isValidNumericInput() ?
-                .secondary : .customRed
-        }
+    private var isInputValidForCalculation: Bool {
+        age.isValidNumericInput(in: 1...120) &&
+        weight.isValidNumericInput() &&
+        height.isValidNumericInput()
     }
     
     // MARK: - Text
@@ -265,6 +271,57 @@ final class RdiViewModel: ObservableObject {
         
         return .primary
     }
+    
+    func fieldTitleColor(for field: String) -> Color {
+        let isAge = field == age
+        if isAge {
+            return field.isValidNumericInput(in: 1...120) ?
+                .secondary : .customRed
+        } else {
+            return field.isValidNumericInput() ?
+                .secondary : .customRed
+        }
+    }
+    
+    // MARK: - Keyboard
+    func normalizeInputs() {
+        age = age.trimmedLeadingZeros
+        weight = weight.trimmedLeadingZeros
+        height = height.trimmedLeadingZeros
+    }
+    
+    // MARK: - Focus
+    func handleFocusChange(from previous: RdiFocus?) {
+        normalizeInputs()
+        
+        if let old = previous {
+            switch old {
+            case .age:
+                if age.isValidNumericInput(in: 1...120) {
+                    age = age.trimmedLeadingZeros
+                }
+                
+            case .weight:
+                if weight.isValidNumericInput() {
+                    weight = weight.trimmedLeadingZeros
+                }
+                
+            case .height:
+                if height.isValidNumericInput() {
+                    height = height.trimmedLeadingZeros
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    ContentView(
+        loginViewModel: LoginViewModel(),
+        mainViewModel: MainViewModel(),
+        goalsViewModel: GoalsViewModel()
+    )
+    .environmentObject(ThemeManager())
 }
 
 #Preview {

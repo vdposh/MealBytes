@@ -235,20 +235,6 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
-        if newValue {
-            originalAmount = amount
-            amount = ""
-        } else {
-            if let newAmount = Double(amount.sanitizedForDouble),
-               newAmount > 0 {
-                originalAmount = amount
-            } else {
-                amount = originalAmount
-            }
-        }
-    }
-    
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
         var description = serving.measurementDescription
@@ -276,6 +262,11 @@ final class FoodViewModel: ObservableObject {
             return "Select a Serving"
         }
         return servingDescription(for: selectedServing)
+    }
+    
+    // MARK: - Text
+    func titleColor(for value: String) -> Color {
+        value.isValidNumericInput() ? .secondary : .customRed
     }
     
     // MARK: - Button States
@@ -335,6 +326,21 @@ final class FoodViewModel: ObservableObject {
     //MARK: - Keyboard
     func normalizeAmount() {
         amount = amount.trimmedLeadingZeros
+    }
+    
+    // MARK: - Focus
+    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
+        if newValue {
+            originalAmount = amount
+            amount = ""
+        } else {
+            if let newAmount = Double(amount.sanitizedForDouble),
+               newAmount > 0 {
+                originalAmount = amount
+            } else {
+                amount = originalAmount
+            }
+        }
     }
 }
 
