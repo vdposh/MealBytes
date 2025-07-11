@@ -130,28 +130,39 @@ final class CustomRdiViewModel: ObservableObject {
     
     // MARK: - Input Validation
     func validateInputs() -> String? {
-        var errorMessages: [String] = []
+        var invalidFields: [String] = []
         
         if !toggleOn {
             if !calories.isValidNumericInput() {
-                errorMessages.append("Enter a valid calorie value.")
+                invalidFields.append("Calorie")
             }
         } else {
-            let macronutrients: [(String, String)] = [
-                (fat, "Enter a valid fat value."),
-                (carbohydrate, "Enter a valid carbohydrate value."),
-                (protein, "Enter a valid protein value.")
-            ]
-            for (value, message) in macronutrients {
-                if !value.isValidNumericInput() {
-                    errorMessages.append(message)
-                }
+            if !fat.isValidNumericInput() {
+                invalidFields.append("Fat")
+            }
+            if !carbohydrate.isValidNumericInput() {
+                invalidFields.append("Carbohydrate")
+            }
+            if !protein.isValidNumericInput() {
+                invalidFields.append("Protein")
             }
         }
         
-        return errorMessages.isEmpty ? nil : errorMessages.joined(
-            separator: "\n"
-        )
+        guard !invalidFields.isEmpty else { return nil }
+        
+        let fieldList = formatList(invalidFields)
+        return "Enter a valid \(fieldList) value."
+    }
+    
+    private func formatList(_ items: [String]) -> String {
+        switch items.count {
+        case 0: return ""
+        case 1: return items[0]
+        case 2: return items.joined(separator: " and ")
+        default:
+            let allExceptLast = items.dropLast().joined(separator: ", ")
+            return "\(allExceptLast) and \(items.last ?? "")"
+        }
     }
     
     func handleSave() -> Bool {
