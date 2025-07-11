@@ -25,7 +25,7 @@ final class CustomRdiViewModel: ObservableObject {
                                   carbohydrate: carbohydrate,
                                   protein: protein)
             } else if calories.isEmpty {
-                calories = "0"
+                calories = ""
             }
         }
     }
@@ -37,10 +37,6 @@ final class CustomRdiViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        calories = "0"
-        fat = ""
-        carbohydrate = ""
-        protein = ""
         setupBindings()
     }
     
@@ -177,22 +173,19 @@ final class CustomRdiViewModel: ObservableObject {
     // MARK: - Text
     func text(for calculatedRdi: String) -> String {
         let sanitized = calculatedRdi.sanitizedForDouble
-        
-        guard let rdiValue = Double(sanitized),
-              rdiValue > 0,
-              calories.isValidNumericInput(),
-              fat.isValidNumericInput(),
-              carbohydrate.isValidNumericInput(),
-              protein.isValidNumericInput() else {
+        guard let rdiValue = Double(sanitized), rdiValue > 0 else {
             return "Fill in the data"
         }
         
-        switch rdiValue {
-        case 1:
-            return "\(calculatedRdi) calorie"
-        default:
-            return "\(calculatedRdi) calories"
+        if !toggleOn {
+            guard calories.isValidNumericInput() else {
+                return "Fill in the data"
+            }
         }
+        
+        return rdiValue == 1
+        ? "\(calculatedRdi) calorie"
+        : "\(calculatedRdi) calories"
     }
     
     // MARK: - UI Helpers

@@ -18,9 +18,17 @@ extension String {
     
     var trimmedLeadingZeros: String {
         let cleaned = self.sanitizedForDouble
-        guard let number = Double(cleaned),
-              self.isValidNumericInput() else {
+        let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard let number = Double(cleaned) else {
             return self
+        }
+        
+        if number == 0 && trimmed
+            .sanitizedForDouble
+            .preparedForLocaleDecimal
+            .allSatisfy({ $0 == "0" }) {
+            return ""
         }
         
         return number.truncatingRemainder(dividingBy: 1) == 0
@@ -28,20 +36,8 @@ extension String {
         : String(number)
     }
     
-    var hasInvalidLeadingZeros: Bool {
-        let sanitized = self.sanitizedForDouble
-        if Double(sanitized) != nil {
-            return false
-        }
-        
-        let components = sanitized.components(separatedBy: ".")
-        guard let integerPart = components.first else { return false }
-        return integerPart.count > 1 && integerPart.hasPrefix("0")
-    }
-    
     func isValidNumericInput(in range: ClosedRange<Double>? = nil) -> Bool {
         let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
-        
         let sanitized = trimmed.sanitizedForDouble
         
         guard let value = Double(sanitized), value > 0 else {
