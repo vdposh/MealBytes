@@ -48,7 +48,7 @@ struct ServingButtonView: View {
     let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
     let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-
+    
     ContentView(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel,

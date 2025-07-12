@@ -110,7 +110,7 @@ enum RdiFocus: Hashable {
     let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
     let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-
+    
     ContentView(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel,
@@ -122,7 +122,7 @@ enum RdiFocus: Hashable {
 #Preview {
     let mainViewModel = MainViewModel()
     let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-
+    
     return NavigationStack {
         RdiView(rdiViewModel: rdiViewModel)
     }

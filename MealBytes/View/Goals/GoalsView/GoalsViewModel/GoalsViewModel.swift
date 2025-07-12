@@ -13,7 +13,7 @@ final class GoalsViewModel: ObservableObject {
     private let mainViewModel: MainViewModel
     let rdiViewModel: RdiViewModel
     let customRdiViewModel: CustomRdiViewModel
-
+    
     init(mainViewModel: MainViewModel) {
         self.mainViewModel = mainViewModel
         self.rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
@@ -38,7 +38,7 @@ final class GoalsViewModel: ObservableObject {
     func rdiText() -> String {
         rdiViewModel.text(for: rdiViewModel.calculatedRdi)
     }
-
+    
     func customRdiText() -> String {
         customRdiViewModel.text(for: customRdiViewModel.calories)
     }
@@ -60,7 +60,7 @@ final class GoalsViewModel: ObservableObject {
     let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
     let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-
+    
     ContentView(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel,

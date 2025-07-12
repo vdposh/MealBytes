@@ -320,7 +320,7 @@ final class RdiViewModel: ObservableObject {
     let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
     let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-
+    
     ContentView(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel,
@@ -332,7 +332,7 @@ final class RdiViewModel: ObservableObject {
 #Preview {
     let mainViewModel = MainViewModel()
     let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-
+    
     return NavigationStack {
         RdiView(rdiViewModel: rdiViewModel)
     }

@@ -51,7 +51,7 @@ struct CalorieMetricsSection: View {
     let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
     let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-
+    
     ContentView(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel,
@@ -63,7 +63,7 @@ struct CalorieMetricsSection: View {
 #Preview {
     let mainViewModel = MainViewModel()
     let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
-
+    
     return NavigationStack {
         CustomRdiView(customRdiViewModel: customRdiViewModel)
     }

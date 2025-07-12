@@ -115,7 +115,7 @@ struct ServingTextFieldView: View {
                 input.removeLast()
                 return
             }
-
+            
             let suffixesToTrim = [",00", ".00", ",0", ".0"]
             for suffix in suffixesToTrim {
                 if input.hasSuffix(suffix) {
@@ -123,14 +123,14 @@ struct ServingTextFieldView: View {
                     return
                 }
             }
-
+            
             if let commaIndex = input.firstIndex(of: ",") {
                 let fractional = input[commaIndex...]
                 if fractional.hasSuffix("0") && fractional.count == 3 {
                     input.removeLast()
                 }
             }
-
+            
         case .integer:
             break
         }
@@ -146,7 +146,7 @@ enum InputMode {
     let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
     let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-
+    
     ContentView(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel,
