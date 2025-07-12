@@ -17,7 +17,7 @@ protocol FirebaseFirestoreProtocol {
                                                    isLoggedIn: Bool)
     func loadCustomRdiFirestore() async throws -> CustomRdiData
     func loadRdiFirestore() async throws -> RdiData
-    func loadMainRdiFirestore() async throws -> String
+    func loadMainRdiFirestore() async throws -> MainRdiData
     func loadDisplayRdiFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
     func addBookmarkFirestore(_ foods: [Food],
@@ -25,7 +25,7 @@ protocol FirebaseFirestoreProtocol {
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
     func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
-    func saveMainRdiFirestore(_ rdi: String) async throws
+    func saveMainRdiFirestore(_ data: MainRdiData) async throws
     func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
@@ -33,7 +33,7 @@ protocol FirebaseFirestoreProtocol {
 }
 
 final class FirebaseFirestore: FirebaseFirestoreProtocol {
-    private let firestore: Firestore = Firestore.firestore()
+    private lazy var firestore = Firestore.firestore()
     
     // MARK: - Fetch Data
     func loadMealItemsFirestore() async throws -> [MealItem] {
@@ -182,7 +182,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Load RDI String
-    func loadMainRdiFirestore() async throws -> String {
+    func loadMainRdiFirestore() async throws -> MainRdiData {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -191,15 +191,11 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("rdi")
             .document("myRdi")
         let snapshot = try await documentReference.getDocument()
-        guard let data = snapshot.data(),
-              let rdi = data["rdi"] as? String else {
-            return ""
-        }
-        return rdi
+        return try snapshot.data(as: MainRdiData.self)
     }
     
     // MARK: - Save RDI String
-    func saveMainRdiFirestore(_ rdi: String) async throws {
+    func saveMainRdiFirestore(_ data: MainRdiData) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -207,7 +203,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(uid)
             .collection("rdi")
             .document("myRdi")
-        try await documentReference.setData(["rdi": rdi])
+        try documentReference.setData(from: data)
     }
     
     // MARK: - Load Display RDI

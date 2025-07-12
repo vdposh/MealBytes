@@ -26,8 +26,16 @@ struct MealBytesApp: App {
     
     @StateObject private var mainViewModel = MainViewModel()
     @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var goalsViewModel = GoalsViewModel()
     @StateObject private var themeManager = ThemeManager()
+    @StateObject private var goalsViewModel: GoalsViewModel
+    
+    init() {
+        let mainViewModel = MainViewModel()
+        _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _goalsViewModel = StateObject(
+            wrappedValue: GoalsViewModel(mainViewModel: mainViewModel)
+        )
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -52,10 +60,14 @@ struct MealBytesApp: App {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }

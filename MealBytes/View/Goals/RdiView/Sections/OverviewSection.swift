@@ -28,7 +28,10 @@ struct OverviewSection: View {
 }
 
 #Preview {
-    NavigationStack {
-        RdiView()
+    let mainViewModel = MainViewModel()
+    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+
+    return NavigationStack {
+        RdiView(rdiViewModel: rdiViewModel)
     }
 }

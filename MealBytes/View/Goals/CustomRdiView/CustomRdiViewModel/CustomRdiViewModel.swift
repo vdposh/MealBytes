@@ -33,10 +33,11 @@ final class CustomRdiViewModel: ObservableObject {
     private let formatter = Formatter()
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    let mainViewModel = MainViewModel()
+    private let mainViewModel: MainViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(mainViewModel: MainViewModel) {
+        self.mainViewModel = mainViewModel
         setupBindings()
     }
     
@@ -79,7 +80,7 @@ final class CustomRdiViewModel: ObservableObject {
             await MainActor.run {
                 mainViewModel.rdi = calories
             }
-            await mainViewModel.saveMainRdiMainView()
+            await mainViewModel.saveMainRdiMainView(source: "customRdiView")
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -255,16 +256,23 @@ final class CustomRdiViewModel: ObservableObject {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }
 
 #Preview {
-    NavigationStack {
-        CustomRdiView()
+    let mainViewModel = MainViewModel()
+    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+
+    return NavigationStack {
+        CustomRdiView(customRdiViewModel: customRdiViewModel)
     }
 }

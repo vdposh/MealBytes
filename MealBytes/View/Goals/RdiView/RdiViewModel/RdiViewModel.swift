@@ -24,10 +24,11 @@ final class RdiViewModel: ObservableObject {
     
     private let formatter = Formatter()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    let mainViewModel = MainViewModel()
+    private let mainViewModel: MainViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(mainViewModel: MainViewModel) {
+        self.mainViewModel = mainViewModel
         setupDataObserver()
     }
     
@@ -80,7 +81,7 @@ final class RdiViewModel: ObservableObject {
             await MainActor.run {
                 mainViewModel.rdi = calculatedRdi
             }
-            await mainViewModel.saveMainRdiMainView()
+            await mainViewModel.saveMainRdiMainView(source: "rdiView")
         } catch {
             appError = .decoding
         }
@@ -316,16 +317,23 @@ final class RdiViewModel: ObservableObject {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }
 
 #Preview {
-    NavigationStack {
-        RdiView()
+    let mainViewModel = MainViewModel()
+    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+
+    return NavigationStack {
+        RdiView(rdiViewModel: rdiViewModel)
     }
 }

@@ -14,9 +14,13 @@ struct GoalsView: View {
         List {
             Section {
                 if goalsViewModel.isDataLoaded {
-                    NavigationLink(destination: RdiView()) {
+                    NavigationLink(destination: RdiView(
+                        rdiViewModel: goalsViewModel.rdiViewModel)
+                    ) {
                         LabeledContent {
                             Text(goalsViewModel.rdiText())
+                                .foregroundColor(goalsViewModel.rdiStyle.color)
+                                .fontWeight(goalsViewModel.rdiStyle.weight)
                         } label: {
                             HStack {
                                 Image(systemName: "person")
@@ -39,9 +43,17 @@ struct GoalsView: View {
             
             Section {
                 if goalsViewModel.isDataLoaded {
-                    NavigationLink(destination: CustomRdiView()) {
+                    NavigationLink(destination: CustomRdiView(
+                        customRdiViewModel: goalsViewModel.customRdiViewModel)
+                    ) {
                         LabeledContent {
                             Text(goalsViewModel.customRdiText())
+                                .foregroundColor(
+                                    goalsViewModel.customRdiStyle.color
+                                )
+                                .fontWeight(
+                                    goalsViewModel.customRdiStyle.weight
+                                )
                         } label: {
                             HStack {
                                 Image(systemName: "person.badge.plus")
@@ -70,10 +82,14 @@ struct GoalsView: View {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+    
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }

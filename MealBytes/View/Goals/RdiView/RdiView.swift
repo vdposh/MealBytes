@@ -10,7 +10,7 @@ import SwiftUI
 struct RdiView: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: RdiFocus?
-    @StateObject private var rdiViewModel = RdiViewModel()
+    @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
         ZStack {
@@ -107,16 +107,23 @@ enum RdiFocus: Hashable {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }
 
 #Preview {
-    NavigationStack {
-        RdiView()
+    let mainViewModel = MainViewModel()
+    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+
+    return NavigationStack {
+        RdiView(rdiViewModel: rdiViewModel)
     }
 }

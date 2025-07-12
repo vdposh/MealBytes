@@ -24,6 +24,7 @@ final class MainViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var rdiProgress: Double = 0.0
     @Published var rdi: String = ""
+    @Published var rdiSource: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var shouldDisplayRdi: Bool = true
@@ -144,9 +145,10 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load RDI
     private func loadMainRdiMainView() async {
         do {
-            let fetchedRdi = try await firestore.loadMainRdiFirestore()
+            let fetchedData = try await firestore.loadMainRdiFirestore()
             await MainActor.run {
-                self.rdi = fetchedRdi
+                self.rdi = fetchedData.rdi
+                self.rdiSource = fetchedData.source
             }
         } catch {
             await MainActor.run {
@@ -156,9 +158,14 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Save RDI
-    func saveMainRdiMainView() async {
+    func saveMainRdiMainView(source: String) async {
         do {
-            try await firestore.saveMainRdiFirestore(rdi)
+            let rdiData = MainRdiData(rdi: rdi, source: source)
+            try await firestore.saveMainRdiFirestore(rdiData)
+            
+            await MainActor.run {
+                self.rdiSource = source
+            }
         } catch {
             await MainActor.run {
                 appError = .network
@@ -531,10 +538,14 @@ enum DisplayElement {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }

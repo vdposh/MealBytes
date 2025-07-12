@@ -11,7 +11,7 @@ struct CustomRdiView: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var caloriesFocused: Bool
     @FocusState private var focusMacronutrients: MacronutrientsFocus?
-    @StateObject private var customRdiViewModel = CustomRdiViewModel()
+    @ObservedObject var customRdiViewModel: CustomRdiViewModel
     
     var body: some View {
         ZStack {
@@ -193,16 +193,23 @@ enum MacronutrientsFocus: Hashable {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+
     ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
     )
     .environmentObject(ThemeManager())
 }
 
 #Preview {
-    NavigationStack {
-        CustomRdiView()
+    let mainViewModel = MainViewModel()
+    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+
+    return NavigationStack {
+        CustomRdiView(customRdiViewModel: customRdiViewModel)
     }
 }

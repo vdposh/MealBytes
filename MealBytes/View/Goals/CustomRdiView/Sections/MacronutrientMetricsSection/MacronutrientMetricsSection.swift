@@ -54,7 +54,11 @@ struct MacronutrientMetricsSection: View {
 }
 
 #Preview {
-    NavigationStack {
-        CustomRdiView()
+    let mainViewModel = MainViewModel()
+    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+
+    return NavigationStack {
+        CustomRdiView(customRdiViewModel: customRdiViewModel)
     }
 }
+
