@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
@@ -20,6 +21,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isToggleUpdating: Bool = false
+    @Published var displayRdi: Bool = false
     @Published var isPasswordChanging: Bool = false
     @Published var isDeletingAccount: Bool = false
     
@@ -27,11 +29,19 @@ final class ProfileViewModel: ObservableObject {
     @ObservedObject var mainViewModel: MainViewModel
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private var cancellables = Set<AnyCancellable>()
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModel) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
+        self.displayRdi = mainViewModel.shouldDisplayRdi
+        
+        setupBindings()
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     // MARK: - Toggle
@@ -46,6 +56,18 @@ final class ProfileViewModel: ObservableObject {
                 self.isToggleUpdating = false
             }
         }
+    }
+    
+    private func setupBindings() {
+        $displayRdi
+            .removeDuplicates()
+            .sink { [weak self] newValue in
+                guard let self else { return }
+                Task {
+                    self.updateShouldDisplayRdi(to: newValue)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Sign Out

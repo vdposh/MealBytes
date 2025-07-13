@@ -42,18 +42,8 @@ struct ProfileView: View {
             .listRowBackground(Color.clear)
             
             Section {
-                Toggle(
-                    "Display RDI",
-                    isOn: .init(
-                        get: { profileViewModel
-                            .mainViewModel.shouldDisplayRdi },
-                        set: { newValue in
-                            profileViewModel
-                                .updateShouldDisplayRdi(to: newValue)
-                        }
-                    )
-                )
-                .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+                Toggle("Display RDI", isOn: $profileViewModel.displayRdi)
+                    .toggleStyle(SwitchToggleStyle(tint: .customGreen))
             } footer: {
                 Text("Enable this option to display Recommended Daily Intake (RDI) in the Diary.")
             }
