@@ -43,17 +43,30 @@ final class GoalsViewModel: ObservableObject {
         customRdiViewModel.text(for: customRdiViewModel.calories)
     }
     
-    var rdiStyle: (color: Color, weight: Font.Weight) {
-        mainViewModel.rdiSource == "rdiView"
-        ? (.customGreen, .medium)
-        : (.secondary, .regular)
+    var currentRdiSource: RdiSourceType {
+        RdiSourceType(rawValue: mainViewModel.rdiSource) ?? .rdiView
     }
     
-    var customRdiStyle: (color: Color, weight: Font.Weight) {
-        mainViewModel.rdiSource == "customRdiView"
-        ? (.customGreen, .medium)
-        : (.secondary, .regular)
+    func isActive(_ source: RdiSourceType) -> Bool {
+        currentRdiSource == source
     }
+    
+    func color(for source: RdiSourceType) -> Color {
+        isActive(source) ? .customGreen : .secondary
+    }
+    
+    func weight(for source: RdiSourceType) -> Font.Weight {
+        isActive(source) ? .medium : .regular
+    }
+    
+    func icon(for source: RdiSourceType) -> String {
+        isActive(source) ? "person.fill" : "person"
+    }
+}
+
+enum RdiSourceType: String {
+    case rdiView
+    case customRdiView
 }
 
 #Preview {

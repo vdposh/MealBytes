@@ -19,12 +19,19 @@ struct GoalsView: View {
                     ) {
                         LabeledContent {
                             Text(goalsViewModel.rdiText())
-                                .foregroundColor(goalsViewModel.rdiStyle.color)
-                                .fontWeight(goalsViewModel.rdiStyle.weight)
+                                .foregroundColor(
+                                    goalsViewModel.color(for: .rdiView)
+                                )
+                                .fontWeight(
+                                    goalsViewModel.weight(for: .rdiView)
+                                )
                         } label: {
                             HStack {
-                                Image(systemName: "person")
-                                    .foregroundStyle(.customGreen)
+                                Image(
+                                    systemName: goalsViewModel
+                                        .icon(for: .rdiView)
+                                )
+                                .foregroundStyle(.customGreen)
                                 Text("RDI")
                             }
                         }
@@ -49,15 +56,18 @@ struct GoalsView: View {
                         LabeledContent {
                             Text(goalsViewModel.customRdiText())
                                 .foregroundColor(
-                                    goalsViewModel.customRdiStyle.color
+                                    goalsViewModel.color(for: .customRdiView)
                                 )
                                 .fontWeight(
-                                    goalsViewModel.customRdiStyle.weight
+                                    goalsViewModel.weight(for: .customRdiView)
                                 )
                         } label: {
                             HStack {
-                                Image(systemName: "person.badge.plus")
-                                    .foregroundStyle(.customGreen)
+                                Image(
+                                    systemName: goalsViewModel
+                                        .icon(for: .customRdiView)
+                                )
+                                .foregroundStyle(.customGreen)
                                 Text("Custom RDI")
                             }
                         }
