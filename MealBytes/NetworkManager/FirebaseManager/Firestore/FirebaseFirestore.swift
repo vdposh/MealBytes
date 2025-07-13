@@ -40,7 +40,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let snapshot = try await firestore.collection("Users")
+        let snapshot = try await firestore
+            .collection("Users")
             .document(uid)
             .collection("MainView")
             .order(by: "createdAt")
@@ -58,7 +59,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("MainView")
             .document(mealItem.id.uuidString)
@@ -70,7 +72,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("MainView")
             .document(mealItem.id.uuidString)
@@ -82,7 +85,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("MainView")
             .document(mealItem.id.uuidString)
@@ -94,15 +98,16 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let snapshot = try await firestore.collection("Users")
+        
+        let snapshot = try await firestore
+            .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document("Bookmarks")
+            .document(mealType.rawValue.lowercased())
             .getDocument()
         
         guard let data = snapshot.data(),
-              let foodsArray = data[mealType.rawValue.lowercased()] as?
-                [[String: Any]] else {
+              let foodsArray = data["items"] as? [[String: Any]] else {
             return []
         }
         
@@ -125,12 +130,14 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         
         let encodedFoods = try foods.map { try Firestore.Encoder().encode($0) }
         
-        try await firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document("Bookmarks")
-            .setData([mealType.rawValue.lowercased(): encodedFoods],
-                     merge: true)
+            .document(mealType.rawValue.lowercased())
+        
+        try await documentReference.setData(["items": encodedFoods],
+                                            merge: true)
     }
     
     // MARK: - Load customRDI Data
@@ -138,7 +145,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("CustomRdiView")
@@ -150,7 +158,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("CustomRdiView")
@@ -162,7 +171,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("RdiView")
@@ -174,7 +184,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("RdiView")
@@ -186,7 +197,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("RDI")
@@ -199,7 +211,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("RDI")
@@ -211,7 +224,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("DisplayRDI")
@@ -228,7 +242,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("DisplayRDI")
@@ -244,7 +259,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AuthError.userNotFound
         }
         
-        let snapshot = try await firestore.collection("Users")
+        let snapshot = try await firestore
+            .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("LoginInfo")
@@ -268,7 +284,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             "email": email,
             "isLoggedIn": isLoggedIn
         ]
-        try await firestore.collection("Users")
+        try await firestore
+            .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("LoginInfo")
@@ -280,10 +297,24 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AppError.decoding
         }
         
-        let documentReference = firestore.collection("Users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("LoginInfo")
         try await documentReference.delete()
     }
+}
+
+#Preview {
+    let loginViewModel = LoginViewModel()
+    let mainViewModel = MainViewModel()
+    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
+    
+    ContentView(
+        loginViewModel: loginViewModel,
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
+    )
+    .environmentObject(ThemeManager())
 }
