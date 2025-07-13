@@ -1,5 +1,5 @@
 //
-//  CustomRdiView.swift
+//  DailyIntakeView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 22/03/2025.
@@ -7,37 +7,37 @@
 
 import SwiftUI
 
-struct CustomRdiView: View {
+struct DailyIntakeView: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var caloriesFocused: Bool
     @FocusState private var focusMacronutrients: MacronutrientsFocus?
-    @ObservedObject var customRdiViewModel: CustomRdiViewModel
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         ZStack {
-            if customRdiViewModel.isDataLoaded {
+            if dailyIntakeViewModel.isDataLoaded {
                 ScrollViewReader { proxy in
                     List {
                         Section {
                         } footer: {
-                            Text("Set RDI by entering calories directly or calculate it based on macronutrient distribution.")
+                            Text("Set daily intake by entering calories directly or calculate it based on macronutrient distribution.")
                         }
                         
                         CalorieMetricsSection(
                             isFocused: $caloriesFocused,
-                            customRdiViewModel: customRdiViewModel
+                            dailyIntakeViewModel: dailyIntakeViewModel
                         )
-                        .disabled(customRdiViewModel.toggleOn)
+                        .disabled(dailyIntakeViewModel.toggleOn)
                         
-                        if customRdiViewModel.toggleOn {
+                        if dailyIntakeViewModel.toggleOn {
                             MacronutrientMetricsSection(
                                 focusedField: _focusMacronutrients,
-                                customRdiViewModel: customRdiViewModel
+                                dailyIntakeViewModel: dailyIntakeViewModel
                             )
                         }
                         
                         Section {
-                            Toggle(isOn: $customRdiViewModel.toggleOn) {
+                            Toggle(isOn: $dailyIntakeViewModel.toggleOn) {
                                 Text("Macronutrient metrics")
                             }
                             .toggleStyle(SwitchToggleStyle(tint: .customGreen))
@@ -45,7 +45,7 @@ struct CustomRdiView: View {
                             Text("Enable this option to calculate intake using macronutrients.")
                         }
                     }
-                    .navigationBarTitle("Custom RDI", displayMode: .inline)
+                    .navigationBarTitle("Daily Intake", displayMode: .inline)
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
                             HStack(spacing: 0) {
@@ -73,28 +73,28 @@ struct CustomRdiView: View {
                             DoneButtonView {
                                 caloriesFocused = false
                                 focusMacronutrients = nil
-                                customRdiViewModel.normalizeInputs()
+                                dailyIntakeViewModel.normalizeInputs()
                             }
                         }
                         
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Save") {
-                                if customRdiViewModel.handleSave() {
+                                if dailyIntakeViewModel.handleSave() {
                                     Task {
-                                        await customRdiViewModel
-                                            .saveCustomRdiView()
+                                        await dailyIntakeViewModel
+                                            .saveDailyIntakeView()
                                     }
                                     dismiss()
                                 }
                                 caloriesFocused = false
                                 focusMacronutrients = nil
-                                customRdiViewModel.normalizeInputs()
+                                dailyIntakeViewModel.normalizeInputs()
                             }
                         }
                     }
                     .onChange(of: focusMacronutrients) {
                         if let focusMacronutrients {
-                            customRdiViewModel.handleMacronutrientFocusChange(
+                            dailyIntakeViewModel.handleMacronutrientFocusChange(
                                 focus: focusMacronutrients,
                                 didGainFocus: false
                             )
@@ -110,18 +110,18 @@ struct CustomRdiView: View {
                         }
                     }
                     .alert("Error",
-                           isPresented: $customRdiViewModel.showAlert) {
+                           isPresented: $dailyIntakeViewModel.showAlert) {
                         Button("OK") {
-                            customRdiViewModel.showAlert = false
+                            dailyIntakeViewModel.showAlert = false
                         }
                     } message: {
-                        Text(customRdiViewModel.alertMessage)
+                        Text(dailyIntakeViewModel.alertMessage)
                     }
                 }
             } else {
                 LoadingView()
                     .task {
-                        await customRdiViewModel.loadCustomRdiView()
+                        await dailyIntakeViewModel.loadDailyIntakeView()
                     }
             }
         }
@@ -207,9 +207,11 @@ enum MacronutrientsFocus: Hashable {
 
 #Preview {
     let mainViewModel = MainViewModel()
-    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
     
     return NavigationStack {
-        CustomRdiView(customRdiViewModel: customRdiViewModel)
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }

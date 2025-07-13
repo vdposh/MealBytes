@@ -42,10 +42,10 @@ struct ProfileView: View {
             .listRowBackground(Color.clear)
             
             Section {
-                Toggle("Display RDI", isOn: $profileViewModel.displayRdi)
+                Toggle("Daily Intake", isOn: $profileViewModel.displayIntake)
                     .toggleStyle(SwitchToggleStyle(tint: .customGreen))
             } footer: {
-                Text("Enable this option to display Recommended Daily Intake (RDI) in the Diary.")
+                Text("Enable this option to display daily intake progress directly in the Diary.")
             }
             
             Section {

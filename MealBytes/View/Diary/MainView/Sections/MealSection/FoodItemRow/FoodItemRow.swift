@@ -78,8 +78,8 @@ struct FoodItemRow: View {
                             unit: .empty
                         )
                     )
-                    if mainViewModel.canDisplayRdi() {
-                        Text(mainViewModel.rdiPercentageText(
+                    if mainViewModel.canDisplayIntake() {
+                        Text(mainViewModel.intakePercentageText(
                             for: mealItem.nutrients[.calories]))
                         .lineLimit(1)
                         .foregroundColor(.secondary)

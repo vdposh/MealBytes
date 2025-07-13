@@ -14,7 +14,7 @@ struct OverviewSection: View {
         Section {
         } footer: {
             VStack(alignment: .leading) {
-                Text("The RDI calculation is based on unique factors, including age, weight, height, gender, and activity level.")
+                Text("The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level.")
                     .padding(.bottom)
                 
                 Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
@@ -30,7 +30,7 @@ struct OverviewSection: View {
 #Preview {
     let mainViewModel = MainViewModel()
     let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-
+    
     return NavigationStack {
         RdiView(rdiViewModel: rdiViewModel)
     }

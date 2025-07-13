@@ -36,7 +36,7 @@ struct AgeSection: View {
 #Preview {
     let mainViewModel = MainViewModel()
     let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-
+    
     return NavigationStack {
         RdiView(rdiViewModel: rdiViewModel)
     }

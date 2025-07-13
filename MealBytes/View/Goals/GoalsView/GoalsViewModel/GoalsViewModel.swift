@@ -12,12 +12,12 @@ final class GoalsViewModel: ObservableObject {
     
     private let mainViewModel: MainViewModel
     let rdiViewModel: RdiViewModel
-    let customRdiViewModel: CustomRdiViewModel
+    let dailyIntakeViewModel: DailyIntakeViewModel
     
     init(mainViewModel: MainViewModel) {
         self.mainViewModel = mainViewModel
         self.rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-        self.customRdiViewModel = CustomRdiViewModel(
+        self.dailyIntakeViewModel = DailyIntakeViewModel(
             mainViewModel: mainViewModel
         )
     }
@@ -25,9 +25,10 @@ final class GoalsViewModel: ObservableObject {
     // MARK: - Load Data
     func loadGoalsData() async {
         async let rdiTask: () = rdiViewModel.loadRdiView()
-        async let customRdiTask: () = customRdiViewModel.loadCustomRdiView()
+        async let dailyIntakeTask: () = dailyIntakeViewModel
+            .loadDailyIntakeView()
         
-        _ = await (rdiTask, customRdiTask)
+        _ = await (rdiTask, dailyIntakeTask)
         
         await MainActor.run {
             isDataLoaded = true
@@ -39,41 +40,41 @@ final class GoalsViewModel: ObservableObject {
         rdiViewModel.text(for: rdiViewModel.calculatedRdi)
     }
     
-    func customRdiText() -> String {
-        customRdiViewModel.text(for: customRdiViewModel.calories)
+    func dailyIntakeText() -> String {
+        dailyIntakeViewModel.text(for: dailyIntakeViewModel.calories)
     }
     
-    var currentRdiSource: RdiSourceType {
-        RdiSourceType(rawValue: mainViewModel.rdiSource) ?? .rdiView
+    var currentIntakeSource: IntakeSourceType {
+        IntakeSourceType(rawValue: mainViewModel.intakeSource) ?? .rdiView
     }
     
-    func isActive(_ source: RdiSourceType) -> Bool {
+    func isActive(_ source: IntakeSourceType) -> Bool {
         switch source {
         case .rdiView:
-            return currentRdiSource == source &&
+            return currentIntakeSource == source &&
             rdiText() != "Fill in the data"
-        case .customRdiView:
-            return currentRdiSource == source &&
-            customRdiText() != "Fill in the data"
+        case .dailyIntakeView:
+            return currentIntakeSource == source &&
+            dailyIntakeText() != "Fill in the data"
         }
     }
     
-    func color(for source: RdiSourceType) -> Color {
+    func color(for source: IntakeSourceType) -> Color {
         isActive(source) ? .customGreen : .secondary
     }
     
-    func weight(for source: RdiSourceType) -> Font.Weight {
+    func weight(for source: IntakeSourceType) -> Font.Weight {
         isActive(source) ? .medium : .regular
     }
     
-    func icon(for source: RdiSourceType) -> String {
+    func icon(for source: IntakeSourceType) -> String {
         isActive(source) ? "person.fill" : "person"
     }
 }
 
-enum RdiSourceType: String {
+enum IntakeSourceType: String {
     case rdiView
-    case customRdiView
+    case dailyIntakeView
 }
 
 #Preview {

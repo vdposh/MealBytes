@@ -22,12 +22,12 @@ final class MainViewModel: ObservableObject {
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var uniqueID = UUID()
     @Published var appError: AppError?
-    @Published var rdiProgress: Double = 0.0
-    @Published var rdi: String = ""
-    @Published var rdiSource: String = ""
+    @Published var intakeProgress: Double = 0.0
+    @Published var intake: String = ""
+    @Published var intakeSource: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
-    @Published var displayRdi: Bool = true
+    @Published var displayIntake: Bool = true
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -142,13 +142,13 @@ final class MainViewModel: ObservableObject {
         ).count == 1 ? nil : .destructive
     }
     
-    // MARK: - Load RDI
-    private func loadMainRdiMainView() async {
+    // MARK: - Load Current Intake
+    private func loadCurrentIntakeMainView() async {
         do {
-            let fetchedData = try await firestore.loadMainRdiFirestore()
+            let fetchedData = try await firestore.loadCurrentIntakeFirestore()
             await MainActor.run {
-                self.rdi = fetchedData.rdi
-                self.rdiSource = fetchedData.source
+                self.intake = fetchedData.intake
+                self.intakeSource = fetchedData.source
             }
         } catch {
             await MainActor.run {
@@ -157,14 +157,14 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save RDI
-    func saveMainRdiMainView(source: String) async {
+    // MARK: - Save Current Intake
+    func saveCurrentIntakeMainView(source: String) async {
         do {
-            let rdiData = MainRdiData(rdi: rdi, source: source)
-            try await firestore.saveMainRdiFirestore(rdiData)
+            let intakeData = CurrentIntake(intake: intake, source: source)
+            try await firestore.saveCurrentIntakeFirestore(intakeData)
             
             await MainActor.run {
-                self.rdiSource = source
+                self.intakeSource = source
             }
         } catch {
             await MainActor.run {
@@ -173,12 +173,12 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Display RDI
-    private func loadDisplayRdiMainView() async {
+    // MARK: - Load Display Intake
+    private func loadDisplayIntakeMainView() async {
         do {
-            let value = try await firestore.loadDisplayRdiFirestore()
+            let value = try await firestore.loadDisplayIntakeFirestore()
             await MainActor.run {
-                displayRdi = value
+                displayIntake = value
             }
         } catch {
             await MainActor.run {
@@ -187,14 +187,14 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save Display RDI
-    func saveDisplayRdiMainView(_ newValue: Bool) async {
+    // MARK: - Save Display Intake
+    func saveDisplayIntakeMainView(_ newValue: Bool) async {
         await MainActor.run {
-            displayRdi = newValue
+            displayIntake = newValue
         }
         
         do {
-            try await firestore.saveDisplayRdiFirestore(newValue)
+            try await firestore.saveDisplayIntakeFirestore(newValue)
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -205,39 +205,40 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
-        async let mainRdiTask: () = loadMainRdiMainView()
-        async let displayRdiTask: () = loadDisplayRdiMainView()
+        async let currentIntakeTask: () = loadCurrentIntakeMainView()
+        async let displayIntakeTask: () = loadDisplayIntakeMainView()
         
-        _ = await (mealItemsTask, mainRdiTask, displayRdiTask)
+        _ = await (mealItemsTask, currentIntakeTask, displayIntakeTask)
         
         await MainActor.run {
             updateProgress()
         }
     }
     
-    //MARK: - RDI % calculation
-    private func calculateRdiPercentage(from calories: Double?) -> String {
-        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "0%" }
+    //MARK: - Intake % calculation
+    private func calculateIntakePercentage(from calories: Double?) -> String {
+        guard let intakeValue = Double(intake),
+              intakeValue > 0 else { return "0%" }
         let safeCalories = calories ?? 0.0
-        let percentage = round((safeCalories / rdiValue) * 100)
+        let percentage = round((safeCalories / intakeValue) * 100)
         return "\(Int(percentage))%"
     }
     
-    private func updateRdiProgress(calories: Double) {
-        guard let rdiValue = Double(rdi), rdiValue > 0 else {
-            rdiProgress = 0.0
+    private func updateIntakeProgress(calories: Double) {
+        guard let intakeValue = Double(intake), intakeValue > 0 else {
+            intakeProgress = 0.0
             return
         }
-        rdiProgress = min(max(calories / rdiValue, 0), 1)
+        intakeProgress = min(max(calories / intakeValue, 0), 1)
     }
     
     private func updateProgress() {
         let calories = summariesForCaloriesSection()[.calories] ?? 0.0
-        updateRdiProgress(calories: calories)
+        updateIntakeProgress(calories: calories)
     }
     
-    func rdiPercentageText(for calories: Double?) -> String {
-        return calculateRdiPercentage(from: calories ?? 0.0)
+    func intakePercentageText(for calories: Double?) -> String {
+        return calculateIntakePercentage(from: calories ?? 0.0)
     }
     
     private func setupBindings() {
@@ -250,8 +251,8 @@ final class MainViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func canDisplayRdi() -> Bool {
-        return displayRdi && !rdi.isEmpty
+    func canDisplayIntake() -> Bool {
+        return displayIntake && !intake.isEmpty
     }
     
     // MARK: - Recalculate Nutrients

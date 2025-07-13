@@ -30,10 +30,10 @@ struct CaloriesSection: View {
                             )
                             .lineLimit(1)
                             
-                            if mainViewModel.canDisplayRdi() {
+                            if mainViewModel.canDisplayIntake() {
                                 Text("/")
                                     .foregroundStyle(.secondary)
-                                Text(mainViewModel.rdi)
+                                Text(mainViewModel.intake)
                                     .lineLimit(1)
                                     .foregroundStyle(.secondary)
                             }
@@ -42,8 +42,8 @@ struct CaloriesSection: View {
                         .fontWeight(.medium)
                     }
                     
-                    if mainViewModel.canDisplayRdi() {
-                        ProgressView(value: mainViewModel.rdiProgress)
+                    if mainViewModel.canDisplayIntake() {
+                        ProgressView(value: mainViewModel.intakeProgress)
                             .progressViewStyle(.linear)
                             .tint(.customGreen)
                             .background(Color.customGreen.opacity(0.2))
@@ -63,8 +63,8 @@ struct CaloriesSection: View {
                                 formattedValue: nutrients[key] ?? ""
                             )
                         }
-                        if mainViewModel.canDisplayRdi() {
-                            Text(mainViewModel.rdiPercentageText(
+                        if mainViewModel.canDisplayIntake() {
+                            Text(mainViewModel.intakePercentageText(
                                 for: summaries[.calories]))
                             .lineLimit(1)
                             .foregroundColor(.secondary)
@@ -78,6 +78,6 @@ struct CaloriesSection: View {
             }
             .padding(.vertical, 5)
         }
-        .id(mainViewModel.displayRdi)
+        .id(mainViewModel.displayIntake)
     }
 }

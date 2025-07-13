@@ -1,5 +1,5 @@
 //
-//  CustomRdiViewModel.swift
+//  DailyIntakeViewModel.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 23/03/2025.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-final class CustomRdiViewModel: ObservableObject {
+final class DailyIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var calories: String = ""
     @Published var fat: String = ""
@@ -45,16 +45,16 @@ final class CustomRdiViewModel: ObservableObject {
         cancellables.removeAll()
     }
     
-    // MARK: - Load CustomGoals Data
-    func loadCustomRdiView() async {
+    // MARK: - Load DailyIntake Data
+    func loadDailyIntakeView() async {
         do {
-            let customGoalsData = try await firestore.loadCustomRdiFirestore()
+            let dailyIntakeData = try await firestore.loadDailyIntakeFirestore()
             await MainActor.run {
-                toggleOn = customGoalsData.macronutrientMetrics
-                calories = customGoalsData.calories
-                fat = customGoalsData.fat
-                carbohydrate = customGoalsData.carbohydrate
-                protein = customGoalsData.protein
+                toggleOn = dailyIntakeData.macronutrientMetrics
+                calories = dailyIntakeData.calories
+                fat = dailyIntakeData.fat
+                carbohydrate = dailyIntakeData.carbohydrate
+                protein = dailyIntakeData.protein
                 isDataLoaded = true
             }
         } catch {
@@ -65,9 +65,9 @@ final class CustomRdiViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save Textfields Info
-    func saveCustomRdiView() async {
-        let customGoalsData = CustomRdiData(
+    // MARK: - Save DailyIntake Data
+    func saveDailyIntakeView() async {
+        let dailyIntakeData = DailyIntake(
             calories: calories.trimmedLeadingZeros,
             fat: fat.trimmedLeadingZeros,
             carbohydrate: carbohydrate.trimmedLeadingZeros,
@@ -76,11 +76,12 @@ final class CustomRdiViewModel: ObservableObject {
         )
         
         do {
-            try await firestore.saveCustomRdiFirestore(customGoalsData)
+            try await firestore.saveDailyIntakeFirestore(dailyIntakeData)
             await MainActor.run {
-                mainViewModel.rdi = calories
+                mainViewModel.intake = calories
             }
-            await mainViewModel.saveMainRdiMainView(source: "customRdiView")
+            await mainViewModel
+                .saveCurrentIntakeMainView(source: "dailyIntakeView")
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -172,9 +173,9 @@ final class CustomRdiViewModel: ObservableObject {
     }
     
     // MARK: - Text
-    func text(for calculatedRdi: String) -> String {
-        let sanitized = calculatedRdi.sanitizedForDouble
-        guard let rdiValue = Double(sanitized), rdiValue > 0 else {
+    func text(for calculatedIntake: String) -> String {
+        let sanitized = calculatedIntake.sanitizedForDouble
+        guard let intakeValue = Double(sanitized), intakeValue > 0 else {
             return "Fill in the data"
         }
         
@@ -184,9 +185,9 @@ final class CustomRdiViewModel: ObservableObject {
             }
         }
         
-        return rdiValue == 1
-        ? "\(calculatedRdi) calorie"
-        : "\(calculatedRdi) calories"
+        return intakeValue == 1
+        ? "\(calculatedIntake) calorie"
+        : "\(calculatedIntake) calories"
     }
     
     // MARK: - UI Helpers
@@ -270,9 +271,11 @@ final class CustomRdiViewModel: ObservableObject {
 
 #Preview {
     let mainViewModel = MainViewModel()
-    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
     
     return NavigationStack {
-        CustomRdiView(customRdiViewModel: customRdiViewModel)
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }

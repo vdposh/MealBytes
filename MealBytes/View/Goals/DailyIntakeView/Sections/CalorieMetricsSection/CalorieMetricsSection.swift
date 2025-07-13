@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CalorieMetricsSection: View {
     var isFocused: FocusState<Bool>.Binding
-    @ObservedObject var customRdiViewModel: CustomRdiViewModel
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         Section {
@@ -17,7 +17,7 @@ struct CalorieMetricsSection: View {
         } header: {
             Text("Calorie Metrics")
         } footer: {
-            Text(customRdiViewModel.footerText)
+            Text(dailyIntakeViewModel.footerText)
         }
         .id("fatField")
     }
@@ -25,23 +25,23 @@ struct CalorieMetricsSection: View {
     private var calorieInputRow: some View {
         HStack(alignment: .bottom) {
             ServingTextFieldView(
-                text: $customRdiViewModel.calories,
+                text: $dailyIntakeViewModel.calories,
                 title: "Calories",
-                showStar: customRdiViewModel.showStar,
+                showStar: dailyIntakeViewModel.showStar,
                 keyboardType: .numberPad,
                 inputMode: .integer,
-                titleColor: customRdiViewModel.titleColor(
-                    for: customRdiViewModel.calories,
+                titleColor: dailyIntakeViewModel.titleColor(
+                    for: dailyIntakeViewModel.calories,
                     isCalorie: true),
-                textColor: customRdiViewModel.caloriesTextColor,
-                opacity: customRdiViewModel.underlineOpacity,
+                textColor: dailyIntakeViewModel.caloriesTextColor,
+                opacity: dailyIntakeViewModel.underlineOpacity,
                 maxIntegerDigits: 5
             )
             .focused(isFocused)
             .padding(.trailing, 5)
             
             Text("kcal")
-                .foregroundColor(customRdiViewModel.caloriesTextColor)
+                .foregroundColor(dailyIntakeViewModel.caloriesTextColor)
         }
         .padding(.bottom, 5)
     }
@@ -62,9 +62,11 @@ struct CalorieMetricsSection: View {
 
 #Preview {
     let mainViewModel = MainViewModel()
-    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
     
     return NavigationStack {
-        CustomRdiView(customRdiViewModel: customRdiViewModel)
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }

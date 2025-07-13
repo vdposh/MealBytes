@@ -14,6 +14,43 @@ struct GoalsView: View {
         List {
             Section {
                 if goalsViewModel.isDataLoaded {
+                    NavigationLink(destination: DailyIntakeView(
+                        dailyIntakeViewModel: goalsViewModel
+                            .dailyIntakeViewModel)
+                    ) {
+                        LabeledContent {
+                            Text(goalsViewModel.dailyIntakeText())
+                                .foregroundColor(
+                                    goalsViewModel.color(for: .dailyIntakeView)
+                                )
+                                .fontWeight(
+                                    goalsViewModel.weight(for: .dailyIntakeView)
+                                )
+                        } label: {
+                            HStack {
+                                Image(
+                                    systemName: goalsViewModel
+                                        .icon(for: .dailyIntakeView)
+                                )
+                                .foregroundStyle(.customGreen)
+                                Text("Daily Intake")
+                            }
+                        }
+                    }
+                    .disabled(goalsViewModel.isDataLoaded == false)
+                } else {
+                    HStack {
+                        LoadingView()
+                        Text("Loading...")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            } footer: {
+                Text("Daily intake can be set by entering the required number of calories or calculated using macronutrient values such as fats, carbohydrates, and proteins.")
+            }
+            
+            Section {
+                if goalsViewModel.isDataLoaded {
                     NavigationLink(destination: RdiView(
                         rdiViewModel: goalsViewModel.rdiViewModel)
                     ) {
@@ -46,42 +83,6 @@ struct GoalsView: View {
                 }
             } footer: {
                 Text("MealBytes calculates the Recommended Daily Intake (RDI) to provide a daily calorie target tailored to help achieve the desired weight.")
-            }
-            
-            Section {
-                if goalsViewModel.isDataLoaded {
-                    NavigationLink(destination: CustomRdiView(
-                        customRdiViewModel: goalsViewModel.customRdiViewModel)
-                    ) {
-                        LabeledContent {
-                            Text(goalsViewModel.customRdiText())
-                                .foregroundColor(
-                                    goalsViewModel.color(for: .customRdiView)
-                                )
-                                .fontWeight(
-                                    goalsViewModel.weight(for: .customRdiView)
-                                )
-                        } label: {
-                            HStack {
-                                Image(
-                                    systemName: goalsViewModel
-                                        .icon(for: .customRdiView)
-                                )
-                                .foregroundStyle(.customGreen)
-                                Text("Custom RDI")
-                            }
-                        }
-                    }
-                    .disabled(goalsViewModel.isDataLoaded == false)
-                } else {
-                    HStack {
-                        LoadingView()
-                        Text("Loading...")
-                            .foregroundColor(.secondary)
-                    }
-                }
-            } footer: {
-                Text("RDI can be set by entering the required number of calories or calculated using macronutrient values such as fats, carbohydrates, and proteins.")
             }
         }
         .navigationBarTitle("Goals", displayMode: .inline)

@@ -65,7 +65,7 @@ enum WeightUnit: String, CaseIterable {
 #Preview {
     let mainViewModel = MainViewModel()
     let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-
+    
     return NavigationStack {
         RdiView(rdiViewModel: rdiViewModel)
     }

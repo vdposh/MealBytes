@@ -21,7 +21,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isToggleUpdating: Bool = false
-    @Published var displayRdi: Bool = false
+    @Published var displayIntake: Bool = false
     @Published var isPasswordChanging: Bool = false
     @Published var isDeletingAccount: Bool = false
     
@@ -35,7 +35,7 @@ final class ProfileViewModel: ObservableObject {
          mainViewModel: MainViewModel) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
-        self.displayRdi = mainViewModel.displayRdi
+        self.displayIntake = mainViewModel.displayIntake
         
         setupBindings()
     }
@@ -45,13 +45,13 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Toggle
-    func updateDisplayRdi(to newValue: Bool) {
+    func updateDisplayIntake(to newValue: Bool) {
         Task {
             await MainActor.run {
                 self.isToggleUpdating = true
-                self.mainViewModel.displayRdi = newValue
+                self.mainViewModel.displayIntake = newValue
             }
-            await self.mainViewModel.saveDisplayRdiMainView(newValue)
+            await self.mainViewModel.saveDisplayIntakeMainView(newValue)
             await MainActor.run {
                 self.isToggleUpdating = false
             }
@@ -59,12 +59,12 @@ final class ProfileViewModel: ObservableObject {
     }
     
     private func setupBindings() {
-        $displayRdi
+        $displayIntake
             .removeDuplicates()
             .sink { [weak self] newValue in
                 guard let self else { return }
                 Task {
-                    self.updateDisplayRdi(to: newValue)
+                    self.updateDisplayIntake(to: newValue)
                 }
             }
             .store(in: &cancellables)

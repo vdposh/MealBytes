@@ -29,8 +29,8 @@ struct NutrientSummaryRow: View {
                     formattedValue: nutrients[label] ?? ""
                 )
             }
-            if mainViewModel.canDisplayRdi() {
-                Text(mainViewModel.rdiPercentageText(for: calories))
+            if mainViewModel.canDisplayIntake() {
+                Text(mainViewModel.intakePercentageText(for: calories))
                     .lineLimit(1)
                     .foregroundColor(.secondary)
                     .font(.subheadline)

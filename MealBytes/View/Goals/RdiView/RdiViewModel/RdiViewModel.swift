@@ -79,9 +79,9 @@ final class RdiViewModel: ObservableObject {
         do {
             try await firestore.saveRdiFirestore(rdiData)
             await MainActor.run {
-                mainViewModel.rdi = calculatedRdi
+                mainViewModel.intake = calculatedRdi
             }
-            await mainViewModel.saveMainRdiMainView(source: "rdiView")
+            await mainViewModel.saveCurrentIntakeMainView(source: "rdiView")
         } catch {
             appError = .decoding
         }

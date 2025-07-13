@@ -12,7 +12,7 @@ struct MacronutrientRow: View {
     var focusedField: FocusState<MacronutrientsFocus?>.Binding
     let title: String
     let titleColor: Color
-    @ObservedObject var customRdiViewModel: CustomRdiViewModel
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -56,9 +56,11 @@ struct MacronutrientRow: View {
 
 #Preview {
     let mainViewModel = MainViewModel()
-    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
     
     return NavigationStack {
-        CustomRdiView(customRdiViewModel: customRdiViewModel)
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }

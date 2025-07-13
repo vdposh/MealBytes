@@ -9,38 +9,38 @@ import SwiftUI
 
 struct MacronutrientMetricsSection: View {
     @FocusState var focusedField: MacronutrientsFocus?
-    @ObservedObject var customRdiViewModel: CustomRdiViewModel
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         Section {
             VStack(spacing: 15) {
                 MacronutrientRow(
-                    textFieldBinding: $customRdiViewModel.fat,
+                    textFieldBinding: $dailyIntakeViewModel.fat,
                     focusedField: $focusedField,
                     title: "Fat",
-                    titleColor: customRdiViewModel.titleColor(
-                        for: customRdiViewModel.fat),
-                    customRdiViewModel: customRdiViewModel
+                    titleColor: dailyIntakeViewModel.titleColor(
+                        for: dailyIntakeViewModel.fat),
+                    dailyIntakeViewModel: dailyIntakeViewModel
                 )
                 .focused($focusedField, equals: .fat)
                 
                 MacronutrientRow(
-                    textFieldBinding: $customRdiViewModel.carbohydrate,
+                    textFieldBinding: $dailyIntakeViewModel.carbohydrate,
                     focusedField: $focusedField,
                     title: "Carbohydrate",
-                    titleColor: customRdiViewModel.titleColor(
-                        for: customRdiViewModel.carbohydrate),
-                    customRdiViewModel: customRdiViewModel
+                    titleColor: dailyIntakeViewModel.titleColor(
+                        for: dailyIntakeViewModel.carbohydrate),
+                    dailyIntakeViewModel: dailyIntakeViewModel
                 )
                 .focused($focusedField, equals: .carbohydrate)
                 
                 MacronutrientRow(
-                    textFieldBinding: $customRdiViewModel.protein,
+                    textFieldBinding: $dailyIntakeViewModel.protein,
                     focusedField: $focusedField,
                     title: "Protein",
-                    titleColor: customRdiViewModel.titleColor(
-                        for: customRdiViewModel.protein),
-                    customRdiViewModel: customRdiViewModel
+                    titleColor: dailyIntakeViewModel.titleColor(
+                        for: dailyIntakeViewModel.protein),
+                    dailyIntakeViewModel: dailyIntakeViewModel
                 )
                 .focused($focusedField, equals: .protein)
             }
@@ -55,10 +55,12 @@ struct MacronutrientMetricsSection: View {
 
 #Preview {
     let mainViewModel = MainViewModel()
-    let customRdiViewModel = CustomRdiViewModel(mainViewModel: mainViewModel)
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
 
     return NavigationStack {
-        CustomRdiView(customRdiViewModel: customRdiViewModel)
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }
 
