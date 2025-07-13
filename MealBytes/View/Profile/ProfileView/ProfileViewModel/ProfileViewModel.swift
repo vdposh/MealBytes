@@ -35,7 +35,7 @@ final class ProfileViewModel: ObservableObject {
          mainViewModel: MainViewModel) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
-        self.displayRdi = mainViewModel.shouldDisplayRdi
+        self.displayRdi = mainViewModel.displayRdi
         
         setupBindings()
     }
@@ -45,11 +45,11 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Toggle
-    func updateShouldDisplayRdi(to newValue: Bool) {
+    func updateDisplayRdi(to newValue: Bool) {
         Task {
             await MainActor.run {
                 self.isToggleUpdating = true
-                self.mainViewModel.shouldDisplayRdi = newValue
+                self.mainViewModel.displayRdi = newValue
             }
             await self.mainViewModel.saveDisplayRdiMainView(newValue)
             await MainActor.run {
@@ -64,7 +64,7 @@ final class ProfileViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 guard let self else { return }
                 Task {
-                    self.updateShouldDisplayRdi(to: newValue)
+                    self.updateDisplayRdi(to: newValue)
                 }
             }
             .store(in: &cancellables)

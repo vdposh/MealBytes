@@ -27,7 +27,7 @@ final class MainViewModel: ObservableObject {
     @Published var rdiSource: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
-    @Published var shouldDisplayRdi: Bool = true
+    @Published var displayRdi: Bool = true
     
     let calendar = Calendar.current
     let formatter = Formatter()
@@ -178,7 +178,7 @@ final class MainViewModel: ObservableObject {
         do {
             let value = try await firestore.loadDisplayRdiFirestore()
             await MainActor.run {
-                shouldDisplayRdi = value
+                displayRdi = value
             }
         } catch {
             await MainActor.run {
@@ -190,7 +190,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Save Display RDI
     func saveDisplayRdiMainView(_ newValue: Bool) async {
         await MainActor.run {
-            shouldDisplayRdi = newValue
+            displayRdi = newValue
         }
         
         do {
@@ -251,7 +251,7 @@ final class MainViewModel: ObservableObject {
     }
     
     func canDisplayRdi() -> Bool {
-        return shouldDisplayRdi && !rdi.isEmpty
+        return displayRdi && !rdi.isEmpty
     }
     
     // MARK: - Recalculate Nutrients

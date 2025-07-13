@@ -48,7 +48,14 @@ final class GoalsViewModel: ObservableObject {
     }
     
     func isActive(_ source: RdiSourceType) -> Bool {
-        currentRdiSource == source
+        switch source {
+        case .rdiView:
+            return currentRdiSource == source &&
+            rdiText() != "Fill in the data"
+        case .customRdiView:
+            return currentRdiSource == source &&
+            customRdiText() != "Fill in the data"
+        }
     }
     
     func color(for source: RdiSourceType) -> Color {

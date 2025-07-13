@@ -26,7 +26,7 @@ protocol FirebaseFirestoreProtocol {
     func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
     func saveMainRdiFirestore(_ data: MainRdiData) async throws
-    func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws
+    func saveDisplayRdiFirestore(_ displayRdi: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteLoginDataFirestore() async throws
@@ -40,9 +40,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let snapshot = try await firestore.collection("users")
+        let snapshot = try await firestore.collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .order(by: "createdAt")
             .getDocuments()
         
@@ -58,9 +58,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .document(mealItem.id.uuidString)
         try documentReference.setData(from: mealItem)
     }
@@ -70,9 +70,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .document(mealItem.id.uuidString)
         try documentReference.setData(from: mealItem, merge: true)
     }
@@ -82,9 +82,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .document(mealItem.id.uuidString)
         try await documentReference.delete()
     }
@@ -94,10 +94,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let snapshot = try await firestore.collection("users")
+        let snapshot = try await firestore.collection("Users")
             .document(uid)
-            .collection("favoriteFoods")
-            .document("favorites")
+            .collection("SearchView")
+            .document("Bookmarks")
             .getDocument()
         
         guard let data = snapshot.data(),
@@ -110,7 +110,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             Food(
                 searchFoodId: foodData["food_id"] as? Int ?? 0,
                 searchFoodName: foodData["food_name"] as? String ?? "",
-                searchFoodDescription: foodData["food_description"] as? 
+                searchFoodDescription: foodData["food_description"] as?
                 String ?? ""
             )
         }
@@ -125,10 +125,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         
         let encodedFoods = try foods.map { try Firestore.Encoder().encode($0) }
         
-        try await firestore.collection("users")
+        try await firestore.collection("Users")
             .document(uid)
-            .collection("favoriteFoods")
-            .document("favorites")
+            .collection("SearchView")
+            .document("Bookmarks")
             .setData([mealType.rawValue.lowercased(): encodedFoods],
                      merge: true)
     }
@@ -138,10 +138,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("userCustomRdiGoals")
-            .document("currentCustomGoals")
+            .collection("GoalsView")
+            .document("CustomRdiView")
         return try await documentReference.getDocument(as: CustomRdiData.self)
     }
     
@@ -150,10 +150,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("userCustomRdiGoals")
-            .document("currentCustomGoals")
+            .collection("GoalsView")
+            .document("CustomRdiView")
         try documentReference.setData(from: customGoalsData)
     }
     
@@ -162,10 +162,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("userRdiGoals")
-            .document("currentRdiGoals")
+            .collection("GoalsView")
+            .document("RdiView")
         return try await documentReference.getDocument(as: RdiData.self)
     }
     
@@ -174,10 +174,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("userRdiGoals")
-            .document("currentRdiGoals")
+            .collection("GoalsView")
+            .document("RdiView")
         try documentReference.setData(from: rdiData)
     }
     
@@ -186,10 +186,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("rdi")
-            .document("myRdi")
+            .collection("GoalsView")
+            .document("RDI")
         let snapshot = try await documentReference.getDocument()
         return try snapshot.data(as: MainRdiData.self)
     }
@@ -199,10 +199,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("rdi")
-            .document("myRdi")
+            .collection("GoalsView")
+            .document("RDI")
         try documentReference.setData(from: data)
     }
     
@@ -211,29 +211,29 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("settings")
-            .document("displayRdi")
+            .collection("ProfileView")
+            .document("DisplayRDI")
         let snapshot = try await documentReference.getDocument()
         guard let data = snapshot.data(),
-              let shouldDisplayRdi = data["shouldDisplayRdi"] as? Bool else {
+              let displayRdi = data["displayRdi"] as? Bool else {
             throw AppError.decoding
         }
-        return shouldDisplayRdi
+        return displayRdi
     }
     
     // MARK: - Save Display RDI
-    func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws {
+    func saveDisplayRdiFirestore(_ displayRdi: Bool) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("settings")
-            .document("displayRdi")
+            .collection("ProfileView")
+            .document("DisplayRDI")
         try await documentReference.setData(
-            ["shouldDisplayRdi": shouldDisplayRdi]
+            ["displayRdi": displayRdi]
         )
     }
     
@@ -244,10 +244,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AuthError.userNotFound
         }
         
-        let snapshot = try await firestore.collection("users")
+        let snapshot = try await firestore.collection("Users")
             .document(uid)
-            .collection("LoginData")
-            .document("loginInfo")
+            .collection("ProfileView")
+            .document("LoginInfo")
             .getDocument()
         
         guard let data = snapshot.data(),
@@ -268,10 +268,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             "email": email,
             "isLoggedIn": isLoggedIn
         ]
-        try await firestore.collection("users")
+        try await firestore.collection("Users")
             .document(uid)
-            .collection("LoginData")
-            .document("loginInfo")
+            .collection("ProfileView")
+            .document("LoginInfo")
             .setData(data, merge: true)
     }
     
@@ -280,10 +280,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AppError.decoding
         }
         
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore.collection("Users")
             .document(uid)
-            .collection("LoginData")
-            .document("loginInfo")
+            .collection("ProfileView")
+            .document("LoginInfo")
         try await documentReference.delete()
     }
 }
