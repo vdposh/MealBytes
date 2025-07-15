@@ -26,18 +26,16 @@ struct MealBytesApp: App {
     
     @StateObject private var mainViewModel: MainViewModel
     @StateObject private var loginViewModel: LoginViewModel
-    @StateObject private var themeManager: ThemeManager
     @StateObject private var goalsViewModel: GoalsViewModel
     @StateObject private var profileViewModel: ProfileViewModel
+    @StateObject private var themeManager = ThemeManager()
     
     init() {
         let mainViewModel = MainViewModel()
         let loginViewModel = LoginViewModel()
-        let themeManager = ThemeManager()
         
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
         _loginViewModel = StateObject(wrappedValue: loginViewModel)
-        _themeManager = StateObject(wrappedValue: themeManager)
         _goalsViewModel = StateObject(
             wrappedValue: GoalsViewModel(mainViewModel: mainViewModel)
         )
@@ -66,6 +64,7 @@ struct MealBytesApp: App {
                         await mainViewModel.loadMainData()
                         await loginViewModel.loadLoginData()
                         await goalsViewModel.loadGoalsData()
+                        await profileViewModel.loadProfileData()
                     }
                 }
             }
