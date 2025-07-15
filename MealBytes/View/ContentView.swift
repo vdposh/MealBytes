@@ -12,6 +12,7 @@ struct ContentView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
+    @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
         ZStack {
@@ -23,7 +24,8 @@ struct ContentView: View {
                 TabBarView(
                     loginViewModel: loginViewModel,
                     mainViewModel: mainViewModel,
-                    goalsViewModel: goalsViewModel
+                    goalsViewModel: goalsViewModel,
+                    profileViewModel: profileViewModel
                 )
             } else {
                 LoginView(loginViewModel: loginViewModel)
@@ -37,14 +39,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    let loginViewModel = LoginViewModel()
-    let mainViewModel = MainViewModel()
-    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-    
-    ContentView(
-        loginViewModel: loginViewModel,
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

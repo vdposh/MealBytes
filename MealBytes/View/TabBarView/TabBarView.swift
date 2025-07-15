@@ -12,6 +12,7 @@ struct TabBarView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
+    @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -34,8 +35,7 @@ struct TabBarView: View {
             .tag(0)
             
             NavigationStack {
-                ProfileView(loginViewModel: loginViewModel,
-                            mainViewModel: mainViewModel)
+                ProfileView(profileViewModel: profileViewModel)
             }
             .tabItem {
                 Image(systemName: "person.fill")
@@ -60,14 +60,5 @@ struct TabBarView: View {
 }
 
 #Preview {
-    let loginViewModel = LoginViewModel()
-    let mainViewModel = MainViewModel()
-    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-    
-    ContentView(
-        loginViewModel: loginViewModel,
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

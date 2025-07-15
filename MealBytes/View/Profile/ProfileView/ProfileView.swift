@@ -8,16 +8,8 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var profileViewModel: ProfileViewModel
     @EnvironmentObject var themeManager: ThemeManager
-    
-    init(loginViewModel: LoginViewModel,
-         mainViewModel: MainViewModel) {
-        _profileViewModel = StateObject(wrappedValue: ProfileViewModel(
-            loginViewModel: loginViewModel,
-            mainViewModel: mainViewModel)
-        )
-    }
+    @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
         List {
@@ -191,14 +183,5 @@ struct ProfileView: View {
 }
 
 #Preview {
-    let loginViewModel = LoginViewModel()
-    let mainViewModel = MainViewModel()
-    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-    
-    ContentView(
-        loginViewModel: loginViewModel,
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

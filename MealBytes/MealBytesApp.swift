@@ -24,16 +24,28 @@ struct MealBytesApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.colorScheme) private var systemColorScheme
     
-    @StateObject private var mainViewModel = MainViewModel()
-    @StateObject private var loginViewModel = LoginViewModel()
-    @StateObject private var themeManager = ThemeManager()
+    @StateObject private var mainViewModel: MainViewModel
+    @StateObject private var loginViewModel: LoginViewModel
+    @StateObject private var themeManager: ThemeManager
     @StateObject private var goalsViewModel: GoalsViewModel
+    @StateObject private var profileViewModel: ProfileViewModel
     
     init() {
         let mainViewModel = MainViewModel()
+        let loginViewModel = LoginViewModel()
+        let themeManager = ThemeManager()
+        
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _loginViewModel = StateObject(wrappedValue: loginViewModel)
+        _themeManager = StateObject(wrappedValue: themeManager)
         _goalsViewModel = StateObject(
             wrappedValue: GoalsViewModel(mainViewModel: mainViewModel)
+        )
+        _profileViewModel = StateObject(
+            wrappedValue: ProfileViewModel(
+                loginViewModel: loginViewModel,
+                mainViewModel: mainViewModel
+            )
         )
     }
     
@@ -42,7 +54,8 @@ struct MealBytesApp: App {
             ContentView(
                 loginViewModel: loginViewModel,
                 mainViewModel: mainViewModel,
-                goalsViewModel: goalsViewModel
+                goalsViewModel: goalsViewModel,
+                profileViewModel: profileViewModel
             )
             .environmentObject(themeManager)
             .preferredColorScheme(themeManager.appliedColorScheme)
@@ -61,14 +74,5 @@ struct MealBytesApp: App {
 }
 
 #Preview {
-    let loginViewModel = LoginViewModel()
-    let mainViewModel = MainViewModel()
-    let goalsViewModel = GoalsViewModel(mainViewModel: mainViewModel)
-    
-    ContentView(
-        loginViewModel: loginViewModel,
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }
