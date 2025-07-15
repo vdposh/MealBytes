@@ -8,6 +8,7 @@
 import SwiftUI
 
 final class GoalsViewModel: ObservableObject {
+    @Published var uniqueId = UUID()
     @Published var isDataLoaded: Bool = false
     
     private let mainViewModel: MainViewModel
@@ -24,6 +25,11 @@ final class GoalsViewModel: ObservableObject {
     
     // MARK: - Load Data
     func loadGoalsData() async {
+        await MainActor.run {
+            uniqueId = UUID()
+            isDataLoaded = false
+        }
+        
         async let rdiTask: () = rdiViewModel.loadRdiView()
         async let dailyIntakeTask: () = dailyIntakeViewModel
             .loadDailyIntakeView()

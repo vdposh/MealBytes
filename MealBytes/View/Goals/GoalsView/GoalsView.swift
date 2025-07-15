@@ -85,6 +85,7 @@ struct GoalsView: View {
                 Text("MealBytes calculates the Recommended Daily Intake (RDI) to provide a daily calorie target tailored to help achieve the desired weight.")
             }
         }
+        .id(goalsViewModel.uniqueId)
         .navigationBarTitle("Goals", displayMode: .inline)
         .task {
             await goalsViewModel.loadGoalsData()
