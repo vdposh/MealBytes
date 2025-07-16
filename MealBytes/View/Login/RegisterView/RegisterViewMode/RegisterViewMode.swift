@@ -20,10 +20,10 @@ final class RegisterViewModel: ObservableObject {
     @Published var isRegisterLoading: Bool = false
     
     private var error: AuthError?
-    
-    private var timerSubscription: AnyCancellable?
-    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     private var remainingSeconds: Int = 60
+    
+    private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private var timerSubscription: AnyCancellable?
     
     deinit {
         timerSubscription?.cancel()

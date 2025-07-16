@@ -33,7 +33,7 @@ final class ProfileViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init(loginViewModel: LoginViewModel,
-         mainViewModel: MainViewModel) {
+         mainViewModel: MainViewModelProtocol) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
         self.displayIntake = mainViewModel.displayIntake
@@ -46,7 +46,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Toggle
-    func updateDisplayIntake(to newValue: Bool) {
+    private func updateDisplayIntake(to newValue: Bool) {
         Task {
             await MainActor.run {
                 self.isToggleUpdating = true
@@ -114,7 +114,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Change Password
-    func changePassword(currentPassword: String,
+    private func changePassword(currentPassword: String,
                         newPassword: String) async throws {
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,

@@ -12,6 +12,7 @@ import FirebaseCore
 protocol MainViewModelProtocol {
     var date: Date { get }
     var intakeSource: String { get }
+    var displayIntake: Bool { get }
     
     func saveCurrentIntakeMainView(source: String) async
     func saveDisplayIntakeMainView(_ newValue: Bool) async
@@ -45,8 +46,8 @@ final class MainViewModel: ObservableObject {
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
-    let calendar = Calendar.current
-    let formatter = Formatter()
+    private let storedCalendar = Calendar.current
+    private let storedFormatter = Formatter()
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     lazy var searchViewModel = SearchViewModel(mainViewModel: self)
@@ -322,18 +323,13 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Value for Nutrient Type
-    func value(for type: NutrientType) -> Double {
-        nutrientSummaries[type] ?? 0.0
-    }
-    
     // MARK: - Format Serving Size
-    func formattedServingSize(for mealItem: MealItem) -> String {
+    private func formattedServingSize(for mealItem: MealItem) -> String {
         return formatter.formattedValue(mealItem.nutrients[.servingSize],
                                         unit: .empty)
     }
     
-    func formattedMeasurement(for mealItem: MealItem) -> String {
+    private func formattedMeasurement(for mealItem: MealItem) -> String {
         if mealItem.measurementDescription.starts(with: "serving (") {
             return "serving"
         } else {
@@ -537,10 +533,19 @@ final class MainViewModel: ObservableObject {
     }
     
     //MARK: - Close sections
-    func collapseAllSections() {
+    private func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
+    }
+    
+    // MARK: - Text
+    var calendar: Calendar {
+        storedCalendar
+    }
+    
+    var formatter: Formatter {
+        storedFormatter
     }
 }
 
