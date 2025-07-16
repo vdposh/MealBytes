@@ -20,23 +20,16 @@ final class SearchViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
     @Published var selectedMealType: MealType = .breakfast
+    @Published var query: String = "" {
+        didSet {
+            handleQueryChange(from: oldValue, to: query)
+        }
+    }
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
-    @Published var query: String = "" {
-        didSet {
-            guard query != oldValue else { return }
-            currentPage = 0
-            switch query.isEmpty {
-            case true:
-                resetSearch()
-            case false:
-                queueSearch(query)
-            }
-        }
-    }
     
-    var shouldResetQuery = false
+    private var shouldResetQuery = false
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
     
@@ -95,6 +88,17 @@ final class SearchViewModel: ObservableObject {
                     }
                 }
             }
+    }
+    
+    private func handleQueryChange(from oldValue: String,
+                                   to newValue: String) {
+        guard oldValue != newValue else { return }
+        currentPage = 0
+        if newValue.isEmpty {
+            resetSearch()
+        } else {
+            queueSearch(newValue)
+        }
     }
     
     // MARK: - Load Bookmarks

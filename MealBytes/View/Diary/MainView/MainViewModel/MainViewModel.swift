@@ -29,9 +29,7 @@ protocol MainViewModelProtocol {
 final class MainViewModel: ObservableObject {
     @Published var date = Date() {
         didSet {
-            recalculateNutrients(for: date)
-            updateProgress()
-            collapseAllSections()
+            handleDateChange(from: oldValue, to: date)
         }
     }
     @Published var mealItems: [MealType: [MealItem]]
@@ -46,8 +44,8 @@ final class MainViewModel: ObservableObject {
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
-    private let storedCalendar = Calendar.current
-    private let storedFormatter = Formatter()
+    let formatter = Formatter()
+    let calendar = Calendar.current
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     lazy var searchViewModel = SearchViewModel(mainViewModel: self)
@@ -532,20 +530,19 @@ final class MainViewModel: ObservableObject {
         return Array(prevDays) + days + nextDays
     }
     
+    private func handleDateChange(from oldDate: Date, to newDate: Date) {
+        guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
+        
+        recalculateNutrients(for: newDate)
+        updateProgress()
+        collapseAllSections()
+    }
+    
     //MARK: - Close sections
     private func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
-    }
-    
-    // MARK: - Text
-    var calendar: Calendar {
-        storedCalendar
-    }
-    
-    var formatter: Formatter {
-        storedFormatter
     }
 }
 

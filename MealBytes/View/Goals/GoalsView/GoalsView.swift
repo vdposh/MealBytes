@@ -18,21 +18,17 @@ struct GoalsView: View {
                         dailyIntakeViewModel: goalsViewModel
                             .dailyIntakeViewModel)
                     ) {
+                        let dailyIntakeState = goalsViewModel.displayState(
+                            for: .dailyIntakeView
+                        )
                         LabeledContent {
-                            Text(goalsViewModel.dailyIntakeText())
-                                .foregroundColor(
-                                    goalsViewModel.color(for: .dailyIntakeView)
-                                )
-                                .fontWeight(
-                                    goalsViewModel.weight(for: .dailyIntakeView)
-                                )
+                            Text(dailyIntakeState.text)
+                                .foregroundColor(dailyIntakeState.color)
+                                .fontWeight(dailyIntakeState.weight)
                         } label: {
                             HStack {
-                                Image(
-                                    systemName: goalsViewModel
-                                        .icon(for: .dailyIntakeView)
-                                )
-                                .foregroundStyle(.customGreen)
+                                Image(systemName: dailyIntakeState.icon)
+                                    .foregroundStyle(.customGreen)
                                 Text("Daily Intake")
                             }
                         }
@@ -54,21 +50,17 @@ struct GoalsView: View {
                     NavigationLink(destination: RdiView(
                         rdiViewModel: goalsViewModel.rdiViewModel)
                     ) {
+                        let rdiState = goalsViewModel.displayState(
+                            for: .rdiView
+                        )
                         LabeledContent {
-                            Text(goalsViewModel.rdiText())
-                                .foregroundColor(
-                                    goalsViewModel.color(for: .rdiView)
-                                )
-                                .fontWeight(
-                                    goalsViewModel.weight(for: .rdiView)
-                                )
+                            Text(rdiState.text)
+                                .foregroundColor(rdiState.color)
+                                .fontWeight(rdiState.weight)
                         } label: {
                             HStack {
-                                Image(
-                                    systemName: goalsViewModel
-                                        .icon(for: .rdiView)
-                                )
-                                .foregroundStyle(.customGreen)
+                                Image(systemName: rdiState.icon)
+                                    .foregroundStyle(.customGreen)
                                 Text("RDI")
                             }
                         }

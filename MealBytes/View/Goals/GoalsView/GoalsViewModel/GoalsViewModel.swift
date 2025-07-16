@@ -42,39 +42,37 @@ final class GoalsViewModel: ObservableObject {
     }
     
     // MARK: - Text
-    func rdiText() -> String {
-        rdiViewModel.text(for: rdiViewModel.calculatedRdi)
-    }
-    
-    func dailyIntakeText() -> String {
-        dailyIntakeViewModel.text(for: dailyIntakeViewModel.calories)
-    }
-    
-    var currentIntakeSource: IntakeSourceType {
-        IntakeSourceType(rawValue: mainViewModel.intakeSource) ?? .rdiView
+    func displayState(for source: IntakeSourceType) -> IntakeDisplayState {
+        let isActive = self.isActive(source)
+        let text: String
+        switch source {
+        case .rdiView:
+            text = rdiViewModel.rdiText()
+        case .dailyIntakeView:
+            text = dailyIntakeViewModel.dailyIntakeText()
+        }
+        
+        return IntakeDisplayState(
+            text: text,
+            color: isActive ? .customGreen : .secondary,
+            weight: isActive ? .medium : .regular,
+            icon: isActive ? "person.fill" : "person"
+        )
     }
     
     func isActive(_ source: IntakeSourceType) -> Bool {
         switch source {
         case .rdiView:
             return currentIntakeSource == source &&
-            rdiText() != "Fill in the data"
+            rdiViewModel.rdiText() != "Fill in the data"
         case .dailyIntakeView:
             return currentIntakeSource == source &&
-            dailyIntakeText() != "Fill in the data"
+            dailyIntakeViewModel.dailyIntakeText() != "Fill in the data"
         }
     }
     
-    func color(for source: IntakeSourceType) -> Color {
-        isActive(source) ? .customGreen : .secondary
-    }
-    
-    func weight(for source: IntakeSourceType) -> Font.Weight {
-        isActive(source) ? .medium : .regular
-    }
-    
-    func icon(for source: IntakeSourceType) -> String {
-        isActive(source) ? "person.fill" : "person"
+    var currentIntakeSource: IntakeSourceType {
+        IntakeSourceType(rawValue: mainViewModel.intakeSource) ?? .rdiView
     }
 }
 

@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct DailyIntakeView: View {
-    @Environment(\.dismiss) private var dismiss
-    @FocusState private var caloriesFocused: Bool
     @FocusState private var focusMacronutrients: MacronutrientsFocus?
+    @FocusState private var caloriesFocused: Bool
+    @Environment(\.dismiss) private var dismiss
+    
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {

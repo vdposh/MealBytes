@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct RdiView: View {
-    @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: RdiFocus?
+    @Environment(\.dismiss) private var dismiss
+    
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {

@@ -188,7 +188,7 @@ struct FoodView: View {
                             action: {
                                 foodViewModel.addMealItemFoodView(
                                     in: foodViewModel.mealType,
-                                    for: foodViewModel.date
+                                    for: foodViewModel.mainViewModel.date
                                 )
                                 dismiss()
                             },
@@ -221,7 +221,7 @@ struct FoodView: View {
                             action: {
                                 Task {
                                     await foodViewModel.updateMealItemFoodView(
-                                        for: foodViewModel.date
+                                        for: foodViewModel.mainViewModel.date
                                     )
                                     dismiss()
                                 }

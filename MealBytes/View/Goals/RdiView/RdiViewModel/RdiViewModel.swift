@@ -263,6 +263,10 @@ final class RdiViewModel: ObservableObject {
         : "\(calculatedRdi) calories"
     }
     
+    func rdiText() -> String {
+        text(for: calculatedRdi)
+    }
+    
     func color(for calculatedRdi: String) -> Color? {
         guard !calculatedRdi.isEmpty,
               isInputValidForCalculation,

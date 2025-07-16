@@ -56,9 +56,9 @@ struct MainView: View {
     
     private var datePickerView: some View {
         VStack {
-            DatePickerView(selectedDate: $mainViewModel.date,
-                           isPresented: $mainViewModel.isExpandedCalendar,
-                           mainViewModel: mainViewModel)
+            CalendarView(selectedDate: $mainViewModel.date,
+                         isPresented: $mainViewModel.isExpandedCalendar,
+                         mainViewModel: mainViewModel)
         }
         .background(Color(.systemBackground))
     }

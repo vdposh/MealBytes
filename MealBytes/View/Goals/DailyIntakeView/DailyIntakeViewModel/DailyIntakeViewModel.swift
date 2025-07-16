@@ -190,6 +190,10 @@ final class DailyIntakeViewModel: ObservableObject {
         : "\(calculatedIntake) calories"
     }
     
+    func dailyIntakeText() -> String {
+        text(for: calories)
+    }
+    
     // MARK: - UI Helpers
     func titleColor(for value: String,
                     isCalorie: Bool = false) -> Color {

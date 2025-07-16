@@ -1,5 +1,5 @@
 //
-//  DatePickerView.swift
+//  CalendarView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 19/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DatePickerView: View {
+struct CalendarView: View {
     @Binding var selectedDate: Date
     @Binding var isPresented: Bool
     @ObservedObject var mainViewModel: MainViewModel

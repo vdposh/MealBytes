@@ -26,23 +26,23 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
+    private let formatter = Formatter()
     private let originalMealType: MealType
     private let originalCreatedAt: Date
-    private let storedFood: Food
     private let originalMealItemId: UUID
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
-    private let formatter = Formatter()
-    
-    private var storedMealType: MealType
     private var didChangeMealType: Bool {
         mealType != originalMealType
     }
     
+    let food: Food
+    var mealType: MealType
+    
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let searchViewModel: SearchViewModelProtocol
-    private let mainViewModel: MainViewModelProtocol
+    let mainViewModel: MainViewModelProtocol
     
     init(food: Food,
          mealType: MealType,
@@ -59,8 +59,8 @@ final class FoodViewModel: ObservableObject {
             alwaysRoundUp: false
         )
         
-        self.storedFood = food
-        self.storedMealType = mealType
+        self.food = food
+        self.mealType = mealType
         self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
@@ -327,17 +327,6 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Text
     func titleColor(for value: String) -> Color {
         value.isValidNumericInput() ? .secondary : .customRed
-    }
-    
-    var date: Date {
-        mainViewModel.date
-    }
-    
-    var food: Food { storedFood }
-    
-    var mealType: MealType {
-        get { storedMealType }
-        set { storedMealType = newValue }
     }
     
     //MARK: - Keyboard
