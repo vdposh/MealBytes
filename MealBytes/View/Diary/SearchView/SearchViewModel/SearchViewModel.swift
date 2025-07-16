@@ -8,6 +8,11 @@
 import SwiftUI
 import Combine
 
+protocol SearchViewModelProtocol {
+    func isBookmarkedSearchView(_ food: Food) -> Bool
+    func toggleBookmarkSearchView(for food: Food)
+}
+
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
@@ -246,6 +251,8 @@ final class SearchViewModel: ObservableObject {
         isLoading = false
     }
 }
+
+extension SearchViewModel: SearchViewModelProtocol {}
 
 #Preview {
     PreviewContentView.contentView

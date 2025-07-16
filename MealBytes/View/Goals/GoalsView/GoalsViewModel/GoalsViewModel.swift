@@ -11,11 +11,11 @@ final class GoalsViewModel: ObservableObject {
     @Published var uniqueId = UUID()
     @Published var isDataLoaded: Bool = false
     
-    private let mainViewModel: MainViewModel
+    private let mainViewModel: MainViewModelProtocol
     let rdiViewModel: RdiViewModel
     let dailyIntakeViewModel: DailyIntakeViewModel
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
         self.rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
         self.dailyIntakeViewModel = DailyIntakeViewModel(

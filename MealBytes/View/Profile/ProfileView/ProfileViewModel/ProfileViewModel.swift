@@ -26,7 +26,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var mainViewModel: MainViewModel
+    private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     private var cancellables = Set<AnyCancellable>()
@@ -49,7 +49,7 @@ final class ProfileViewModel: ObservableObject {
         Task {
             await MainActor.run {
                 self.isToggleUpdating = true
-                self.mainViewModel.displayIntake = newValue
+                mainViewModel.setDisplayIntake(newValue)
             }
             await self.mainViewModel.saveDisplayIntakeMainView(newValue)
             await MainActor.run {

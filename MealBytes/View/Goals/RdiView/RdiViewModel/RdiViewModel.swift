@@ -23,11 +23,12 @@ final class RdiViewModel: ObservableObject {
     @Published var isDataLoaded: Bool = false
     
     private let formatter = Formatter()
+    
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    private let mainViewModel: MainViewModel
+    private let mainViewModel: MainViewModelProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
         setupDataObserver()
     }
@@ -79,7 +80,7 @@ final class RdiViewModel: ObservableObject {
         do {
             try await firestore.saveRdiFirestore(rdiData)
             await MainActor.run {
-                mainViewModel.intake = calculatedRdi
+                mainViewModel.updateIntake(to: calculatedRdi)
             }
             await mainViewModel.saveCurrentIntakeMainView(source: "rdiView")
         } catch {

@@ -10,7 +10,7 @@ import SwiftUI
 struct DatePickerView: View {
     @Binding var selectedDate: Date
     @Binding var isPresented: Bool
-    let mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         VStack {

@@ -9,6 +9,21 @@ import SwiftUI
 import Combine
 import FirebaseCore
 
+protocol MainViewModelProtocol {
+    var date: Date { get }
+    var intakeSource: String { get }
+    
+    func saveCurrentIntakeMainView(source: String) async
+    func saveDisplayIntakeMainView(_ newValue: Bool) async
+    func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
+    func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
+    func deleteMealItemMainView(with id: UUID, for: MealType)
+    func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
+    func updateIntake(to value: String)
+    func collapseSection(for mealType: MealType, to isExpanded: Bool)
+    func setDisplayIntake(_ value: Bool)
+}
+
 final class MainViewModel: ObservableObject {
     @Published var date = Date() {
         didSet {
@@ -20,8 +35,8 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
-    @Published var uniqueId = UUID()
     @Published var appError: AppError?
+    @Published var uniqueId = UUID()
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
@@ -520,7 +535,7 @@ final class MainViewModel: ObservableObject {
         return Array(prevDays) + days + nextDays
     }
     
-    //MARK: - Close all sections
+    //MARK: - Close sections
     func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
@@ -536,6 +551,20 @@ enum NutrientSource {
 enum DisplayElement {
     case day
     case weekday
+}
+
+extension MainViewModel: MainViewModelProtocol {
+    func collapseSection(for mealType: MealType, to isExpanded: Bool) {
+        expandedSections[mealType] = isExpanded
+    }
+    
+    func setDisplayIntake(_ value: Bool) {
+        displayIntake = value
+    }
+    
+    func updateIntake(to value: String) {
+        intake = value
+    }
 }
 
 #Preview {

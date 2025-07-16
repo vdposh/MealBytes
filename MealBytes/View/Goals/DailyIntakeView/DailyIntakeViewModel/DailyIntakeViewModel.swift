@@ -33,10 +33,10 @@ final class DailyIntakeViewModel: ObservableObject {
     private let formatter = Formatter()
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    private let mainViewModel: MainViewModel
+    private let mainViewModel: MainViewModelProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
         setupBindings()
     }
@@ -78,7 +78,7 @@ final class DailyIntakeViewModel: ObservableObject {
         do {
             try await firestore.saveDailyIntakeFirestore(dailyIntakeData)
             await MainActor.run {
-                mainViewModel.intake = calories
+                mainViewModel.updateIntake(to: calories)
             }
             await mainViewModel
                 .saveCurrentIntakeMainView(source: "dailyIntakeView")

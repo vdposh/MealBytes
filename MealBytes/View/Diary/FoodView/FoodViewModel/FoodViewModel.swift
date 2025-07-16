@@ -26,26 +26,27 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
+    private let originalMealType: MealType
+    private let originalCreatedAt: Date
+    private let storedFood: Food
+    private let originalMealItemId: UUID
     private let initialMeasurementDescription: String
     private let showSaveRemoveButton: Bool
     private let formatter = Formatter()
-    private let originalMealType: MealType
-    private let originalCreatedAt: Date
-    private let originalMealItemId: UUID
-    let food: Food
-    var mealType: MealType
-    var didChangeMealType: Bool {
+    
+    private var storedMealType: MealType
+    private var didChangeMealType: Bool {
         mealType != originalMealType
     }
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    let searchViewModel: SearchViewModel
-    let mainViewModel: MainViewModel
+    private let searchViewModel: SearchViewModelProtocol
+    private let mainViewModel: MainViewModelProtocol
     
     init(food: Food,
          mealType: MealType,
-         searchViewModel: SearchViewModel,
+         searchViewModel: SearchViewModelProtocol,
          mainViewModel: MainViewModel,
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
@@ -58,8 +59,8 @@ final class FoodViewModel: ObservableObject {
             alwaysRoundUp: false
         )
         
-        self.food = food
-        self.mealType = mealType
+        self.storedFood = food
+        self.storedMealType = mealType
         self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
@@ -178,8 +179,10 @@ final class FoodViewModel: ObservableObject {
                     if mainViewModel.filteredMealItems(for: originalMealType,
                                                        on: date).isEmpty {
                         await MainActor.run {
-                            mainViewModel
-                                .expandedSections[originalMealType] = false
+                            mainViewModel.collapseSection(
+                                for: originalMealType,
+                                to: false
+                            )
                         }
                     }
                     
@@ -189,7 +192,10 @@ final class FoodViewModel: ObservableObject {
                             to: mealType,
                             for: date
                         )
-                        mainViewModel.expandedSections[mealType] = true
+                        mainViewModel.collapseSection(
+                            for: originalMealType,
+                            to: true
+                        )
                     }
                     
                     try await firestore.updateMealItemFirestore(updatedMealItem)
@@ -264,11 +270,6 @@ final class FoodViewModel: ObservableObject {
         return servingDescription(for: selectedServing)
     }
     
-    // MARK: - Text
-    func titleColor(for value: String) -> Color {
-        value.isValidNumericInput() ? .secondary : .customRed
-    }
-    
     // MARK: - Button States
     var canAddFood: Bool {
         amount.isValidNumericInput()
@@ -321,6 +322,22 @@ final class FoodViewModel: ObservableObject {
                     isSubValue: detail.isSubValue
                 )
             }
+    }
+    
+    // MARK: - Text
+    func titleColor(for value: String) -> Color {
+        value.isValidNumericInput() ? .secondary : .customRed
+    }
+    
+    var date: Date {
+        mainViewModel.date
+    }
+    
+    var food: Food { storedFood }
+    
+    var mealType: MealType {
+        get { storedMealType }
+        set { storedMealType = newValue }
     }
     
     //MARK: - Keyboard
