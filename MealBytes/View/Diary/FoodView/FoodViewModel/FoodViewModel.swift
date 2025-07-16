@@ -47,7 +47,7 @@ final class FoodViewModel: ObservableObject {
     init(food: Food,
          mealType: MealType,
          searchViewModel: SearchViewModelProtocol,
-         mainViewModel: MainViewModel,
+         mainViewModel: MainViewModelProtocol,
          initialAmount: String = "",
          initialMeasurementDescription: String = "",
          showSaveRemoveButton: Bool = false,

@@ -43,11 +43,11 @@ final class SearchViewModel: ObservableObject {
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
-    let mainViewModel: MainViewModel
+    let mainViewModel: MainViewModelProtocol
     
     private var searchCancellable: AnyCancellable?
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
     }
     

@@ -20,8 +20,8 @@ struct FoodView: View {
     
     init(navigationTitle: String,
          food: Food,
-         searchViewModel: SearchViewModel,
-         mainViewModel: MainViewModel,
+         searchViewModel: SearchViewModelProtocol,
+         mainViewModel: MainViewModelProtocol,
          mealType: MealType,
          amount: String,
          measurementDescription: String,

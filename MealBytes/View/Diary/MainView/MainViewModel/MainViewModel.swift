@@ -20,6 +20,7 @@ protocol MainViewModelProtocol {
     func deleteMealItemMainView(with id: UUID, for: MealType)
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func updateIntake(to value: String)
+    func formattedDate(isAbbreviated: Bool) -> String
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
 }
