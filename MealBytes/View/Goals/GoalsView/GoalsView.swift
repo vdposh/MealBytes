@@ -14,26 +14,29 @@ struct GoalsView: View {
         List {
             Section {
                 if goalsViewModel.isDataLoaded {
-                    NavigationLink(destination: DailyIntakeView(
-                        dailyIntakeViewModel: goalsViewModel
-                            .dailyIntakeViewModel)
-                    ) {
-                        let dailyIntakeState = goalsViewModel.displayState(
-                            for: .dailyIntakeView
-                        )
-                        LabeledContent {
-                            Text(dailyIntakeState.text)
-                                .foregroundColor(dailyIntakeState.color)
-                                .fontWeight(dailyIntakeState.weight)
-                        } label: {
-                            HStack {
-                                Image(systemName: dailyIntakeState.icon)
-                                    .foregroundStyle(.customGreen)
-                                Text("Daily Intake")
+                    if let dailyIntakeViewModel = goalsViewModel
+                        .dailyIntakeViewModel as? DailyIntakeViewModel {
+                        NavigationLink(destination: DailyIntakeView(
+                            dailyIntakeViewModel: dailyIntakeViewModel)
+                        ) {
+                            let dailyIntakeState = goalsViewModel.displayState(
+                                for: .dailyIntakeView
+                            )
+                            
+                            LabeledContent {
+                                Text(dailyIntakeState.text)
+                                    .foregroundColor(dailyIntakeState.color)
+                                    .fontWeight(dailyIntakeState.weight)
+                            } label: {
+                                HStack {
+                                    Image(systemName: dailyIntakeState.icon)
+                                        .foregroundStyle(.customGreen)
+                                    Text("Daily Intake")
+                                }
                             }
                         }
+                        .disabled(!goalsViewModel.isDataLoaded)
                     }
-                    .disabled(goalsViewModel.isDataLoaded == false)
                 } else {
                     HStack {
                         LoadingView()
@@ -47,25 +50,29 @@ struct GoalsView: View {
             
             Section {
                 if goalsViewModel.isDataLoaded {
-                    NavigationLink(destination: RdiView(
-                        rdiViewModel: goalsViewModel.rdiViewModel)
-                    ) {
-                        let rdiState = goalsViewModel.displayState(
-                            for: .rdiView
-                        )
-                        LabeledContent {
-                            Text(rdiState.text)
-                                .foregroundColor(rdiState.color)
-                                .fontWeight(rdiState.weight)
-                        } label: {
-                            HStack {
-                                Image(systemName: rdiState.icon)
-                                    .foregroundStyle(.customGreen)
-                                Text("RDI")
+                    if let rdiViewModel = goalsViewModel
+                        .rdiViewModel as? RdiViewModel {
+                        NavigationLink(destination: RdiView(
+                            rdiViewModel: rdiViewModel)
+                        ) {
+                            let rdiState = goalsViewModel.displayState(
+                                for: .rdiView
+                            )
+                            
+                            LabeledContent {
+                                Text(rdiState.text)
+                                    .foregroundColor(rdiState.color)
+                                    .fontWeight(rdiState.weight)
+                            } label: {
+                                HStack {
+                                    Image(systemName: rdiState.icon)
+                                        .foregroundStyle(.customGreen)
+                                    Text("RDI")
+                                }
                             }
                         }
+                        .disabled(!goalsViewModel.isDataLoaded)
                     }
-                    .disabled(goalsViewModel.isDataLoaded == false)
                 } else {
                     HStack {
                         LoadingView()

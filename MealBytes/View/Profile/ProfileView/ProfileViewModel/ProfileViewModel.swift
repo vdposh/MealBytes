@@ -27,9 +27,9 @@ final class ProfileViewModel: ObservableObject {
     
     @ObservedObject var loginViewModel: LoginViewModel
     
-    private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private let mainViewModel: MainViewModelProtocol
     private var cancellables = Set<AnyCancellable>()
     
     init(loginViewModel: LoginViewModel,

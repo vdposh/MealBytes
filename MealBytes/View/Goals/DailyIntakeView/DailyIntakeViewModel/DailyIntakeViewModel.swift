@@ -8,6 +8,12 @@
 import SwiftUI
 import Combine
 
+protocol DailyIntakeViewModelProtocol {
+    func dailyIntakeText() -> String
+    func loadDailyIntakeView() async
+    func saveDailyIntakeView() async
+}
+
 final class DailyIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var calories: String = ""
@@ -19,14 +25,7 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var isDataLoaded: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
-            normalizeInputs()
-            if toggleOn {
-                calculateCalories(fat: fat,
-                                  carbohydrate: carbohydrate,
-                                  protein: protein)
-            } else if calories.isEmpty {
-                calories = ""
-            }
+            handleToggleOnChange()
         }
     }
     
@@ -172,6 +171,20 @@ final class DailyIntakeViewModel: ObservableObject {
         return true
     }
     
+    private func handleToggleOnChange() {
+        normalizeInputs()
+        
+        if toggleOn {
+            calculateCalories(
+                fat: fat,
+                carbohydrate: carbohydrate,
+                protein: protein
+            )
+        } else if calories.isEmpty {
+            calories = ""
+        }
+    }
+    
     // MARK: - Text
     func text(for calculatedIntake: String) -> String {
         let sanitized = calculatedIntake.sanitizedForDouble
@@ -259,6 +272,8 @@ final class DailyIntakeViewModel: ObservableObject {
         }
     }
 }
+
+extension DailyIntakeViewModel: DailyIntakeViewModelProtocol {}
 
 #Preview {
     PreviewContentView.contentView

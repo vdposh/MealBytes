@@ -33,11 +33,21 @@ struct MealBytesApp: App {
     init() {
         let mainViewModel = MainViewModel()
         let loginViewModel = LoginViewModel()
+        let dailyIntakeViewModel = DailyIntakeViewModel(
+            mainViewModel: mainViewModel
+        )
+        let rdiViewModel = RdiViewModel(
+            mainViewModel: mainViewModel
+        )
         
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
         _loginViewModel = StateObject(wrappedValue: loginViewModel)
         _goalsViewModel = StateObject(
-            wrappedValue: GoalsViewModel(mainViewModel: mainViewModel)
+            wrappedValue: GoalsViewModel(
+                mainViewModel: mainViewModel,
+                dailyIntakeViewModel: dailyIntakeViewModel,
+                rdiViewModel: rdiViewModel
+            )
         )
         _profileViewModel = StateObject(
             wrappedValue: ProfileViewModel(

@@ -8,6 +8,12 @@
 import SwiftUI
 import Combine
 
+protocol RdiViewModelProtocol {
+    func rdiText() -> String
+    func loadRdiView() async
+    func saveRdiView() async
+}
+
 final class RdiViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var age: String = ""
@@ -320,6 +326,8 @@ final class RdiViewModel: ObservableObject {
         }
     }
 }
+
+extension RdiViewModel: RdiViewModelProtocol {}
 
 #Preview {
     PreviewContentView.contentView

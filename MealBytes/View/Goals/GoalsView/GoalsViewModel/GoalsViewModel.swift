@@ -12,15 +12,15 @@ final class GoalsViewModel: ObservableObject {
     @Published var isDataLoaded: Bool = false
     
     private let mainViewModel: MainViewModelProtocol
-    let rdiViewModel: RdiViewModel
-    let dailyIntakeViewModel: DailyIntakeViewModel
+    let dailyIntakeViewModel: DailyIntakeViewModelProtocol
+    let rdiViewModel: RdiViewModelProtocol
     
-    init(mainViewModel: MainViewModelProtocol) {
+    init(mainViewModel: MainViewModelProtocol,
+         dailyIntakeViewModel: DailyIntakeViewModelProtocol,
+         rdiViewModel: RdiViewModelProtocol) {
         self.mainViewModel = mainViewModel
-        self.rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-        self.dailyIntakeViewModel = DailyIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
+        self.dailyIntakeViewModel = dailyIntakeViewModel
+        self.rdiViewModel = rdiViewModel
     }
     
     // MARK: - Load Data
