@@ -16,10 +16,10 @@ protocol MainViewModelProtocol {
     
     func saveCurrentIntakeMainView(source: String) async
     func saveDisplayIntakeMainView(_ newValue: Bool) async
+    func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType)
-    func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func updateIntake(to value: String)
     func formattedDate(isAbbreviated: Bool) -> String
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
@@ -48,7 +48,9 @@ final class MainViewModel: ObservableObject {
     let calendar = Calendar.current
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    lazy var searchViewModel = SearchViewModel(mainViewModel: self)
+    lazy var searchViewModel: SearchViewModelProtocol = SearchViewModel(
+        mainViewModel: self
+    )
     private var cancellables = Set<AnyCancellable>()
     
     init() {

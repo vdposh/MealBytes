@@ -9,9 +9,9 @@ import SwiftUI
 import Combine
 
 protocol DailyIntakeViewModelProtocol {
-    func dailyIntakeText() -> String
     func loadDailyIntakeView() async
     func saveDailyIntakeView() async
+    func dailyIntakeText() -> String
 }
 
 final class DailyIntakeViewModel: ObservableObject {

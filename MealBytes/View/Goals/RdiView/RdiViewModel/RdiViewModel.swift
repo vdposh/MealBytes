@@ -9,9 +9,9 @@ import SwiftUI
 import Combine
 
 protocol RdiViewModelProtocol {
-    func rdiText() -> String
     func loadRdiView() async
     func saveRdiView() async
+    func rdiText() -> String
 }
 
 final class RdiViewModel: ObservableObject {

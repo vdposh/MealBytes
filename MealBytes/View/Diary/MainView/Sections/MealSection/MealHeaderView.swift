@@ -62,17 +62,22 @@ struct MealHeaderView: View {
                             .fontWeight(.bold)
                     }
                 }
-                .background(
-                    NavigationLink(
-                        destination: SearchView(
-                            searchViewModel: mainViewModel.searchViewModel,
-                            mealType: mealType
-                        )
-                    ) {
+                .background {
+                    if let searchModel = mainViewModel
+                        .searchViewModel as? SearchViewModel {
+                        NavigationLink(
+                            destination: SearchView(
+                                searchViewModel: searchModel,
+                                mealType: mealType
+                            )
+                        ) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+                    } else {
                         EmptyView()
                     }
-                        .opacity(0)
-                )
+                }
             }
             
             if mainViewModel.expandedSections[mealType] == true {

@@ -9,8 +9,9 @@ import SwiftUI
 import Combine
 
 protocol SearchViewModelProtocol {
-    func isBookmarkedSearchView(_ food: Food) -> Bool
     func toggleBookmarkSearchView(for food: Food)
+    func loadBookmarksData(for mealType: MealType) async
+    func isBookmarkedSearchView(_ food: Food) -> Bool
 }
 
 final class SearchViewModel: ObservableObject {
