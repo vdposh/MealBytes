@@ -22,7 +22,7 @@ struct CompactNutrientDetailRow: View {
                     .foregroundColor(.white)
             }
         }
-        .frame(height: 78)
+        .frame(height: 76)
         .frame(maxWidth: .infinity)
         .background(.customGreen)
         .cornerRadius(12)

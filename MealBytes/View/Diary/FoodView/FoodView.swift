@@ -178,7 +178,7 @@ struct FoodView: View {
                         CompactNutrientDetailRow(nutrient: nutrient)
                     }
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 5)
                 
                 HStack {
                     switch showAddButton {
