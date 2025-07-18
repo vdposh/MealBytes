@@ -37,14 +37,7 @@ struct DailyIntakeView: View {
                             )
                         }
                         
-                        Section {
-                            Toggle(isOn: $dailyIntakeViewModel.toggleOn) {
-                                Text("Macronutrient metrics")
-                            }
-                            .toggleStyle(SwitchToggleStyle(tint: .customGreen))
-                        } footer: {
-                            Text("Enable this option to calculate intake using macronutrients.")
-                        }
+                        ToggleSection(toggleOn: $dailyIntakeViewModel.toggleOn)
                     }
                     .navigationBarTitle("Daily Intake", displayMode: .inline)
                     .toolbar {

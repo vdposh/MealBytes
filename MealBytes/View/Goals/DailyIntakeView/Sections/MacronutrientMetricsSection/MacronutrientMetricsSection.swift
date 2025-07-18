@@ -58,7 +58,7 @@ struct MacronutrientMetricsSection: View {
     let dailyIntakeViewModel = DailyIntakeViewModel(
         mainViewModel: mainViewModel
     )
-
+    
     return NavigationStack {
         DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }

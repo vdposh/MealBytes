@@ -245,7 +245,6 @@ struct FoodView: View {
     }
 }
 
-
 #Preview {
     PreviewContentView.contentView
 }

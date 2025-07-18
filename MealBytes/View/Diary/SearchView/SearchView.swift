@@ -61,6 +61,7 @@ struct SearchView: View {
                     pageButton(direction: .next)
                     pageButton(direction: .previous)
                 }
+                .ignoresSafeArea(.keyboard)
                 .background {
                     if searchViewModel.foods.isEmpty {
                         contentUnavailableView(
