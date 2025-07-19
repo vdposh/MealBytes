@@ -145,13 +145,16 @@ struct SearchView: View {
                     )
                 }
                 .interactiveDismissDisabled(true)
+                .presentationCornerRadius(16)
             }
         }
     }
     
     @ViewBuilder
-    private func pageButton(direction:
-                            SearchViewModel.PageDirection) -> some View {
+    private func pageButton(
+        direction:
+        SearchViewModel.PageDirection
+    ) -> some View {
         if searchViewModel.canLoadPage(direction: direction) {
             Button {
                 searchViewModel.loadPage(direction: direction)

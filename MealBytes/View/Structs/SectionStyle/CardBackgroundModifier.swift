@@ -17,6 +17,8 @@ struct CardBackgroundModifier: ViewModifier {
                     .background(
                         Color(uiColor: .secondarySystemGroupedBackground)
                     )
+                    .cornerRadius(14)
+                    .padding(.horizontal, 20)
             } else {
                 content
             }

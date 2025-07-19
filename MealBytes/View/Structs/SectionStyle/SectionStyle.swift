@@ -15,15 +15,19 @@ struct SectionStyleContainer<Content: View>: View {
     var description: String?
     var useUppercasedTitle: Bool = true
     var useWideTrailingPadding: Bool = false
+    var hasBottomPadding: Bool = true
+    var hasTopTextPadding: Bool = true
     
     init(
         @ViewBuilder mainContent: () -> Content,
         @ViewBuilder secondaryContent: () -> AnyView? = { nil },
-        layout: SectionCardLayout = .textFieldStyle,
+        layout: SectionCardLayout = .textStyle,
         title: String? = nil,
         description: String? = nil,
         useUppercasedTitle: Bool = true,
-        useWideTrailingPadding: Bool = false
+        useWideTrailingPadding: Bool = false,
+        hasBottomPadding: Bool = true,
+        hasTopTextPadding: Bool = true
     ) {
         self.mainContent = mainContent()
         self.secondaryContent = secondaryContent()
@@ -32,6 +36,8 @@ struct SectionStyleContainer<Content: View>: View {
         self.description = description
         self.useUppercasedTitle = useUppercasedTitle
         self.useWideTrailingPadding = useWideTrailingPadding
+        self.hasBottomPadding = hasBottomPadding
+        self.hasTopTextPadding = hasTopTextPadding
     }
     
     var body: some View {
@@ -49,7 +55,11 @@ struct SectionStyleContainer<Content: View>: View {
                     .padding(.vertical, 5)
                     .padding(.leading, 20)
                     .padding(.trailing, useWideTrailingPadding ? 20 : 10)
-                    .cardStyle()
+                    .background(
+                        Color(uiColor: .secondarySystemGroupedBackground)
+                    )
+                    .cornerRadius(14)
+                    .padding(.horizontal, 20)
                 
             case .pickerUnitStyle:
                 VStack {
@@ -65,14 +75,22 @@ struct SectionStyleContainer<Content: View>: View {
                             .padding(.bottom, 10)
                     }
                 }
-                .cardStyle()
+                .background(
+                    Color(uiColor: .secondarySystemGroupedBackground)
+                )
+                .cornerRadius(14)
+                .padding(.horizontal, 20)
                 
-            case .textFieldStyle:
+            case .textStyle:
                 mainContent
                     .padding(.horizontal, 20)
-                    .padding(.top, 12)
+                    .padding(.top, hasTopTextPadding ? 12 : 5)
                     .padding(.bottom)
-                    .cardStyle()
+                    .background(
+                        Color(uiColor: .secondarySystemGroupedBackground)
+                    )
+                    .cornerRadius(14)
+                    .padding(.horizontal, 20)
                 
             case .resultRdiStyle:
                 mainContent
@@ -89,14 +107,14 @@ struct SectionStyleContainer<Content: View>: View {
                     .padding(.horizontal, 40)
             }
         }
-        .padding(.bottom, 25)
+        .padding(.bottom, hasBottomPadding ? 25 : 0)
     }
 }
 
 enum SectionCardLayout {
     case pickerStyle
     case pickerUnitStyle
-    case textFieldStyle
+    case textStyle
     case resultRdiStyle
 }
 

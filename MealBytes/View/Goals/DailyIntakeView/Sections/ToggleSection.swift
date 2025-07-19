@@ -20,7 +20,8 @@ struct ToggleSection: View {
             },
             layout: .pickerStyle,
             description: "Enable this option to calculate intake using macronutrients.",
-            useWideTrailingPadding: true
+            useWideTrailingPadding: true,
+            hasBottomPadding: false
         )
     }
 }

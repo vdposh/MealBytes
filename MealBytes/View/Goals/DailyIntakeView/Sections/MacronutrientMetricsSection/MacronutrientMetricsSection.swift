@@ -50,7 +50,7 @@ struct MacronutrientMetricsSection: View {
                 }
                 .id("macronutrientsField")
             },
-            layout: .textFieldStyle,
+            layout: .textStyle,
             title: "Macronutrient Metrics",
             description: "Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake."
         )

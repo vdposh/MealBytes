@@ -18,18 +18,20 @@ struct FoodView: View {
     
     @StateObject private var foodViewModel: FoodViewModel
     
-    init(navigationTitle: String,
-         food: Food,
-         searchViewModel: SearchViewModelProtocol,
-         mainViewModel: MainViewModelProtocol,
-         mealType: MealType,
-         amount: String,
-         measurementDescription: String,
-         showAddButton: Bool,
-         showSaveRemoveButton: Bool,
-         showMealTypeButton: Bool,
-         originalCreatedAt: Date = Date(),
-         originalMealItemId: UUID? = nil) {
+    init(
+        navigationTitle: String,
+        food: Food,
+        searchViewModel: SearchViewModelProtocol,
+        mainViewModel: MainViewModelProtocol,
+        mealType: MealType,
+        amount: String,
+        measurementDescription: String,
+        showAddButton: Bool,
+        showSaveRemoveButton: Bool,
+        showMealTypeButton: Bool,
+        originalCreatedAt: Date = Date(),
+        originalMealItemId: UUID? = nil
+    ) {
         self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
@@ -241,7 +243,7 @@ struct FoodView: View {
                 }
             }
         }
-        .padding(.vertical, 7)
+        .padding(.vertical, 8)
         .padding(.horizontal, 20)
     }
     
