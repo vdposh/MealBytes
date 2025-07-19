@@ -50,7 +50,7 @@ struct HeightSection: View {
                     }
                 )
             },
-            layout: .pickerUnit,
+            layout: .pickerUnitStyle,
             title: "Height Details",
             description: "Enter height and, if necessary, adjust the unit (centimeters or inches)."
         )

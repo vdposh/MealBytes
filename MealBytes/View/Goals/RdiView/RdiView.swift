@@ -20,7 +20,7 @@ struct RdiView: View {
             if rdiViewModel.isDataLoaded {
                 ScrollViewReader { proxy in
                     ScrollView {
-                        OverviewSection(rdiViewModel: rdiViewModel)
+                        OverviewRdiSection(rdiViewModel: rdiViewModel)
                         AgeSection(
                             focusedField: _focusedField,
                             rdiViewModel: rdiViewModel

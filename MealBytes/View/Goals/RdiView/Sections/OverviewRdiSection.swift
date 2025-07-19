@@ -1,5 +1,5 @@
 //
-//  OverviewSection.swift
+//  OverviewRdiSection.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 27/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OverviewSection: View {
+struct OverviewRdiSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
@@ -17,7 +17,8 @@ struct OverviewSection: View {
                     .foregroundColor(
                         rdiViewModel.color(for: rdiViewModel.calculatedRdi)
                     )
-            }, layout: .resultStyle,
+            },
+            layout: .resultRdiStyle,
             title: "The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level. RDI is an estimate and not medical advice.",
             useUppercasedTitle: false
         )

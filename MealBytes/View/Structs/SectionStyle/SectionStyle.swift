@@ -14,22 +14,24 @@ struct SectionStyleContainer<Content: View>: View {
     var title: String?
     var description: String?
     var useUppercasedTitle: Bool = true
+    var useWideTrailingPadding: Bool = false
     
     init(
         @ViewBuilder mainContent: () -> Content,
         @ViewBuilder secondaryContent: () -> AnyView? = { nil },
-        layout: SectionCardLayout = .textStyle,
+        layout: SectionCardLayout = .textFieldStyle,
         title: String? = nil,
         description: String? = nil,
-        useUppercasedTitle: Bool = true
+        useUppercasedTitle: Bool = true,
+        useWideTrailingPadding: Bool = false
     ) {
-        
         self.mainContent = mainContent()
         self.secondaryContent = secondaryContent()
         self.layout = layout
         self.title = title
         self.description = description
         self.useUppercasedTitle = useUppercasedTitle
+        self.useWideTrailingPadding = useWideTrailingPadding
     }
     
     var body: some View {
@@ -46,10 +48,10 @@ struct SectionStyleContainer<Content: View>: View {
                 mainContent
                     .padding(.vertical, 5)
                     .padding(.leading, 20)
-                    .padding(.trailing, 10)
+                    .padding(.trailing, useWideTrailingPadding ? 20 : 10)
                     .cardStyle()
                 
-            case .pickerUnit:
+            case .pickerUnitStyle:
                 VStack {
                     mainContent
                         .padding(.horizontal, 20)
@@ -65,14 +67,14 @@ struct SectionStyleContainer<Content: View>: View {
                 }
                 .cardStyle()
                 
-            case .textStyle:
+            case .textFieldStyle:
                 mainContent
                     .padding(.horizontal, 20)
                     .padding(.top, 12)
                     .padding(.bottom)
                     .cardStyle()
                 
-            case .resultStyle:
+            case .resultRdiStyle:
                 mainContent
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -93,16 +95,18 @@ struct SectionStyleContainer<Content: View>: View {
 
 enum SectionCardLayout {
     case pickerStyle
-    case pickerUnit
-    case textStyle
-    case resultStyle
+    case pickerUnitStyle
+    case textFieldStyle
+    case resultRdiStyle
 }
 
 #Preview {
     let mainViewModel = MainViewModel()
-    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
     
     return NavigationStack {
-        RdiView(rdiViewModel: rdiViewModel)
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }

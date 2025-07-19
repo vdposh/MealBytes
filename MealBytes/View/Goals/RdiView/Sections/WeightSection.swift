@@ -51,7 +51,7 @@ struct WeightSection: View {
                     }
                 )
             },
-            layout: .pickerUnit,
+            layout: .pickerUnitStyle,
             title: "Weight Details",
             description: "Enter weight and adjust the unit as needed (kilograms or pounds)."
         )

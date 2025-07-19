@@ -21,6 +21,10 @@ struct DailyIntakeView: View {
             if dailyIntakeViewModel.isDataLoaded {
                 ScrollViewReader { proxy in
                     ScrollView {
+                        OverviewDailyIntakeSection(
+                            dailyIntakeViewModel: dailyIntakeViewModel
+                        )
+                        
                         CalorieMetricsSection(
                             isFocused: $caloriesFocused,
                             dailyIntakeViewModel: dailyIntakeViewModel
