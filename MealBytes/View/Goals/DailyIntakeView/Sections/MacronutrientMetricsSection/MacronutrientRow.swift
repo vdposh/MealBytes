@@ -42,10 +42,6 @@ struct MacronutrientRow: View {
 }
 
 #Preview {
-    PreviewContentView.contentView
-}
-
-#Preview {
     let mainViewModel = MainViewModel()
     let dailyIntakeViewModel = DailyIntakeViewModel(
         mainViewModel: mainViewModel

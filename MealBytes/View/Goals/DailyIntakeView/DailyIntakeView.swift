@@ -16,14 +16,11 @@ struct DailyIntakeView: View {
     
     var body: some View {
         ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
             if dailyIntakeViewModel.isDataLoaded {
                 ScrollViewReader { proxy in
-                    List {
-                        Section {
-                        } footer: {
-                            Text("Set daily intake by entering calories directly or calculate it based on macronutrient distribution.")
-                        }
-                        
+                    ScrollView {
                         CalorieMetricsSection(
                             isFocused: $caloriesFocused,
                             dailyIntakeViewModel: dailyIntakeViewModel
@@ -127,23 +124,16 @@ struct DailyIntakeView: View {
         switch direction {
         case .up:
             switch focusMacronutrients {
-            case .carbohydrate:
-                focusMacronutrients = .fat
-            case .protein:
-                focusMacronutrients = .carbohydrate
-            default:
-                break
+            case .carbohydrate: focusMacronutrients = .fat
+            case .protein: focusMacronutrients = .carbohydrate
+            default: break
             }
         case .down:
             switch focusMacronutrients {
-            case .fat:
-                focusMacronutrients = .carbohydrate
-            case .carbohydrate:
-                focusMacronutrients = .protein
-            case .protein:
-                focusMacronutrients = nil
-            default:
-                break
+            case .fat: focusMacronutrients = .carbohydrate
+            case .carbohydrate: focusMacronutrients = .protein
+            case .protein: focusMacronutrients = nil
+            default: break
             }
         }
     }
@@ -151,10 +141,8 @@ struct DailyIntakeView: View {
     private func canMoveFocus(_ direction: FocusDirection) -> Bool {
         guard let focus = focusMacronutrients else { return false }
         switch direction {
-        case .up:
-            return focus != .fat
-        case .down:
-            return focus != .protein
+        case .up: return focus != .fat
+        case .down: return focus != .protein
         }
     }
     
@@ -175,7 +163,7 @@ enum MacronutrientsFocus: Hashable {
     
     var scrollID: String {
         switch self {
-        default: "fatField"
+        default: "macronutrientsField"
         }
     }
     

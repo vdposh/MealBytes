@@ -11,8 +11,16 @@ struct ActivitySection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
+        VStack(alignment: .leading) {
+            Text("ACTIVITY LEVEL")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
+            
             HStack {
+                Text("Activity")
+                    .padding(.leading, 20)
+                
                 Picker("Activity", selection: $rdiViewModel.selectedActivity) {
                     if rdiViewModel.selectedActivity == .notSelected {
                         Text("Not Selected").tag(Activity.notSelected)
@@ -24,12 +32,20 @@ struct ActivitySection: View {
                 }
                 .pickerStyle(.menu)
                 .accentColor(rdiViewModel.selectedActivity.accentColor)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.trailing, 10)
             }
-        } header: {
-            Text("Activity Level")
-        } footer: {
+            .padding(.vertical, 5)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .cornerRadius(12)
+            .padding(.horizontal, 20)
+            
             Text("Select the necessary indicator based on daily activity level.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
         }
+        .padding(.bottom, 25)
     }
 }
 

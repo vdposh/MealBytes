@@ -12,7 +12,12 @@ struct MacronutrientMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        Section {
+        VStack(alignment: .leading) {
+            Text("MACRONUTRIENT METRICS")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
+            
             VStack(spacing: 15) {
                 MacronutrientRow(
                     textFieldBinding: $dailyIntakeViewModel.fat,
@@ -44,12 +49,19 @@ struct MacronutrientMetricsSection: View {
                 )
                 .focused($focusedField, equals: .protein)
             }
-            .padding(.bottom, 5)
-        } header: {
-            Text("Macronutrient Metrics")
-        } footer: {
+            .padding(.top, 12)
+            .padding(.bottom)
+            .padding(.horizontal, 20)
+            .background(Color(uiColor: .systemBackground))
+            .cornerRadius(12)
+            .padding(.horizontal, 20)
+            
             Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
         }
+        .padding(.bottom, 25)
     }
 }
 

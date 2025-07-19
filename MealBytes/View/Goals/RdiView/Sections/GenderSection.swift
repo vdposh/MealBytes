@@ -11,23 +11,41 @@ struct GenderSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            Picker("Gender", selection: $rdiViewModel.selectedGender) {
-                if rdiViewModel.selectedGender == .notSelected {
-                    Text("Not Selected").tag(Gender.notSelected)
+        VStack(alignment: .leading) {
+            Text("SET GENDER")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
+            
+            HStack {
+                Text("Gender")
+                    .padding(.leading, 20)
+                
+                Picker("Gender", selection: $rdiViewModel.selectedGender) {
+                    if rdiViewModel.selectedGender == .notSelected {
+                        Text("Not Selected").tag(Gender.notSelected)
+                    }
+                    ForEach(Gender.allCases.filter { $0 != .notSelected },
+                            id: \.self) { gender in
+                        Text(gender.rawValue).tag(gender)
+                    }
                 }
-                ForEach(Gender.allCases.filter { $0 != .notSelected },
-                        id: \.self) { gender in
-                    Text(gender.rawValue).tag(gender)
-                }
+                .pickerStyle(.menu)
+                .accentColor(rdiViewModel.selectedGender.accentColor)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.trailing, 10)
             }
-            .pickerStyle(.menu)
-            .accentColor(rdiViewModel.selectedGender.accentColor)
-        } header: {
-            Text("Set Gender")
-        } footer: {
+            .padding(.vertical, 5)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .cornerRadius(12)
+            .padding(.horizontal, 20)
+            
             Text("Specify gender to ensure RDI calculations.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 40)
         }
+        .padding(.bottom, 25)
     }
 }
 
