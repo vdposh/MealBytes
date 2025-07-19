@@ -32,7 +32,7 @@ struct AgeSection: View {
             .padding(.top, 12)
             .padding(.bottom)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .cornerRadius(14)
             .padding(.horizontal, 20)
             
             Text("Enter age to personalize recommendations.")

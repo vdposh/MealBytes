@@ -53,7 +53,7 @@ struct MacronutrientMetricsSection: View {
             .padding(.bottom)
             .padding(.horizontal, 20)
             .background(Color(uiColor: .systemBackground))
-            .cornerRadius(12)
+            .cornerRadius(14)
             .padding(.horizontal, 20)
             
             Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")

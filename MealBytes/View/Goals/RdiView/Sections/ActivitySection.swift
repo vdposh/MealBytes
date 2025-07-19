@@ -12,7 +12,7 @@ struct ActivitySection: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("ACTIVITY LEVEL")
+            Text("Activity Level".uppercased())
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 40)
@@ -37,7 +37,7 @@ struct ActivitySection: View {
             }
             .padding(.vertical, 5)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .cornerRadius(14)
             .padding(.horizontal, 20)
             
             Text("Select the necessary indicator based on daily activity level.")

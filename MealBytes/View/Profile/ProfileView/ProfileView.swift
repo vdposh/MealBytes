@@ -108,6 +108,7 @@ struct ProfileView: View {
                 }
             }
         }
+        .scrollIndicators(.hidden)
         .navigationBarTitle("Profile", displayMode: .inline)
         .task {
             await profileViewModel.loadProfileData()

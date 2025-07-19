@@ -37,7 +37,7 @@ struct GenderSection: View {
             }
             .padding(.vertical, 5)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .cornerRadius(14)
             .padding(.horizontal, 20)
             
             Text("Specify gender to ensure RDI calculations.")

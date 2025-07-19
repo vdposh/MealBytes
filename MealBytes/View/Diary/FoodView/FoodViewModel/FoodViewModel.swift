@@ -362,21 +362,23 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
 }
 
 #Preview {
-    FoodView(
-        navigationTitle: "Add to Diary",
-        food: Food(
-            searchFoodId: 3092,
-            searchFoodName: "Egg",
-            searchFoodDescription: "1 cup"
-        ),
-        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        amount: "1",
-        measurementDescription: "Grams",
-        showAddButton: false,
-        showSaveRemoveButton: true,
-        showMealTypeButton: true,
-        originalMealItemId: UUID()
-    )
+    NavigationStack {
+        FoodView(
+            navigationTitle: "Add to Diary",
+            food: Food(
+                searchFoodId: 3092,
+                searchFoodName: "Egg",
+                searchFoodDescription: "1 cup"
+            ),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "1",
+            measurementDescription: "Grams",
+            showAddButton: false,
+            showSaveRemoveButton: true,
+            showMealTypeButton: true,
+            originalMealItemId: UUID()
+        )
+    }
 }

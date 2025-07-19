@@ -36,6 +36,7 @@ struct MainView: View {
                 mealSections
                 detailedInformationSection
             }
+            .scrollIndicators(.hidden)
             .listSectionSpacing(15)
         }
         .navigationBarTitleDisplayMode(.inline)

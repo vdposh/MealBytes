@@ -58,7 +58,7 @@ struct HeightSection: View {
                 .padding(.bottom, 10)
             }
             .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .cornerRadius(14)
             .padding(.horizontal, 20)
             .id("heightField")
             

@@ -52,7 +52,7 @@ struct CalorieMetricsSection: View {
             .padding(.bottom)
             .padding(.horizontal, 20)
             .background(Color(uiColor: .systemBackground))
-            .cornerRadius(12)
+            .cornerRadius(14)
             .padding(.horizontal, 20)
             
             Text(dailyIntakeViewModel.footerText)

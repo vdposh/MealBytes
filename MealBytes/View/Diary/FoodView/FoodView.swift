@@ -49,6 +49,8 @@ struct FoodView: View {
     
     var body: some View {
         ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
             if let error = foodViewModel.appError {
                 contentUnavailableView(
                     for: error,
@@ -61,14 +63,16 @@ struct FoodView: View {
                 }
             } else {
                 if foodViewModel.isLoading {
+                    Color(.secondarySystemGroupedBackground)
+                        .ignoresSafeArea()
                     LoadingView()
                 } else {
-                    List {
+                    ScrollView {
                         servingSizeSection
                         nutrientActionSection
                         nutrientDetailSection
                     }
-                    .listSectionSpacing(15)
+                    .scrollIndicators(.hidden)
                 }
             }
         }
@@ -96,13 +100,11 @@ struct FoodView: View {
     }
     
     private var servingSizeSection: some View {
-        Section {
-            Text(foodViewModel.food.searchFoodName)
-                .font(.headline)
-                .listRowSeparator(.hidden)
-                .padding(.top, 10)
-            
-            VStack(spacing: 15) {
+        VStack {
+            VStack(alignment: .leading, spacing: 15) {
+                Text(foodViewModel.food.searchFoodName)
+                    .font(.headline)
+                
                 ServingTextFieldView(
                     text: $foodViewModel.amount,
                     title: "Size",
@@ -113,8 +115,10 @@ struct FoodView: View {
                 )
                 .focused($amountFocused)
                 .onChange(of: amountFocused) { oldValue, newValue in
-                    foodViewModel.handleFocusChange(from: oldValue,
-                                                    to: newValue)
+                    foodViewModel.handleFocusChange(
+                        from: oldValue,
+                        to: newValue
+                    )
                 }
                 
                 ServingButtonView(
@@ -135,12 +139,14 @@ struct FoodView: View {
                         .foodDetail?.servings.serving {
                         ForEach(servings, id: \.self) { serving in
                             Button(foodViewModel.servingDescription(
-                                for: serving)) {
-                                    foodViewModel.updateServing(serving)
-                                }
+                                for: serving
+                            )) {
+                                foodViewModel.updateServing(serving)
+                            }
                         }
                     }
                 }
+                .foregroundStyle(.primary)
                 
                 if showMealTypeButton {
                     ServingButtonView(
@@ -163,78 +169,80 @@ struct FoodView: View {
                             }
                         }
                     }
+                    .foregroundStyle(.primary)
                 }
             }
-            .padding(.bottom, 10)
+            .padding(20)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .cornerRadius(14)
+            .padding(.horizontal, 20)
         }
+        .padding(.top, 30)
     }
     
     private var nutrientActionSection: some View {
-        Section {
-            VStack {
-                HStack {
-                    ForEach(foodViewModel.compactNutrientDetails,
-                            id: \.id) { nutrient in
-                        CompactNutrientDetailRow(nutrient: nutrient)
-                    }
+        VStack {
+            HStack {
+                ForEach(foodViewModel.compactNutrientDetails, id: \.id) { nutrient in
+                    CompactNutrientDetailRow(nutrient: nutrient)
                 }
-                .padding(.bottom, 5)
-                
-                HStack {
-                    switch showAddButton {
-                    case true:
-                        ActionButtonView(
-                            title: "Add",
-                            action: {
-                                foodViewModel.addMealItemFoodView(
-                                    in: foodViewModel.mealType,
+            }
+            .padding(.bottom, 5)
+            
+            HStack {
+                switch showAddButton {
+                case true:
+                    ActionButtonView(
+                        title: "Add",
+                        action: {
+                            foodViewModel.addMealItemFoodView(
+                                in: foodViewModel.mealType,
+                                for: foodViewModel.mainViewModel.date
+                            )
+                            dismiss()
+                        },
+                        backgroundColor: .customGreen,
+                        isEnabled: foodViewModel.canAddFood
+                    )
+                    
+                    BookmarkButtonView(
+                        action: {
+                            foodViewModel.toggleBookmarkFoodView()
+                        },
+                        isFilled: foodViewModel.isBookmarkFilled,
+                        width: 55,
+                        height: 30
+                    )
+                case false:
+                    ActionButtonView(
+                        title: "Remove",
+                        action: {
+                            Task {
+                                await foodViewModel.deleteMealItemFoodView()
+                                dismiss()
+                            }
+                        },
+                        backgroundColor: .customRed
+                    )
+                    
+                    ActionButtonView(
+                        title: "Save",
+                        action: {
+                            Task {
+                                await foodViewModel.updateMealItemFoodView(
                                     for: foodViewModel.mainViewModel.date
                                 )
                                 dismiss()
-                            },
-                            backgroundColor: .customGreen,
-                            isEnabled: foodViewModel.canAddFood
-                        )
-                        
-                        BookmarkButtonView(
-                            action: {
-                                foodViewModel.toggleBookmarkFoodView()
-                            },
-                            isFilled: foodViewModel.isBookmarkFilled,
-                            width: 55,
-                            height: 30
-                        )
-                    case false:
-                        ActionButtonView(
-                            title: "Remove",
-                            action: {
-                                Task {
-                                    await foodViewModel.deleteMealItemFoodView()
-                                    dismiss()
-                                }
-                            },
-                            backgroundColor: .customRed
-                        )
-                        
-                        ActionButtonView(
-                            title: "Save",
-                            action: {
-                                Task {
-                                    await foodViewModel.updateMealItemFoodView(
-                                        for: foodViewModel.mainViewModel.date
-                                    )
-                                    dismiss()
-                                }
-                            },
-                            backgroundColor: .customGreen,
-                            isEnabled: foodViewModel.canAddFood
-                        )
-                    }
+                            }
+                        },
+                        backgroundColor: .customGreen,
+                        isEnabled: foodViewModel.canAddFood
+                    )
                 }
             }
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
         }
+        .padding(.vertical, 7)
+        .padding(.horizontal, 20)
     }
     
     private var nutrientDetailSection: some View {
@@ -250,21 +258,23 @@ struct FoodView: View {
 }
 
 #Preview {
-    FoodView(
-        navigationTitle: "Add to Diary",
-        food: Food(
-            searchFoodId: 3092,
-            searchFoodName: "Egg",
-            searchFoodDescription: "1 cup"
-        ),
-        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        amount: "1",
-        measurementDescription: "Grams",
-        showAddButton: false,
-        showSaveRemoveButton: true,
-        showMealTypeButton: true,
-        originalMealItemId: UUID()
-    )
+    NavigationStack {
+        FoodView(
+            navigationTitle: "Add to Diary",
+            food: Food(
+                searchFoodId: 3092,
+                searchFoodName: "Egg",
+                searchFoodDescription: "1 cup"
+            ),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "1",
+            measurementDescription: "Grams",
+            showAddButton: false,
+            showSaveRemoveButton: true,
+            showMealTypeButton: true,
+            originalMealItemId: UUID()
+        )
+    }
 }

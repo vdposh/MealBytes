@@ -36,6 +36,7 @@ struct DailyIntakeView: View {
                         
                         ToggleSection(toggleOn: $dailyIntakeViewModel.toggleOn)
                     }
+                    .scrollIndicators(.hidden)
                     .navigationBarTitle("Daily Intake", displayMode: .inline)
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
