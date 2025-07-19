@@ -9,45 +9,39 @@ import SwiftUI
 
 struct ActivitySection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
-    
+
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Activity Level".uppercased())
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-            
-            HStack {
-                Text("Activity")
-                    .padding(.leading, 20)
-                
-                Picker("Activity", selection: $rdiViewModel.selectedActivity) {
-                    if rdiViewModel.selectedActivity == .notSelected {
-                        Text("Not Selected").tag(Activity.notSelected)
+        SectionStyleContainer(
+            mainContent: {
+                HStack {
+                    Text("Activity")
+
+                    Picker(
+                        "Activity",
+                        selection: $rdiViewModel.selectedActivity
+                    ) {
+                        if rdiViewModel.selectedActivity == .notSelected {
+                            Text("Not Selected").tag(Activity.notSelected)
+                        }
+                        ForEach(
+                            Activity.allCases.filter { $0 != .notSelected },
+                            id: \.self
+                        ) { level in
+                            Text(level.rawValue).tag(level)
+                        }
                     }
-                    ForEach(Activity.allCases.filter { $0 != .notSelected },
-                            id: \.self) { level in
-                        Text(level.rawValue).tag(level)
-                    }
+                    .pickerStyle(.menu)
+                    .accentColor(rdiViewModel.selectedActivity.accentColor)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                .pickerStyle(.menu)
-                .accentColor(rdiViewModel.selectedActivity.accentColor)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.trailing, 10)
-            }
-            .padding(.vertical, 5)
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(14)
-            .padding(.horizontal, 20)
-            
-            Text("Select the necessary indicator based on daily activity level.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-        }
-        .padding(.bottom, 25)
+            },
+            layout: .pickerStyle,
+            title: "Activity Level",
+            description: "Select the necessary indicator based on daily activity level."
+        )
     }
 }
+
 
 enum Activity: String, CaseIterable {
     case notSelected = "Not selected"

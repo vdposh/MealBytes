@@ -65,6 +65,10 @@ extension View {
             }
         }
     }
+    
+    func cardStyle(useBackground: Bool = true) -> some View {
+        self.modifier(CardBackgroundModifier(useBackground: useBackground))
+    }
 }
 
 #Preview {

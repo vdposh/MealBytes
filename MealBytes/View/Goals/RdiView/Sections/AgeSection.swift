@@ -12,35 +12,25 @@ struct AgeSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("AGE DETAILS")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-            
-            ServingTextFieldView(
-                text: $rdiViewModel.age,
-                title: "Age",
-                keyboardType: .numberPad,
-                inputMode: .integer,
-                titleColor: rdiViewModel.fieldTitleColor(for: rdiViewModel.age),
-                maxIntegerDigits: 3
-            )
-            .focused($focusedField, equals: .age)
-            .id("ageField")
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom)
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(14)
-            .padding(.horizontal, 20)
-            
-            Text("Enter age to personalize recommendations.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-        }
-        .padding(.bottom, 25)
+        SectionStyleContainer(
+            mainContent: {
+                ServingTextFieldView(
+                    text: $rdiViewModel.age,
+                    title: "Age",
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    titleColor: rdiViewModel.fieldTitleColor(
+                        for: rdiViewModel.age
+                    ),
+                    maxIntegerDigits: 3
+                )
+                .focused($focusedField, equals: .age)
+            },
+            layout: .textStyle,
+            title: "Age Details",
+            description: "Enter age to personalize recommendations."
+        )
+        .id("ageField")
     }
 }
 

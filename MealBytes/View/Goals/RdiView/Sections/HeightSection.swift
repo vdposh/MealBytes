@@ -12,13 +12,8 @@ struct HeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("HEIGHT DETAILS")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-            
-            VStack {
+        SectionStyleContainer(
+            mainContent: {
                 ServingTextFieldView(
                     text: $rdiViewModel.height,
                     title: "Height",
@@ -28,46 +23,38 @@ struct HeightSection: View {
                     maxIntegerDigits: 3
                 )
                 .focused($focusedField, equals: .height)
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                
-                HStack {
-                    Text("Height Unit")
-                        .padding(.leading, 20)
-                    
-                    Picker("Height Unit",
-                           selection: $rdiViewModel.selectedHeightUnit) {
-                        if rdiViewModel.selectedHeightUnit == .notSelected {
-                            Text("Not Selected").tag(HeightUnit.notSelected)
+            },
+            secondaryContent: {
+                AnyView(
+                    HStack {
+                        Text("Height Unit")
+                        
+                        Picker("Height Unit",
+                               selection: $rdiViewModel.selectedHeightUnit) {
+                            if rdiViewModel.selectedHeightUnit == .notSelected {
+                                Text("Not Selected").tag(HeightUnit.notSelected)
+                            }
+                            ForEach(
+                                HeightUnit.allCases.filter {
+                                    $0 != .notSelected },
+                                id: \.self
+                            ) { unit in
+                                Text(unit.rawValue).tag(unit)
+                            }
                         }
-                        ForEach(
-                            HeightUnit.allCases.filter { $0 != .notSelected },
-                            id: \.self
-                        ) { height in
-                            Text(height.rawValue).tag(height)
-                        }
+                               .pickerStyle(.menu)
+                               .accentColor(
+                                rdiViewModel.selectedHeightUnit.accentColor
+                               )
+                               .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                           .pickerStyle(.menu)
-                           .accentColor(
-                            rdiViewModel.selectedHeightUnit.accentColor
-                           )
-                           .frame(maxWidth: .infinity, alignment: .trailing)
-                           .padding(.trailing, 10)
-                }
-                .padding(.top, 2)
-                .padding(.bottom, 10)
-            }
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(14)
-            .padding(.horizontal, 20)
-            .id("heightField")
-            
-            Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 40)
-                .padding(.bottom, 25)
-        }
+                )
+            },
+            layout: .pickerUnit,
+            title: "Height Details",
+            description: "Enter height and, if necessary, adjust the unit (centimeters or inches)."
+        )
+        .id("heightField")
     }
 }
 
