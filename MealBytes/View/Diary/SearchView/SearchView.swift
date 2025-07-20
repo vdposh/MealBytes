@@ -145,7 +145,7 @@ struct SearchView: View {
                     )
                 }
                 .interactiveDismissDisabled(true)
-                .presentationCornerRadius(16)
+                .presentationCornerRadius(14)
             }
         }
     }

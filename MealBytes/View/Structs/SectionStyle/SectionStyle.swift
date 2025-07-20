@@ -17,6 +17,7 @@ struct SectionStyleContainer<Content: View>: View {
     var useWideTrailingPadding: Bool = false
     var hasBottomPadding: Bool = true
     var hasTopTextPadding: Bool = true
+    var useLargeCornerRadius: Bool = false
     
     init(
         @ViewBuilder mainContent: () -> Content,
@@ -27,7 +28,8 @@ struct SectionStyleContainer<Content: View>: View {
         useUppercasedTitle: Bool = true,
         useWideTrailingPadding: Bool = false,
         hasBottomPadding: Bool = true,
-        hasTopTextPadding: Bool = true
+        hasTopTextPadding: Bool = true,
+        useLargeCornerRadius: Bool = false
     ) {
         self.mainContent = mainContent()
         self.secondaryContent = secondaryContent()
@@ -38,6 +40,7 @@ struct SectionStyleContainer<Content: View>: View {
         self.useWideTrailingPadding = useWideTrailingPadding
         self.hasBottomPadding = hasBottomPadding
         self.hasTopTextPadding = hasTopTextPadding
+        self.useLargeCornerRadius = useLargeCornerRadius
     }
     
     var body: some View {
@@ -52,13 +55,13 @@ struct SectionStyleContainer<Content: View>: View {
             switch layout {
             case .pickerStyle:
                 mainContent
-                    .padding(.vertical, 5)
+                    .padding(.vertical, 6)
                     .padding(.leading, 20)
                     .padding(.trailing, useWideTrailingPadding ? 20 : 10)
                     .background(
                         Color(uiColor: .secondarySystemGroupedBackground)
                     )
-                    .cornerRadius(14)
+                    .cornerRadius(10)
                     .padding(.horizontal, 20)
                 
             case .pickerUnitStyle:
@@ -78,7 +81,7 @@ struct SectionStyleContainer<Content: View>: View {
                 .background(
                     Color(uiColor: .secondarySystemGroupedBackground)
                 )
-                .cornerRadius(14)
+                .cornerRadius(10)
                 .padding(.horizontal, 20)
                 
             case .textStyle:
@@ -89,7 +92,7 @@ struct SectionStyleContainer<Content: View>: View {
                     .background(
                         Color(uiColor: .secondarySystemGroupedBackground)
                     )
-                    .cornerRadius(14)
+                    .cornerRadius(useLargeCornerRadius ? 12 : 10)
                     .padding(.horizontal, 20)
                 
             case .resultRdiStyle:
@@ -119,12 +122,17 @@ enum SectionCardLayout {
 }
 
 #Preview {
+    let loginViewModel = LoginViewModel()
     let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
+    let themeManager = ThemeManager()
     
-    return NavigationStack {
-        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
+    NavigationStack {
+        ProfileView(
+            profileViewModel: ProfileViewModel(
+                loginViewModel: loginViewModel,
+                mainViewModel: mainViewModel
+            )
+        )
+        .environmentObject(themeManager)
     }
 }

@@ -176,7 +176,7 @@ struct FoodView: View {
             }
             .padding(20)
             .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .cornerRadius(14)
+            .cornerRadius(12)
             .padding(.horizontal, 20)
         }
         .padding(.top, 30)

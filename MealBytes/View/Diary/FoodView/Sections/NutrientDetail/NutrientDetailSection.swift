@@ -49,7 +49,8 @@ struct NutrientDetailSectionView: View {
                 }
             },
             layout: .textStyle,
-            hasTopTextPadding: false
+            hasTopTextPadding: false,
+            useLargeCornerRadius: true
         )
     }
 }

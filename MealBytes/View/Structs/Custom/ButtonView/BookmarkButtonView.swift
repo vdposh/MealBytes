@@ -26,7 +26,7 @@ struct BookmarkButtonView: View {
                     height: height
                 )
         }
-        .buttonStyle(.plain)
+//        .buttonStyle(.plain)
         .disabled(!isEnabled)
         .foregroundStyle(.customGreen)
     }
