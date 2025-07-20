@@ -38,7 +38,9 @@ struct DailyIntakeView: View {
                             )
                         }
                         
-                        ToggleSection(toggleOn: $dailyIntakeViewModel.toggleOn)
+                        MacronutrientsNutrientsToggleSection(
+                            toggleOn: $dailyIntakeViewModel.toggleOn
+                        )
                     }
                     .navigationBarTitle("Daily Intake", displayMode: .inline)
                     .toolbar {
@@ -49,8 +51,11 @@ struct DailyIntakeView: View {
                                         moveFocus(.up)
                                     } label: {
                                         Image(systemName: "chevron.up")
-                                            .foregroundColor(colorForFocus(
-                                                isActive: canMoveFocus(.up)))
+                                            .foregroundColor(
+                                                colorForFocus(
+                                                    isActive: canMoveFocus(.up)
+                                                )
+                                            )
                                     }
                                     .disabled(!canMoveFocus(.up))
                                     
@@ -58,8 +63,13 @@ struct DailyIntakeView: View {
                                         moveFocus(.down)
                                     } label: {
                                         Image(systemName: "chevron.down")
-                                            .foregroundColor(colorForFocus(
-                                                isActive: canMoveFocus(.down)))
+                                            .foregroundColor(
+                                                colorForFocus(
+                                                    isActive: canMoveFocus(
+                                                        .down
+                                                    )
+                                                )
+                                            )
                                     }
                                     .disabled(!canMoveFocus(.down))
                                 }
@@ -104,8 +114,10 @@ struct DailyIntakeView: View {
                             }
                         }
                     }
-                    .alert("Error",
-                           isPresented: $dailyIntakeViewModel.showAlert) {
+                    .alert(
+                        "Error",
+                        isPresented: $dailyIntakeViewModel.showAlert
+                    ) {
                         Button("OK") {
                             dailyIntakeViewModel.showAlert = false
                         }

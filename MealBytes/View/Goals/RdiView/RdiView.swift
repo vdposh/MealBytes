@@ -94,8 +94,10 @@ struct RdiView: View {
                     .onChange(of: focusedField) {
                         guard let field = focusedField else { return }
                         withAnimation {
-                            proxy.scrollTo(field.scrollID,
-                                           anchor: field.scrollAnchor)
+                            proxy.scrollTo(
+                                field.scrollID,
+                                anchor: field.scrollAnchor
+                            )
                         }
                     }
                     .alert("Error", isPresented: $rdiViewModel.showAlert) {

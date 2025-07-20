@@ -20,8 +20,6 @@ final class ProfileViewModel: ObservableObject {
     @Published var alertType: AlertType?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
-    @Published var isToggleUpdating: Bool = false
-    @Published var displayIntake: Bool = false
     @Published var isPasswordChanging: Bool = false
     @Published var isDeletingAccount: Bool = false
     
@@ -29,46 +27,13 @@ final class ProfileViewModel: ObservableObject {
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
-    private let mainViewModel: MainViewModelProtocol
+    let mainViewModel: MainViewModelProtocol
     private var cancellables = Set<AnyCancellable>()
     
     init(loginViewModel: LoginViewModel,
          mainViewModel: MainViewModelProtocol) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
-        self.displayIntake = mainViewModel.displayIntake
-        
-        setupBindings()
-    }
-    
-    deinit {
-        cancellables.removeAll()
-    }
-    
-    // MARK: - Toggle
-    private func updateDisplayIntake(to newValue: Bool) {
-        Task {
-            await MainActor.run {
-                self.isToggleUpdating = true
-                mainViewModel.setDisplayIntake(newValue)
-            }
-            await self.mainViewModel.saveDisplayIntakeMainView(newValue)
-            await MainActor.run {
-                self.isToggleUpdating = false
-            }
-        }
-    }
-    
-    private func setupBindings() {
-        $displayIntake
-            .removeDuplicates()
-            .sink { [weak self] newValue in
-                guard let self else { return }
-                Task {
-                    self.updateDisplayIntake(to: newValue)
-                }
-            }
-            .store(in: &cancellables)
     }
     
     // MARK: - Sign Out

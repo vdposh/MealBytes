@@ -72,7 +72,8 @@ struct CalendarView: View {
                                     for: .day,
                                     date: date,
                                     isSelected: mainViewModel.calendar.isDate(
-                                        selectedDate, inSameDayAs: date),
+                                        selectedDate, inSameDayAs: date
+                                    ),
                                     isToday: mainViewModel
                                         .calendar.isDateInToday(date)
                                 ))
@@ -90,7 +91,8 @@ struct CalendarView: View {
                                 for: .day,
                                 date: date,
                                 isSelected: mainViewModel.calendar.isDate(
-                                    selectedDate, inSameDayAs: date),
+                                    selectedDate, inSameDayAs: date
+                                ),
                                 forBackground: true
                             )
                         )

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ToggleSection: View {
+struct MacronutrientsNutrientsToggleSection: View {
     @Binding var toggleOn: Bool
     
     var body: some View {
