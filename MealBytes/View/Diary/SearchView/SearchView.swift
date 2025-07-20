@@ -10,7 +10,6 @@ import SwiftUI
 struct SearchView: View {
     @State private var mealType: MealType
     @State private var selectedFood: Food?
-    @State private var showFoodView = false
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -21,139 +20,144 @@ struct SearchView: View {
     }
     
     var body: some View {
-        VStack {
-            if searchViewModel.isLoading {
-                LoadingView()
-            } else if let error = searchViewModel.appError {
-                contentUnavailableView(for: error, mealType: mealType) {
-                    searchViewModel.queueSearch(searchViewModel.query)
-                }
-            } else {
-                List {
-                    ForEach(searchViewModel.foods,
-                            id: \.searchFoodId) { food in
+        NavigationStack {
+            VStack {
+                contentBody
+            }
+            .navigationBarTitle("Search", displayMode: .large)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        searchViewModel.showMealType = true
+                    } label: {
                         HStack {
+                            Image(systemName: mealType.iconName)
+                                .font(.system(size: 13))
+                                .frame(width: 15, height: 5)
+                                .foregroundColor(mealType.color)
+                            Text(mealType.rawValue)
+                                .font(.headline)
+                                .foregroundStyle(.customGreen)
+                        }
+                    }
+                    .confirmationDialog(
+                        "Select a Meal Type",
+                        isPresented: $searchViewModel.showMealType,
+                        titleVisibility: .visible
+                    ) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
                             Button {
-                                selectedFood = food
-                                showFoodView = true
-                            } label: {
-                                FoodDetailView(food: food)
-                                    .frame(
-                                        maxWidth: .infinity,
-                                        alignment: .leading
-                                    )
-                            }
-                            .padding(.vertical, 1)
-                            .onChange(of: showFoodView) {
-                                selectedFood = selectedFood
-                            }
-                            BookmarkButtonView(
-                                action: {
-                                    searchViewModel
-                                        .handleBookmarkAction(for: food)
-                                },
-                                isFilled: searchViewModel
-                                    .isBookmarkedSearchView(food),
-                                width: 45, height: 24
-                            )
-                        }
-                    }
-                    pageButton(direction: .next)
-                    pageButton(direction: .previous)
-                }
-                .ignoresSafeArea(.keyboard)
-                .background {
-                    if searchViewModel.foods.isEmpty {
-                        contentUnavailableView(
-                            for: .noBookmarks,
-                            mealType: mealType
-                        ) { }
-                    }
-                }
-                .listStyle(.plain)
-                .scrollDismissesKeyboard(.immediately)
-            }
-        }
-        .navigationBarTitle(
-            searchViewModel.mainViewModel.formattedDate(isAbbreviated: true),
-            displayMode: .large
-        )
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button {
-                    searchViewModel.showMealType = true
-                } label: {
-                    HStack {
-                        Image(systemName: mealType.iconName)
-                            .font(.system(size: 13))
-                            .frame(width: 15, height: 5)
-                            .foregroundColor(mealType.color)
-                        Text(mealType.rawValue)
-                            .font(.headline)
-                            .foregroundStyle(.customGreen)
-                    }
-                }
-                .confirmationDialog(
-                    "Select a Meal Type",
-                    isPresented: $searchViewModel.showMealType,
-                    titleVisibility: .visible
-                ) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Button {
-                            if searchViewModel.mealSwitch(to: meal) {
-                                mealType = meal
-                                Task {
-                                    await searchViewModel
-                                        .loadBookmarksSearchView(for: meal)
+                                if searchViewModel.mealSwitch(to: meal) {
+                                    mealType = meal
+                                    Task {
+                                        await searchViewModel
+                                            .loadBookmarksSearchView(for: meal)
+                                    }
                                 }
+                            } label: {
+                                Text(meal.rawValue)
                             }
-                        } label: {
-                            Text(meal.rawValue)
                         }
                     }
                 }
             }
-        }
-        .confirmationDialog(
-            searchViewModel.bookmarkTitle,
-            isPresented: $searchViewModel.showBookmarkDialog,
-            titleVisibility: .visible
-        ) {
-            Button("Remove bookmark", role: .destructive) {
-                searchViewModel.confirmRemoveBookmark()
-            }
-        }
-        .searchable(
-            text: $searchViewModel.query,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: "Enter a food name"
-        )
-        .sheet(isPresented: $showFoodView) {
-            if let food = selectedFood {
-                NavigationStack {
-                    FoodView(
-                        navigationTitle: "Add to \(mealType.rawValue)",
-                        food: food,
-                        searchViewModel: searchViewModel,
-                        mainViewModel: searchViewModel.mainViewModel,
-                        mealType: mealType,
-                        amount: "",
-                        measurementDescription: "",
-                        showAddButton: true,
-                        showSaveRemoveButton: false,
-                        showMealTypeButton: false
-                    )
+            .confirmationDialog(
+                searchViewModel.bookmarkTitle,
+                isPresented: $searchViewModel.showBookmarkDialog,
+                titleVisibility: .visible
+            ) {
+                Button("Remove bookmark", role: .destructive) {
+                    searchViewModel.confirmRemoveBookmark()
                 }
-                .interactiveDismissDisabled(true)
-                .presentationCornerRadius(14)
+            }
+            .searchable(
+                text: $searchViewModel.query,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Enter a food name"
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private var contentBody: some View {
+        if searchViewModel.isLoading {
+            LoadingView()
+        } else if let error = searchViewModel.appError {
+            contentUnavailableView(for: error, mealType: mealType) {
+                searchViewModel.queueSearch(searchViewModel.query)
+            }
+        } else {
+            List {
+                ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
+                    foodRow(for: food)
+                }
+                pageButton(direction: .next)
+                pageButton(direction: .previous)
+            }
+            .listStyle(.plain)
+            .ignoresSafeArea(.keyboard)
+            .scrollDismissesKeyboard(.immediately)
+            .background {
+                if searchViewModel.foods.isEmpty {
+                    contentUnavailableView(
+                        for: .noBookmarks,
+                        mealType: mealType
+                    ) { }
+                }
             }
         }
     }
     
     @ViewBuilder
+    private func foodRow(for food: Food) -> some View {
+        ZStack {
+            Button {
+                selectedFood = food
+            } label: {
+                HStack {
+                    FoodDetailView(food: food)
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
+                        .padding(.vertical, 1)
+                    
+                    BookmarkButtonView(
+                        action: {
+                            searchViewModel
+                                .handleBookmarkAction(for: food)
+                        },
+                        isFilled: searchViewModel
+                            .isBookmarkedSearchView(food),
+                        width: 45,
+                        height: 24
+                    )
+                    .buttonStyle(.plain)
+                }
+            }
+            NavigationLink(
+                destination: FoodView(
+                    navigationTitle: "Add to \(mealType.rawValue)",
+                    food: food,
+                    searchViewModel: searchViewModel,
+                    mainViewModel: searchViewModel.mainViewModel,
+                    mealType: mealType,
+                    amount: "",
+                    measurementDescription: "",
+                    showAddButton: true,
+                    showSaveRemoveButton: false,
+                    showMealTypeButton: false
+                )
+            ) {
+                EmptyView()
+            }
+            .opacity(0)
+        }
+    }
+    
+    @ViewBuilder
     private func pageButton(
-        direction:
-        SearchViewModel.PageDirection
+        direction: SearchViewModel.PageDirection
     ) -> some View {
         if searchViewModel.canLoadPage(direction: direction) {
             Button {

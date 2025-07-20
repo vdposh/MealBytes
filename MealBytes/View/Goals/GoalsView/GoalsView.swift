@@ -85,7 +85,6 @@ struct GoalsView: View {
             }
         }
         .id(goalsViewModel.uniqueId)
-        .scrollIndicators(.hidden)
         .navigationBarTitle("Goals", displayMode: .inline)
         .task {
             await goalsViewModel.loadGoalsData()

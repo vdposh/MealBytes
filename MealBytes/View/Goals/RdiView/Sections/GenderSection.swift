@@ -36,7 +36,6 @@ struct GenderSection: View {
                 }
             },
             layout: .pickerStyle,
-            title: "Set Gender",
             description: "Specify gender to ensure RDI calculations."
         )
     }

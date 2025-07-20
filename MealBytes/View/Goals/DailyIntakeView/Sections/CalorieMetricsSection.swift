@@ -38,7 +38,6 @@ struct CalorieMetricsSection: View {
                 .id("macronutrientsField")
             },
             layout: .textStyle,
-            title: "Calorie Metrics",
             description: (dailyIntakeViewModel.footerText)
         )
     }

@@ -54,6 +54,8 @@ struct FoodView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
             if let error = foodViewModel.appError {
+                Color(.secondarySystemGroupedBackground)
+                    .ignoresSafeArea()
                 contentUnavailableView(
                     for: error,
                     mealType: foodViewModel.mealType
@@ -84,15 +86,6 @@ struct FoodView: View {
                 DoneButtonView {
                     amountFocused = false
                     foodViewModel.normalizeAmount()
-                }
-            }
-            
-            if showAddButton {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .font(.body)
                 }
             }
         }
@@ -175,7 +168,7 @@ struct FoodView: View {
                 }
             }
             .padding(20)
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .background(Color(.secondarySystemGroupedBackground))
             .cornerRadius(12)
             .padding(.horizontal, 20)
         }
@@ -185,7 +178,10 @@ struct FoodView: View {
     private var nutrientActionSection: some View {
         VStack {
             HStack {
-                ForEach(foodViewModel.compactNutrientDetails, id: \.id) { nutrient in
+                ForEach(
+                    foodViewModel.compactNutrientDetails,
+                    id: \.id
+                ) { nutrient in
                     CompactNutrientDetailRow(nutrient: nutrient)
                 }
             }

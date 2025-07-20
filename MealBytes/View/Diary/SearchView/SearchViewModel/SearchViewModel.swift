@@ -68,9 +68,10 @@ final class SearchViewModel: ObservableObject {
                 
                 Task {
                     do {
-                        let foods = try await self.networkManager
-                            .fetchFoods(query: query,
-                                        page: self.currentPage)
+                        let foods = try await self.networkManager.fetchFoods(
+                            query: query,
+                            page: self.currentPage
+                        )
                         await MainActor.run {
                             self.foods = foods
                             self.appError = nil
@@ -91,8 +92,10 @@ final class SearchViewModel: ObservableObject {
             }
     }
     
-    private func handleQueryChange(from oldValue: String,
-                                   to newValue: String) {
+    private func handleQueryChange(
+        from oldValue: String,
+        to newValue: String
+    ) {
         guard oldValue != newValue else { return }
         currentPage = 0
         if newValue.isEmpty {
@@ -111,15 +114,16 @@ final class SearchViewModel: ObservableObject {
         }
         
         do {
-            let favoriteFoods = try await firestore
-                .loadBookmarksFirestore(for: mealType)
-            let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
+            let favorites = try await firestore.loadBookmarksFirestore(
+                for: mealType
+            )
+            let bookmarked = Set(favorites.map { $0.searchFoodId })
             
             await MainActor.run {
-                self.favoriteFoods = favoriteFoods
+                self.favoriteFoods = favorites
                 self.bookmarkedFoods = bookmarked
                 if query.isEmpty {
-                    self.foods = favoriteFoods
+                    self.foods = favorites
                 }
                 self.isLoading = false
                 self.appError = nil
@@ -187,8 +191,10 @@ final class SearchViewModel: ObservableObject {
                 }
             }
             
-            try await firestore.addBookmarkFirestore(updatedFavorites,
-                                                     for: selectedMealType)
+            try await firestore.addBookmarkFirestore(
+                updatedFavorites,
+                for: selectedMealType
+            )
         }
     }
     
@@ -266,7 +272,9 @@ extension SearchViewModel: SearchViewModelProtocol {}
 #Preview {
     NavigationStack {
         SearchView(
-            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            searchViewModel: SearchViewModel(
+                mainViewModel: MainViewModel()
+            ),
             mealType: .breakfast
         )
     }

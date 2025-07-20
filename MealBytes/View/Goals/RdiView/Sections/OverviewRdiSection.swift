@@ -19,10 +19,8 @@ struct OverviewRdiSection: View {
                     )
             },
             layout: .resultRdiStyle,
-            title: "The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level. RDI is an estimate and not medical advice.",
-            useUppercasedTitle: false
+            title: "The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level. RDI is an estimate and not medical advice."
         )
-        .padding(.top, 40)
     }
 }
 

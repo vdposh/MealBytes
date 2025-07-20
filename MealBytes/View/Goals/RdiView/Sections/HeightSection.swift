@@ -29,8 +29,10 @@ struct HeightSection: View {
                     HStack {
                         Text("Height Unit")
                         
-                        Picker("Height Unit",
-                               selection: $rdiViewModel.selectedHeightUnit) {
+                        Picker(
+                            "Height Unit",
+                            selection: $rdiViewModel.selectedHeightUnit
+                        ) {
                             if rdiViewModel.selectedHeightUnit == .notSelected {
                                 Text("Not Selected").tag(HeightUnit.notSelected)
                             }
@@ -42,16 +44,15 @@ struct HeightSection: View {
                                 Text(unit.rawValue).tag(unit)
                             }
                         }
-                               .pickerStyle(.menu)
-                               .accentColor(
-                                rdiViewModel.selectedHeightUnit.accentColor
-                               )
-                               .frame(maxWidth: .infinity, alignment: .trailing)
+                        .pickerStyle(.menu)
+                        .accentColor(
+                            rdiViewModel.selectedHeightUnit.accentColor
+                        )
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 )
             },
             layout: .pickerUnitStyle,
-            title: "Height Details",
             description: "Enter height and, if necessary, adjust the unit (centimeters or inches)."
         )
         .id("heightField")

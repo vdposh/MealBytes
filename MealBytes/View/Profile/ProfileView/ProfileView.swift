@@ -18,7 +18,6 @@ struct ProfileView: View {
             PasswordSection(profileViewModel: profileViewModel)
             SignOutSection(profileViewModel: profileViewModel)
         }
-        .scrollIndicators(.hidden)
         .navigationBarTitle("Profile", displayMode: .inline)
         .task {
             await profileViewModel.loadProfileData()

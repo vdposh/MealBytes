@@ -27,7 +27,6 @@ struct AgeSection: View {
                 .focused($focusedField, equals: .age)
             },
             layout: .textStyle,
-            title: "Age Details",
             description: "Enter age to personalize recommendations."
         )
         .id("ageField")

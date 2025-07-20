@@ -21,7 +21,6 @@ protocol MainViewModelProtocol {
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType)
     func updateIntake(to value: String)
-    func formattedDate(isAbbreviated: Bool) -> String
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
 }
@@ -68,6 +67,19 @@ final class MainViewModel: ObservableObject {
     
     deinit {
         cancellables.removeAll()
+    }
+    
+    // MARK: - Load Data
+    func loadMainData() async {
+        async let mealItemsTask: () = loadMealItemsMainView()
+        async let currentIntakeTask: () = loadCurrentIntakeMainView()
+        async let displayIntakeTask: () = loadDisplayIntakeMainView()
+        
+        _ = await (mealItemsTask, currentIntakeTask, displayIntakeTask)
+        
+        await MainActor.run {
+            updateProgress()
+        }
     }
     
     // MARK: - Load Meal Item
@@ -216,19 +228,6 @@ final class MainViewModel: ObservableObject {
             await MainActor.run {
                 appError = .decoding
             }
-        }
-    }
-    
-    // MARK: - Load Data
-    func loadMainData() async {
-        async let mealItemsTask: () = loadMealItemsMainView()
-        async let currentIntakeTask: () = loadCurrentIntakeMainView()
-        async let displayIntakeTask: () = loadDisplayIntakeMainView()
-        
-        _ = await (mealItemsTask, currentIntakeTask, displayIntakeTask)
-        
-        await MainActor.run {
-            updateProgress()
         }
     }
     
@@ -412,25 +411,14 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Formatted year for Calendar
-    func formattedDate(isAbbreviated: Bool) -> String {
-        var monthFormat: Date.FormatStyle.Symbol.Month
-        var weekdayFormat: Date.FormatStyle.Symbol.Weekday
-        
-        if isAbbreviated {
-            monthFormat = .abbreviated
-            weekdayFormat = .abbreviated
-        } else {
-            monthFormat = .wide
-            weekdayFormat = .wide
-        }
-        
+    func formattedDate() -> String {
         if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
             return date.formatted(
-                .dateTime.weekday(weekdayFormat).day().month(.wide)
+                .dateTime.weekday(.wide).day().month(.wide)
             )
         } else {
             return date.formatted(
-                .dateTime.weekday(weekdayFormat).day().month(monthFormat).year()
+                .dateTime.weekday(.wide).day().month(.wide).year()
             )
         }
     }

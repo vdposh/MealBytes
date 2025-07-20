@@ -39,13 +39,13 @@ struct MainView: View {
             .scrollIndicators(.hidden)
             .listSectionSpacing(15)
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitle("Diary", displayMode: .inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Button {
                     mainViewModel.isExpandedCalendar.toggle()
                 } label: {
-                    Text(mainViewModel.formattedDate(isAbbreviated: false))
+                    Text(mainViewModel.formattedDate())
                         .font(.headline)
                 }
             }

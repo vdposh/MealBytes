@@ -29,8 +29,9 @@ struct WeightSection: View {
                     HStack {
                         Text("Weight Unit")
                         
-                        Picker("Weight Unit",
-                               selection: $rdiViewModel.selectedWeightUnit
+                        Picker(
+                            "Weight Unit",
+                            selection: $rdiViewModel.selectedWeightUnit
                         ) {
                             if rdiViewModel.selectedWeightUnit == .notSelected {
                                 Text("Not Selected").tag(WeightUnit.notSelected)
@@ -52,7 +53,6 @@ struct WeightSection: View {
                 )
             },
             layout: .pickerUnitStyle,
-            title: "Weight Details",
             description: "Enter weight and adjust the unit as needed (kilograms or pounds)."
         )
         .id("weightField")

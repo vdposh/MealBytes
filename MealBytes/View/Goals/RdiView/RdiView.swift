@@ -36,7 +36,6 @@ struct RdiView: View {
                             rdiViewModel: rdiViewModel
                         )
                     }
-                    .scrollIndicators(.hidden)
                     .navigationBarTitle("RDI", displayMode: .inline)
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {

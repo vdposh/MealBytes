@@ -15,11 +15,8 @@ struct OverviewDailyIntakeSection: View {
             mainContent: {
                 EmptyView()
             },
-            title: "Set daily intake by entering calories directly or calculate it based on macronutrient distribution.",
-            useUppercasedTitle: false
+            title: "Set daily intake by entering calories directly or calculate it based on macronutrient distribution."
         )
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 40)
     }
 }
 

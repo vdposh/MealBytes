@@ -36,7 +36,6 @@ struct ActivitySection: View {
                 }
             },
             layout: .pickerStyle,
-            title: "Activity Level",
             description: "Select the necessary indicator based on daily activity level."
         )
     }

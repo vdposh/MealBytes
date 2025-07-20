@@ -13,7 +13,6 @@ struct SectionStyleContainer<Content: View>: View {
     var layout: SectionCardLayout
     var title: String?
     var description: String?
-    var useUppercasedTitle: Bool = true
     var useWideTrailingPadding: Bool = false
     var hasBottomPadding: Bool = true
     var hasTopTextPadding: Bool = true
@@ -25,7 +24,6 @@ struct SectionStyleContainer<Content: View>: View {
         layout: SectionCardLayout = .textStyle,
         title: String? = nil,
         description: String? = nil,
-        useUppercasedTitle: Bool = true,
         useWideTrailingPadding: Bool = false,
         hasBottomPadding: Bool = true,
         hasTopTextPadding: Bool = true,
@@ -36,7 +34,6 @@ struct SectionStyleContainer<Content: View>: View {
         self.layout = layout
         self.title = title
         self.description = description
-        self.useUppercasedTitle = useUppercasedTitle
         self.useWideTrailingPadding = useWideTrailingPadding
         self.hasBottomPadding = hasBottomPadding
         self.hasTopTextPadding = hasTopTextPadding
@@ -46,10 +43,12 @@ struct SectionStyleContainer<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading) {
             if let title {
-                Text(useUppercasedTitle ? title.uppercased() : title)
+                Text(title)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 40)
+                    .padding(.top, 40)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             switch layout {
@@ -59,7 +58,7 @@ struct SectionStyleContainer<Content: View>: View {
                     .padding(.leading, 20)
                     .padding(.trailing, useWideTrailingPadding ? 20 : 10)
                     .background(
-                        Color(uiColor: .secondarySystemGroupedBackground)
+                        Color(.secondarySystemGroupedBackground)
                     )
                     .cornerRadius(10)
                     .padding(.horizontal, 20)
@@ -79,7 +78,7 @@ struct SectionStyleContainer<Content: View>: View {
                     }
                 }
                 .background(
-                    Color(uiColor: .secondarySystemGroupedBackground)
+                    Color(.secondarySystemGroupedBackground)
                 )
                 .cornerRadius(10)
                 .padding(.horizontal, 20)
@@ -90,7 +89,7 @@ struct SectionStyleContainer<Content: View>: View {
                     .padding(.top, hasTopTextPadding ? 12 : 5)
                     .padding(.bottom)
                     .background(
-                        Color(uiColor: .secondarySystemGroupedBackground)
+                        Color(.secondarySystemGroupedBackground)
                     )
                     .cornerRadius(useLargeCornerRadius ? 12 : 10)
                     .padding(.horizontal, 20)
@@ -122,17 +121,32 @@ enum SectionCardLayout {
 }
 
 #Preview {
-    let loginViewModel = LoginViewModel()
-    let mainViewModel = MainViewModel()
-    let themeManager = ThemeManager()
-    
     NavigationStack {
-        ProfileView(
-            profileViewModel: ProfileViewModel(
-                loginViewModel: loginViewModel,
-                mainViewModel: mainViewModel
-            )
+        FoodView(
+            navigationTitle: "Add to Diary",
+            food: Food(
+                searchFoodId: 3092,
+                searchFoodName: "Egg",
+                searchFoodDescription: "1 cup"
+            ),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "1",
+            measurementDescription: "Grams",
+            showAddButton: false,
+            showSaveRemoveButton: true,
+            showMealTypeButton: true,
+            originalMealItemId: UUID()
         )
-        .environmentObject(themeManager)
+    }
+}
+
+#Preview {
+    let mainViewModel = MainViewModel()
+    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+    
+    return NavigationStack {
+        RdiView(rdiViewModel: rdiViewModel)
     }
 }

@@ -73,8 +73,6 @@ struct MealBytesApp: App {
                         try await TokenManager.shared.fetchToken()
                         await mainViewModel.loadMainData()
                         await loginViewModel.loadLoginData()
-                        await goalsViewModel.loadGoalsData()
-                        await profileViewModel.loadProfileData()
                     }
                 }
             }
