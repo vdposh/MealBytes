@@ -26,6 +26,7 @@ struct ActionButtonView: View {
                 .lineLimit(1)
                 .cornerRadius(12)
         }
+        .buttonStyle(.plain)
         .disabled(!isEnabled)
     }
 }
