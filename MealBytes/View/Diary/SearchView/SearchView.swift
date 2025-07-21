@@ -21,60 +21,58 @@ struct SearchView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                contentBody
-            }
-            .navigationBarTitle("Search", displayMode: .large)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        searchViewModel.showMealType = true
-                    } label: {
-                        HStack {
-                            Image(systemName: mealType.iconName)
-                                .font(.system(size: 13))
-                                .frame(width: 15, height: 5)
-                                .foregroundColor(mealType.color)
-                            Text(mealType.rawValue)
-                                .font(.headline)
-                                .foregroundStyle(.customGreen)
+            contentBody
+                .navigationBarTitle("Search", displayMode: .large)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button {
+                            searchViewModel.showMealType = true
+                        } label: {
+                            HStack {
+                                Image(systemName: mealType.iconName)
+                                    .font(.system(size: 13))
+                                    .frame(width: 15, height: 5)
+                                    .foregroundColor(mealType.color)
+                                Text(mealType.rawValue)
+                                    .font(.headline)
+                                    .foregroundStyle(.customGreen)
+                            }
                         }
-                    }
-                    .confirmationDialog(
-                        "Select a Meal Type",
-                        isPresented: $searchViewModel.showMealType,
-                        titleVisibility: .visible
-                    ) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Button {
-                                if searchViewModel.mealSwitch(to: meal) {
-                                    mealType = meal
-                                    Task {
-                                        await searchViewModel
-                                            .loadBookmarksSearchView(for: meal)
+                        .confirmationDialog(
+                            "Select a Meal Type",
+                            isPresented: $searchViewModel.showMealType,
+                            titleVisibility: .visible
+                        ) {
+                            ForEach(MealType.allCases, id: \.self) { meal in
+                                Button {
+                                    if searchViewModel.mealSwitch(to: meal) {
+                                        mealType = meal
+                                        Task {
+                                            await searchViewModel
+                                                .loadBookmarksSearchView(for: meal)
+                                        }
                                     }
+                                } label: {
+                                    Text(meal.rawValue)
                                 }
-                            } label: {
-                                Text(meal.rawValue)
                             }
                         }
                     }
                 }
-            }
-            .confirmationDialog(
-                searchViewModel.bookmarkTitle,
-                isPresented: $searchViewModel.showBookmarkDialog,
-                titleVisibility: .visible
-            ) {
-                Button("Remove bookmark", role: .destructive) {
-                    searchViewModel.confirmRemoveBookmark()
+                .confirmationDialog(
+                    searchViewModel.bookmarkTitle,
+                    isPresented: $searchViewModel.showBookmarkDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button("Remove bookmark", role: .destructive) {
+                        searchViewModel.confirmRemoveBookmark()
+                    }
                 }
-            }
-            .searchable(
-                text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Enter a food name"
-            )
+                .searchable(
+                    text: $searchViewModel.query,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Enter a food name"
+                )
         }
     }
     
