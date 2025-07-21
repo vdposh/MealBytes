@@ -36,7 +36,8 @@ struct ActivitySection: View {
                 }
             },
             layout: .pickerStyle,
-            description: "Select the necessary indicator based on daily activity level."
+            description: "Select the necessary indicator based on daily activity level.",
+            useCompactVerticalPadding: true
         )
     }
 }

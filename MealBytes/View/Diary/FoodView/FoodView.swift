@@ -170,7 +170,7 @@ struct FoodView: View {
             .padding(20)
             .background(Color(.secondarySystemGroupedBackground))
             .cornerRadius(12)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 16)
         }
         .padding(.top, 30)
     }
@@ -240,7 +240,7 @@ struct FoodView: View {
             }
         }
         .padding(.vertical, 8)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 16)
     }
     
     private var nutrientDetailSection: some View {

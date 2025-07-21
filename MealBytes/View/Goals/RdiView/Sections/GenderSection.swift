@@ -36,7 +36,8 @@ struct GenderSection: View {
                 }
             },
             layout: .pickerStyle,
-            description: "Specify gender to ensure RDI calculations."
+            description: "Specify gender to ensure RDI calculations.",
+            useCompactVerticalPadding: true
         )
     }
 }

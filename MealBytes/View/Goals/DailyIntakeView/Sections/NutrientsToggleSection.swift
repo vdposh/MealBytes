@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct MacronutrientsNutrientsToggleSection: View {
+struct NutrientsToggleSection: View {
     @Binding var toggleOn: Bool
     
     var body: some View {
         SectionStyleContainer(
             mainContent: {
                 Toggle(isOn: $toggleOn) {
-                    Text("Macronutrient metrics")
+                    Text("Macronutrient Metrics")
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .customGreen))
             },

@@ -38,7 +38,7 @@ struct DailyIntakeView: View {
                             )
                         }
                         
-                        MacronutrientsNutrientsToggleSection(
+                        NutrientsToggleSection(
                             toggleOn: $dailyIntakeViewModel.toggleOn
                         )
                     }

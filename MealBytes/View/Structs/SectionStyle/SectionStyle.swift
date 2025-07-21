@@ -17,6 +17,7 @@ struct SectionStyleContainer<Content: View>: View {
     var hasBottomPadding: Bool = true
     var hasTopTextPadding: Bool = true
     var useLargeCornerRadius: Bool = false
+    var useCompactVerticalPadding: Bool = false
     
     init(
         @ViewBuilder mainContent: () -> Content,
@@ -27,7 +28,8 @@ struct SectionStyleContainer<Content: View>: View {
         useWideTrailingPadding: Bool = false,
         hasBottomPadding: Bool = true,
         hasTopTextPadding: Bool = true,
-        useLargeCornerRadius: Bool = false
+        useLargeCornerRadius: Bool = false,
+        useCompactVerticalPadding: Bool = false
     ) {
         self.mainContent = mainContent()
         self.secondaryContent = secondaryContent()
@@ -38,6 +40,7 @@ struct SectionStyleContainer<Content: View>: View {
         self.hasBottomPadding = hasBottomPadding
         self.hasTopTextPadding = hasTopTextPadding
         self.useLargeCornerRadius = useLargeCornerRadius
+        self.useCompactVerticalPadding = useCompactVerticalPadding
     }
     
     var body: some View {
@@ -46,7 +49,7 @@ struct SectionStyleContainer<Content: View>: View {
                 Text(title)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 32)
                     .padding(.top, 40)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -54,19 +57,19 @@ struct SectionStyleContainer<Content: View>: View {
             switch layout {
             case .pickerStyle:
                 mainContent
-                    .padding(.vertical, 6)
-                    .padding(.leading, 20)
-                    .padding(.trailing, useWideTrailingPadding ? 20 : 10)
+                    .padding(.vertical, useCompactVerticalPadding ? 5 : 6.5)
+                    .padding(.leading, 16)
+                    .padding(.trailing, useWideTrailingPadding ? 16 : 4)
                     .background(
                         Color(.secondarySystemGroupedBackground)
                     )
                     .cornerRadius(10)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 16)
                 
             case .pickerUnitStyle:
                 VStack {
                     mainContent
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 16)
                         .padding(.top, 12)
                     
                     if let secondary = secondaryContent {
@@ -81,32 +84,32 @@ struct SectionStyleContainer<Content: View>: View {
                     Color(.secondarySystemGroupedBackground)
                 )
                 .cornerRadius(10)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 16)
                 
             case .textStyle:
                 mainContent
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 16)
                     .padding(.top, hasTopTextPadding ? 12 : 5)
                     .padding(.bottom)
                     .background(
                         Color(.secondarySystemGroupedBackground)
                     )
                     .cornerRadius(useLargeCornerRadius ? 12 : 10)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 16)
                 
             case .resultRdiStyle:
                 mainContent
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 32)
             }
             
             if let description {
                 Text(description)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 32)
             }
         }
         .padding(.bottom, hasBottomPadding ? 25 : 0)
@@ -118,6 +121,10 @@ enum SectionCardLayout {
     case pickerUnitStyle
     case textStyle
     case resultRdiStyle
+}
+
+#Preview {
+    PreviewContentView.contentView
 }
 
 #Preview {
