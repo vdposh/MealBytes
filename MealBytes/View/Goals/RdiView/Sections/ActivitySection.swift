@@ -53,10 +53,8 @@ enum Activity: String, CaseIterable {
     
     var accentColor: Color {
         switch self {
-        case .notSelected:
-            return .customRed
-        default:
-            return .customGreen
+        case .notSelected: return .customRed
+        default: return .customGreen
         }
     }
 }

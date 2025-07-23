@@ -82,8 +82,7 @@ final class SearchViewModel: ObservableObject {
                             switch error {
                             case let appError as AppError:
                                 self.appError = appError
-                            default:
-                                self.appError = .network
+                            default: self.appError = .network
                             }
                             self.isLoading = false
                         }
@@ -118,7 +117,6 @@ final class SearchViewModel: ObservableObject {
                 for: mealType
             )
             let bookmarked = Set(favorites.map { $0.searchFoodId })
-            
             await MainActor.run {
                 self.favoriteFoods = favorites
                 self.bookmarkedFoods = bookmarked
@@ -234,18 +232,15 @@ final class SearchViewModel: ObservableObject {
     
     func canLoadPage(direction: PageDirection) -> Bool {
         switch direction {
-        case .next:
-            foods.count == maxResultsPerPage
-        case .previous:
-            currentPage > 0
+        case .next: foods.count == maxResultsPerPage
+        case .previous: currentPage > 0
         }
     }
     
     func loadPage(direction: PageDirection) {
         isLoading = true
         switch direction {
-        case .next:
-            currentPage += 1
+        case .next: currentPage += 1
         case .previous:
             if currentPage > 0 {
                 currentPage -= 1

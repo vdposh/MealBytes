@@ -30,8 +30,10 @@ final class ProfileViewModel: ObservableObject {
     let mainViewModel: MainViewModelProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(loginViewModel: LoginViewModel,
-         mainViewModel: MainViewModelProtocol) {
+    init(
+        loginViewModel: LoginViewModel,
+        mainViewModel: MainViewModelProtocol
+    ) {
         self.loginViewModel = loginViewModel
         self.mainViewModel = mainViewModel
     }
@@ -58,8 +60,10 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Delete Account
     private func deleteAccount(email: String, password: String) async {
         do {
-            try await firebaseAuth.reauthenticateAuth(email: email,
-                                                      password: password)
+            try await firebaseAuth.reauthenticateAuth(
+                email: email,
+                password: password
+            )
             try await firebaseAuth.deleteAccountAuth()
             
             do {
@@ -79,8 +83,10 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Change Password
-    private func changePassword(currentPassword: String,
-                        newPassword: String) async throws {
+    private func changePassword(
+        currentPassword: String,
+        newPassword: String
+    ) async throws {
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,
             newPassword: newPassword

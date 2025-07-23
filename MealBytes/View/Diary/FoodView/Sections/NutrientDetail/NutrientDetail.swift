@@ -31,10 +31,8 @@ extension NutrientDetail {
     var formattedValue: String {
         let unit: Formatter.Unit = {
             switch type {
-            case .calories:
-                    .empty
-            case .servingSize where serving.metricServingUnit.isEmpty:
-                    .empty
+            case .calories: .empty
+            case .servingSize where serving.metricServingUnit.isEmpty: .empty
             default:
                 Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
             }

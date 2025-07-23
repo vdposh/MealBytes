@@ -10,7 +10,7 @@ import SwiftUI
 struct MacronutrientMetricsSection: View {
     @FocusState var focusedField: MacronutrientsFocus?
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
-
+    
     var body: some View {
         SectionStyleContainer(
             mainContent: {

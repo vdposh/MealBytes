@@ -51,15 +51,19 @@ final class RdiViewModel: ObservableObject {
                 self.calculatedRdi = rdiData.calculatedRdi
                 self.age = rdiData.age
                 self.selectedGender = Gender(
-                    rawValue: rdiData.selectedGender) ?? .notSelected
+                    rawValue: rdiData.selectedGender
+                ) ?? .notSelected
                 self.selectedActivity = Activity(
-                    rawValue: rdiData.selectedActivity) ?? .notSelected
+                    rawValue: rdiData.selectedActivity
+                ) ?? .notSelected
                 self.weight = rdiData.weight.preparedForLocaleDecimal
                 self.selectedWeightUnit = WeightUnit(
-                    rawValue: rdiData.selectedWeightUnit) ?? .notSelected
+                    rawValue: rdiData.selectedWeightUnit
+                ) ?? .notSelected
                 self.height = rdiData.height.preparedForLocaleDecimal
                 self.selectedHeightUnit = HeightUnit(
-                    rawValue: rdiData.selectedHeightUnit) ?? .notSelected
+                    rawValue: rdiData.selectedHeightUnit
+                ) ?? .notSelected
                 isDataLoaded = true
             }
         } catch {
@@ -105,7 +109,8 @@ final class RdiViewModel: ObservableObject {
                 $selectedActivity,
                 Publishers.CombineLatest(
                     $selectedWeightUnit,
-                    $selectedHeightUnit)
+                    $selectedHeightUnit
+                )
             )
         )
         .sink { [weak self] combined1, combined2 in
@@ -127,13 +132,15 @@ final class RdiViewModel: ObservableObject {
         .store(in: &cancellables)
     }
     
-    private func recalculateRdi(age: String,
-                                weight: String,
-                                height: String,
-                                gender: Gender,
-                                activity: Activity,
-                                weightUnit: WeightUnit,
-                                heightUnit: HeightUnit) {
+    private func recalculateRdi(
+        age: String,
+        weight: String,
+        height: String,
+        gender: Gender,
+        activity: Activity,
+        weightUnit: WeightUnit,
+        heightUnit: HeightUnit
+    ) {
         guard isInputValidForCalculation,
               gender != .notSelected,
               activity != .notSelected else {
@@ -158,8 +165,7 @@ final class RdiViewModel: ObservableObject {
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue + 5
         case .female:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
-        case .notSelected:
-            return
+        case .notSelected: return
         }
         
         let activityFactor: Double

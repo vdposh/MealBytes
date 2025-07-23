@@ -36,8 +36,10 @@ final class RegisterViewModel: ObservableObject {
         }
         
         do {
-            try await firebaseAuth.signUpAuth(email: email,
-                                              password: password)
+            try await firebaseAuth.signUpAuth(
+                email: email,
+                password: password
+            )
             await handleSignUpResult(success: true)
             
             await MainActor.run {
@@ -87,24 +89,28 @@ final class RegisterViewModel: ObservableObject {
         }
         
         timerSubscription?.cancel()
-        timerSubscription = Timer.publish(every: 1.0, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self else { return }
-                
-                self.remainingSeconds -= 1
-                
-                Task {
-                    await MainActor.run {
-                        self.updateTimerText()
-                        
-                        if self.remainingSeconds <= 0 {
-                            self.timerSubscription?.cancel()
-                            self.isResendEnabled = true
-                        }
+        timerSubscription = Timer.publish(
+            every: 1.0,
+            on: .main,
+            in: .common
+        )
+        .autoconnect()
+        .sink { [weak self] _ in
+            guard let self else { return }
+            
+            self.remainingSeconds -= 1
+            
+            Task {
+                await MainActor.run {
+                    self.updateTimerText()
+                    
+                    if self.remainingSeconds <= 0 {
+                        self.timerSubscription?.cancel()
+                        self.isResendEnabled = true
                     }
                 }
             }
+        }
     }
     
     private func updateTimerText() {
@@ -134,8 +140,10 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    private func handleSignUpResult(success: Bool,
-                                    error: AuthError? = nil) async {
+    private func handleSignUpResult(
+        success: Bool,
+        error: AuthError? = nil
+    ) async {
         await MainActor.run {
             self.error = error
             self.showAlert = true
@@ -158,16 +166,11 @@ final class RegisterViewModel: ObservableObject {
     private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
-            case .invalidEmail:
-                return .invalidEmail
-            case .emailAlreadyInUse:
-                return .emailAlreadyInUse
-            case .weakPassword:
-                return .weakPassword
-            case .networkError:
-                return .networkError
-            default:
-                return .unknownError
+            case .invalidEmail: return .invalidEmail
+            case .emailAlreadyInUse: return .emailAlreadyInUse
+            case .weakPassword: return .weakPassword
+            case .networkError: return .networkError
+            default: return .unknownError
             }
         }
         return .unknownError

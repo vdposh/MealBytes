@@ -65,12 +65,12 @@ struct CaloriesSection: View {
                         }
                         if mainViewModel.canDisplayIntake() {
                             Text(mainViewModel.intakePercentageText(
-                                for: summaries[.calories]))
+                                for: summaries[.calories])
+                            )
                             .lineLimit(1)
                             .foregroundColor(.secondary)
                             .font(.subheadline)
-                            .frame(maxWidth: .infinity,
-                                   alignment: .trailing)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

@@ -101,18 +101,22 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Add Food Item
-    func addMealItemMainView(_ item: MealItem,
-                             to mealType: MealType,
-                             for date: Date) {
+    func addMealItemMainView(
+        _ item: MealItem,
+        to mealType: MealType,
+        for date: Date
+    ) {
         mealItems[mealType, default: []].append(item)
         expandedSections[mealType] = true
         recalculateNutrients(for: date)
     }
     
     // MARK: - Update Meal Item
-    func updateMealItemMainView(_ updatedItem: MealItem,
-                                for mealType: MealType,
-                                on date: Date) {
+    func updateMealItemMainView(
+        _ updatedItem: MealItem,
+        for mealType: MealType,
+        on date: Date
+    ) {
         guard let items = mealItems[mealType] else { return }
         
         if let index = items.firstIndex(where: {
@@ -274,15 +278,18 @@ final class MainViewModel: ObservableObject {
     // MARK: - Recalculate Nutrients
     private func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(
-            into: [NutrientType: Double]()) { result, mealList in
-                mealList.forEach { item in
-                    guard calendar.isDate(item.date,
-                                          inSameDayAs: date) else { return }
-                    item.nutrients.forEach { nutrient, value in
-                        result[nutrient, default: 0.0] += value
-                    }
+            into: [NutrientType: Double]()
+        ) { result, mealList in
+            mealList.forEach { item in
+                guard calendar.isDate(
+                    item.date,
+                    inSameDayAs: date
+                ) else { return }
+                item.nutrients.forEach { nutrient, value in
+                    result[nutrient, default: 0.0] += value
                 }
             }
+        }
     }
     
     // MARK: - Summary Calories
@@ -290,8 +297,10 @@ final class MainViewModel: ObservableObject {
         mealItems.values.reduce(
             into: [NutrientType: Double]()) { result, items in
                 items.forEach { item in
-                    guard calendar.isDate(item.date,
-                                          inSameDayAs: date) else { return }
+                    guard calendar.isDate(
+                        item.date,
+                        inSameDayAs: date
+                    ) else { return }
                     item.nutrients.forEach { nutrient, value in
                         result[nutrient, default: 0.0] += value
                     }
@@ -300,8 +309,10 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Filter Meal Items
-    func filteredMealItems(for mealType: MealType,
-                           on date: Date) -> [MealItem] {
+    func filteredMealItems(
+        for mealType: MealType,
+        on date: Date
+    ) -> [MealItem] {
         return mealItems[mealType, default: []].filter {
             calendar.isDate($0.date, inSameDayAs: date)
         }
@@ -313,8 +324,7 @@ final class MainViewModel: ObservableObject {
             .getDetailedNutrients(from: nutrientSummaries)
         
         switch isExpanded {
-        case true:
-            return allNutrients
+        case true: return allNutrients
         case false:
             return allNutrients.filter {
                 [.calories, .fat, .protein, .carbohydrate].contains($0.type)
@@ -324,8 +334,10 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Format Serving Size
     private func formattedServingSize(for mealItem: MealItem) -> String {
-        return formatter.formattedValue(mealItem.nutrients[.servingSize],
-                                        unit: .empty)
+        return formatter.formattedValue(
+            mealItem.nutrients[.servingSize],
+            unit: .empty
+        )
     }
     
     private func formattedMeasurement(for mealItem: MealItem) -> String {
@@ -354,23 +366,31 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Format Calories
     func formattedCalories(_ calories: Double) -> String {
-        return formatter.formattedValue(calories,
-                                        unit: .empty,
-                                        alwaysRoundUp: true)
+        return formatter.formattedValue(
+            calories,
+            unit: .empty,
+            alwaysRoundUp: true
+        )
     }
     
     // MARK: - Format Value
-    func formattedValue(_ value: Double,
-                        unit: Formatter.Unit,
-                        alwaysRoundUp: Bool) -> String {
-        return formatter.formattedValue(value,
-                                        unit: unit,
-                                        alwaysRoundUp: alwaysRoundUp)
+    func formattedValue(
+        _ value: Double,
+        unit: Formatter.Unit,
+        alwaysRoundUp: Bool
+    ) -> String {
+        return formatter.formattedValue(
+            value,
+            unit: unit,
+            alwaysRoundUp: alwaysRoundUp
+        )
     }
     
     // MARK: - Calculate Totals for Nutrients
-    func totalNutrient(_ nutrient: NutrientType,
-                       for mealItems: [MealItem]) -> Double {
+    func totalNutrient(
+        _ nutrient: NutrientType,
+        for mealItems: [MealItem]
+    ) -> Double {
         mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
     }
     
@@ -400,9 +420,11 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Calculate Date Offset
     func dateByAddingOffset(for offset: Int) -> Date {
-        Calendar.current.date(byAdding: .day,
-                              value: offset,
-                              to: Date()) ?? Date()
+        Calendar.current.date(
+            byAdding: .day,
+            value: offset,
+            to: Date()
+        ) ?? Date()
     }
     
     
@@ -424,12 +446,14 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Color for Calendar
-    func color(for element: DisplayElement,
-               date: Date? = nil,
-               isSelected: Bool = false,
-               isToday: Bool = false,
-               forBackground: Bool = false,
-               forcePrimary: Bool = false) -> Color {
+    func color(
+        for element: DisplayElement,
+        date: Date? = nil,
+        isSelected: Bool = false,
+        isToday: Bool = false,
+        forBackground: Bool = false,
+        forcePrimary: Bool = false
+    ) -> Color {
         if forBackground {
             return isSelected ? .customGreen.opacity(0.2) : .clear
         }
@@ -439,9 +463,11 @@ final class MainViewModel: ObservableObject {
         if forcePrimary {
             return .primary
         }
-        if let date, !calendar.isDate(date,
-                                      equalTo: self.date,
-                                      toGranularity: .month) {
+        if let date, !calendar.isDate(
+            date,
+            equalTo: self.date,
+            toGranularity: .month
+        ) {
             return .secondary
         }
         return element == .day ? .primary : .secondary
@@ -454,17 +480,21 @@ final class MainViewModel: ObservableObject {
         } != nil
     }
     
-    func selectDate(_ date: Date,
-                    selectedDate: inout Date,
-                    isPresented: inout Bool) {
+    func selectDate(
+        _ date: Date,
+        selectedDate: inout Date,
+        isPresented: inout Bool
+    ) {
         selectedDate = date
         isPresented = false
     }
     
     func changeMonth(by value: Int, selectedDate: inout Date) {
-        if let newDate = calendar.date(byAdding: .month,
-                                       value: value,
-                                       to: selectedDate) {
+        if let newDate = calendar.date(
+            byAdding: .month,
+            value: value,
+            to: selectedDate
+        ) {
             selectedDate = newDate
         }
     }
@@ -477,15 +507,21 @@ final class MainViewModel: ObservableObject {
                 day: 1
             )
         ),
-              let range = calendar.range(of: .day,
-                                         in: .month,
-                                         for: startOfMonth),
-              let prevMonth = calendar.date(byAdding: .month,
-                                            value: -1,
-                                            to: startOfMonth),
-              let prevMonthRange = calendar.range(of: .day,
-                                                  in: .month,
-                                                  for: prevMonth)
+              let range = calendar.range(
+                of: .day,
+                in: .month,
+                for: startOfMonth
+              ),
+              let prevMonth = calendar.date(
+                byAdding: .month,
+                value: -1,
+                to: startOfMonth
+              ),
+              let prevMonthRange = calendar.range(
+                of: .day,
+                in: .month,
+                for: prevMonth
+              )
         else { return [] }
         
         let days = range.compactMap {
@@ -502,9 +538,10 @@ final class MainViewModel: ObservableObject {
         
         let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
         
-        let nextDays: [Date] = (fillerCount > 0
-                                ? Array(1...fillerCount)
-                                : []
+        let nextDays: [Date] = (
+            fillerCount > 0
+            ? Array(1...fillerCount)
+            : []
         ).compactMap {
             guard let last = days.last else { return nil }
             let candidate = calendar.date(byAdding: .day, value: $0, to: last)

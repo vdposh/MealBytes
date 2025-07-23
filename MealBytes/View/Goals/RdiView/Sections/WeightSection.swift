@@ -33,8 +33,10 @@ struct WeightSection: View {
                             "Weight Unit",
                             selection: $rdiViewModel.selectedWeightUnit
                         ) {
-                            if rdiViewModel.selectedWeightUnit == .notSelected {
-                                Text("Not Selected").tag(WeightUnit.notSelected)
+                            if rdiViewModel
+                                .selectedWeightUnit == .notSelected {
+                                Text("Not Selected")
+                                    .tag(WeightUnit.notSelected)
                             }
                             ForEach(
                                 WeightUnit.allCases.filter {
@@ -66,10 +68,8 @@ enum WeightUnit: String, CaseIterable {
     
     var accentColor: Color {
         switch self {
-        case .notSelected:
-            return .customRed
-        default:
-            return .customGreen
+        case .notSelected: return .customRed
+        default: return .customGreen
         }
     }
 }

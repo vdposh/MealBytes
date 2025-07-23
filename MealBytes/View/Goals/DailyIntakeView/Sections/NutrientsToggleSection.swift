@@ -1,5 +1,5 @@
 //
-//  ToggleSection.swift
+//  NutrientsToggleSection.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 18/07/2025.
@@ -20,8 +20,7 @@ struct NutrientsToggleSection: View {
             },
             layout: .pickerStyle,
             description: "Enable this option to calculate intake using macronutrients.",
-            useWideTrailingPadding: true,
-            hasBottomPadding: false
+            useWideTrailingPadding: true
         )
     }
 }

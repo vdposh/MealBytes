@@ -60,7 +60,9 @@ struct ServingTextFieldView: View {
                     Rectangle()
                         .frame(height: 1)
                         .opacity(opacity)
-                        .foregroundColor(isFocused ? .customGreen : .secondary),
+                        .foregroundColor(
+                            isFocused ? .customGreen : .secondary
+                        ),
                     alignment: .bottom
                 )
         }
@@ -91,7 +93,9 @@ struct ServingTextFieldView: View {
             
         case .integer:
             let separators: [Character] = [",", "."]
-            if let separatorIndex = input.firstIndex(where: { separators.contains($0) }) {
+            if let separatorIndex = input.firstIndex(where: {
+                separators.contains($0)
+            }) {
                 input = String(input[..<separatorIndex])
             }
             

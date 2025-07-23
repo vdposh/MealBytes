@@ -50,7 +50,7 @@ struct SectionStyleContainer<Content: View>: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 32)
-                    .padding(.top, 40)
+                    .padding(.top, hasTopTextPadding ? 40 : 0)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
@@ -74,8 +74,8 @@ struct SectionStyleContainer<Content: View>: View {
                     
                     if let secondary = secondaryContent {
                         secondary
-                            .padding(.leading, 20)
-                            .padding(.trailing, 10)
+                            .padding(.leading, 16)
+                            .padding(.trailing, 4)
                             .padding(.top, 2)
                             .padding(.bottom, 10)
                     }

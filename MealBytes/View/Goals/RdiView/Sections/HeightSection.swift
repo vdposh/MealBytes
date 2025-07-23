@@ -33,8 +33,10 @@ struct HeightSection: View {
                             "Height Unit",
                             selection: $rdiViewModel.selectedHeightUnit
                         ) {
-                            if rdiViewModel.selectedHeightUnit == .notSelected {
-                                Text("Not Selected").tag(HeightUnit.notSelected)
+                            if rdiViewModel
+                                .selectedHeightUnit == .notSelected {
+                                Text("Not Selected")
+                                    .tag(HeightUnit.notSelected)
                             }
                             ForEach(
                                 HeightUnit.allCases.filter {
@@ -66,10 +68,8 @@ enum HeightUnit: String, CaseIterable {
     
     var accentColor: Color {
         switch self {
-        case .notSelected:
-            return .customRed
-        default:
-            return .customGreen
+        case .notSelected: return .customRed
+        default: return .customGreen
         }
     }
 }

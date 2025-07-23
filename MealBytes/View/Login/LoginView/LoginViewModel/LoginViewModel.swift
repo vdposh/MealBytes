@@ -29,8 +29,10 @@ final class LoginViewModel: ObservableObject {
         }
         
         do {
-            let user = try await firebaseAuth.signInAuth(email: email,
-                                                         password: password)
+            let user = try await firebaseAuth.signInAuth(
+                email: email,
+                password: password)
+            
             
             if !user.isEmailVerified {
                 await MainActor.run {
@@ -42,8 +44,10 @@ final class LoginViewModel: ObservableObject {
             }
             
             do {
-                try await firestore.saveLoginDataFirestore(email: email,
-                                                           isLoggedIn: true)
+                try await firestore.saveLoginDataFirestore(
+                    email: email,
+                    isLoggedIn: true
+                )
             } catch {
                 await MainActor.run {
                     self.error = .networkError
@@ -85,8 +89,8 @@ final class LoginViewModel: ObservableObject {
             }
         } catch {
             do {
-                let (email,
-                     isLoggedIn) = try await firestore.loadLoginDataFirestore()
+                let (email, isLoggedIn) = try await firestore
+                    .loadLoginDataFirestore()
                 
                 await MainActor.run {
                     self.email = email
@@ -194,14 +198,10 @@ final class LoginViewModel: ObservableObject {
     private func handleError(_ error: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: error.code) {
             switch authErrorCode {
-            case .invalidEmail:
-                return .invalidEmail
-            case .networkError:
-                return .networkError
-            case .userDisabled:
-                return .userNotVerified
-            default:
-                return .incorrectCredentials
+            case .invalidEmail: return .invalidEmail
+            case .networkError: return .networkError
+            case .userDisabled: return .userNotVerified
+            default: return .incorrectCredentials
             }
         }
         return .unknownError

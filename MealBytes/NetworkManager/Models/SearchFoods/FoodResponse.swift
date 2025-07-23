@@ -22,14 +22,21 @@ struct FoodResponse: Decodable {
         let container = try decoder
             .container(keyedBy: ContainerKeys.self)
         let foodsContainer = try container
-            .nestedContainer(keyedBy: FoodsKeys.self, forKey: .foods)
+            .nestedContainer(
+                keyedBy: FoodsKeys.self,
+                forKey: .foods
+            )
         
-        if let array = try? foodsContainer.decode([Food].self,
-                                                  forKey: .food) {
+        if let array = try? foodsContainer.decode(
+            [Food].self,
+            forKey: .food
+        ) {
             self.foods = array
         }
-        else if let single = try? foodsContainer.decode(Food.self,
-                                                        forKey: .food) {
+        else if let single = try? foodsContainer.decode(
+            Food.self,
+            forKey: .food
+        ) {
             self.foods = [single]
         }
         else {

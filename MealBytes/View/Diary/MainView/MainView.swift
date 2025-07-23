@@ -57,9 +57,11 @@ struct MainView: View {
     
     private var datePickerView: some View {
         VStack {
-            CalendarView(selectedDate: $mainViewModel.date,
-                         isPresented: $mainViewModel.isExpandedCalendar,
-                         mainViewModel: mainViewModel)
+            CalendarView(
+                selectedDate: $mainViewModel.date,
+                isPresented: $mainViewModel.isExpandedCalendar,
+                mainViewModel: mainViewModel
+            )
         }
         .background(Color(.systemBackground))
     }
@@ -72,8 +74,9 @@ struct MainView: View {
                         mainViewModel.date = mainViewModel
                             .dateByAddingOffset(for: offset)
                     } label: {
-                        dateView(for: mainViewModel
-                            .dateByAddingOffset(for: offset))
+                        dateView(
+                            for: mainViewModel.dateByAddingOffset(for: offset)
+                        )
                     }
                     .buttonStyle(.plain)
                 }

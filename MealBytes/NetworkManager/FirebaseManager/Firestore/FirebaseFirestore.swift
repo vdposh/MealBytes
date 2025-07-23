@@ -13,15 +13,19 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
-    func loadLoginDataFirestore() async throws -> (email: String,
-                                                   isLoggedIn: Bool)
+    func loadLoginDataFirestore() async throws -> (
+        email: String,
+        isLoggedIn: Bool
+    )
     func loadDailyIntakeFirestore() async throws -> DailyIntake
     func loadRdiFirestore() async throws -> RdiData
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake
     func loadDisplayIntakeFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
-    func addBookmarkFirestore(_ foods: [Food],
-                              for mealType: MealType) async throws
+    func addBookmarkFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
     func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
@@ -94,7 +98,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Load bookmarks
-    func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food] {
+    func loadBookmarksFirestore(
+        for mealType: MealType
+    ) async throws -> [Food] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -136,8 +142,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
         
-        try await documentReference.setData(["items": encodedFoods],
-                                            merge: true)
+        try await documentReference.setData(
+            ["items": encodedFoods],
+            merge: true
+        )
     }
     
     // MARK: - Load DailyIntake Data
@@ -253,8 +261,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Current User
-    func loadLoginDataFirestore() async throws -> (email: String,
-                                                   isLoggedIn: Bool) {
+    func loadLoginDataFirestore() async throws -> (
+        email: String,
+        isLoggedIn: Bool
+    ) {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AuthError.userNotFound
         }
@@ -275,8 +285,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return (email, isLoggedIn)
     }
     
-    func saveLoginDataFirestore(email: String,
-                                isLoggedIn: Bool) async throws {
+    func saveLoginDataFirestore(
+        email: String,
+        isLoggedIn: Bool
+    ) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }

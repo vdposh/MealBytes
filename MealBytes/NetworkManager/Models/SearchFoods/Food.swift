@@ -30,20 +30,31 @@ struct Food: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         let searchFoodIdString = try container.decode(
-            String.self, forKey: .searchFoodId)
+            String.self,
+            forKey: .searchFoodId
+        )
         self.searchFoodId = Int(searchFoodIdString) ?? 0
         
         self.searchFoodName = try container.decode(
-            String.self, forKey: .searchFoodName)
+            String.self,
+            forKey: .searchFoodName
+        )
         self.searchFoodDescription = try container.decode(
-            String.self, forKey: .searchFoodDescription)
+            String.self,
+            forKey: .searchFoodDescription
+        )
     }
     
     var parsedDescription: String? {
         let components = searchFoodDescription.split(
-            separator: "|", maxSplits: 1, omittingEmptySubsequences: true)
+            separator: "|",
+            maxSplits: 1,
+            omittingEmptySubsequences: true
+        )
         guard let firstPart = components.first else { return nil }
-        return String(firstPart.trimmingCharacters(in: .whitespacesAndNewlines))
+        return String(
+            firstPart.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
     }
 }
 

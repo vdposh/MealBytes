@@ -31,8 +31,8 @@ extension DetailedNutrient {
             unit: {
                 switch type {
                 case .calories: .empty
-                default: Formatter.Unit(rawValue: type.alternativeUnit) ??
-                        .empty
+                default:
+                    Formatter.Unit(rawValue: type.alternativeUnit) ?? .empty
                 }
             }(),
             alwaysRoundUp: type == .calories

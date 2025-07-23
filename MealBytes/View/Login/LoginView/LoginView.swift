@@ -20,7 +20,8 @@ struct LoginView: View {
                 LoginTextFieldView(
                     text: $loginViewModel.email,
                     titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.email)
+                        for: loginViewModel.email
+                    )
                 )
                 
                 SecureFieldView(
@@ -28,7 +29,8 @@ struct LoginView: View {
                     title: "Password",
                     placeholder: "Enter password",
                     titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.password)
+                        for: loginViewModel.password
+                    )
                 )
                 
                 ActionButtonView(

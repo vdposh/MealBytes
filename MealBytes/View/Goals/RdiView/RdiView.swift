@@ -21,16 +21,21 @@ struct RdiView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         OverviewRdiSection(rdiViewModel: rdiViewModel)
+                        
                         AgeSection(
                             focusedField: _focusedField,
                             rdiViewModel: rdiViewModel
                         )
+                        
                         GenderSection(rdiViewModel: rdiViewModel)
+                        
                         ActivitySection(rdiViewModel: rdiViewModel)
+                        
                         WeightSection(
                             focusedField: _focusedField,
                             rdiViewModel: rdiViewModel
                         )
+                        
                         HeightSection(
                             focusedField: _focusedField,
                             rdiViewModel: rdiViewModel

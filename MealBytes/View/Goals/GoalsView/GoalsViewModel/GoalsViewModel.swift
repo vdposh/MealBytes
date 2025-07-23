@@ -15,9 +15,11 @@ final class GoalsViewModel: ObservableObject {
     let dailyIntakeViewModel: DailyIntakeViewModelProtocol
     let rdiViewModel: RdiViewModelProtocol
     
-    init(mainViewModel: MainViewModelProtocol,
+    init(
+        mainViewModel: MainViewModelProtocol,
          dailyIntakeViewModel: DailyIntakeViewModelProtocol,
-         rdiViewModel: RdiViewModelProtocol) {
+         rdiViewModel: RdiViewModelProtocol
+    ) {
         self.mainViewModel = mainViewModel
         self.dailyIntakeViewModel = dailyIntakeViewModel
         self.rdiViewModel = rdiViewModel
@@ -46,10 +48,8 @@ final class GoalsViewModel: ObservableObject {
         let isActive = self.isActive(source)
         let text: String
         switch source {
-        case .rdiView:
-            text = rdiViewModel.rdiText()
-        case .dailyIntakeView:
-            text = dailyIntakeViewModel.dailyIntakeText()
+        case .rdiView: text = rdiViewModel.rdiText()
+        case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText()
         }
         
         return IntakeDisplayState(

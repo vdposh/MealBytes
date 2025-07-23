@@ -28,8 +28,7 @@ extension CompactNutrientDetail {
             value,
             unit: {
                 switch type {
-                case .calories:
-                        .empty
+                case .calories: .empty
                 default:
                     Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
                 }

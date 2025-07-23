@@ -49,10 +49,8 @@ enum Gender: String, CaseIterable {
     
     var accentColor: Color {
         switch self {
-        case .notSelected:
-            return .customRed
-        case .male, .female:
-            return .customGreen
+        case .notSelected: return .customRed
+        case .male, .female: return .customGreen
         }
     }
 }

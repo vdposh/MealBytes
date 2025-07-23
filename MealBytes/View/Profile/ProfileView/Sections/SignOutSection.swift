@@ -26,14 +26,13 @@ struct SignOutSection: View {
                     Text("Do you want to")
                         .foregroundColor(.secondary)
                     
-                    Button {
+                    Button("delete") {
                         profileViewModel.prepareAlert(for: .deleteAccount)
-                    } label: {
-                        Text("delete")
-                            .fontWeight(.semibold)
-                            .foregroundColor(.customRed)
                     }
-                    .buttonStyle(.plain)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.customRed)
+                    .buttonStyle(.borderless)
                     
                     Text("the account?")
                         .foregroundColor(.secondary)

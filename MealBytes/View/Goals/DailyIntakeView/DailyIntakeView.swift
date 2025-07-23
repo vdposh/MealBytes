@@ -99,15 +99,18 @@ struct DailyIntakeView: View {
                     }
                     .onChange(of: focusMacronutrients) {
                         if let focusMacronutrients {
-                            dailyIntakeViewModel.handleMacronutrientFocusChange(
-                                focus: focusMacronutrients,
-                                didGainFocus: false
-                            )
+                            dailyIntakeViewModel
+                                .handleMacronutrientFocusChange(
+                                    focus: focusMacronutrients,
+                                    didGainFocus: false
+                                )
                         }
                     }
                     .onChange(of: focusMacronutrients) {
                         guard let field = focusMacronutrients else { return }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        DispatchQueue.main.asyncAfter(
+                            deadline: .now() + 0.15
+                        ) {
                             withAnimation {
                                 proxy.scrollTo(field.scrollID,
                                                anchor: field.scrollAnchor)

@@ -44,15 +44,17 @@ final class FoodViewModel: ObservableObject {
     private let searchViewModel: SearchViewModelProtocol
     let mainViewModel: MainViewModelProtocol
     
-    init(food: Food,
-         mealType: MealType,
-         searchViewModel: SearchViewModelProtocol,
-         mainViewModel: MainViewModelProtocol,
-         initialAmount: String = "",
-         initialMeasurementDescription: String = "",
-         showSaveRemoveButton: Bool = false,
-         originalCreatedAt: Date = Date(),
-         originalMealItemId: UUID? = nil) {
+    init(
+        food: Food,
+        mealType: MealType,
+        searchViewModel: SearchViewModelProtocol,
+        mainViewModel: MainViewModelProtocol,
+        initialAmount: String = "",
+        initialMeasurementDescription: String = "",
+        showSaveRemoveButton: Bool = false,
+        originalCreatedAt: Date = Date(),
+        originalMealItemId: UUID? = nil
+    ) {
         let roundedAmount = Formatter().formattedValue(
             Double(initialAmount),
             unit: .empty,
@@ -108,7 +110,9 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Add a food item
     func addMealItemFoodView(in section: MealType, for date: Date) {
-        let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
+        let nutrients = nutrientDetails.reduce(
+            into: [NutrientType: Double]()
+        ) {
             result, detail in
             result[detail.type] = detail.value
         }
@@ -116,7 +120,8 @@ final class FoodViewModel: ObservableObject {
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             portionUnit: nutrientDetails.first(where: {
-                $0.type == .servingSize })?.serving.metricServingUnit ?? "",
+                $0.type == .servingSize
+            })?.serving.metricServingUnit ?? "",
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
@@ -167,7 +172,9 @@ final class FoodViewModel: ObservableObject {
                             on: date
                         )
                     }
-                    try await firestore.updateMealItemFirestore(updatedMealItem)
+                    try await firestore.updateMealItemFirestore(
+                        updatedMealItem
+                    )
                 } else {
                     await MainActor.run {
                         mainViewModel.deleteMealItemMainView(
@@ -176,8 +183,10 @@ final class FoodViewModel: ObservableObject {
                         )
                     }
                     
-                    if mainViewModel.filteredMealItems(for: originalMealType,
-                                                       on: date).isEmpty {
+                    if mainViewModel.filteredMealItems(
+                        for: originalMealType,
+                        on: date
+                    ).isEmpty {
                         await MainActor.run {
                             mainViewModel.collapseSection(
                                 for: originalMealType,
@@ -198,7 +207,9 @@ final class FoodViewModel: ObservableObject {
                         )
                     }
                     
-                    try await firestore.updateMealItemFirestore(updatedMealItem)
+                    try await firestore.updateMealItemFirestore(
+                        updatedMealItem
+                    )
                 }
             } catch {
                 await MainActor.run {
@@ -210,8 +221,10 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Delete food
     func deleteMealItemFoodView() async {
-        mainViewModel.deleteMealItemMainView(with: originalMealItemId,
-                                             for: originalMealType)
+        mainViewModel.deleteMealItemMainView(
+            with: originalMealItemId,
+            for: originalMealType
+        )
     }
     
     // MARK: - Bookmark Management
@@ -234,10 +247,8 @@ final class FoodViewModel: ObservableObject {
         }
         
         switch serving.isMetricMeasurement {
-        case true:
-            self.amount = "100"
-        case false:
-            self.amount = "1"
+        case true: self.amount = "100"
+        case false: self.amount = "1"
         }
     }
     
@@ -255,8 +266,10 @@ final class FoodViewModel: ObservableObject {
         }
         
         if description.hasPrefix("serving"),
-           let range = description.range(of: #"serving\s*\([^)]+\)"#,
-                                         options: .regularExpression) {
+           let range = description.range(
+            of: #"serving\s*\([^)]+\)"#,
+            options: .regularExpression
+           ) {
             description.replaceSubrange(range, with: "serving")
         }
         
@@ -280,20 +293,23 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing, canAddFood else { return 0 }
         
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
-        return calculateBaseAmountValue(amountValue, serving: selectedServing)
+        return calculateBaseAmountValue(
+            amountValue,
+            serving: selectedServing
+        )
     }
     
-    private func calculateBaseAmountValue(_ amount: Double,
-                                          serving: Serving) -> Double {
+    private func calculateBaseAmountValue(
+        _ amount: Double,
+        serving: Serving
+    ) -> Double {
         if amount.isZero {
             return 0
         }
         
         switch serving.isMetricMeasurement {
-        case true:
-            return amount * 0.01
-        case false:
-            return amount
+        case true: return amount * 0.01
+        case false: return amount
         }
     }
     

@@ -13,8 +13,10 @@ struct SearchView: View {
     
     @ObservedObject var searchViewModel: SearchViewModel
     
-    init(searchViewModel: SearchViewModel,
-         mealType: MealType) {
+    init(
+        searchViewModel: SearchViewModel,
+        mealType: MealType
+    ) {
         self.searchViewModel = searchViewModel
         self._mealType = State(initialValue: mealType)
     }
@@ -49,7 +51,9 @@ struct SearchView: View {
                                         mealType = meal
                                         Task {
                                             await searchViewModel
-                                                .loadBookmarksSearchView(for: meal)
+                                                .loadBookmarksSearchView(
+                                                    for: meal
+                                                )
                                         }
                                     }
                                 } label: {
@@ -122,11 +126,9 @@ struct SearchView: View {
                     
                     BookmarkButtonView(
                         action: {
-                            searchViewModel
-                                .handleBookmarkAction(for: food)
+                            searchViewModel.handleBookmarkAction(for: food)
                         },
-                        isFilled: searchViewModel
-                            .isBookmarkedSearchView(food),
+                        isFilled: searchViewModel.isBookmarkedSearchView(food),
                         width: 45,
                         height: 24
                     )

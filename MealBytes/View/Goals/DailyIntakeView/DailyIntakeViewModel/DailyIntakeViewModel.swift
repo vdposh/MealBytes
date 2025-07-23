@@ -47,7 +47,8 @@ final class DailyIntakeViewModel: ObservableObject {
     // MARK: - Load DailyIntake Data
     func loadDailyIntakeView() async {
         do {
-            let dailyIntakeData = try await firestore.loadDailyIntakeFirestore()
+            let dailyIntakeData = try await firestore
+                .loadDailyIntakeFirestore()
             await MainActor.run {
                 toggleOn = dailyIntakeData.macronutrientMetrics
                 calories = dailyIntakeData.calories
@@ -92,9 +93,11 @@ final class DailyIntakeViewModel: ObservableObject {
     private func setupBindings() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)
             .sink { [weak self] fat, carb, protein in
-                self?.calculateCalories(fat: fat,
-                                        carbohydrate: carb,
-                                        protein: protein)
+                self?.calculateCalories(
+                    fat: fat,
+                    carbohydrate: carb,
+                    protein: protein
+                )
             }
             .store(in: &cancellables)
         
@@ -112,9 +115,11 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Calculations
-    private func calculateCalories(fat: String,
-                                   carbohydrate: String,
-                                   protein: String) {
+    private func calculateCalories(
+        fat: String,
+        carbohydrate: String,
+        protein: String
+    ) {
         guard toggleOn else { return }
         
         let fatValue = Double(fat.sanitizedForDouble) ?? 0
@@ -208,8 +213,10 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     // MARK: - UI Helpers
-    func titleColor(for value: String,
-                    isCalorie: Bool = false) -> Color {
+    func titleColor(
+        for value: String,
+        isCalorie: Bool = false
+    ) -> Color {
         if isCalorie && toggleOn {
             return .secondary
         }
@@ -247,8 +254,10 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleMacronutrientFocusChange(focus: MacronutrientsFocus,
-                                        didGainFocus: Bool) {
+    func handleMacronutrientFocusChange(
+        focus: MacronutrientsFocus,
+        didGainFocus: Bool
+    ) {
         normalizeInputs()
         
         switch focus {

@@ -43,7 +43,9 @@ struct LoginTextFieldView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
-                        .foregroundColor(isFocused ? .customGreen : .secondary),
+                        .foregroundColor(
+                            isFocused ? .customGreen : .secondary
+                        ),
                     alignment: .bottom
                 )
         }

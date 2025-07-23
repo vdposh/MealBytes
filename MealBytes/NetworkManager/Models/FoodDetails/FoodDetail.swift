@@ -28,12 +28,18 @@ struct FoodDetail: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         let foodIdString = try container.decode(
-            String.self, forKey: .foodId)
+            String.self,
+            forKey: .foodId
+        )
         self.foodId = Int(foodIdString) ?? 0
         
         self.foodName = try container.decode(
-            String.self, forKey: .foodName)
+            String.self,
+            forKey: .foodName
+        )
         self.servings = try container.decode(
-            Servings.self, forKey: .servings)
+            Servings.self,
+            forKey: .servings
+        )
     }
 }
