@@ -26,7 +26,6 @@ final class RdiViewModel: ObservableObject {
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isDataLoaded: Bool = false
     
     private let formatter = Formatter()
     
@@ -64,12 +63,10 @@ final class RdiViewModel: ObservableObject {
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .notSelected
-                isDataLoaded = true
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
-                isDataLoaded = true
             }
         }
     }

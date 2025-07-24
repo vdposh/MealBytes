@@ -54,7 +54,7 @@ struct FoodView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
             if let error = foodViewModel.appError {
-                Color(.systemGroupedBackground)
+                Color(.secondarySystemGroupedBackground)
                     .ignoresSafeArea()
                 contentUnavailableView(
                     for: error,
@@ -67,7 +67,7 @@ struct FoodView: View {
                 }
             } else {
                 if foodViewModel.isLoading {
-                    Color(.systemGroupedBackground)
+                    Color(.secondarySystemGroupedBackground)
                         .ignoresSafeArea()
                     LoadingView()
                 } else {

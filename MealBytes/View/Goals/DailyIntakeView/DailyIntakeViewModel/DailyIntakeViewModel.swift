@@ -22,7 +22,6 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isDataLoaded: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
             handleToggleOnChange()
@@ -55,12 +54,10 @@ final class DailyIntakeViewModel: ObservableObject {
                 fat = dailyIntakeData.fat
                 carbohydrate = dailyIntakeData.carbohydrate
                 protein = dailyIntakeData.protein
-                isDataLoaded = true
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
-                isDataLoaded = true
             }
         }
     }
