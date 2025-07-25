@@ -18,7 +18,7 @@ struct NutrientDetailSection: View {
                     Text(title)
                         .font(.callout)
                         .fontWeight(.medium)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, 6)
                         .padding(.horizontal, 4)
                     
                     ForEach(
