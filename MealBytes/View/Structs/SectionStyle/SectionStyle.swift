@@ -90,7 +90,7 @@ struct SectionStyleContainer<Content: View>: View {
             case .textStyle:
                 mainContent
                     .padding(.horizontal, 16)
-                    .padding(.top, hasTopTextPadding ? 12 : 5)
+                    .padding(.top, hasTopTextPadding ? 12 : 18)
                     .padding(.bottom)
                     .background(
                         Color(.secondarySystemGroupedBackground)

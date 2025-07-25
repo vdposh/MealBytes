@@ -18,8 +18,8 @@ struct NutrientDetailSectionView: View {
                     Text(title)
                         .font(.callout)
                         .fontWeight(.medium)
-                        .padding(.top, 10)
-                        .padding(.bottom, 5)
+                        .padding(.bottom, 4)
+                        .padding(.horizontal, 4)
                     
                     ForEach(
                         Array(nutrientDetails.enumerated()),
@@ -49,6 +49,7 @@ struct NutrientDetailSectionView: View {
                                 .padding(.trailing, -21)
                         }
                     }
+                    .padding(.horizontal, 4)
                 }
                 
             },
