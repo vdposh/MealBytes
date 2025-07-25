@@ -172,7 +172,7 @@ struct FoodView: View {
             .cornerRadius(12)
             .padding(.horizontal, 16)
         }
-        .padding(.top, 30)
+        .padding(.top, 36)
     }
     
     private var nutrientActionSection: some View {
@@ -244,7 +244,7 @@ struct FoodView: View {
     }
     
     private var nutrientDetailSection: some View {
-        NutrientDetailSectionView(
+        NutrientDetailSection(
             title: "Detailed Information",
             nutrientDetails: foodViewModel.nutrientDetails
         )

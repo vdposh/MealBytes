@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NutrientDetailSectionView: View {
+struct NutrientDetailSection: View {
     let title: String
     let nutrientDetails: [NutrientDetail]
     
