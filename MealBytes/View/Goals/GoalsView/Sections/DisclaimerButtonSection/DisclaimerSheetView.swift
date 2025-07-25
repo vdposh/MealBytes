@@ -26,6 +26,9 @@ struct DisclaimerSheetView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
+                            .symbolRenderingMode(.hierarchical)
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
                     }
                     .accessibilityLabel("Close")
                     .foregroundStyle(.secondary)

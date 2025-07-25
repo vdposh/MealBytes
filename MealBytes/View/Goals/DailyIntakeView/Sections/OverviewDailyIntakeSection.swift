@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct OverviewDailyIntakeSection: View {
-    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         SectionStyleContainer(

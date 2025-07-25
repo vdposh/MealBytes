@@ -20,9 +20,7 @@ struct DailyIntakeView: View {
                 .ignoresSafeArea()
             ScrollViewReader { proxy in
                 ScrollView {
-                    OverviewDailyIntakeSection(
-                        dailyIntakeViewModel: dailyIntakeViewModel
-                    )
+                    OverviewDailyIntakeSection()
                     
                     CalorieMetricsSection(
                         isFocused: $caloriesFocused,
