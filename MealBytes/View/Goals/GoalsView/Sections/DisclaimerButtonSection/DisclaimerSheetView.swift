@@ -14,12 +14,15 @@ struct DisclaimerSheetView: View {
         NavigationStack {
             List {
                 Section {
+                    EmptyView()
                 } header: {
                     Text("Daily Intake and Recommendations")
                 } footer: {
                     Text("The daily intake values displayed in MealBytes are an estimate based on your personal input and are not intended as medical advice or dietary recommendations.\n\nPlease consult a qualified healthcare professional or registered dietitian before making significant dietary changes or if you have specific medical conditions or nutritional needs. MealBytes does not replace individualized clinical advice.")
                 }
             }
+            .listStyle(.grouped)
+            .scrollContentBackground(.hidden)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
@@ -38,21 +41,8 @@ struct DisclaimerSheetView: View {
     }
 }
 
-
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    let rdiViewModel = RdiViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    GoalsView(
-        goalsViewModel: GoalsViewModel(
-            mainViewModel: mainViewModel,
-            dailyIntakeViewModel: dailyIntakeViewModel,
-            rdiViewModel: rdiViewModel
-        )
-    )
+    NavigationStack {
+        DisclaimerSheetView()
+    }
 }

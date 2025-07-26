@@ -132,7 +132,6 @@ struct SearchView: View {
                         width: 45,
                         height: 24
                     )
-                    .buttonStyle(.plain)
                 }
             }
             NavigationLink(

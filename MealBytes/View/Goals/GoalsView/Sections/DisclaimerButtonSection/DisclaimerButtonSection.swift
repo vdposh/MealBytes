@@ -24,7 +24,7 @@ struct DisclaimerButtonSection: View {
         }
         .listRowBackground(Color.clear)
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.top)
+        .padding(.top, 30)
     }
 }
 

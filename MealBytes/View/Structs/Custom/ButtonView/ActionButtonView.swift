@@ -26,7 +26,7 @@ struct ActionButtonView: View {
                 .lineLimit(1)
                 .cornerRadius(12)
         }
-        .buttonStyle(.plain)
+        .opacity(isEnabled ? 1 : 0.5)
         .disabled(!isEnabled)
     }
 }
