@@ -16,18 +16,19 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if loginViewModel.isSignIn {
+            switch loginViewModel.loginState {
+            case .signingIn:
                 LoginLoadingView()
-            } else if loginViewModel.isLoading {
+            case .loadingLogo:
                 LoginLogoView()
-            } else if loginViewModel.isLoggedIn {
+            case .loggedIn:
                 TabBarView(
                     loginViewModel: loginViewModel,
                     mainViewModel: mainViewModel,
                     goalsViewModel: goalsViewModel,
                     profileViewModel: profileViewModel
                 )
-            } else {
+            case .notLoggedIn:
                 LoginView(loginViewModel: loginViewModel)
             }
         }

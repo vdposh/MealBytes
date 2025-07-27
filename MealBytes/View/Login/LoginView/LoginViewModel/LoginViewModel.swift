@@ -73,6 +73,15 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
+    var loginState: LoginState {
+        switch true {
+        case isSignIn: return .signingIn
+        case isLoading: return .loadingLogo
+        case isLoggedIn: return .loggedIn
+        default: return .notLoggedIn
+        }
+    }
+    
     // MARK: - Load Data
     func loadLoginData() async {
         async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
@@ -206,4 +215,15 @@ final class LoginViewModel: ObservableObject {
         }
         return .unknownError
     }
+}
+
+enum LoginState {
+    case loadingLogo
+    case signingIn
+    case loggedIn
+    case notLoggedIn
+}
+
+#Preview {
+    PreviewContentView.contentView
 }
