@@ -14,6 +14,7 @@ protocol MainViewModelProtocol {
     var intakeSource: String { get }
     var displayIntake: Bool { get }
     
+    func loadMainData() async
     func saveCurrentIntakeMainView(source: String) async
     func saveDisplayIntakeMainView(_ newValue: Bool) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]

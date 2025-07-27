@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct PreviewFactory {
-    static let loginViewModel = LoginViewModel()
     static let mainViewModel = MainViewModel()
+    static let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
     
     static let dailyIntakeViewModel:
     DailyIntakeViewModelProtocol = DailyIntakeViewModel(

@@ -21,6 +21,11 @@ final class LoginViewModel: ObservableObject {
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private let mainViewModel: MainViewModelProtocol
+    
+    init(mainViewModel: MainViewModelProtocol) {
+        self.mainViewModel = mainViewModel
+    }
     
     // MARK: - Sign In
     func signIn() async {
@@ -57,6 +62,8 @@ final class LoginViewModel: ObservableObject {
                 return
             }
             
+            await mainViewModel.loadMainData()
+            
             await MainActor.run {
                 self.error = nil
                 self.isSignIn = false
@@ -89,8 +96,8 @@ final class LoginViewModel: ObservableObject {
         
         do {
             let (_, isAuthenticated) = try await (tokenTask, authTask)
-            let (email,
-                 isLoggedIn) = try await firestore.loadLoginDataFirestore()
+            let (email, isLoggedIn) = try await firestore
+                .loadLoginDataFirestore()
             
             await MainActor.run {
                 self.isLoggedIn = isAuthenticated && isLoggedIn

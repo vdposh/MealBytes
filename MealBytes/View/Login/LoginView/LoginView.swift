@@ -79,6 +79,8 @@ struct LoginView: View {
 
 #Preview {
     NavigationStack {
-        LoginView(loginViewModel: LoginViewModel())
+        LoginView(
+            loginViewModel: LoginViewModel(mainViewModel: MainViewModel())
+        )
     }
 }

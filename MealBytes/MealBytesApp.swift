@@ -35,7 +35,7 @@ struct MealBytesApp: App {
     
     init() {
         let mainViewModel = MainViewModel()
-        let loginViewModel = LoginViewModel()
+        let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
         let dailyIntakeViewModel = DailyIntakeViewModel(
             mainViewModel: mainViewModel
         )

@@ -31,19 +31,3 @@ struct IntakeToggleSection: View {
         }
     }
 }
-
-#Preview {
-    let loginViewModel = LoginViewModel()
-    let mainViewModel = MainViewModel()
-    let themeManager = ThemeManager()
-    
-    NavigationStack {
-        ProfileView(
-            profileViewModel: ProfileViewModel(
-                loginViewModel: loginViewModel,
-                mainViewModel: mainViewModel
-            )
-        )
-        .environmentObject(themeManager)
-    }
-}

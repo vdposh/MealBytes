@@ -109,3 +109,19 @@ struct ProfileView: View {
 #Preview {
     PreviewContentView.contentView
 }
+
+#Preview {
+    let mainViewModel = MainViewModel()
+    let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
+    let themeManager = ThemeManager()
+    
+    NavigationStack {
+        ProfileView(
+            profileViewModel: ProfileViewModel(
+                loginViewModel: loginViewModel,
+                mainViewModel: mainViewModel
+            )
+        )
+        .environmentObject(themeManager)
+    }
+}
