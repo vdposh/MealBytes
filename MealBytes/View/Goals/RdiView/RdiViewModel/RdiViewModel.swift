@@ -11,6 +11,7 @@ import Combine
 protocol RdiViewModelProtocol {
     func loadRdiView() async
     func saveRdiView() async
+    func clearRdi()
     func rdiText() -> String
 }
 
@@ -35,7 +36,7 @@ final class RdiViewModel: ObservableObject {
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
-        setupDataObserver()
+        setupBindingsRdiView()
     }
     
     deinit {
@@ -71,6 +72,17 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
+    func clearRdi() {
+        calculatedRdi = ""
+        age = ""
+        weight = ""
+        height = ""
+        selectedGender = .notSelected
+        selectedActivity = .notSelected
+        selectedWeightUnit = .notSelected
+        selectedHeightUnit = .notSelected
+    }
+    
     // MARK: - Save RDI Data
     func saveRdiView() async {
         let rdiData = RdiData(
@@ -95,8 +107,8 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    // MARK: - RDI Calculation
-    private func setupDataObserver() {
+    // MARK: - Calculation
+    private func setupBindingsRdiView() {
         Publishers.CombineLatest(
             Publishers.CombineLatest($age, $weight),
             Publishers.CombineLatest($height, $selectedGender)
@@ -330,6 +342,7 @@ final class RdiViewModel: ObservableObject {
     }
 }
 
+    //MARK: - Extensions
 extension RdiViewModel: RdiViewModelProtocol {}
 
 #Preview {

@@ -79,7 +79,7 @@ final class ResetViewModel: ObservableObject {
         return !email.isEmpty
     }
     
-    // MARK: - Colors
+    // MARK: - Color
     func titleColor(for text: String) -> Color {
         return text.isEmpty ? .customRed : .secondary
     }

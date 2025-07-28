@@ -93,7 +93,7 @@ final class ProfileViewModel: ObservableObject {
         )
     }
     
-    // MARK: - Load Data
+    // MARK: - Load Profile Data
     func loadProfileData() async {
         guard let user = Auth.auth().currentUser else {
             Task {

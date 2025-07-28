@@ -70,8 +70,10 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         try await user.delete()
     }
     
-    func reauthenticateAuth(email: String,
-                            password: String) async throws {
+    func reauthenticateAuth(
+        email: String,
+        password: String
+    ) async throws {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }

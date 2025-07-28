@@ -63,14 +63,14 @@ final class MainViewModel: ObservableObject {
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
         self.expandedSections = sections
-        setupBindings()
+        setupBindingsMainView()
     }
     
     deinit {
         cancellables.removeAll()
     }
     
-    // MARK: - Load Data
+    // MARK: - Load Main Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let currentIntakeTask: () = loadCurrentIntakeMainView()
@@ -101,7 +101,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Add Food Item
+    // MARK: - Add Meal Item
     func addMealItemMainView(
         _ item: MealItem,
         to mealType: MealType,
@@ -236,7 +236,17 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    //MARK: - Intake % calculation
+    //MARK: - Calculation (Intake)
+    private func setupBindingsMainView() {
+        $mealItems
+            .combineLatest($nutrientSummaries)
+            .sink { [weak self] _, _ in
+                guard let self else { return }
+                self.updateProgress()
+            }
+            .store(in: &cancellables)
+    }
+    
     private func calculateIntakePercentage(from calories: Double?) -> String {
         guard let intakeValue = Double(intake),
               intakeValue > 0 else { return "0%" }
@@ -260,16 +270,6 @@ final class MainViewModel: ObservableObject {
     
     func intakePercentageText(for calories: Double?) -> String {
         return calculateIntakePercentage(from: calories ?? 0.0)
-    }
-    
-    private func setupBindings() {
-        $mealItems
-            .combineLatest($nutrientSummaries)
-            .sink { [weak self] _, _ in
-                guard let self else { return }
-                self.updateProgress()
-            }
-            .store(in: &cancellables)
     }
     
     func canDisplayIntake() -> Bool {
@@ -584,6 +584,7 @@ enum DisplayElement {
     case weekday
 }
 
+    //MARK: - Extensions
 extension MainViewModel: MainViewModelProtocol {
     func collapseSection(for mealType: MealType, to isExpanded: Bool) {
         expandedSections[mealType] = isExpanded

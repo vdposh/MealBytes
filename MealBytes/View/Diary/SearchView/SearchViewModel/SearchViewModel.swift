@@ -104,7 +104,14 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Bookmarks
+    private func resetSearch() {
+        currentPage = 0
+        foods = favoriteFoods
+        appError = nil
+        isLoading = false
+    }
+    
+    // MARK: - Load Bookmarks Data
     func loadBookmarksSearchView(for mealType: MealType) async {
         guard firebaseAuth.currentUserExists() else { return }
         
@@ -224,7 +231,7 @@ final class SearchViewModel: ObservableObject {
         return "Remove \"\(foodName)\" from favorite foods?"
     }
     
-    // MARK: - Pagination
+    // MARK: - Paginations
     enum PageDirection {
         case next
         case previous
@@ -248,16 +255,9 @@ final class SearchViewModel: ObservableObject {
         }
         queueSearch(query)
     }
-    
-    // MARK: - Reset Search
-    private func resetSearch() {
-        currentPage = 0
-        foods = favoriteFoods
-        appError = nil
-        isLoading = false
-    }
 }
 
+    // MARK: - Extensions
 extension SearchViewModel: SearchViewModelProtocol {}
 
 #Preview {

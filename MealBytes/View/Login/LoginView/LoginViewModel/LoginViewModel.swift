@@ -36,7 +36,8 @@ final class LoginViewModel: ObservableObject {
         do {
             let user = try await firebaseAuth.signInAuth(
                 email: email,
-                password: password)
+                password: password
+            )
             
             
             if !user.isEmailVerified {
@@ -89,7 +90,7 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Data
+    // MARK: - Load Login Data
     func loadLoginData() async {
         async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
         async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
@@ -205,7 +206,7 @@ final class LoginViewModel: ObservableObject {
         return !email.isEmpty && !password.isEmpty
     }
     
-    // MARK: - Colors
+    // MARK: - Color
     func titleColor(for text: String) -> Color {
         return text.isEmpty ? .customRed : .secondary
     }

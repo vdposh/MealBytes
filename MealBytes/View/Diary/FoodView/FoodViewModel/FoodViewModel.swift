@@ -108,7 +108,7 @@ final class FoodViewModel: ObservableObject {
         isLoading = false
     }
     
-    // MARK: - Add a food item
+    // MARK: - Add Food Item
     func addMealItemFoodView(in section: MealType, for date: Date) {
         let nutrients = nutrientDetails.reduce(
             into: [NutrientType: Double]()
@@ -141,7 +141,7 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Resave food
+    // MARK: - Update Food Item
     func updateMealItemFoodView(for date: Date) async {
         guard let selectedServing else { return }
         
@@ -219,7 +219,7 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Delete food
+    // MARK: - Delete Food Item
     func deleteMealItemFoodView() async {
         mainViewModel.deleteMealItemMainView(
             with: originalMealItemId,

@@ -39,7 +39,7 @@ protocol FirebaseFirestoreProtocol {
 final class FirebaseFirestore: FirebaseFirestoreProtocol {
     private lazy var firestore = Firestore.firestore()
     
-    // MARK: - Fetch Data
+    // MARK: - Load Meal
     func loadMealItemsFirestore() async throws -> [MealItem] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -58,7 +58,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return mealItems
     }
     
-    // MARK: - Save Data
+    // MARK: - Save Meal
     func addMealItemFirestore(_ mealItem: MealItem) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -71,7 +71,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try documentReference.setData(from: mealItem)
     }
     
-    // MARK: - Update Data
+    // MARK: - Update Meal
     func updateMealItemFirestore(_ mealItem: MealItem) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -84,7 +84,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try documentReference.setData(from: mealItem, merge: true)
     }
     
-    // MARK: - Delete Data
+    // MARK: - Delete Meal
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -97,7 +97,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await documentReference.delete()
     }
     
-    // MARK: - Load bookmarks
+    // MARK: - Load Bookmarks
     func loadBookmarksFirestore(
         for mealType: MealType
     ) async throws -> [Food] {
@@ -127,7 +127,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         }
     }
     
-    // MARK: - Add bookmarks
+    // MARK: - Add Bookmarks
     func addBookmarkFirestore(_ foods: [Food],
                               for mealType: MealType) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -148,7 +148,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         )
     }
     
-    // MARK: - Load DailyIntake Data
+    // MARK: - Load DailyIntake
     func loadDailyIntakeFirestore() async throws -> DailyIntake {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -161,7 +161,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return try await documentReference.getDocument(as: DailyIntake.self)
     }
     
-    // MARK: - Save DailyIntake Data
+    // MARK: - Save DailyIntake
     func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -174,7 +174,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try documentReference.setData(from: DailyIntakeData)
     }
     
-    // MARK: - Load RDI Data
+    // MARK: - Load RDI
     func loadRdiFirestore() async throws -> RdiData {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -187,7 +187,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return try await documentReference.getDocument(as: RdiData.self)
     }
     
-    // MARK: - Save RDI Data
+    // MARK: - Save RDI
     func saveRdiFirestore(_ rdiData: RdiData) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding

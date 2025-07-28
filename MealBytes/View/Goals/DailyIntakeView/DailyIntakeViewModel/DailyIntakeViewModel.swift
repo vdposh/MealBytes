@@ -11,6 +11,7 @@ import Combine
 protocol DailyIntakeViewModelProtocol {
     func loadDailyIntakeView() async
     func saveDailyIntakeView() async
+    func clearDailyIntake()
     func dailyIntakeText() -> String
 }
 
@@ -36,7 +37,7 @@ final class DailyIntakeViewModel: ObservableObject {
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
-        setupBindings()
+        setupBindingsDailyIntakeView()
     }
     
     deinit {
@@ -60,6 +61,14 @@ final class DailyIntakeViewModel: ObservableObject {
                 appError = .decoding
             }
         }
+    }
+    
+    func clearDailyIntake() {
+        calories = ""
+        fat = ""
+        carbohydrate = ""
+        protein = ""
+        toggleOn = false
     }
     
     // MARK: - Save DailyIntake Data
@@ -86,8 +95,8 @@ final class DailyIntakeViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Setup Bindings
-    private func setupBindings() {
+    // MARK: - Calculation
+    private func setupBindingsDailyIntakeView() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)
             .sink { [weak self] fat, carb, protein in
                 self?.calculateCalories(
@@ -111,7 +120,6 @@ final class DailyIntakeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Calculations
     private func calculateCalories(
         fat: String,
         carbohydrate: String,
@@ -209,7 +217,7 @@ final class DailyIntakeViewModel: ObservableObject {
         text(for: calories)
     }
     
-    // MARK: - UI Helpers
+    // MARK: - UI Helper
     func titleColor(
         for value: String,
         isCalorie: Bool = false
@@ -279,6 +287,7 @@ final class DailyIntakeViewModel: ObservableObject {
     }
 }
 
+    //MARK: - Extensions
 extension DailyIntakeViewModel: DailyIntakeViewModelProtocol {}
 
 #Preview {

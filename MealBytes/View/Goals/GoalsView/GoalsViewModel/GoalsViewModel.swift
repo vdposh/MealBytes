@@ -25,11 +25,13 @@ final class GoalsViewModel: ObservableObject {
         self.rdiViewModel = rdiViewModel
     }
     
-    // MARK: - Load Data
+    // MARK: - Load Goals Data
     func loadGoalsData() async {
         await MainActor.run {
             uniqueId = UUID()
             isDataLoaded = false
+            dailyIntakeViewModel.clearDailyIntake()
+            rdiViewModel.clearRdi()
         }
         
         async let rdiTask: () = rdiViewModel.loadRdiView()
