@@ -342,7 +342,6 @@ final class RdiViewModel: ObservableObject {
     }
 }
 
-    //MARK: - Extensions
 extension RdiViewModel: RdiViewModelProtocol {}
 
 #Preview {

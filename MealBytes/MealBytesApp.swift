@@ -28,36 +28,39 @@ struct MealBytesApp: App {
     @Environment(\.colorScheme) private var systemColorScheme
     
     @StateObject private var mainViewModel: MainViewModel
-    @StateObject private var loginViewModel: LoginViewModel
     @StateObject private var goalsViewModel: GoalsViewModel
+    @StateObject private var loginViewModel: LoginViewModel
     @StateObject private var profileViewModel: ProfileViewModel
-    @StateObject private var themeManager = ThemeManager()
+    @StateObject private var themeManager: ThemeManager
     
     init() {
         let mainViewModel = MainViewModel()
-        let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
         let dailyIntakeViewModel = DailyIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let rdiViewModel = RdiViewModel(
             mainViewModel: mainViewModel
         )
+        let goalsViewModel = GoalsViewModel(
+            mainViewModel: mainViewModel,
+            dailyIntakeViewModel: dailyIntakeViewModel,
+            rdiViewModel: rdiViewModel
+        )
+        let loginViewModel = LoginViewModel(
+            mainViewModel: mainViewModel,
+            goalsViewModel: goalsViewModel
+        )
+        let profileViewModel = ProfileViewModel(
+            loginViewModel: loginViewModel,
+            mainViewModel: mainViewModel
+        )
+        let themeManager = ThemeManager()
         
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
         _loginViewModel = StateObject(wrappedValue: loginViewModel)
-        _goalsViewModel = StateObject(
-            wrappedValue: GoalsViewModel(
-                mainViewModel: mainViewModel,
-                dailyIntakeViewModel: dailyIntakeViewModel,
-                rdiViewModel: rdiViewModel
-            )
-        )
-        _profileViewModel = StateObject(
-            wrappedValue: ProfileViewModel(
-                loginViewModel: loginViewModel,
-                mainViewModel: mainViewModel
-            )
-        )
+        _profileViewModel = StateObject(wrappedValue: profileViewModel)
+        _themeManager = StateObject(wrappedValue: themeManager)
     }
     
     var body: some Scene {

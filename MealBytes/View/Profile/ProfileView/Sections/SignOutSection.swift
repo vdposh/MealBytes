@@ -18,13 +18,16 @@ struct SignOutSection: View {
             }
         } footer: {
             if profileViewModel.isDeletingAccount {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+                HStack {
+                    ProgressView()
+                    Text("Deleting account...")
+                        .font(.callout)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
             } else {
                 HStack(spacing: 4) {
                     Text("Do you want to")
-                        .foregroundColor(.secondary)
                     
                     Button("delete") {
                         profileViewModel.prepareAlert(for: .deleteAccount)
@@ -35,7 +38,6 @@ struct SignOutSection: View {
                     .buttonStyle(.borderless)
                     
                     Text("the account?")
-                        .foregroundColor(.secondary)
                 }
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)

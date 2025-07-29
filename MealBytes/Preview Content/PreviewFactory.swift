@@ -9,28 +9,26 @@ import SwiftUI
 
 struct PreviewFactory {
     static let mainViewModel = MainViewModel()
-    static let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
-    
     static let dailyIntakeViewModel:
     DailyIntakeViewModelProtocol = DailyIntakeViewModel(
         mainViewModel: mainViewModel
     )
-    
     static let rdiViewModel:
     RdiViewModelProtocol = RdiViewModel(
         mainViewModel: mainViewModel
     )
-    
     static let goalsViewModel = GoalsViewModel(
         mainViewModel: mainViewModel,
         dailyIntakeViewModel: dailyIntakeViewModel,
         rdiViewModel: rdiViewModel
     )
-    
+    static let loginViewModel = LoginViewModel(
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
+    )
     static let profileViewModel = ProfileViewModel(
         loginViewModel: loginViewModel,
         mainViewModel: mainViewModel
     )
-    
     static let themeManager = ThemeManager()
 }

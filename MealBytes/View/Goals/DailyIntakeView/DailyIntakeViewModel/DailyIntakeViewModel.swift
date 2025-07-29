@@ -287,7 +287,6 @@ final class DailyIntakeViewModel: ObservableObject {
     }
 }
 
-    //MARK: - Extensions
 extension DailyIntakeViewModel: DailyIntakeViewModelProtocol {}
 
 #Preview {

@@ -10,7 +10,7 @@ import Combine
 import FirebaseCore
 
 protocol MainViewModelProtocol {
-    var date: Date { get }
+    var date: Date { get set }
     var intakeSource: String { get }
     var displayIntake: Bool { get }
     
@@ -24,6 +24,8 @@ protocol MainViewModelProtocol {
     func updateIntake(to value: String)
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
+    func collapseAllSections()
+    func resetDateToToday()
 }
 
 final class MainViewModel: ObservableObject {
@@ -549,9 +551,11 @@ final class MainViewModel: ObservableObject {
             
             guard let date = candidate else { return nil }
             
-            return calendar.isDate(date,
-                                   equalTo: startOfMonth,
-                                   toGranularity: .month)
+            return calendar.isDate(
+                date,
+                equalTo: startOfMonth,
+                toGranularity: .month
+            )
             ? nil : date
         }
         
@@ -567,7 +571,7 @@ final class MainViewModel: ObservableObject {
     }
     
     //MARK: - Close sections
-    private func collapseAllSections() {
+    func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
@@ -584,8 +588,11 @@ enum DisplayElement {
     case weekday
 }
 
-    //MARK: - Extensions
 extension MainViewModel: MainViewModelProtocol {
+    func resetDateToToday() {
+        date = Date()
+    }
+    
     func collapseSection(for mealType: MealType, to isExpanded: Bool) {
         expandedSections[mealType] = isExpanded
     }

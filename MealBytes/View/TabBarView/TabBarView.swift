@@ -56,6 +56,12 @@ struct TabBarView: View {
         .task {
             selectedTab = 0
         }
+        .overlay {
+            if profileViewModel.isLoading {
+                LoadingProfileView()
+                    .zIndex(1)
+            }
+        }
     }
 }
 

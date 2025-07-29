@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+protocol GoalsViewModelProtocol {
+    func clearGoalsView()
+}
+
 final class GoalsViewModel: ObservableObject {
     @Published var uniqueId = UUID()
     @Published var isDataLoaded: Bool = false
@@ -17,8 +21,8 @@ final class GoalsViewModel: ObservableObject {
     
     init(
         mainViewModel: MainViewModelProtocol,
-         dailyIntakeViewModel: DailyIntakeViewModelProtocol,
-         rdiViewModel: RdiViewModelProtocol
+        dailyIntakeViewModel: DailyIntakeViewModelProtocol,
+        rdiViewModel: RdiViewModelProtocol
     ) {
         self.mainViewModel = mainViewModel
         self.dailyIntakeViewModel = dailyIntakeViewModel
@@ -30,8 +34,6 @@ final class GoalsViewModel: ObservableObject {
         await MainActor.run {
             uniqueId = UUID()
             isDataLoaded = false
-            dailyIntakeViewModel.clearDailyIntake()
-            rdiViewModel.clearRdi()
         }
         
         async let rdiTask: () = rdiViewModel.loadRdiView()
@@ -43,6 +45,11 @@ final class GoalsViewModel: ObservableObject {
         await MainActor.run {
             isDataLoaded = true
         }
+    }
+    
+    func clearGoalsView() {
+        dailyIntakeViewModel.clearDailyIntake()
+        rdiViewModel.clearRdi()
     }
     
     // MARK: - Text
@@ -82,6 +89,9 @@ enum IntakeSourceType: String {
     case rdiView
     case dailyIntakeView
 }
+
+    // MARK: - Text
+extension GoalsViewModel: GoalsViewModelProtocol {}
 
 #Preview {
     PreviewContentView.contentView

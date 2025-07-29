@@ -38,6 +38,20 @@ final class ProfileViewModel: ObservableObject {
         self.mainViewModel = mainViewModel
     }
     
+    // MARK: - Load Profile Data
+    func loadProfileData() async {
+        guard let user = Auth.auth().currentUser else {
+            await MainActor.run {
+                email = nil
+            }
+            return
+        }
+        
+        await MainActor.run {
+            email = user.email
+        }
+    }
+    
     // MARK: - Sign Out
     private func signOut() {
         do {
@@ -51,7 +65,7 @@ final class ProfileViewModel: ObservableObject {
                 }
             }
             
-            loginViewModel.isLoggedIn = false
+            loginViewModel.resetLoginState()
         } catch {
             appError = .decoding
         }
@@ -72,9 +86,7 @@ final class ProfileViewModel: ObservableObject {
                 appError = .network
             }
             
-            await MainActor.run {
-                loginViewModel.isLoggedIn = false
-            }
+            loginViewModel.resetLoginState()
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -83,31 +95,13 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Change Password
-    private func changePassword(
-        currentPassword: String,
-        newPassword: String
-    ) async throws {
+    private func changePassword(currentPassword: String, newPassword: String)
+    async throws {
+        try await Task.sleep(nanoseconds: 4 * 1_000_000_000)
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,
             newPassword: newPassword
         )
-    }
-    
-    // MARK: - Load Profile Data
-    func loadProfileData() async {
-        guard let user = Auth.auth().currentUser else {
-            Task {
-                await MainActor.run {
-                    email = nil
-                }
-            }
-            return
-        }
-        Task {
-            await MainActor.run {
-                email = user.email
-            }
-        }
     }
     
     // MARK: - Alert
@@ -145,7 +139,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func handleAlertAction() async {
-        guard let alertType = alertType else { return }
+        guard let alertType else { return }
         
         switch alertType {
         case .signOut:
@@ -221,8 +215,10 @@ final class ProfileViewModel: ObservableObject {
             }
             
             do {
-                try await changePassword(currentPassword: password,
-                                         newPassword: newPassword)
+                try await changePassword(
+                    currentPassword: password,
+                    newPassword: newPassword
+                )
                 await MainActor.run {
                     alertTitle = "Done"
                     alertMessage = "Password has been successfully updated."
@@ -243,11 +239,16 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    enum AlertType {
-        case signOut
-        case deleteAccount
-        case changePassword
+    // MARK: - UI Helper
+    var isLoading: Bool {
+        isDeletingAccount || isPasswordChanging
     }
+}
+
+enum AlertType {
+    case signOut
+    case deleteAccount
+    case changePassword
 }
 
 #Preview {

@@ -22,9 +22,52 @@ final class LoginViewModel: ObservableObject {
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     private let mainViewModel: MainViewModelProtocol
+    private let goalsViewModel: GoalsViewModelProtocol
     
-    init(mainViewModel: MainViewModelProtocol) {
+    init(
+        mainViewModel: MainViewModelProtocol,
+        goalsViewModel: GoalsViewModelProtocol
+    ) {
         self.mainViewModel = mainViewModel
+        self.goalsViewModel = goalsViewModel
+    }
+    
+    // MARK: - Load Login Data
+    func loadLoginData() async {
+        async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
+        async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
+        
+        do {
+            let (_, isAuthenticated) = try await (tokenTask, authTask)
+            let (email, isLoggedIn) = try await firestore
+                .loadLoginDataFirestore()
+            
+            await MainActor.run {
+                self.isLoggedIn = isAuthenticated && isLoggedIn
+                self.email = email
+            }
+        } catch {
+            do {
+                let (email, isLoggedIn) = try await firestore
+                    .loadLoginDataFirestore()
+                
+                await MainActor.run {
+                    self.email = email
+                    self.isLoggedIn = isLoggedIn
+                    self.error = .offlineMode
+                    self.showErrorAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = .sessionExpired
+                    self.showErrorAlert = true
+                }
+            }
+        }
+        
+        await MainActor.run {
+            isLoading = false
+        }
     }
     
     // MARK: - Sign In
@@ -90,42 +133,19 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Login Data
-    func loadLoginData() async {
-        async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
-        async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
+    func resetLoginState() {
+        email = ""
+        password = ""
+        showAlert = false
+        showErrorAlert = false
+        isLoggedIn = false
+        isSignIn = false
+        error = nil
         
-        do {
-            let (_, isAuthenticated) = try await (tokenTask, authTask)
-            let (email, isLoggedIn) = try await firestore
-                .loadLoginDataFirestore()
-            
-            await MainActor.run {
-                self.isLoggedIn = isAuthenticated && isLoggedIn
-                self.email = email
-            }
-        } catch {
-            do {
-                let (email, isLoggedIn) = try await firestore
-                    .loadLoginDataFirestore()
-                
-                await MainActor.run {
-                    self.email = email
-                    self.isLoggedIn = isLoggedIn
-                    self.error = .offlineMode
-                    self.showErrorAlert = true
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = .sessionExpired
-                    self.showErrorAlert = true
-                }
-            }
-        }
-        
-        await MainActor.run {
-            isLoading = false
-        }
+        mainViewModel.updateIntake(to: "")
+        mainViewModel.collapseAllSections()
+        mainViewModel.resetDateToToday()
+        goalsViewModel.clearGoalsView()
     }
     
     // MARK: - Alert
