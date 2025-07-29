@@ -19,14 +19,9 @@ struct MainView: View {
                 }
                 .zIndex(2)
                 
-                Button {
+                CalendarButtonView {
                     mainViewModel.isExpandedCalendar = false
-                } label: {
-                    Color.primary
-                        .opacity(0.4)
-                        .ignoresSafeArea()
                 }
-                .buttonStyle(InvisibleButtonStyle())
                 .zIndex(1)
             }
             
