@@ -33,8 +33,7 @@ struct ContentView: View {
             }
         }
         .task {
-            await mainViewModel.loadMainData()
-            await loginViewModel.loadLoginData()
+            await loginViewModel.loadData()
         }
     }
 }

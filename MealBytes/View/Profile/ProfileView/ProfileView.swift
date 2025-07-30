@@ -56,47 +56,36 @@ struct ProfileView: View {
                 }
                 
                 if profileViewModel.alertType == .changePassword {
-                    if profileViewModel.alertTitle == "Done" {
-                        Button("OK") {
-                            profileViewModel.showAlert = false
-                        }
-                    } else {
-                        SecureField(
-                            "Current Password",
-                            text: $profileViewModel.password
-                        )
-                        
-                        .font(.callout)
-                        .textContentType(.password)
-                        
-                        SecureField(
-                            "New Password",
-                            text: $profileViewModel.newPassword
-                        )
-                        
-                        .font(.callout)
-                        .textContentType(.newPassword)
-                        
-                        SecureField(
-                            "Confirm New Password",
-                            text: $profileViewModel.confirmPassword
-                        )
-                        
-                        .font(.callout)
-                        .textContentType(.newPassword)
-                        
-                        Group {
-                            Button("Cancel", role: .cancel) {
-                                profileViewModel.showAlert = false
-                            }
-                            
-                            Button(
-                                profileViewModel.destructiveButtonTitle
-                            ) {
-                                Task {
-                                    await profileViewModel.handleAlertAction()
-                                }
-                            }
+                    SecureField(
+                        "Current Password",
+                        text: $profileViewModel.password
+                    )
+                    .font(.callout)
+                    .textContentType(.password)
+                    
+                    SecureField(
+                        "New Password",
+                        text: $profileViewModel.newPassword
+                    )
+                    .font(.callout)
+                    .textContentType(.newPassword)
+                    
+                    SecureField(
+                        "Confirm New Password",
+                        text: $profileViewModel.confirmPassword
+                    )
+                    .font(.callout)
+                    .textContentType(.newPassword)
+                    
+                    Button("Cancel", role: .cancel) {
+                        profileViewModel.showAlert = false
+                    }
+                    
+                    Button(
+                        profileViewModel.destructiveButtonTitle
+                    ) {
+                        Task {
+                            await profileViewModel.handleAlertAction()
                         }
                     }
                 }

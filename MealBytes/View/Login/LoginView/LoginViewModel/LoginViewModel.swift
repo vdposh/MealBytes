@@ -32,6 +32,14 @@ final class LoginViewModel: ObservableObject {
         self.goalsViewModel = goalsViewModel
     }
     
+    // MARK: - Load Data
+    func loadData() async {
+        async let mainData: () = mainViewModel.loadMainData()
+        async let loginData: () = loadLoginData()
+        
+        _ = await (mainData, loginData)
+    }
+    
     // MARK: - Load Login Data
     func loadLoginData() async {
         async let tokenTask: String? = firebaseAuth.refreshTokenAuth()

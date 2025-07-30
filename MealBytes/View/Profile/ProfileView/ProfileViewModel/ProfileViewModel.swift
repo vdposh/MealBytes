@@ -221,9 +221,6 @@ final class ProfileViewModel: ObservableObject {
                     newPassword: newPassword
                 )
                 await MainActor.run {
-                    alertTitle = "Done"
-                    alertMessage = "Password has been successfully updated."
-                    showAlert = true
                     isPasswordChanging = false
                 }
             } catch {
@@ -255,11 +252,6 @@ final class ProfileViewModel: ObservableObject {
         isDeletingAccount = false
         
         loginViewModel.resetLoginState()
-    }
-    
-    // MARK: - UI Helper
-    var isLoading: Bool {
-        isDeletingAccount || isPasswordChanging
     }
 }
 
