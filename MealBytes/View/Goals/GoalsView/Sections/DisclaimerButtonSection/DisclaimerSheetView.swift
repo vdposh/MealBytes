@@ -18,7 +18,11 @@ struct DisclaimerSheetView: View {
                 } header: {
                     Text("Daily Intake and Recommendations")
                 } footer: {
-                    Text("The daily intake values displayed in MealBytes are an estimate based on your personal input and are not intended as medical advice or dietary recommendations.\n\nPlease consult a qualified healthcare professional or registered dietitian before making significant dietary changes or if you have specific medical conditions or nutritional needs. MealBytes does not replace individualized clinical advice.")
+                    Text("""
+                The daily intake values displayed in MealBytes are an estimate based on your personal input and are not intended as medical advice or dietary recommendations.
+                
+                Please consult a qualified healthcare professional or registered dietitian before making significant dietary changes or if you have specific medical conditions or nutritional needs. MealBytes does not replace individualized clinical advice.
+                """)
                 }
             }
             .listStyle(.grouped)
