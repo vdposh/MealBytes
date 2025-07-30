@@ -38,6 +38,10 @@ final class LoginViewModel: ObservableObject {
         async let loginData: () = loadLoginData()
         
         _ = await (mainData, loginData)
+        
+        await MainActor.run {
+            isLoading = false
+        }
     }
     
     // MARK: - Load Login Data
@@ -71,10 +75,6 @@ final class LoginViewModel: ObservableObject {
                     self.showErrorAlert = true
                 }
             }
-        }
-        
-        await MainActor.run {
-            isLoading = false
         }
     }
     
