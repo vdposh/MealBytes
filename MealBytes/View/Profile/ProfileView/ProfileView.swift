@@ -43,6 +43,7 @@ struct ProfileView: View {
                         }
                     }
                 }
+                
                 if profileViewModel.alertType == .signOut {
                     Button(
                         profileViewModel.destructiveButtonTitle,
@@ -53,6 +54,7 @@ struct ProfileView: View {
                         }
                     }
                 }
+                
                 if profileViewModel.alertType == .changePassword {
                     if profileViewModel.alertTitle == "Done" {
                         Button("OK") {

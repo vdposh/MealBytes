@@ -18,7 +18,7 @@ struct PasswordSection: View {
             } label: {
                 if profileViewModel.isPasswordChanging {
                     HStack {
-                        ProgressView()
+                        LoadingView()
                         Text("Updating password...")
                             .foregroundColor(.secondary)
                     }

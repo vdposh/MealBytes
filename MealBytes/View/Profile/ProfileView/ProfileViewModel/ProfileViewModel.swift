@@ -65,7 +65,7 @@ final class ProfileViewModel: ObservableObject {
                 }
             }
             
-            loginViewModel.resetLoginState()
+            resetProfileState()
         } catch {
             appError = .decoding
         }
@@ -86,7 +86,7 @@ final class ProfileViewModel: ObservableObject {
                 appError = .network
             }
             
-            loginViewModel.resetLoginState()
+            resetProfileState()
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -95,9 +95,10 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Change Password
-    private func changePassword(currentPassword: String, newPassword: String)
-    async throws {
-        try await Task.sleep(nanoseconds: 4 * 1_000_000_000)
+    private func changePassword(
+        currentPassword: String,
+        newPassword: String
+    ) async throws {
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,
             newPassword: newPassword
@@ -237,6 +238,23 @@ final class ProfileViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    //MARK: - Reset State
+    func resetProfileState() {
+        password = ""
+        newPassword = ""
+        confirmPassword = ""
+        alertTitle = ""
+        alertMessage = ""
+        destructiveButtonTitle = ""
+        alertType = nil
+        appError = nil
+        showAlert = false
+        isPasswordChanging = false
+        isDeletingAccount = false
+        
+        loginViewModel.resetLoginState()
     }
     
     // MARK: - UI Helper
