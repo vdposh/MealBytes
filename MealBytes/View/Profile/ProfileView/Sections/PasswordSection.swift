@@ -16,16 +16,8 @@ struct PasswordSection: View {
             Button {
                 profileViewModel.prepareAlert(for: .changePassword)
             } label: {
-                if profileViewModel.isPasswordChanging {
-                    HStack {
-                        LoadingView()
-                        Text("Loading...")
-                            .foregroundColor(.secondary)
-                    }
-                } else {
-                    Text("Change Password")
-                        .foregroundStyle(.customGreen)
-                }
+                Text("Change Password")
+                    .foregroundStyle(.customGreen)
             }
             .disabled(profileViewModel.isPasswordChanging)
         } footer: {
