@@ -33,6 +33,7 @@ final class GoalsViewModel: ObservableObject {
     func loadGoalsData() async {
         await MainActor.run {
             uniqueId = UUID()
+            clearGoalsView()
             isDataLoaded = false
         }
         

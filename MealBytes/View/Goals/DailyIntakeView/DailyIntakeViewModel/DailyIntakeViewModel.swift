@@ -73,8 +73,10 @@ final class DailyIntakeViewModel: ObservableObject {
     
     // MARK: - Save DailyIntake Data
     func saveDailyIntakeView() async {
+        let trimmedCalories = calories.trimmedLeadingZeros
+        
         let dailyIntakeData = DailyIntake(
-            calories: calories.trimmedLeadingZeros,
+            calories: trimmedCalories,
             fat: fat.trimmedLeadingZeros,
             carbohydrate: carbohydrate.trimmedLeadingZeros,
             protein: protein.trimmedLeadingZeros,
@@ -84,10 +86,11 @@ final class DailyIntakeViewModel: ObservableObject {
         do {
             try await firestore.saveDailyIntakeFirestore(dailyIntakeData)
             await MainActor.run {
-                mainViewModel.updateIntake(to: calories)
+                mainViewModel.updateIntake(to: trimmedCalories)
             }
-            await mainViewModel
-                .saveCurrentIntakeMainView(source: "dailyIntakeView")
+            await mainViewModel.saveCurrentIntakeMainView(
+                source: "dailyIntakeView"
+            )
         } catch {
             await MainActor.run {
                 appError = .decoding
