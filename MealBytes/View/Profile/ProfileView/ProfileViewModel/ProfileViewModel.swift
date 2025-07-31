@@ -83,7 +83,9 @@ final class ProfileViewModel: ObservableObject {
             do {
                 try await firestore.deleteLoginDataFirestore()
             } catch {
-                appError = .network
+                await MainActor.run {
+                    appError = .network
+                }
             }
             
             resetProfileState()

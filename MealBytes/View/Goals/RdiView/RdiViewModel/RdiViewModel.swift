@@ -85,8 +85,10 @@ final class RdiViewModel: ObservableObject {
     
     // MARK: - Save RDI Data
     func saveRdiView() async {
+        let stableRdi = calculatedRdi
+        
         let rdiData = RdiData(
-            calculatedRdi: calculatedRdi,
+            calculatedRdi: stableRdi,
             age: age.trimmedLeadingZeros,
             selectedGender: selectedGender.rawValue,
             selectedActivity: selectedActivity.rawValue,
@@ -99,11 +101,13 @@ final class RdiViewModel: ObservableObject {
         do {
             try await firestore.saveRdiFirestore(rdiData)
             await MainActor.run {
-                mainViewModel.updateIntake(to: calculatedRdi)
+                mainViewModel.updateIntake(to: stableRdi)
             }
             await mainViewModel.saveCurrentIntakeMainView(source: "rdiView")
         } catch {
-            appError = .decoding
+            await MainActor.run {
+                appError = .decoding
+            }
         }
     }
     

@@ -18,9 +18,12 @@ struct SignOutSection: View {
             }
         } footer: {
             if profileViewModel.isDeletingAccount {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+                HStack {
+                    ProgressView()
+                    Text("Deleting account...")
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
             } else {
                 HStack(spacing: 4) {
                     Text("Do you want to")
