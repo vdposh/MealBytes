@@ -26,7 +26,7 @@ protocol MainViewModelProtocol {
     func setDisplayIntake(_ value: Bool)
     func collapseAllSections()
     func resetDateToToday()
-    func resetMainData()
+    func resetMainState()
 }
 
 final class MainViewModel: ObservableObject {
@@ -579,7 +579,7 @@ final class MainViewModel: ObservableObject {
     }
     
     //MARK: - Reset State
-    func resetMainData() {
+    func resetMainState() {
         updateIntake(to: "")
         collapseAllSections()
         resetDateToToday()

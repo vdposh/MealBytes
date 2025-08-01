@@ -151,7 +151,7 @@ final class LoginViewModel: ObservableObject {
         isSignIn = false
         error = nil
         
-        mainViewModel.resetMainData()
+        mainViewModel.resetMainState()
         goalsViewModel.clearGoalsView()
     }
     
