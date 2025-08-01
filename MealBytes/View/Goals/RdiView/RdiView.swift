@@ -21,14 +21,14 @@ struct RdiView: View {
                 ScrollView {
                     OverviewRdiSection(rdiViewModel: rdiViewModel)
                     
+                    GenderSection(rdiViewModel: rdiViewModel)
+                    
+                    ActivitySection(rdiViewModel: rdiViewModel)
+                    
                     AgeSection(
                         focusedField: _focusedField,
                         rdiViewModel: rdiViewModel
                     )
-                    
-                    GenderSection(rdiViewModel: rdiViewModel)
-                    
-                    ActivitySection(rdiViewModel: rdiViewModel)
                     
                     WeightSection(
                         focusedField: _focusedField,
@@ -164,7 +164,7 @@ enum RdiFocus: Hashable {
     
     var scrollAnchor: UnitPoint {
         switch self {
-        case .age: .bottom
+        case .age: .top
         case .weight: .center
         case .height: .top
         }

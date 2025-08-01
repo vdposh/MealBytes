@@ -26,6 +26,7 @@ protocol MainViewModelProtocol {
     func setDisplayIntake(_ value: Bool)
     func collapseAllSections()
     func resetDateToToday()
+    func resetMainData()
 }
 
 final class MainViewModel: ObservableObject {
@@ -575,6 +576,14 @@ final class MainViewModel: ObservableObject {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
+    }
+    
+    //MARK: - Reset State
+    func resetMainData() {
+        updateIntake(to: "")
+        collapseAllSections()
+        resetDateToToday()
+        setDisplayIntake(true)
     }
 }
 

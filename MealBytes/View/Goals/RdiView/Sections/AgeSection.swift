@@ -29,7 +29,6 @@ struct AgeSection: View {
             layout: .textStyle,
             description: "Enter age to personalize recommendations."
         )
-        .id("ageField")
     }
 }
 

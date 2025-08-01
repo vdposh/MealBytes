@@ -40,7 +40,6 @@ struct LoadingProfileView: View {
                     LoadingView()
                         .padding(.top, 4)
                 }
-                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(-2)
                 .padding(.top, 18)

@@ -39,6 +39,7 @@ struct ActivitySection: View {
             description: "Select the necessary indicator based on daily activity level.",
             useCompactVerticalPadding: true
         )
+        .id("ageField")
     }
 }
 

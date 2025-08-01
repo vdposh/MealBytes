@@ -151,9 +151,7 @@ final class LoginViewModel: ObservableObject {
         isSignIn = false
         error = nil
         
-        mainViewModel.updateIntake(to: "")
-        mainViewModel.collapseAllSections()
-        mainViewModel.resetDateToToday()
+        mainViewModel.resetMainData()
         goalsViewModel.clearGoalsView()
     }
     
