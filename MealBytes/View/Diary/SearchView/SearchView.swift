@@ -69,7 +69,9 @@ struct SearchView: View {
                     titleVisibility: .visible
                 ) {
                     Button("Remove bookmark", role: .destructive) {
-                        searchViewModel.confirmRemoveBookmark()
+                        Task {
+                            await searchViewModel.confirmRemoveBookmark()
+                        }
                     }
                 }
                 .searchable(
@@ -126,7 +128,11 @@ struct SearchView: View {
                     
                     BookmarkButtonView(
                         action: {
-                            searchViewModel.handleBookmarkAction(for: food)
+                            Task {
+                                await searchViewModel.handleBookmarkAction(
+                                    for: food
+                                )
+                            }
                         },
                         isFilled: searchViewModel.isBookmarkedSearchView(food),
                         width: 45,

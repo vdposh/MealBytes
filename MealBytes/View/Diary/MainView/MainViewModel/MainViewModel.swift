@@ -135,6 +135,7 @@ final class MainViewModel: ObservableObject {
         Task {
             do {
                 try await firestore.updateMealItemFirestore(updatedItem)
+                
                 await MainActor.run {
                     recalculateNutrients(for: date)
                 }
@@ -161,8 +162,7 @@ final class MainViewModel: ObservableObject {
                 }
                 
                 do {
-                    try await firestore
-                        .deleteMealItemFirestore(itemToDelete)
+                    try await firestore.deleteMealItemFirestore(itemToDelete)
                 } catch {
                     await MainActor.run {
                         self.appError = .network
@@ -537,8 +537,7 @@ final class MainViewModel: ObservableObject {
         
         let prevDays = prevMonthRange.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)
-        }
-            .suffix(adjustedWeekday)
+        }.suffix(adjustedWeekday)
         
         let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
         
@@ -556,8 +555,7 @@ final class MainViewModel: ObservableObject {
                 date,
                 equalTo: startOfMonth,
                 toGranularity: .month
-            )
-            ? nil : date
+            ) ? nil : date
         }
         
         return Array(prevDays) + days + nextDays

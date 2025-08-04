@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 protocol SearchViewModelProtocol {
-    func toggleBookmarkSearchView(for food: Food)
+    func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksData(for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
 }
@@ -162,40 +162,40 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Toggle Bookmark
-    func toggleBookmarkSearchView(for food: Food) {
+    func toggleBookmarkSearchView(for food: Food) async {
+        let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
+        
+        let updatedBookmarkedFoods: Set<Int>
+        if isAdding {
+            updatedBookmarkedFoods = bookmarkedFoods
+                .union([food.searchFoodId])
+        } else {
+            updatedBookmarkedFoods = bookmarkedFoods
+                .subtracting([food.searchFoodId])
+        }
+        
+        let updatedFavorites: [Food]
+        if isAdding {
+            if !favoriteFoods.contains(food) {
+                updatedFavorites = favoriteFoods + [food]
+            } else {
+                updatedFavorites = favoriteFoods
+            }
+        } else {
+            updatedFavorites = favoriteFoods.filter { $0 != food }
+        }
+        
+        await MainActor.run {
+            self.favoriteFoods = updatedFavorites
+            self.bookmarkedFoods = updatedBookmarkedFoods
+            if query.isEmpty {
+                self.foods = updatedFavorites
+            } else {
+                self.foods = self.foods
+            }
+        }
+        
         Task {
-            let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
-            
-            let updatedBookmarkedFoods: Set<Int>
-            if isAdding {
-                updatedBookmarkedFoods = bookmarkedFoods
-                    .union([food.searchFoodId])
-            } else {
-                updatedBookmarkedFoods = bookmarkedFoods
-                    .subtracting([food.searchFoodId])
-            }
-            
-            let updatedFavorites: [Food]
-            if isAdding {
-                if !favoriteFoods.contains(food) {
-                    updatedFavorites = favoriteFoods + [food]
-                } else {
-                    updatedFavorites = favoriteFoods
-                }
-            } else {
-                updatedFavorites = favoriteFoods.filter { $0 != food }
-            }
-            
-            await MainActor.run {
-                self.favoriteFoods = updatedFavorites
-                self.bookmarkedFoods = updatedBookmarkedFoods
-                if query.isEmpty {
-                    self.foods = updatedFavorites
-                } else {
-                    self.foods = self.foods
-                }
-            }
-            
             try await firestore.addBookmarkFirestore(
                 updatedFavorites,
                 for: selectedMealType
@@ -208,20 +208,25 @@ final class SearchViewModel: ObservableObject {
         bookmarkedFoods.contains(food.searchFoodId)
     }
     
-    func handleBookmarkAction(for food: Food) {
+    func handleBookmarkAction(for food: Food) async {
         if isBookmarkedSearchView(food) {
-            foodToRemove = food
-            showBookmarkDialog = true
+            await MainActor.run {
+                foodToRemove = food
+                showBookmarkDialog = true
+            }
         } else {
-            toggleBookmarkSearchView(for: food)
+            await toggleBookmarkSearchView(for: food)
         }
     }
     
-    func confirmRemoveBookmark() {
+    func confirmRemoveBookmark() async {
         if let foodToRemove {
-            toggleBookmarkSearchView(for: foodToRemove)
+            await toggleBookmarkSearchView(for: foodToRemove)
         }
-        foodToRemove = nil
+        
+        await MainActor.run {
+            foodToRemove = nil
+        }
     }
     
     var bookmarkTitle: String {
@@ -257,7 +262,6 @@ final class SearchViewModel: ObservableObject {
     }
 }
 
-    // MARK: - Extensions
 extension SearchViewModel: SearchViewModelProtocol {}
 
 #Preview {

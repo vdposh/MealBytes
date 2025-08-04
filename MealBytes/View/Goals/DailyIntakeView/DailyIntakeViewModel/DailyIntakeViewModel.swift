@@ -85,6 +85,7 @@ final class DailyIntakeViewModel: ObservableObject {
         
         do {
             try await firestore.saveDailyIntakeFirestore(dailyIntakeData)
+            
             await MainActor.run {
                 mainViewModel.updateIntake(to: trimmedCalories)
             }

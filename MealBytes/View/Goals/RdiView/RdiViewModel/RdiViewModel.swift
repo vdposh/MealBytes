@@ -100,6 +100,7 @@ final class RdiViewModel: ObservableObject {
         
         do {
             try await firestore.saveRdiFirestore(rdiData)
+            
             await MainActor.run {
                 mainViewModel.updateIntake(to: stableRdi)
             }

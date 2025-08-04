@@ -162,59 +162,58 @@ final class FoodViewModel: ObservableObject {
             createdAt: createdAt
         )
         
-        Task {
-            do {
-                if originalMealType == mealType {
-                    await MainActor.run {
-                        mainViewModel.updateMealItemMainView(
-                            updatedMealItem,
-                            for: mealType,
-                            on: date
-                        )
-                    }
-                    try await firestore.updateMealItemFirestore(
-                        updatedMealItem
-                    )
-                } else {
-                    await MainActor.run {
-                        mainViewModel.deleteMealItemMainView(
-                            with: originalMealItemId,
-                            for: originalMealType
-                        )
-                    }
-                    
-                    if mainViewModel.filteredMealItems(
-                        for: originalMealType,
+        do {
+            if originalMealType == mealType {
+                await MainActor.run {
+                    mainViewModel.updateMealItemMainView(
+                        updatedMealItem,
+                        for: mealType,
                         on: date
-                    ).isEmpty {
-                        await MainActor.run {
-                            mainViewModel.collapseSection(
-                                for: originalMealType,
-                                to: false
-                            )
-                        }
-                    }
-                    
+                    )
+                }
+                
+                try await firestore.updateMealItemFirestore(
+                    updatedMealItem
+                )
+            } else {
+                await MainActor.run {
+                    mainViewModel.deleteMealItemMainView(
+                        with: originalMealItemId,
+                        for: originalMealType
+                    )
+                }
+                
+                if mainViewModel.filteredMealItems(
+                    for: originalMealType,
+                    on: date
+                ).isEmpty {
                     await MainActor.run {
-                        mainViewModel.addMealItemMainView(
-                            updatedMealItem,
-                            to: mealType,
-                            for: date
-                        )
                         mainViewModel.collapseSection(
                             for: originalMealType,
-                            to: true
+                            to: false
                         )
                     }
-                    
-                    try await firestore.updateMealItemFirestore(
-                        updatedMealItem
+                }
+                
+                await MainActor.run {
+                    mainViewModel.addMealItemMainView(
+                        updatedMealItem,
+                        to: mealType,
+                        for: date
+                    )
+                    mainViewModel.collapseSection(
+                        for: originalMealType,
+                        to: true
                     )
                 }
-            } catch {
-                await MainActor.run {
-                    appError = .disconnected
-                }
+                
+                try await firestore.updateMealItemFirestore(
+                    updatedMealItem
+                )
+            }
+        } catch {
+            await MainActor.run {
+                appError = .disconnected
             }
         }
     }
@@ -228,9 +227,11 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Bookmark Management
-    func toggleBookmarkFoodView() {
-        isBookmarkFilled.toggle()
-        searchViewModel.toggleBookmarkSearchView(for: food)
+    func toggleBookmarkFoodView() async {
+        await MainActor.run {
+            isBookmarkFilled.toggle()
+        }
+        await searchViewModel.toggleBookmarkSearchView(for: food)
     }
     
     // MARK: - Serving Selection and Amount Setting

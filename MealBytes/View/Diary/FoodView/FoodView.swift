@@ -205,7 +205,9 @@ struct FoodView: View {
                     
                     BookmarkButtonView(
                         action: {
-                            foodViewModel.toggleBookmarkFoodView()
+                            Task {
+                                await foodViewModel.toggleBookmarkFoodView()
+                            }
                         },
                         isFilled: foodViewModel.isBookmarkFilled,
                         width: 55,

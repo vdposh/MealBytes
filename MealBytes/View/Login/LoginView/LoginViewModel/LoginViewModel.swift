@@ -157,11 +157,7 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Alert
     private func updateAlertState() {
-        Task {
-            await MainActor.run {
-                showAlert = error != nil
-            }
-        }
+        showAlert = error != nil
     }
     
     func getErrorAlert() -> Alert {
@@ -178,11 +174,7 @@ final class LoginViewModel: ObservableObject {
                     title: Text("Session Expired"),
                     message: Text(error.errorDescription ?? ""),
                     dismissButton: .default(Text("OK")) {
-                        Task {
-                            await MainActor.run {
-                                self.isLoggedIn = false
-                            }
-                        }
+                        self.isLoggedIn = false
                     }
                 )
             default:

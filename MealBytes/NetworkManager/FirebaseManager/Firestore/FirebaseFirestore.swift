@@ -128,8 +128,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Add Bookmarks
-    func addBookmarkFirestore(_ foods: [Food],
-                              for mealType: MealType) async throws {
+    func addBookmarkFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
