@@ -37,10 +37,18 @@ struct RdiSectionView: View {
                     .disabled(!goalsViewModel.isDataLoaded)
                 }
             } else {
-                HStack {
-                    LoadingView()
-                    Text("Loading...")
-                        .foregroundColor(.secondary)
+                LabeledContent {
+                    HStack {
+                        LoadingView()
+                        Text("Loading...")
+                            .foregroundColor(.secondary)
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "person")
+                            .foregroundStyle(.customGreen)
+                        Text("RDI")
+                    }
                 }
             }
         } footer: {

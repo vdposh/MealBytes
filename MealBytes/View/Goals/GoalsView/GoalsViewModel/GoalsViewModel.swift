@@ -14,6 +14,7 @@ protocol GoalsViewModelProtocol {
 final class GoalsViewModel: ObservableObject {
     @Published var uniqueId = UUID()
     @Published var isDataLoaded: Bool = false
+    @Published var isLoading: Bool = false
     
     private let mainViewModel: MainViewModelProtocol
     let dailyIntakeViewModel: DailyIntakeViewModelProtocol
@@ -31,6 +32,12 @@ final class GoalsViewModel: ObservableObject {
     
     // MARK: - Load Goals Data
     func loadGoalsData() async {
+        guard !isLoading else { return }
+        
+        await MainActor.run {
+            isLoading = true
+        }
+        
         await MainActor.run {
             uniqueId = UUID()
             clearGoalsView()
@@ -45,6 +52,7 @@ final class GoalsViewModel: ObservableObject {
         
         await MainActor.run {
             isDataLoaded = true
+            isLoading = false
         }
     }
     
@@ -91,7 +99,6 @@ enum IntakeSourceType: String {
     case dailyIntakeView
 }
 
-    // MARK: - Text
 extension GoalsViewModel: GoalsViewModelProtocol {}
 
 #Preview {
