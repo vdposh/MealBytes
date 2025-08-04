@@ -108,6 +108,8 @@ enum Pluralizer {
         "apple": "apples",
         "banana": "bananas",
         "carrot": "carrots",
+        "floweret": "flowerets",
+        "floret": "florets",
         "plum": "plums",
         "cherry": "cherries",
         "grape": "grapes",
