@@ -12,6 +12,7 @@ protocol RdiViewModelProtocol {
     func loadRdiView() async
     func saveRdiView() async
     func clearRdi()
+    func conditionallyClearRdi()
     func rdiText() -> String
 }
 
@@ -27,6 +28,7 @@ final class RdiViewModel: ObservableObject {
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
+    @Published var isRdiEmpty: Bool = true
     
     private let formatter = Formatter()
     
@@ -47,6 +49,8 @@ final class RdiViewModel: ObservableObject {
     func loadRdiView() async {
         do {
             let rdiData = try await firestore.loadRdiFirestore()
+            let isEmptyRdi = rdiData.calculatedRdi.isEmpty
+            
             await MainActor.run {
                 self.calculatedRdi = rdiData.calculatedRdi
                 self.age = rdiData.age
@@ -64,11 +68,18 @@ final class RdiViewModel: ObservableObject {
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .notSelected
+                self.isRdiEmpty = isEmptyRdi
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
             }
+        }
+    }
+    
+    func conditionallyClearRdi() {
+        if isRdiEmpty {
+            clearRdi()
         }
     }
     

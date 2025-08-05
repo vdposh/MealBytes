@@ -11,6 +11,7 @@ import Combine
 protocol DailyIntakeViewModelProtocol {
     func loadDailyIntakeView() async
     func saveDailyIntakeView() async
+    func conditionallyClearDailyIntake()
     func clearDailyIntake()
     func dailyIntakeText() -> String
 }
@@ -23,6 +24,7 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
+    @Published var isDailyIntakeEmpty: Bool = true
     @Published var toggleOn: Bool = false {
         didSet {
             handleToggleOnChange()
@@ -49,17 +51,26 @@ final class DailyIntakeViewModel: ObservableObject {
         do {
             let dailyIntakeData = try await firestore
                 .loadDailyIntakeFirestore()
+            let isEmptyIntake = dailyIntakeData.calories.isEmpty
+            
             await MainActor.run {
                 toggleOn = dailyIntakeData.macronutrientMetrics
                 calories = dailyIntakeData.calories
                 fat = dailyIntakeData.fat
                 carbohydrate = dailyIntakeData.carbohydrate
                 protein = dailyIntakeData.protein
+                isDailyIntakeEmpty = isEmptyIntake
             }
         } catch {
             await MainActor.run {
                 appError = .decoding
             }
+        }
+    }
+    
+    func conditionallyClearDailyIntake() {
+        if isDailyIntakeEmpty {
+            clearDailyIntake()
         }
     }
     

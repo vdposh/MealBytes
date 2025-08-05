@@ -40,7 +40,6 @@ final class GoalsViewModel: ObservableObject {
         
         await MainActor.run {
             uniqueId = UUID()
-            clearGoalsView()
             isDataLoaded = false
         }
         
@@ -51,9 +50,15 @@ final class GoalsViewModel: ObservableObject {
         _ = await (rdiTask, dailyIntakeTask)
         
         await MainActor.run {
+            conditionallyClearGoalsView()
             isDataLoaded = true
             isLoading = false
         }
+    }
+    
+    func conditionallyClearGoalsView() {
+        dailyIntakeViewModel.conditionallyClearDailyIntake()
+        rdiViewModel.conditionallyClearRdi()
     }
     
     func clearGoalsView() {
