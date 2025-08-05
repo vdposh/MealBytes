@@ -109,35 +109,31 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Alert
     func prepareAlert(for type: AlertType) {
-        Task {
-            await MainActor.run {
-                password = ""
-                newPassword = ""
-                confirmPassword = ""
-                
-                alertType = type
-                showAlert = true
-                
-                switch type {
-                case .signOut:
-                    alertTitle = "Sign Out"
-                    alertMessage = "Signing out will require signing in again to access the account."
-                    destructiveButtonTitle = "Sign Out"
-                    
-                case .deleteAccount:
-                    alertTitle = "Delete Account"
-                    alertMessage = """
+        password = ""
+        newPassword = ""
+        confirmPassword = ""
+        
+        alertType = type
+        showAlert = true
+        
+        switch type {
+        case .signOut:
+            alertTitle = "Sign Out"
+            alertMessage = "Signing out will require signing in again to access the account."
+            destructiveButtonTitle = "Sign Out"
+            
+        case .deleteAccount:
+            alertTitle = "Delete Account"
+            alertMessage = """
                     To delete the account, enter the password associated with it.
                     Data and account details will be permanently erased. This action cannot be undone.
                     """
-                    destructiveButtonTitle = "Delete"
-                    
-                case .changePassword:
-                    alertTitle = "Change Password"
-                    alertMessage = "Provide the current password and a new password to update account credentials."
-                    destructiveButtonTitle = "Update Password"
-                }
-            }
+            destructiveButtonTitle = "Delete"
+            
+        case .changePassword:
+            alertTitle = "Change Password"
+            alertMessage = "Provide the current password and a new password to update account credentials."
+            destructiveButtonTitle = "Update Password"
         }
     }
     
