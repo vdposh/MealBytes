@@ -23,14 +23,15 @@ final class SearchViewModel: ObservableObject {
     @Published var selectedMealType: MealType = .breakfast
     @Published var query: String = "" {
         didSet {
-            handleQueryChange(from: oldValue, to: query)
+            if query.isEmpty {
+                resetSearch()
+            }
         }
     }
     @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     
-    private var shouldResetQuery = false
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
     
@@ -39,68 +40,62 @@ final class SearchViewModel: ObservableObject {
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModelProtocol
     
-    private var searchCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        setupBindingsSearchView()
     }
     
     deinit {
-        searchCancellable?.cancel()
+        cancellables.removeAll()
     }
     
     // MARK: - Search
-    func queueSearch(_ query: String) {
-        searchCancellable?.cancel()
-        searchCancellable = $query
+    private func setupBindingsSearchView() {
+        $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
+            .filter { !$0.isEmpty }
             .sink { [weak self] query in
                 guard let self else { return }
-                
-                if query.isEmpty {
-                    self.foods = self.favoriteFoods
-                    self.appError = nil
-                    return
-                }
-                
-                self.isLoading = true
-                
-                Task {
-                    do {
-                        let foods = try await self.networkManager.fetchFoods(
-                            query: query,
-                            page: self.currentPage
-                        )
-                        await MainActor.run {
-                            self.foods = foods
-                            self.appError = nil
-                            self.isLoading = false
-                        }
-                    } catch {
-                        await MainActor.run {
-                            switch error {
-                            case let appError as AppError:
-                                self.appError = appError
-                            default: self.appError = .networkRefresh
-                            }
-                            self.isLoading = false
-                        }
-                    }
-                }
+                self.currentPage = 0
+                self.performSearch(query)
             }
+            .store(in: &cancellables)
     }
     
-    private func handleQueryChange(
-        from oldValue: String,
-        to newValue: String
-    ) {
-        guard oldValue != newValue else { return }
-        currentPage = 0
-        if newValue.isEmpty {
-            resetSearch()
-        } else {
-            queueSearch(newValue)
+    func performSearch(_ query: String) {
+        if query.isEmpty {
+            foods = favoriteFoods
+            appError = nil
+            isLoading = false
+            return
+        }
+        
+        isLoading = true
+        
+        Task {
+            do {
+                let foods = try await networkManager.fetchFoods(
+                    query: query,
+                    page: currentPage
+                )
+                await MainActor.run {
+                    self.foods = foods
+                    self.appError = nil
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    switch error {
+                    case let appError as AppError:
+                        self.appError = appError
+                    default: self.appError = .networkRefresh
+                    }
+                    self.isLoading = false
+                }
+            }
         }
     }
     
@@ -142,16 +137,10 @@ final class SearchViewModel: ObservableObject {
     }
     
     func loadBookmarksData(for mealType: MealType) async {
-        shouldResetQuery = true
-        
-        if shouldResetQuery {
-            await MainActor.run {
-                query = ""
-                isLoading = true
-            }
-            shouldResetQuery = false
+        await MainActor.run {
+            query = ""
+            isLoading = true
         }
-        
         await loadBookmarksSearchView(for: mealType)
     }
     
@@ -240,7 +229,7 @@ final class SearchViewModel: ObservableObject {
         return "Remove \"\(foodName)\" from favorite foods?"
     }
     
-    // MARK: - Paginations
+    // MARK: - Pagination
     enum PageDirection {
         case next
         case previous
@@ -262,7 +251,7 @@ final class SearchViewModel: ObservableObject {
                 currentPage -= 1
             }
         }
-        queueSearch(query)
+        performSearch(query)
     }
 }
 

@@ -88,7 +88,7 @@ struct SearchView: View {
             LoadingView()
         } else if let error = searchViewModel.appError {
             contentUnavailableView(for: error, mealType: mealType) {
-                searchViewModel.queueSearch(searchViewModel.query)
+                searchViewModel.performSearch(searchViewModel.query)
             }
         } else {
             List {
