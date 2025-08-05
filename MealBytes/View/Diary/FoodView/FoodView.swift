@@ -193,11 +193,14 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Add",
                         action: {
-                            foodViewModel.addMealItemFoodView(
-                                in: foodViewModel.mealType,
-                                for: foodViewModel.mainViewModel.date
-                            )
-                            dismiss()
+                            Task {
+                                await foodViewModel.addMealItemFoodView(
+                                    in: foodViewModel.mealType,
+                                    for: foodViewModel.mainViewModel.date
+                                )
+                                dismiss()
+                            }
+                            
                         },
                         backgroundColor: .customGreen,
                         isEnabled: foodViewModel.canAddFood
@@ -226,10 +229,12 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Save",
                         action: {
-                            foodViewModel.updateMealItemFoodView(
-                                for: foodViewModel.mainViewModel.date
-                            )
-                            dismiss()
+                            Task {
+                                await foodViewModel.updateMealItemFoodView(
+                                    for: foodViewModel.mainViewModel.date
+                                )
+                                dismiss()
+                            }
                         },
                         backgroundColor: .customGreen,
                         isEnabled: foodViewModel.canAddFood

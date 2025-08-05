@@ -97,12 +97,10 @@ struct MealHeaderView: View {
                             Button(role: mainViewModel.deletionButtonRole(
                                 for: mealType
                             )) {
-                                Task {
-                                    mainViewModel.deleteMealItemMainView(
-                                        with: item.id,
-                                        for: mealType
-                                    )
-                                }
+                                mainViewModel.deleteMealItemMainView(
+                                    with: item.id,
+                                    for: mealType
+                                )
                                 mainViewModel.uniqueId = UUID()
                             } label: {
                                 Image(systemName: "trash")

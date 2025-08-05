@@ -128,22 +128,7 @@ final class MainViewModel: ObservableObject {
             calendar.isDate($0.date, inSameDayAs: date)
         }) {
             mealItems[mealType]?[index] = updatedItem
-        } else {
-            return
-        }
-        
-        Task {
-            do {
-                try await firestore.updateMealItemFirestore(updatedItem)
-                
-                await MainActor.run {
-                    recalculateNutrients(for: date)
-                }
-            } catch {
-                await MainActor.run {
-                    self.appError = .network
-                }
-            }
+            recalculateNutrients(for: date)
         }
     }
     

@@ -109,7 +109,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Add Food Item
-    func addMealItemFoodView(in section: MealType, for date: Date) {
+    func addMealItemFoodView(in section: MealType, for date: Date) async {
         let nutrients = nutrientDetails.reduce(
             into: [NutrientType: Double]()
         ) {
@@ -128,21 +128,22 @@ final class FoodViewModel: ObservableObject {
             amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date, mealType: mealType
         )
-        mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         
-        Task {
-            do {
-                try await firestore.addMealItemFirestore(newItem)
-            } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+        await MainActor.run {
+            mainViewModel.addMealItemMainView(newItem, to: section, for: date)
+        }
+        
+        do {
+            try await firestore.addMealItemFirestore(newItem)
+        } catch {
+            await MainActor.run {
+                appError = .network
             }
         }
     }
     
     // MARK: - Update Food Item
-    func updateMealItemFoodView(for date: Date) {
+    func updateMealItemFoodView(for date: Date) async {
         guard let selectedServing else { return }
         
         let createdAt = didChangeMealType ? Date() : originalCreatedAt
@@ -162,60 +163,54 @@ final class FoodViewModel: ObservableObject {
             createdAt: createdAt
         )
         
-        Task {
-            do {
-                if originalMealType == mealType {
-                    await MainActor.run {
-                        mainViewModel.updateMealItemMainView(
-                            updatedMealItem,
-                            for: mealType,
-                            on: date
-                        )
-                    }
-                    
-                    try await firestore.updateMealItemFirestore(
-                        updatedMealItem
-                    )
-                } else {
-                    await MainActor.run {
-                        mainViewModel.deleteMealItemMainView(
-                            with: originalMealItemId,
-                            for: originalMealType
-                        )
-                    }
-                    
-                    if mainViewModel.filteredMealItems(
-                        for: originalMealType,
+        do {
+            if originalMealType == mealType {
+                await MainActor.run {
+                    mainViewModel.updateMealItemMainView(
+                        updatedMealItem,
+                        for: mealType,
                         on: date
-                    ).isEmpty {
-                        await MainActor.run {
-                            mainViewModel.collapseSection(
-                                for: originalMealType,
-                                to: false
-                            )
-                        }
-                    }
-                    
+                    )
+                }
+                
+                try await firestore.updateMealItemFirestore(updatedMealItem)
+            } else {
+                await MainActor.run {
+                    mainViewModel.deleteMealItemMainView(
+                        with: originalMealItemId,
+                        for: originalMealType
+                    )
+                }
+                
+                if mainViewModel.filteredMealItems(
+                    for: originalMealType,
+                    on: date
+                ).isEmpty {
                     await MainActor.run {
-                        mainViewModel.addMealItemMainView(
-                            updatedMealItem,
-                            to: mealType,
-                            for: date
-                        )
                         mainViewModel.collapseSection(
                             for: originalMealType,
-                            to: true
+                            to: false
                         )
                     }
-                    
-                    try await firestore.updateMealItemFirestore(
-                        updatedMealItem
+                }
+                
+                await MainActor.run {
+                    mainViewModel.addMealItemMainView(
+                        updatedMealItem,
+                        to: mealType,
+                        for: date
+                    )
+                    mainViewModel.collapseSection(
+                        for: originalMealType,
+                        to: true
                     )
                 }
-            } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                
+                try await firestore.updateMealItemFirestore(updatedMealItem)
+            }
+        } catch {
+            await MainActor.run {
+                appError = .network
             }
         }
     }
