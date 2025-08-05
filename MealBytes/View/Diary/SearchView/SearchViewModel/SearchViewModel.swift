@@ -82,7 +82,7 @@ final class SearchViewModel: ObservableObject {
                             switch error {
                             case let appError as AppError:
                                 self.appError = appError
-                            default: self.appError = .network
+                            default: self.appError = .networkRefresh
                             }
                             self.isLoading = false
                         }
@@ -135,7 +135,7 @@ final class SearchViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.appError = .disconnected
+                self.appError = .network
                 self.isLoading = false
             }
         }
@@ -195,11 +195,15 @@ final class SearchViewModel: ObservableObject {
             }
         }
         
-        Task {
+        do {
             try await firestore.addBookmarkFirestore(
                 updatedFavorites,
                 for: selectedMealType
             )
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
         }
     }
     

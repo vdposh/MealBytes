@@ -17,7 +17,7 @@ extension View {
     ) -> some View {
         ContentUnavailableView {
             switch error {
-            case .network:
+            case .network, .networkRefresh:
                 Label {
                     Text("Network error")
                 } icon: {
@@ -58,7 +58,7 @@ extension View {
             }
         } actions: {
             switch error {
-            case .network:
+            case .networkRefresh:
                 Button("Refresh", action: action)
             default:
                 EmptyView()

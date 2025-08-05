@@ -42,7 +42,7 @@ final class NetworkManager: NetworkManagerProtocol {
                         }
                     }
                 case .failure:
-                    continuation.resume(throwing: AppError.network)
+                    continuation.resume(throwing: AppError.networkRefresh)
                 }
             }
         }

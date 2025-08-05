@@ -217,10 +217,8 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Remove",
                         action: {
-                            Task {
-                                await foodViewModel.deleteMealItemFoodView()
-                                dismiss()
-                            }
+                            foodViewModel.deleteMealItemFoodView()
+                            dismiss()
                         },
                         backgroundColor: .customRed
                     )
@@ -228,12 +226,10 @@ struct FoodView: View {
                     ActionButtonView(
                         title: "Save",
                         action: {
-                            Task {
-                                await foodViewModel.updateMealItemFoodView(
-                                    for: foodViewModel.mainViewModel.date
-                                )
-                                dismiss()
-                            }
+                            foodViewModel.updateMealItemFoodView(
+                                for: foodViewModel.mainViewModel.date
+                            )
+                            dismiss()
                         },
                         backgroundColor: .customGreen,
                         isEnabled: foodViewModel.canAddFood
