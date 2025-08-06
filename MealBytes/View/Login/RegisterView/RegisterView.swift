@@ -23,6 +23,7 @@ struct RegisterView: View {
                         for: registerViewModel.email
                     )
                 )
+                .textContentType(.emailAddress)
                 
                 SecureFieldView(
                     text: $registerViewModel.password,
