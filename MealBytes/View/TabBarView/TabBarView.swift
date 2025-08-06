@@ -51,7 +51,16 @@ struct TabBarView: View {
             }
         }
         .alert(isPresented: $loginViewModel.showErrorAlert) {
-            loginViewModel.getErrorAlert()
+            switch loginViewModel.alertType {
+            case .sessionExpired:
+                return loginViewModel.getSessionAlert {
+                    profileViewModel.signOut()
+                }
+            case .offlineMode:
+                return loginViewModel.getOfflineAlert()
+            case .generic:
+                return loginViewModel.commonErrorAlert()
+            }
         }
         .task {
             selectedTab = 0

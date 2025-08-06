@@ -160,31 +160,6 @@ final class LoginViewModel: ObservableObject {
         showAlert = error != nil
     }
     
-    func getErrorAlert() -> Alert {
-        if let error {
-            switch error {
-            case .offlineMode:
-                return Alert(
-                    title: Text("Warning!"),
-                    message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK"))
-                )
-            case .sessionExpired:
-                return Alert(
-                    title: Text("Session Expired"),
-                    message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK")) {
-                        self.isLoggedIn = false
-                    }
-                )
-            default:
-                return commonErrorAlert()
-            }
-        } else {
-            return commonErrorAlert()
-        }
-    }
-    
     func getLoginErrorAlert() -> Alert {
         if let error {
             switch error {
@@ -212,12 +187,36 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    private func commonErrorAlert() -> Alert {
+    func commonErrorAlert() -> Alert {
         return Alert(
             title: Text("Error"),
             message: Text("Something went wrong while processing the request. Try again."),
             dismissButton: .default(Text("OK"))
         )
+    }
+    
+    func getSessionAlert(onDismiss: @escaping () -> Void) -> Alert {
+        return Alert(
+            title: Text("Session Expired"),
+            message: Text(error?.errorDescription ?? ""),
+            dismissButton: .default(Text("OK"), action: onDismiss)
+        )
+    }
+    
+    func getOfflineAlert() -> Alert {
+        return Alert(
+            title: Text("Warning!"),
+            message: Text(error?.errorDescription ?? ""),
+            dismissButton: .default(Text("OK"))
+        )
+    }
+    
+    var alertType: AlertTypeLoginView {
+        switch error {
+        case .sessionExpired: return .sessionExpired
+        case .offlineMode: return .offlineMode
+        default: return .generic
+        }
     }
     
     // MARK: - Button State
@@ -249,6 +248,12 @@ enum LoginState {
     case signingIn
     case loggedIn
     case notLoggedIn
+}
+
+enum AlertTypeLoginView {
+    case sessionExpired
+    case offlineMode
+    case generic
 }
 
 #Preview {

@@ -17,7 +17,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var alertTitle: String = ""
     @Published var alertMessage: String = ""
     @Published var destructiveButtonTitle: String = ""
-    @Published var alertType: AlertType?
+    @Published var alertType: AlertTypeProfileView?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isPasswordChanging: Bool = false
@@ -53,7 +53,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Sign Out
-    private func signOut() {
+    func signOut() {
         do {
             try firebaseAuth.signOutAuth()
             
@@ -108,7 +108,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Alert
-    func prepareAlert(for type: AlertType) {
+    func prepareAlert(for type: AlertTypeProfileView) {
         password = ""
         newPassword = ""
         confirmPassword = ""
@@ -239,7 +239,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     //MARK: - Reset State
-    func resetProfileState() {
+    private func resetProfileState() {
         password = ""
         newPassword = ""
         confirmPassword = ""
@@ -261,7 +261,7 @@ final class ProfileViewModel: ObservableObject {
     }
 }
 
-enum AlertType {
+enum AlertTypeProfileView {
     case signOut
     case deleteAccount
     case changePassword
