@@ -343,7 +343,7 @@ final class FoodViewModel: ObservableObject {
         value.isValidNumericInput() ? .secondary : .customRed
     }
     
-    //MARK: - Keyboard
+    // MARK: - Keyboard
     func normalizeAmount() {
         amount = amount.trimmedLeadingZeros
     }

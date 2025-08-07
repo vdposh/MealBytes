@@ -224,7 +224,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    //MARK: - Calculation (Intake)
+    // MARK: - Calculation (Intake)
     private func setupBindingsMainView() {
         $mealItems
             .combineLatest($nutrientSummaries)
@@ -554,14 +554,14 @@ final class MainViewModel: ObservableObject {
         collapseAllSections()
     }
     
-    //MARK: - Close sections
+    // MARK: - Close sections
     func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
     }
     
-    //MARK: - Reset State
+    // MARK: - Reset State
     func resetMainState() {
         updateIntake(to: "")
         collapseAllSections()

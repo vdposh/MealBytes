@@ -141,7 +141,7 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    //MARK: - Reset State
+    // MARK: - Reset State
     func resetLoginState() {
         email = ""
         password = ""

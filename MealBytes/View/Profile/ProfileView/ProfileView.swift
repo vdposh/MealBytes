@@ -23,7 +23,7 @@ struct ProfileView: View {
             await profileViewModel.loadProfileData()
         }
         .alert(
-            profileViewModel.alertContent?.title ?? "",
+            profileViewModel.alertTitle,
             isPresented: $profileViewModel.showAlert,
             actions: {
                 switch profileViewModel.alertContent?.type {
@@ -55,7 +55,7 @@ struct ProfileView: View {
                     }
                     
                 case .changePassword:
-                    if profileViewModel.alertContent?.title == "Done" {
+                    if profileViewModel.alertTitle == "Done" {
                         Button("OK") {
                             profileViewModel.showAlert = false
                         }
@@ -97,7 +97,7 @@ struct ProfileView: View {
                 }
             },
             message: {
-                Text(profileViewModel.alertContent?.message ?? "")
+                Text(profileViewModel.alertMessage)
             }
         )
     }
