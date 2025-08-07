@@ -55,7 +55,7 @@ struct ProfileView: View {
                     }
                     
                 case .changePassword:
-                    if profileViewModel.alertTitle == "Done" {
+                    if profileViewModel.alertContent?.isSuccess == true {
                         Button("OK") {
                             profileViewModel.showAlert = false
                         }

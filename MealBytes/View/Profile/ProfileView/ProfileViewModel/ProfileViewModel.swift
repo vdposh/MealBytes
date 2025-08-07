@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
@@ -14,7 +13,6 @@ final class ProfileViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var newPassword: String = ""
     @Published var confirmPassword: String = ""
-    @Published var overrideAlertMessage: String?
     @Published var alertContent: AlertContentProfile?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
@@ -26,7 +24,6 @@ final class ProfileViewModel: ObservableObject {
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModelProtocol
-    private var cancellables = Set<AnyCancellable>()
     
     init(
         loginViewModel: LoginViewModel,
@@ -110,7 +107,6 @@ final class ProfileViewModel: ObservableObject {
         password = ""
         newPassword = ""
         confirmPassword = ""
-        overrideAlertMessage = nil
         alertContent = AlertContentProfile(type: type)
         showAlert = true
     }
@@ -173,7 +169,8 @@ final class ProfileViewModel: ObservableObject {
                 )
                 await showOverrideMessage(
                     ProfileMessage.passwordUpdateSuccess.text,
-                    for: .changePassword
+                    for: .changePassword,
+                    isSuccess: true
                 )
             } catch {
                 await showOverrideMessage(
@@ -184,7 +181,7 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    private func validatePassword() -> PasswordValidationError? {
+    private func validatePassword() -> PasswordError? {
         if newPassword.count < 6 {
             return .tooShort
         }
@@ -196,27 +193,19 @@ final class ProfileViewModel: ObservableObject {
     
     private func showOverrideMessage(
         _ message: String,
-        for type: AlertTypeProfileView
+        for type: AlertTypeProfileView,
+        isSuccess: Bool = false
     ) async {
         await MainActor.run {
-            overrideAlertMessage = message
-            alertContent = AlertContentProfile(type: type)
+            alertContent = AlertContentProfile(
+                type: type,
+                overrideMessage: message,
+                isSuccess: isSuccess
+            )
             showAlert = true
             isPasswordChanging = false
             isDeletingAccount = false
         }
-    }
-    
-    var alertTitle: String {
-        alertContent?.type.title ?? "Alert"
-    }
-    
-    var alertMessage: String {
-        overrideAlertMessage ?? alertContent?.type.defaultMessage ?? ""
-    }
-    
-    var destructiveTitle: String {
-        alertContent?.type.destructiveTitle ?? "Confirm"
     }
     
     // MARK: - Reset State
@@ -225,7 +214,6 @@ final class ProfileViewModel: ObservableObject {
         newPassword = ""
         confirmPassword = ""
         alertContent = nil
-        overrideAlertMessage = nil
         showAlert = false
         appError = nil
         isPasswordChanging = false
@@ -238,93 +226,17 @@ final class ProfileViewModel: ObservableObject {
     var isLoading: Bool {
         isDeletingAccount || isPasswordChanging
     }
-}
-
-enum ProfileMessage {
-    case passwordTooShort
-    case passwordMismatch
-    case incorrectPassword
-    case emailMissing
-    case passwordUpdateFailed
-    case passwordUpdateSuccess
     
-    var text: String {
-        switch self {
-        case .passwordTooShort:
-            return """
-            Failed to update the password.
-            The password must be at least 6 characters long.
-            """
-        case .passwordMismatch:
-            return """
-            Failed to update the password.
-            New password and confirmation do not match.
-            """
-        case .incorrectPassword:
-            return """
-            The password entered is incorrect.
-            To delete the account, provide the correct password.
-            """
-        case .emailMissing:
-            return "Email is missing."
-        case .passwordUpdateFailed:
-            return """
-            Failed to update the password.
-            Check the current password and try again.
-            """
-        case .passwordUpdateSuccess:
-            return "Password has been successfully updated."
-        }
+    var alertTitle: String {
+        alertContent?.title ?? "Alert"
     }
-}
-
-enum AlertTypeProfileView {
-    case signOut
-    case deleteAccount
-    case changePassword
     
-    var title: String {
-        switch self {
-        case .signOut: return "Sign Out"
-        case .deleteAccount: return "Delete Account"
-        case .changePassword: return "Change Password"
-        }
+    var alertMessage: String {
+        alertContent?.message ?? ""
     }
     
     var destructiveTitle: String {
-        switch self {
-        case .signOut: return "Sign Out"
-        case .deleteAccount: return "Delete"
-        case .changePassword: return "Update Password"
-        }
-    }
-    
-    var defaultMessage: String {
-        switch self {
-        case .signOut:
-            return "Signing out will require signing in again to access the account."
-        case .deleteAccount:
-            return """
-            To delete the account, enter the password associated with it.
-            Data and account details will be permanently erased. This action cannot be undone.
-            """
-        case .changePassword:
-            return "Provide the current password and a new password to update account credentials."
-        }
-    }
-}
-
-enum PasswordValidationError: Error {
-    case tooShort
-    case mismatch
-    
-    var message: String {
-        switch self {
-        case .tooShort:
-            return ProfileMessage.passwordTooShort.text
-        case .mismatch:
-            return ProfileMessage.passwordMismatch.text
-        }
+        alertContent?.destructiveTitle ?? "Confirm"
     }
 }
 
