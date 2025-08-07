@@ -23,10 +23,11 @@ struct ProfileView: View {
             await profileViewModel.loadProfileData()
         }
         .alert(
-            profileViewModel.alertTitle,
+            profileViewModel.alertContent?.title ?? "",
             isPresented: $profileViewModel.showAlert,
             actions: {
-                if profileViewModel.alertType == .deleteAccount {
+                switch profileViewModel.alertContent?.type {
+                case .deleteAccount:
                     SecureField(
                         "Enter password",
                         text: $profileViewModel.password
@@ -35,28 +36,26 @@ struct ProfileView: View {
                     .textContentType(.password)
                     
                     Button(
-                        profileViewModel.destructiveButtonTitle,
+                        profileViewModel.destructiveTitle,
                         role: .destructive
                     ) {
                         Task {
                             await profileViewModel.handleAlertAction()
                         }
                     }
-                }
-                
-                if profileViewModel.alertType == .signOut {
+                    
+                case .signOut:
                     Button(
-                        profileViewModel.destructiveButtonTitle,
+                        profileViewModel.destructiveTitle,
                         role: .destructive
                     ) {
                         Task {
                             await profileViewModel.handleAlertAction()
                         }
                     }
-                }
-                
-                if profileViewModel.alertType == .changePassword {
-                    if profileViewModel.alertTitle == "Done" {
+                    
+                case .changePassword:
+                    if profileViewModel.alertContent?.title == "Done" {
                         Button("OK") {
                             profileViewModel.showAlert = false
                         }
@@ -86,18 +85,19 @@ struct ProfileView: View {
                             profileViewModel.showAlert = false
                         }
                         
-                        Button(
-                            profileViewModel.destructiveButtonTitle
-                        ) {
+                        Button(profileViewModel.destructiveTitle) {
                             Task {
                                 await profileViewModel.handleAlertAction()
                             }
                         }
                     }
+                    
+                default:
+                    EmptyView()
                 }
             },
             message: {
-                Text(profileViewModel.alertMessage)
+                Text(profileViewModel.alertContent?.message ?? "")
             }
         )
     }

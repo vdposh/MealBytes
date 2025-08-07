@@ -12,8 +12,10 @@ final class SystemStatsViewModel: ObservableObject {
     @Published var usedMemoryMB: Double = 0
     @Published var threadCount: Int = 0
     @Published var cpuUsage: Double = 0
+    @Published var lastCPUPeak: Double = 0
     
     private var timer: Timer?
+    private let cpuPeakThreshold: Double = 50.0
     
     init() {
         startMonitoring()
@@ -26,7 +28,18 @@ final class SystemStatsViewModel: ObservableObject {
         ) { _ in
             self.usedMemoryMB = self.reportMemoryUsage()
             self.threadCount = self.reportThreadCount()
-            self.cpuUsage = self.reportCPUUsage()
+            let currentCPU = self.reportCPUUsage()
+            self.cpuUsage = currentCPU
+            
+            if currentCPU > self.cpuPeakThreshold {
+                self.lastCPUPeak = currentCPU
+                let timestamp = DateFormatter.localizedString(
+                    from: Date(),
+                    dateStyle: .none,
+                    timeStyle: .medium
+                )
+                print("⚠️ [CPU Peak] \(String(format: "%.1f", currentCPU))% at \(timestamp)")
+            }
         }
     }
     
@@ -68,6 +81,11 @@ final class SystemStatsViewModel: ObservableObject {
         guard kr == KERN_SUCCESS else { return -1 }
         
         var totalCPU: Double = 0
+        let timestamp = DateFormatter.localizedString(
+            from: Date(),
+            dateStyle: .none,
+            timeStyle: .medium
+        )
         
         if let threads {
             for i in 0..<Int(threadCount) {
@@ -91,8 +109,13 @@ final class SystemStatsViewModel: ObservableObject {
                 guard result == KERN_SUCCESS else { continue }
                 
                 if threadInfo.flags & TH_FLAGS_IDLE == 0 {
-                    totalCPU += Double(threadInfo.cpu_usage) /
+                    let threadCPU = Double(threadInfo.cpu_usage) /
                     Double(TH_USAGE_SCALE) * 100.0
+                    totalCPU += threadCPU
+                    
+                    if threadCPU > 5.0 {
+                        print("🧵 [\(timestamp)] Thread \(i): \(String(format: "%.2f", threadCPU))%")
+                    }
                 }
             }
         }

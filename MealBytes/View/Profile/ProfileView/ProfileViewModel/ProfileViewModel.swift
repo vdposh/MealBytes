@@ -14,10 +14,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var newPassword: String = ""
     @Published var confirmPassword: String = ""
-    @Published var alertTitle: String = ""
-    @Published var alertMessage: String = ""
-    @Published var destructiveButtonTitle: String = ""
-    @Published var alertType: AlertTypeProfileView?
+    @Published var alertContent: AlertContentProfile?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var isPasswordChanging: Bool = false
@@ -113,32 +110,40 @@ final class ProfileViewModel: ObservableObject {
         newPassword = ""
         confirmPassword = ""
         
-        alertType = type
-        showAlert = true
-        
         switch type {
         case .signOut:
-            alertTitle = "Sign Out"
-            alertMessage = "Signing out will require signing in again to access the account."
-            destructiveButtonTitle = "Sign Out"
+            alertContent = AlertContentProfile(
+                title: "Sign Out",
+                message: "Signing out will require signing in again to access the account.",
+                destructiveTitle: "Sign Out",
+                type: .signOut
+            )
             
         case .deleteAccount:
-            alertTitle = "Delete Account"
-            alertMessage = """
+            alertContent = AlertContentProfile(
+                title: "Delete Account",
+                message: """
                     To delete the account, enter the password associated with it.
                     Data and account details will be permanently erased. This action cannot be undone.
-                    """
-            destructiveButtonTitle = "Delete"
+                    """,
+                destructiveTitle: "Delete",
+                type: .deleteAccount
+            )
             
         case .changePassword:
-            alertTitle = "Change Password"
-            alertMessage = "Provide the current password and a new password to update account credentials."
-            destructiveButtonTitle = "Update Password"
+            alertContent = AlertContentProfile(
+                title: "Change Password",
+                message: "Provide the current password and a new password to update account credentials.",
+                destructiveTitle: "Update Password",
+                type: .changePassword
+            )
         }
+        
+        showAlert = true
     }
     
     func handleAlertAction() async {
-        guard let alertType else { return }
+        guard let alertType = alertContent?.type else { return }
         
         switch alertType {
         case .signOut:
@@ -151,10 +156,14 @@ final class ProfileViewModel: ObservableObject {
             
             guard let email = email, !email.isEmpty else {
                 await MainActor.run {
-                    alertTitle = "Delete Account"
-                    alertMessage = "Email is missing."
+                    alertContent = AlertContentProfile(
+                        title: "Delete Account",
+                        message: "Email is missing.",
+                        destructiveTitle: "Delete",
+                        type: .deleteAccount
+                    )
                     showAlert = true
-                    isDeletingAccount = true
+                    isDeletingAccount = false
                 }
                 return
             }
@@ -172,11 +181,15 @@ final class ProfileViewModel: ObservableObject {
                 }
             } catch {
                 await MainActor.run {
-                    alertTitle = "Delete Account"
-                    alertMessage = """
-                    The password entered is incorrect.
-                    To delete the account, provide the correct password.
-                    """
+                    alertContent = AlertContentProfile(
+                        title: "Delete Account",
+                        message: """
+                        The password entered is incorrect.
+                        To delete the account, provide the correct password.
+                        """,
+                        destructiveTitle: "Delete",
+                        type: .deleteAccount
+                    )
                     showAlert = true
                     isDeletingAccount = false
                 }
@@ -189,11 +202,15 @@ final class ProfileViewModel: ObservableObject {
             
             guard newPassword.count >= 6 else {
                 await MainActor.run {
-                    alertTitle = "Change Password"
-                    alertMessage = """
-                    Failed to update the password.
-                    The password must be at least 6 characters long.
-                    """
+                    alertContent = AlertContentProfile(
+                        title: "Change Password",
+                        message: """
+                        Failed to update the password.
+                        The password must be at least 6 characters long.
+                        """,
+                        destructiveTitle: "Update Password",
+                        type: .changePassword
+                    )
                     showAlert = true
                     isPasswordChanging = false
                 }
@@ -202,11 +219,15 @@ final class ProfileViewModel: ObservableObject {
             
             guard newPassword == confirmPassword else {
                 await MainActor.run {
-                    alertTitle = "Change Password"
-                    alertMessage = """
-                    Failed to update the password.
-                    New password and confirmation do not match.
-                    """
+                    alertContent = AlertContentProfile(
+                        title: "Change Password",
+                        message: """
+                        Failed to update the password.
+                        New password and confirmation do not match.
+                        """,
+                        destructiveTitle: "Update Password",
+                        type: .changePassword
+                    )
                     showAlert = true
                     isPasswordChanging = false
                 }
@@ -219,22 +240,43 @@ final class ProfileViewModel: ObservableObject {
                     newPassword: newPassword
                 )
                 await MainActor.run {
-                    alertTitle = "Done"
-                    alertMessage = "Password has been successfully updated."
+                    alertContent = AlertContentProfile(
+                        title: "Done",
+                        message: "Password has been successfully updated.",
+                        destructiveTitle: "OK",
+                        type: .changePassword
+                    )
                     showAlert = true
                     isPasswordChanging = false
                 }
             } catch {
                 await MainActor.run {
-                    alertTitle = "Change Password"
-                    alertMessage = """
-                    Failed to update the password.
-                    Check the current password and try again.
-                    """
+                    alertContent = AlertContentProfile(
+                        title: "Change Password",
+                        message: """
+                        Failed to update the password.
+                        Check the current password and try again.
+                        """,
+                        destructiveTitle: "Update Password",
+                        type: .changePassword
+                    )
                     showAlert = true
                     isPasswordChanging = false
                 }
             }
+        }
+    }
+    
+    var destructiveTitle: String {
+        alertContent?.destructiveTitle ?? defaultDestructiveTitle
+    }
+    
+    private var defaultDestructiveTitle: String {
+        switch alertContent?.type {
+        case .signOut: return "Sign Out"
+        case .deleteAccount: return "Delete Account"
+        case .changePassword: return "Update Password"
+        default: return "Confirm"
         }
     }
     
@@ -243,12 +285,9 @@ final class ProfileViewModel: ObservableObject {
         password = ""
         newPassword = ""
         confirmPassword = ""
-        alertTitle = ""
-        alertMessage = ""
-        destructiveButtonTitle = ""
-        alertType = nil
-        appError = nil
+        alertContent = nil
         showAlert = false
+        appError = nil
         isPasswordChanging = false
         isDeletingAccount = false
         
