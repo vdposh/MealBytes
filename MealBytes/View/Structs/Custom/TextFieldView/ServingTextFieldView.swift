@@ -23,30 +23,19 @@ struct ServingTextFieldView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button(action: {
-                isFocused = true
-            }) {
-                HStack(spacing: 0) {
-                    Text(title)
-                        .font(.caption)
-                        .foregroundColor(titleColor)
-                    if showStar {
-                        Text("*")
-                            .foregroundColor(.customRed)
-                    }
-                }
-                .frame(height: 15)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
+            FieldTitleView(
+                title: title,
+                showStar: showStar,
+                titleColor: titleColor,
+                isFocused: Binding(
+                    get: { isFocused },
+                    set: { isFocused = $0 }
+                )
+            )
             
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
-                .frame(height: 35)
-                .lineLimit(1)
                 .foregroundColor(textColor)
-                .focused($isFocused)
                 .onChange(of: text) {
                     validateInput(&text)
                 }
@@ -55,15 +44,7 @@ struct ServingTextFieldView: View {
                         finalizeInput(&text)
                     }
                 }
-                .overlay(
-                    Rectangle()
-                        .frame(height: 1)
-                        .opacity(isFocused ? 1 : 0.4)
-                        .foregroundColor(
-                            isFocused ? .customGreen : .secondary
-                        ),
-                    alignment: .bottom
-                )
+                .modifier(FieldStyleModifier(isFocused: $isFocused))
         }
     }
     
