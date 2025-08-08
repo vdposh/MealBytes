@@ -25,7 +25,7 @@ struct MainView: View {
                 .zIndex(1)
             }
             
-            List {
+            Form {
                 dateSection
                 caloriesSection
                 mealSections

@@ -11,7 +11,7 @@ struct ProfileView: View {
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
-        List {
+        Form {
             AccountInfoSection(profileViewModel: profileViewModel)
             IntakeToggleSection(profileViewModel: profileViewModel)
             ThemePickerSection()
