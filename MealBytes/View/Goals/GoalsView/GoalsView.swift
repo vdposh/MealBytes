@@ -11,7 +11,7 @@ struct GoalsView: View {
     @ObservedObject var goalsViewModel: GoalsViewModel
     
     var body: some View {
-        Form {
+        List {
             DailyIntakeSectionView(goalsViewModel: goalsViewModel)
             RdiSectionView(goalsViewModel: goalsViewModel)
             DisclaimerButtonSection()

@@ -12,7 +12,7 @@ struct DisclaimerSheetView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 Section {
                     EmptyView()
                 } header: {
