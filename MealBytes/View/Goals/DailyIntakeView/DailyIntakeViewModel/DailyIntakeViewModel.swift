@@ -24,7 +24,8 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var protein: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isDailyIntakeEmpty: Bool = true
+    @Published var didSaveSuccessfully: Bool = false
+    @Published var didLoadNonEmptyIntake: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
             handleToggleOnChange()
@@ -51,7 +52,7 @@ final class DailyIntakeViewModel: ObservableObject {
         do {
             let dailyIntakeData = try await firestore
                 .loadDailyIntakeFirestore()
-            let isEmptyIntake = dailyIntakeData.calories.isEmpty
+            let hasAnyData = !dailyIntakeData.calories.isEmpty
             
             await MainActor.run {
                 toggleOn = dailyIntakeData.macronutrientMetrics
@@ -59,7 +60,7 @@ final class DailyIntakeViewModel: ObservableObject {
                 fat = dailyIntakeData.fat
                 carbohydrate = dailyIntakeData.carbohydrate
                 protein = dailyIntakeData.protein
-                isDailyIntakeEmpty = isEmptyIntake
+                didLoadNonEmptyIntake = hasAnyData
             }
         } catch {
             await MainActor.run {
@@ -69,9 +70,12 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     func conditionallyClearDailyIntake() {
-        if isDailyIntakeEmpty {
+        if !didSaveSuccessfully && !didLoadNonEmptyIntake {
             clearDailyIntake()
         }
+        
+        didSaveSuccessfully = false
+        didLoadNonEmptyIntake = false
     }
     
     func clearDailyIntake() {
@@ -99,7 +103,9 @@ final class DailyIntakeViewModel: ObservableObject {
             
             await MainActor.run {
                 mainViewModel.updateIntake(to: trimmedCalories)
+                didSaveSuccessfully = true
             }
+            
             await mainViewModel.saveCurrentIntakeMainView(
                 source: "dailyIntakeView"
             )

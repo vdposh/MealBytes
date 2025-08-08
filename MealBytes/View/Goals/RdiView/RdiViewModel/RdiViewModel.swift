@@ -28,7 +28,8 @@ final class RdiViewModel: ObservableObject {
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
-    @Published var isRdiEmpty: Bool = true
+    @Published var didSaveSuccessfully: Bool = false
+    @Published var didLoadNonEmptyRdi: Bool = false
     
     private let formatter = Formatter()
     
@@ -49,7 +50,7 @@ final class RdiViewModel: ObservableObject {
     func loadRdiView() async {
         do {
             let rdiData = try await firestore.loadRdiFirestore()
-            let isEmptyRdi = rdiData.calculatedRdi.isEmpty
+            let hasAnyData = !rdiData.calculatedRdi.isEmpty
             
             await MainActor.run {
                 self.calculatedRdi = rdiData.calculatedRdi
@@ -68,7 +69,7 @@ final class RdiViewModel: ObservableObject {
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .notSelected
-                self.isRdiEmpty = isEmptyRdi
+                self.didLoadNonEmptyRdi = hasAnyData
             }
         } catch {
             await MainActor.run {
@@ -78,9 +79,12 @@ final class RdiViewModel: ObservableObject {
     }
     
     func conditionallyClearRdi() {
-        if isRdiEmpty {
+        if !didSaveSuccessfully && !didLoadNonEmptyRdi {
             clearRdi()
         }
+        
+        didSaveSuccessfully = false
+        didLoadNonEmptyRdi = false
     }
     
     func clearRdi() {
@@ -114,7 +118,9 @@ final class RdiViewModel: ObservableObject {
             
             await MainActor.run {
                 mainViewModel.updateIntake(to: stableRdi)
+                didSaveSuccessfully = true
             }
+            
             await mainViewModel.saveCurrentIntakeMainView(source: "rdiView")
         } catch {
             await MainActor.run {

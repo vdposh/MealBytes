@@ -36,9 +36,6 @@ final class GoalsViewModel: ObservableObject {
         
         await MainActor.run {
             isLoading = true
-        }
-        
-        await MainActor.run {
             uniqueId = UUID()
             isDataLoaded = false
         }
