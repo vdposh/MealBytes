@@ -34,6 +34,7 @@ struct ServingButtonView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
+                        .opacity(0.4)
                         .foregroundColor(.secondary),
                     alignment: .bottom
                 )

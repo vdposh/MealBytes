@@ -26,7 +26,6 @@ struct CalorieMetricsSection: View {
                             isCalorie: true
                         ),
                         textColor: dailyIntakeViewModel.caloriesTextColor,
-                        opacity: dailyIntakeViewModel.underlineOpacity,
                         maxIntegerDigits: 5
                     )
                     .focused(isFocused)

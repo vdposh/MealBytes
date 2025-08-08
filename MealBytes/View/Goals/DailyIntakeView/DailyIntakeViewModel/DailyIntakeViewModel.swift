@@ -257,10 +257,6 @@ final class DailyIntakeViewModel: ObservableObject {
         }
     }
     
-    var underlineOpacity: Double {
-        toggleOn ? 0.6 : 1.0
-    }
-    
     var showStar: Bool {
         !toggleOn
     }

@@ -31,16 +31,6 @@ struct ContentView: View {
             case .notLoggedIn:
                 LoginView(loginViewModel: loginViewModel)
             }
-            
-#if DEBUG
-            VStack {
-                SystemStatsView()
-                    .background(.ultraThickMaterial.opacity(0.8))
-                    .cornerRadius(12)
-            }
-            .allowsHitTesting(false)
-#endif
-            
         }
         .task {
             await loginViewModel.loadData()
