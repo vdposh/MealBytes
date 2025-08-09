@@ -58,3 +58,7 @@ struct DailyIntakeSectionView: View {
         }
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

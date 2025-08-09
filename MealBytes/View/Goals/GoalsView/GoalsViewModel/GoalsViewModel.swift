@@ -35,8 +35,8 @@ final class GoalsViewModel: ObservableObject {
         guard !isLoading else { return }
         
         await MainActor.run {
-            isLoading = true
             uniqueId = UUID()
+            isLoading = true
             isDataLoaded = false
         }
         
@@ -48,8 +48,8 @@ final class GoalsViewModel: ObservableObject {
         
         await MainActor.run {
             conditionallyClearGoalsView()
-            isDataLoaded = true
             isLoading = false
+            isDataLoaded = true
         }
     }
     

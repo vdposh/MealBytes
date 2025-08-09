@@ -56,3 +56,7 @@ struct RdiSectionView: View {
         }
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

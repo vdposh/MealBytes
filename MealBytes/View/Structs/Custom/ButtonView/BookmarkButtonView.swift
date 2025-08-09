@@ -12,7 +12,6 @@ struct BookmarkButtonView: View {
     var isFilled: Bool
     var width: CGFloat? = nil
     var height: CGFloat? = nil
-    var isEnabled: Bool = true
     
     var body: some View {
         Button {
@@ -26,7 +25,7 @@ struct BookmarkButtonView: View {
                     height: height
                 )
         }
-        .disabled(!isEnabled)
+        .buttonStyle(.plain)
         .foregroundStyle(.customGreen)
     }
 }
