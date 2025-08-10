@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LoadingProfileView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @Binding var isPasswordChanging: Bool
+    @Binding var isLoading: Bool
     
     private var backgroundColor: Color {
         if colorScheme == .dark {
@@ -21,12 +21,16 @@ struct LoadingProfileView: View {
         }
     }
     
+    init(isLoading: Binding<Bool>? = nil) {
+        _isLoading = isLoading ?? .constant(false)
+    }
+    
     var body: some View {
         ZStack {
             backgroundColor
                 .ignoresSafeArea()
             
-            if isPasswordChanging {
+            if isLoading {
                 VStack {
                     Text("Loading")
                         .font(.headline)

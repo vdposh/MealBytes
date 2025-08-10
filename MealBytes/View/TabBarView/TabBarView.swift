@@ -68,7 +68,7 @@ struct TabBarView: View {
         .overlay {
             if profileViewModel.isLoading {
                 LoadingProfileView(
-                    isPasswordChanging: $profileViewModel.isPasswordChanging
+                    isLoading: $profileViewModel.isPasswordChanging
                 )
             }
         }
