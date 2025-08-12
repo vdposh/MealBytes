@@ -141,7 +141,6 @@ struct FoodView: View {
                         }
                     }
                 }
-                .foregroundStyle(.primary)
                 
                 if showMealTypeButton {
                     ServingButtonView(
@@ -164,7 +163,6 @@ struct FoodView: View {
                             }
                         }
                     }
-                    .foregroundStyle(.primary)
                 }
             }
             .padding(20)
@@ -177,16 +175,6 @@ struct FoodView: View {
     
     private var nutrientActionSection: some View {
         VStack {
-            HStack {
-                ForEach(
-                    foodViewModel.compactNutrientDetails,
-                    id: \.id
-                ) { nutrient in
-                    CompactNutrientDetailRow(nutrient: nutrient)
-                }
-            }
-            .padding(.bottom, 5)
-            
             HStack {
                 switch showAddButton {
                 case true:
@@ -241,8 +229,23 @@ struct FoodView: View {
                     )
                 }
             }
+            
+            HStack {
+                ForEach(
+                    Array(foodViewModel.compactNutrientDetails.enumerated()),
+                    id: \.element.id
+                ) { index, nutrient in
+                    CompactNutrientDetailRow(nutrient: nutrient)
+                    
+                    if index < foodViewModel.compactNutrientDetails.count - 1 {
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.2))
+                            .frame(width: 1, height: 50)
+                    }
+                }
+            }
         }
-        .padding(.vertical, 5)
+        .padding(.top, 12)
         .padding(.horizontal, 16)
     }
     
