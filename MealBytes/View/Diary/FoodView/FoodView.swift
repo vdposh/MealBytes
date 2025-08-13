@@ -109,10 +109,10 @@ struct FoodView: View {
                     )
                 )
                 .focused($amountFocused)
-                .onChange(of: amountFocused) { oldValue, newValue in
+                .onChange(of: amountFocused) {
                     foodViewModel.handleFocusChange(
-                        from: oldValue,
-                        to: newValue
+                        from: !amountFocused,
+                        to: amountFocused
                     )
                 }
                 
@@ -133,9 +133,11 @@ struct FoodView: View {
                     if let servings = foodViewModel
                         .foodDetail?.servings.serving {
                         ForEach(servings, id: \.self) { serving in
-                            Button(foodViewModel.servingDescription(
-                                for: serving
-                            )) {
+                            Button(
+                                foodViewModel.servingDescription(
+                                    for: serving
+                                )
+                            ) {
                                 foodViewModel.updateServing(serving)
                             }
                         }
@@ -188,7 +190,6 @@ struct FoodView: View {
                                 )
                                 dismiss()
                             }
-                            
                         },
                         backgroundColor: .customGreen,
                         isEnabled: foodViewModel.canAddFood
