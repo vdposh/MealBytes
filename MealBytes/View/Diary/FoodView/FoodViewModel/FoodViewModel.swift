@@ -338,6 +338,17 @@ final class FoodViewModel: ObservableObject {
             }
     }
     
+    // MARK: - UI Helper
+    var viewState: FoodViewState {
+        if let error = appError {
+            return .error(error)
+        } else if isLoading {
+            return .loading
+        } else {
+            return .loaded
+        }
+    }
+    
     // MARK: - Text
     func titleColor(for value: String) -> Color {
         value.isValidNumericInput() ? .secondary : .customRed
@@ -369,6 +380,12 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     case grams = "Grams"
     
     var id: String { self.rawValue }
+}
+
+enum FoodViewState {
+    case loading
+    case error(AppError)
+    case loaded
 }
 
 #Preview {

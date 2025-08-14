@@ -53,7 +53,14 @@ struct FoodView: View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
-            if let error = foodViewModel.appError {
+            
+            switch foodViewModel.viewState {
+            case .loading:
+                Color(.secondarySystemGroupedBackground)
+                    .ignoresSafeArea()
+                LoadingView()
+                
+            case .error(let error):
                 Color(.secondarySystemGroupedBackground)
                     .ignoresSafeArea()
                 contentUnavailableView(
@@ -65,19 +72,14 @@ struct FoodView: View {
                         await foodViewModel.fetchFoodDetails()
                     }
                 }
-            } else {
-                if foodViewModel.isLoading {
-                    Color(.secondarySystemGroupedBackground)
-                        .ignoresSafeArea()
-                    LoadingView()
-                } else {
-                    ScrollView {
-                        servingSizeSection
-                        nutrientActionSection
-                        nutrientDetailSection
-                    }
-                    .scrollIndicators(.hidden)
+                
+            case .loaded:
+                ScrollView {
+                    servingSizeSection
+                    nutrientActionSection
+                    nutrientDetailSection
                 }
+                .scrollIndicators(.hidden)
             }
         }
         .navigationBarTitle(navigationTitle, displayMode: .inline)
