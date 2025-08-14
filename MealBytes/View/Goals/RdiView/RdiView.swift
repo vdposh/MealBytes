@@ -90,16 +90,33 @@ struct RdiView: View {
                     }
                 }
                 .onChange(of: focusedField) {
-                    rdiViewModel.handleFocusChange(from: focusedField)
-                }
-                .onChange(of: focusedField) {
-                    guard let field = focusedField else { return }
-                    withAnimation {
-                        proxy.scrollTo(
-                            field.scrollID,
-                            anchor: field.scrollAnchor
+                    if let lostFocus = rdiViewModel.previousFocus,
+                       lostFocus != focusedField {
+                        rdiViewModel.handleFocusChange(
+                            focus: lostFocus,
+                            didGainFocus: false
                         )
                     }
+                    
+                    if let gainedFocus = focusedField {
+                        rdiViewModel.handleFocusChange(
+                            focus: gainedFocus,
+                            didGainFocus: true
+                        )
+                        
+                        DispatchQueue.main.asyncAfter(
+                            deadline: .now() + 0.15
+                        ) {
+                            withAnimation {
+                                proxy.scrollTo(
+                                    gainedFocus.scrollID,
+                                    anchor: gainedFocus.scrollAnchor
+                                )
+                            }
+                        }
+                    }
+                    
+                    rdiViewModel.previousFocus = focusedField
                 }
                 .alert("Error", isPresented: $rdiViewModel.showAlert) {
                     Button("OK") {

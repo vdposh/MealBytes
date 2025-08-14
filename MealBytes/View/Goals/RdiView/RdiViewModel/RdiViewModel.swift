@@ -18,9 +18,13 @@ protocol RdiViewModelProtocol {
 
 final class RdiViewModel: ObservableObject {
     @Published var appError: AppError?
+    @Published var previousFocus: RdiFocus?
     @Published var age: String = ""
     @Published var weight: String = ""
     @Published var height: String = ""
+    @Published var originalAge: String = ""
+    @Published var originalWeight: String = ""
+    @Published var originalHeight: String = ""
     @Published var selectedGender: Gender = .notSelected
     @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .notSelected
@@ -340,25 +344,49 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleFocusChange(from previous: RdiFocus?) {
-        normalizeInputs()
-        
-        if let old = previous {
-            switch old {
-            case .age:
-                if age.isValidNumericInput(in: 1...120) {
-                    age = age.trimmedLeadingZeros
-                }
-                
-            case .weight:
-                if weight.isValidNumericInput() {
-                    weight = weight.trimmedLeadingZeros
-                }
-                
-            case .height:
-                if height.isValidNumericInput() {
-                    height = height.trimmedLeadingZeros
-                }
+    func handleFocusChange(focus: RdiFocus, didGainFocus: Bool) {
+        switch focus {
+        case .age:
+            handleFocusChange(
+                didGainFocus: didGainFocus,
+                value: &age,
+                original: &originalAge,
+                validation: { $0.isValidNumericInput(in: 1...120) }
+            )
+            
+        case .weight:
+            handleFocusChange(
+                didGainFocus: didGainFocus,
+                value: &weight,
+                original: &originalWeight,
+                validation: { $0.isValidNumericInput() }
+            )
+            
+        case .height:
+            handleFocusChange(
+                didGainFocus: didGainFocus,
+                value: &height,
+                original: &originalHeight,
+                validation: { $0.isValidNumericInput() }
+            )
+        }
+    }
+    
+    private func handleFocusChange(
+        didGainFocus: Bool,
+        value: inout String,
+        original: inout String,
+        validation: (String) -> Bool,
+        normalize: (String) -> String = { $0.trimmedLeadingZeros }
+    ) {
+        if didGainFocus {
+            original = value
+            value = ""
+        } else {
+            if validation(value) {
+                value = normalize(value)
+            } else {
+                value = original
             }
         }
     }
