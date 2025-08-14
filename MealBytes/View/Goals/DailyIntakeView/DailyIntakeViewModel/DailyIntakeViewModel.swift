@@ -18,15 +18,10 @@ protocol DailyIntakeViewModelProtocol {
 
 final class DailyIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
-    @Published var previousFocus: MacronutrientsFocus?
     @Published var calories: String = ""
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
-    @Published var originalCalories: String = ""
-    @Published var originalFat: String = ""
-    @Published var originalCarbohydrate: String = ""
-    @Published var originalProtein: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     @Published var didSaveSuccessfully: Bool = false
@@ -207,7 +202,6 @@ final class DailyIntakeViewModel: ObservableObject {
         return true
     }
     
-    // MARK: - Toggle
     private func handleToggleOnChange() {
         normalizeInputs()
         
@@ -219,21 +213,6 @@ final class DailyIntakeViewModel: ObservableObject {
             )
         } else if calories.isEmpty {
             calories = ""
-        }
-    }
-    
-    func restoreInputsIfNeeded() {
-        if fat.isEmpty {
-            fat = originalFat
-        }
-        if carbohydrate.isEmpty {
-            carbohydrate = originalCarbohydrate
-        }
-        if protein.isEmpty {
-            protein = originalProtein
-        }
-        if calories.isEmpty {
-            calories = originalCalories
         }
     }
     
@@ -297,14 +276,6 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleCaloriesFocusChange(to isFocused: Bool) {
-        updateInputOnFocusChange(
-            value: &calories,
-            original: &originalCalories,
-            didGainFocus: isFocused
-        )
-    }
-    
     func handleMacronutrientFocusChange(
         focus: MacronutrientsFocus,
         didGainFocus: Bool
@@ -313,39 +284,22 @@ final class DailyIntakeViewModel: ObservableObject {
         
         switch focus {
         case .fat:
-            updateInputOnFocusChange(
-                value: &fat,
-                original: &originalFat,
-                didGainFocus: didGainFocus
-            )
+            if didGainFocus {
+            } else if fat.isValidNumericInput() {
+                fat = fat.trimmedLeadingZeros
+            }
             
         case .carbohydrate:
-            updateInputOnFocusChange(
-                value: &carbohydrate,
-                original: &originalCarbohydrate,
-                didGainFocus: didGainFocus
-            )
+            if didGainFocus {
+            } else if carbohydrate.isValidNumericInput() {
+                carbohydrate = carbohydrate.trimmedLeadingZeros
+            }
             
         case .protein:
-            updateInputOnFocusChange(
-                value: &protein,
-                original: &originalProtein,
-                didGainFocus: didGainFocus
-            )
-        }
-    }
-    
-    private func updateInputOnFocusChange(
-        value: inout String,
-        original: inout String,
-        didGainFocus: Bool
-    ) {
-        if didGainFocus {
-            original = value
-            value = ""
-        } else {
-            let sanitized = Double(value.sanitizedForDouble)
-            value = (sanitized != nil && sanitized! > 0) ? value : original
+            if didGainFocus {
+            } else if protein.isValidNumericInput() {
+                protein = protein.trimmedLeadingZeros
+            }
         }
     }
 }

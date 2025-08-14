@@ -36,8 +36,7 @@ struct DailyIntakeView: View {
                     }
                     
                     NutrientsToggleSection(
-                        toggleOn: $dailyIntakeViewModel.toggleOn,
-                        dailyIntakeViewModel: dailyIntakeViewModel
+                        toggleOn: $dailyIntakeViewModel.toggleOn
                     )
                 }
                 .navigationBarTitle("Daily Intake", displayMode: .inline)
@@ -92,39 +91,25 @@ struct DailyIntakeView: View {
                         }
                     }
                 }
-                .onChange(of: caloriesFocused) {
-                    dailyIntakeViewModel.handleCaloriesFocusChange(
-                        to: caloriesFocused
-                    )
+                .onChange(of: focusMacronutrients) {
+                    if let focusMacronutrients {
+                        dailyIntakeViewModel
+                            .handleMacronutrientFocusChange(
+                                focus: focusMacronutrients,
+                                didGainFocus: false
+                            )
+                    }
                 }
                 .onChange(of: focusMacronutrients) {
-                    if let lostFocus = dailyIntakeViewModel.previousFocus,
-                       lostFocus != focusMacronutrients {
-                        dailyIntakeViewModel.handleMacronutrientFocusChange(
-                            focus: lostFocus,
-                            didGainFocus: false
-                        )
-                    }
-                    
-                    if let gainedFocus = focusMacronutrients {
-                        dailyIntakeViewModel.handleMacronutrientFocusChange(
-                            focus: gainedFocus,
-                            didGainFocus: true
-                        )
-                        
-                        DispatchQueue.main.asyncAfter(
-                            deadline: .now() + 0.15
-                        ) {
-                            withAnimation {
-                                proxy.scrollTo(
-                                    gainedFocus.scrollID,
-                                    anchor: gainedFocus.scrollAnchor
-                                )
-                            }
+                    guard let field = focusMacronutrients else { return }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation {
+                            proxy.scrollTo(
+                                field.scrollID,
+                                anchor: field.scrollAnchor
+                            )
                         }
                     }
-                    
-                    dailyIntakeViewModel.previousFocus = focusMacronutrients
                 }
                 .alert(
                     "Error",

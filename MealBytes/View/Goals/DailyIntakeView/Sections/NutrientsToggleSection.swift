@@ -9,18 +9,11 @@ import SwiftUI
 
 struct NutrientsToggleSection: View {
     @Binding var toggleOn: Bool
-    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         SectionStyleContainer(
             mainContent: {
-                Toggle(isOn: Binding(
-                    get: { dailyIntakeViewModel.toggleOn },
-                    set: {
-                        dailyIntakeViewModel.restoreInputsIfNeeded()
-                        dailyIntakeViewModel.toggleOn = $0
-                    }
-                )) {
+                Toggle(isOn: $toggleOn) {
                     Text("Macronutrient Metrics")
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .customGreen))
