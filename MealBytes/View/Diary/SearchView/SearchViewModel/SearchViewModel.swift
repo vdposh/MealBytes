@@ -130,7 +130,6 @@ final class SearchViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.appError = .network
                 self.isLoading = false
             }
         }
