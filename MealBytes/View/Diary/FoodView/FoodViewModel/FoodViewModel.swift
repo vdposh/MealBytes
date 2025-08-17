@@ -26,32 +26,35 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    private let initialMeasurementDescription: String
-    private let showSaveRemoveButton: Bool
     private let formatter = Formatter()
     private let originalMealType: MealType
     private let originalCreatedAt: Date
     private let originalMealItemId: UUID
-    let food: Food
-    var mealType: MealType
-    var didChangeMealType: Bool {
+    private let initialMeasurementDescription: String
+    private let showSaveRemoveButton: Bool
+    private var didChangeMealType: Bool {
         mealType != originalMealType
     }
     
+    let food: Food
+    var mealType: MealType
+    
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    let searchViewModel: SearchViewModel
-    let mainViewModel: MainViewModel
+    private let searchViewModel: SearchViewModelProtocol
+    let mainViewModel: MainViewModelProtocol
     
-    init(food: Food,
-         mealType: MealType,
-         searchViewModel: SearchViewModel,
-         mainViewModel: MainViewModel,
-         initialAmount: String = "",
-         initialMeasurementDescription: String = "",
-         showSaveRemoveButton: Bool = false,
-         originalCreatedAt: Date = Date(),
-         originalMealItemId: UUID? = nil) {
+    init(
+        food: Food,
+        mealType: MealType,
+        searchViewModel: SearchViewModelProtocol,
+        mainViewModel: MainViewModelProtocol,
+        initialAmount: String = "",
+        initialMeasurementDescription: String = "",
+        showSaveRemoveButton: Bool = false,
+        originalCreatedAt: Date = Date(),
+        originalMealItemId: UUID? = nil
+    ) {
         let roundedAmount = Formatter().formattedValue(
             Double(initialAmount),
             unit: .empty,
@@ -98,16 +101,18 @@ final class FoodViewModel: ObservableObject {
             case let appError as AppError:
                 self.appError = appError
             default:
-                self.appError = .network
+                self.appError = .networkRefresh
             }
             isError = true
         }
         isLoading = false
     }
     
-    // MARK: - Add a food item
-    func addMealItemFoodView(in section: MealType, for date: Date) {
-        let nutrients = nutrientDetails.reduce(into: [NutrientType: Double]()) {
+    // MARK: - Add Food Item
+    func addMealItemFoodView(in section: MealType, for date: Date) async {
+        let nutrients = nutrientDetails.reduce(
+            into: [NutrientType: Double]()
+        ) {
             result, detail in
             result[detail.type] = detail.value
         }
@@ -115,27 +120,29 @@ final class FoodViewModel: ObservableObject {
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             portionUnit: nutrientDetails.first(where: {
-                $0.type == .servingSize })?.serving.metricServingUnit ?? "",
+                $0.type == .servingSize
+            })?.serving.metricServingUnit ?? "",
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
             amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date, mealType: mealType
         )
-        mainViewModel.addMealItemMainView(newItem, to: section, for: date)
         
-        Task {
-            do {
-                try await firestore.addMealItemFirestore(newItem)
-            } catch {
-                await MainActor.run {
-                    appError = .disconnected
-                }
+        await MainActor.run {
+            mainViewModel.addMealItemMainView(newItem, to: section, for: date)
+        }
+        
+        do {
+            try await firestore.addMealItemFirestore(newItem)
+        } catch {
+            await MainActor.run {
+                appError = .network
             }
         }
     }
     
-    // MARK: - Resave food
+    // MARK: - Update Food Item
     func updateMealItemFoodView(for date: Date) async {
         guard let selectedServing else { return }
         
@@ -156,62 +163,72 @@ final class FoodViewModel: ObservableObject {
             createdAt: createdAt
         )
         
-        Task {
-            do {
-                if originalMealType == mealType {
-                    await MainActor.run {
-                        mainViewModel.updateMealItemMainView(
-                            updatedMealItem,
-                            for: mealType,
-                            on: date
-                        )
-                    }
-                    try await firestore.updateMealItemFirestore(updatedMealItem)
-                } else {
-                    await MainActor.run {
-                        mainViewModel.deleteMealItemMainView(
-                            with: originalMealItemId,
-                            for: originalMealType
-                        )
-                    }
-                    
-                    if mainViewModel.filteredMealItems(for: originalMealType,
-                                                       on: date).isEmpty {
-                        await MainActor.run {
-                            mainViewModel
-                                .expandedSections[originalMealType] = false
-                        }
-                    }
-                    
-                    await MainActor.run {
-                        mainViewModel.addMealItemMainView(
-                            updatedMealItem,
-                            to: mealType,
-                            for: date
-                        )
-                        mainViewModel.expandedSections[mealType] = true
-                    }
-                    
-                    try await firestore.updateMealItemFirestore(updatedMealItem)
-                }
-            } catch {
+        do {
+            if originalMealType == mealType {
                 await MainActor.run {
-                    appError = .disconnected
+                    mainViewModel.updateMealItemMainView(
+                        updatedMealItem,
+                        for: mealType,
+                        on: date
+                    )
                 }
+                
+                try await firestore.updateMealItemFirestore(updatedMealItem)
+            } else {
+                await MainActor.run {
+                    mainViewModel.deleteMealItemMainView(
+                        with: originalMealItemId,
+                        for: originalMealType
+                    )
+                }
+                
+                if mainViewModel.filteredMealItems(
+                    for: originalMealType,
+                    on: date
+                ).isEmpty {
+                    await MainActor.run {
+                        mainViewModel.collapseSection(
+                            for: originalMealType,
+                            to: false
+                        )
+                    }
+                }
+                
+                await MainActor.run {
+                    mainViewModel.addMealItemMainView(
+                        updatedMealItem,
+                        to: mealType,
+                        for: date
+                    )
+                    mainViewModel.collapseSection(
+                        for: originalMealType,
+                        to: true
+                    )
+                }
+                
+                try await firestore.updateMealItemFirestore(updatedMealItem)
+            }
+        } catch {
+            await MainActor.run {
+                appError = .network
             }
         }
     }
     
-    // MARK: - Delete food
-    func deleteMealItemFoodView() async {
-        mainViewModel.deleteMealItemMainView(with: originalMealItemId,
-                                             for: originalMealType)
+    // MARK: - Delete Food Item
+    func deleteMealItemFoodView() {
+        mainViewModel.deleteMealItemMainView(
+            with: originalMealItemId,
+            for: originalMealType
+        )
     }
     
     // MARK: - Bookmark Management
-    func toggleBookmarkFoodView() {
-        isBookmarkFilled.toggle()
-        searchViewModel.toggleBookmarkSearchView(for: food)
+    func toggleBookmarkFoodView() async {
+        await MainActor.run {
+            isBookmarkFilled.toggle()
+        }
+        await searchViewModel.toggleBookmarkSearchView(for: food)
     }
     
     // MARK: - Serving Selection and Amount Setting
@@ -228,24 +245,8 @@ final class FoodViewModel: ObservableObject {
         }
         
         switch serving.isMetricMeasurement {
-        case true:
-            self.amount = "100"
-        case false:
-            self.amount = "1"
-        }
-    }
-    
-    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
-        if newValue {
-            originalAmount = amount
-            amount = ""
-        } else {
-            if let newAmount = Double(amount.sanitizedForDouble),
-               newAmount > 0 {
-                originalAmount = amount
-            } else {
-                amount = originalAmount
-            }
+        case true: self.amount = "100"
+        case false: self.amount = "1"
         }
     }
     
@@ -263,8 +264,10 @@ final class FoodViewModel: ObservableObject {
         }
         
         if description.hasPrefix("serving"),
-           let range = description.range(of: #"serving\s*\([^)]+\)"#,
-                                         options: .regularExpression) {
+           let range = description.range(
+            of: #"serving\s*\([^)]+\)"#,
+            options: .regularExpression
+           ) {
             description.replaceSubrange(range, with: "serving")
         }
         
@@ -280,29 +283,31 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Button States
     var canAddFood: Bool {
-        let amountValue = Double(amount.sanitizedForDouble) ?? 0
-        return amountValue > 0
+        amount.isValidNumericInput()
     }
     
     // MARK: - Nutrient Calculation
     private func calculateSelectedAmountValue() -> Double {
-        guard let selectedServing else { return 1 }
+        guard let selectedServing, canAddFood else { return 0 }
+        
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
-        return calculateBaseAmountValue(amountValue,
-                                        serving: selectedServing)
+        return calculateBaseAmountValue(
+            amountValue,
+            serving: selectedServing
+        )
     }
     
-    private func calculateBaseAmountValue(_ amount: Double,
-                                          serving: Serving) -> Double {
+    private func calculateBaseAmountValue(
+        _ amount: Double,
+        serving: Serving
+    ) -> Double {
         if amount.isZero {
             return 0
         }
         
         switch serving.isMetricMeasurement {
-        case true:
-            return amount * 0.01
-        case false:
-            return amount
+        case true: return amount * 0.01
+        case false: return amount
         }
     }
     
@@ -332,6 +337,42 @@ final class FoodViewModel: ObservableObject {
                 )
             }
     }
+    
+    // MARK: - UI Helper
+    var viewState: FoodViewState {
+        if let error = appError {
+            return .error(error)
+        } else if isLoading {
+            return .loading
+        } else {
+            return .loaded
+        }
+    }
+    
+    // MARK: - Text
+    func titleColor(for value: String) -> Color {
+        value.isValidNumericInput() ? .secondary : .customRed
+    }
+    
+    // MARK: - Keyboard
+    func normalizeAmount() {
+        amount = amount.trimmedLeadingZeros
+    }
+    
+    // MARK: - Focus
+    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
+        if newValue {
+            originalAmount = amount
+            amount = ""
+        } else {
+            if let newAmount = Double(amount.sanitizedForDouble),
+               newAmount > 0 {
+                originalAmount = amount
+            } else {
+                amount = originalAmount
+            }
+        }
+    }
 }
 
 enum MeasurementUnit: String, CaseIterable, Identifiable {
@@ -341,31 +382,34 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     var id: String { self.rawValue }
 }
 
-#Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+enum FoodViewState {
+    case loading
+    case error(AppError)
+    case loaded
 }
 
 #Preview {
-    FoodView(
-        navigationTitle: "Add to Diary",
-        food: Food(
-            searchFoodId: 3092,
-            searchFoodName: "Egg",
-            searchFoodDescription: "1 cup"
-        ),
-        searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-        mainViewModel: MainViewModel(),
-        mealType: .breakfast,
-        amount: "1",
-        measurementDescription: "Grams",
-        showAddButton: false,
-        showSaveRemoveButton: true,
-        showMealTypeButton: true,
-        originalMealItemId: UUID()
-    )
+    PreviewContentView.contentView
+}
+
+#Preview {
+    NavigationStack {
+        FoodView(
+            navigationTitle: "Add to Diary",
+            food: Food(
+                searchFoodId: 3092,
+                searchFoodName: "Egg",
+                searchFoodDescription: "1 cup"
+            ),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "1",
+            measurementDescription: "Grams",
+            showAddButton: false,
+            showSaveRemoveButton: true,
+            showMealTypeButton: true,
+            originalMealItemId: UUID()
+        )
+    }
 }

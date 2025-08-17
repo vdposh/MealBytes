@@ -27,6 +27,7 @@ struct DetailedInformationSection: View {
                         )
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     Text(nutrient.formattedValue)
                         .foregroundColor(
                             nutrient.isSubValue ? .secondary : .primary

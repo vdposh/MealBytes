@@ -42,10 +42,8 @@ enum NutrientType: String, Identifiable, CaseIterable {
     
     var alternativeTitle: String {
         switch self {
-        case .carbohydrate: 
-            "Carb"
-        default:
-            title
+        case .carbohydrate: "Carb"
+        default: title
         }
     }
     
@@ -84,8 +82,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
             } else {
                 return serving.metricServingUnit
             }
-        default:
-            return baseUnit
+        default: return baseUnit
         }
     }
     

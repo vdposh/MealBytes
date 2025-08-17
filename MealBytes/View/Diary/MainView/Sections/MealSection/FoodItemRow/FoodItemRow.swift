@@ -78,9 +78,10 @@ struct FoodItemRow: View {
                             unit: .empty
                         )
                     )
-                    if mainViewModel.canDisplayRdi() {
-                        Text(mainViewModel.rdiPercentageText(
-                            for: mealItem.nutrients[.calories]))
+                    if mainViewModel.canDisplayIntake() {
+                        Text(mainViewModel.intakePercentageText(
+                            for: mealItem.nutrients[.calories])
+                        )
                         .lineLimit(1)
                         .foregroundColor(.secondary)
                         .font(.subheadline)
@@ -95,10 +96,5 @@ struct FoodItemRow: View {
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

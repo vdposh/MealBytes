@@ -79,7 +79,7 @@ final class ResetViewModel: ObservableObject {
         return !email.isEmpty
     }
     
-    // MARK: - Colors
+    // MARK: - Color
     func titleColor(for text: String) -> Color {
         return text.isEmpty ? .customRed : .secondary
     }
@@ -88,12 +88,9 @@ final class ResetViewModel: ObservableObject {
     private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
-            case .invalidEmail:
-                return .invalidEmail
-            case .networkError:
-                return .networkError
-            default:
-                return .unknownError
+            case .invalidEmail: return .invalidEmail
+            case .networkError: return .networkError
+            default: return .unknownError
             }
         }
         return .unknownError

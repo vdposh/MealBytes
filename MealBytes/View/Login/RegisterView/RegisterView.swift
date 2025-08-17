@@ -20,15 +20,18 @@ struct RegisterView: View {
                 LoginTextFieldView(
                     text: $registerViewModel.email,
                     titleColor: registerViewModel.titleColor(
-                        for: registerViewModel.email)
+                        for: registerViewModel.email
+                    )
                 )
+                .textContentType(.emailAddress)
                 
                 SecureFieldView(
                     text: $registerViewModel.password,
                     title: "Password",
                     placeholder: "Enter password",
                     titleColor: registerViewModel.titleColor(
-                        for: registerViewModel.password)
+                        for: registerViewModel.password
+                    )
                 )
                 
                 SecureFieldView(
@@ -36,7 +39,8 @@ struct RegisterView: View {
                     title: "Confirm Password",
                     placeholder: "Re-enter password",
                     titleColor: registerViewModel.titleColor(
-                        for: registerViewModel.confirmPassword)
+                        for: registerViewModel.confirmPassword
+                    )
                 )
                 
                 if registerViewModel.isRegisterLoading {

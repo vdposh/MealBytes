@@ -9,30 +9,51 @@ import SwiftUI
 import Combine
 import FirebaseCore
 
+protocol MainViewModelProtocol {
+    var date: Date { get set }
+    var intakeSource: String { get }
+    var displayIntake: Bool { get }
+    
+    func loadMainData() async
+    func saveCurrentIntakeMainView(source: String) async
+    func saveDisplayIntakeMainView(_ newValue: Bool) async
+    func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
+    func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
+    func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
+    func deleteMealItemMainView(with id: UUID, for: MealType)
+    func updateIntake(to value: String)
+    func collapseSection(for mealType: MealType, to isExpanded: Bool)
+    func setDisplayIntake(_ value: Bool)
+    func collapseAllSections()
+    func resetDateToToday()
+    func resetMainState()
+}
+
 final class MainViewModel: ObservableObject {
     @Published var date = Date() {
         didSet {
-            recalculateNutrients(for: date)
-            updateProgress()
-            collapseAllSections()
+            handleDateChange(from: oldValue, to: date)
         }
     }
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
-    @Published var uniqueID = UUID()
     @Published var appError: AppError?
-    @Published var rdiProgress: Double = 0.0
-    @Published var rdi: String = ""
+    @Published var uniqueId = UUID()
+    @Published var intakeProgress: Double = 0.0
+    @Published var intake: String = ""
+    @Published var intakeSource: String = ""
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
-    @Published var shouldDisplayRdi: Bool = true
+    @Published var displayIntake: Bool = true
     
-    let calendar = Calendar.current
     let formatter = Formatter()
+    let calendar = Calendar.current
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    lazy var searchViewModel = SearchViewModel(mainViewModel: self)
+    lazy var searchViewModel: SearchViewModelProtocol = SearchViewModel(
+        mainViewModel: self
+    )
     private var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -45,11 +66,24 @@ final class MainViewModel: ObservableObject {
         var sections = [MealType: Bool]()
         MealType.allCases.forEach { sections[$0] = false }
         self.expandedSections = sections
-        setupBindings()
+        setupBindingsMainView()
     }
     
     deinit {
         cancellables.removeAll()
+    }
+    
+    // MARK: - Load Main Data
+    func loadMainData() async {
+        async let mealItemsTask: () = loadMealItemsMainView()
+        async let currentIntakeTask: () = loadCurrentIntakeMainView()
+        async let displayIntakeTask: () = loadDisplayIntakeMainView()
+        
+        _ = await (mealItemsTask, currentIntakeTask, displayIntakeTask)
+        
+        await MainActor.run {
+            updateProgress()
+        }
     }
     
     // MARK: - Load Meal Item
@@ -70,19 +104,23 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Add Food Item
-    func addMealItemMainView(_ item: MealItem,
-                             to mealType: MealType,
-                             for date: Date) {
+    // MARK: - Add Meal Item
+    func addMealItemMainView(
+        _ item: MealItem,
+        to mealType: MealType,
+        for date: Date
+    ) {
         mealItems[mealType, default: []].append(item)
         expandedSections[mealType] = true
         recalculateNutrients(for: date)
     }
     
     // MARK: - Update Meal Item
-    func updateMealItemMainView(_ updatedItem: MealItem,
-                                for mealType: MealType,
-                                on date: Date) {
+    func updateMealItemMainView(
+        _ updatedItem: MealItem,
+        for mealType: MealType,
+        on date: Date
+    ) {
         guard let items = mealItems[mealType] else { return }
         
         if let index = items.firstIndex(where: {
@@ -90,21 +128,7 @@ final class MainViewModel: ObservableObject {
             calendar.isDate($0.date, inSameDayAs: date)
         }) {
             mealItems[mealType]?[index] = updatedItem
-        } else {
-            return
-        }
-        
-        Task {
-            do {
-                try await firestore.updateMealItemFirestore(updatedItem)
-                await MainActor.run {
-                    recalculateNutrients(for: date)
-                }
-            } catch {
-                await MainActor.run {
-                    self.appError = .network
-                }
-            }
+            recalculateNutrients(for: date)
         }
     }
     
@@ -123,8 +147,7 @@ final class MainViewModel: ObservableObject {
                 }
                 
                 do {
-                    try await firestore
-                        .deleteMealItemFirestore(itemToDelete)
+                    try await firestore.deleteMealItemFirestore(itemToDelete)
                 } catch {
                     await MainActor.run {
                         self.appError = .network
@@ -141,12 +164,13 @@ final class MainViewModel: ObservableObject {
         ).count == 1 ? nil : .destructive
     }
     
-    // MARK: - Load RDI
-    private func loadMainRdiMainView() async {
+    // MARK: - Load Current Intake
+    private func loadCurrentIntakeMainView() async {
         do {
-            let fetchedRdi = try await firestore.loadMainRdiFirestore()
+            let fetchedData = try await firestore.loadCurrentIntakeFirestore()
             await MainActor.run {
-                self.rdi = fetchedRdi
+                self.intake = fetchedData.intake
+                self.intakeSource = fetchedData.source
             }
         } catch {
             await MainActor.run {
@@ -155,10 +179,15 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save RDI
-    func saveMainRdiMainView() async {
+    // MARK: - Save Current Intake
+    func saveCurrentIntakeMainView(source: String) async {
         do {
-            try await firestore.saveMainRdiFirestore(rdi)
+            let intakeData = CurrentIntake(intake: intake, source: source)
+            try await firestore.saveCurrentIntakeFirestore(intakeData)
+            
+            await MainActor.run {
+                self.intakeSource = source
+            }
         } catch {
             await MainActor.run {
                 appError = .network
@@ -166,12 +195,12 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Display RDI
-    private func loadDisplayRdiMainView() async {
+    // MARK: - Load Display Intake
+    private func loadDisplayIntakeMainView() async {
         do {
-            let value = try await firestore.loadDisplayRdiFirestore()
+            let value = try await firestore.loadDisplayIntakeFirestore()
             await MainActor.run {
-                shouldDisplayRdi = value
+                displayIntake = value
             }
         } catch {
             await MainActor.run {
@@ -180,14 +209,14 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save Display RDI
-    func saveDisplayRdiMainView(_ newValue: Bool) async {
+    // MARK: - Save Display Intake
+    func saveDisplayIntakeMainView(_ newValue: Bool) async {
         await MainActor.run {
-            shouldDisplayRdi = newValue
+            displayIntake = newValue
         }
         
         do {
-            try await firestore.saveDisplayRdiFirestore(newValue)
+            try await firestore.saveDisplayIntakeFirestore(newValue)
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -195,45 +224,8 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Data
-    func loadMainData() async {
-        async let mealItemsTask: () = loadMealItemsMainView()
-        async let mainRdiTask: () = loadMainRdiMainView()
-        async let displayRdiTask: () = loadDisplayRdiMainView()
-        
-        _ = await (mealItemsTask, mainRdiTask, displayRdiTask)
-        
-        await MainActor.run {
-            updateProgress()
-        }
-    }
-    
-    //MARK: - RDI % calculation
-    private func calculateRdiPercentage(from calories: Double?) -> String {
-        guard let rdiValue = Double(rdi), rdiValue > 0 else { return "0%" }
-        let safeCalories = calories ?? 0.0
-        let percentage = round((safeCalories / rdiValue) * 100)
-        return "\(Int(percentage))%"
-    }
-    
-    private func updateRdiProgress(calories: Double) {
-        guard let rdiValue = Double(rdi), rdiValue > 0 else {
-            rdiProgress = 0.0
-            return
-        }
-        rdiProgress = min(max(calories / rdiValue, 0), 1)
-    }
-    
-    private func updateProgress() {
-        let calories = summariesForCaloriesSection()[.calories] ?? 0.0
-        updateRdiProgress(calories: calories)
-    }
-    
-    func rdiPercentageText(for calories: Double?) -> String {
-        return calculateRdiPercentage(from: calories ?? 0.0)
-    }
-    
-    private func setupBindings() {
+    // MARK: - Calculation (Intake)
+    private func setupBindingsMainView() {
         $mealItems
             .combineLatest($nutrientSummaries)
             .sink { [weak self] _, _ in
@@ -243,22 +235,50 @@ final class MainViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func canDisplayRdi() -> Bool {
-        return shouldDisplayRdi && !rdi.isEmpty
+    private func calculateIntakePercentage(from calories: Double?) -> String {
+        guard let intakeValue = Double(intake),
+              intakeValue > 0 else { return "0%" }
+        let safeCalories = calories ?? 0.0
+        let percentage = round((safeCalories / intakeValue) * 100)
+        return "\(Int(percentage))%"
+    }
+    
+    private func updateIntakeProgress(calories: Double) {
+        guard let intakeValue = Double(intake), intakeValue > 0 else {
+            intakeProgress = 0.0
+            return
+        }
+        intakeProgress = min(max(calories / intakeValue, 0), 1)
+    }
+    
+    private func updateProgress() {
+        let calories = summariesForCaloriesSection()[.calories] ?? 0.0
+        updateIntakeProgress(calories: calories)
+    }
+    
+    func intakePercentageText(for calories: Double?) -> String {
+        return calculateIntakePercentage(from: calories ?? 0.0)
+    }
+    
+    func canDisplayIntake() -> Bool {
+        return displayIntake && !intake.isEmpty
     }
     
     // MARK: - Recalculate Nutrients
     private func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(
-            into: [NutrientType: Double]()) { result, mealList in
-                mealList.forEach { item in
-                    guard calendar.isDate(item.date,
-                                          inSameDayAs: date) else { return }
-                    item.nutrients.forEach { nutrient, value in
-                        result[nutrient, default: 0.0] += value
-                    }
+            into: [NutrientType: Double]()
+        ) { result, mealList in
+            mealList.forEach { item in
+                guard calendar.isDate(
+                    item.date,
+                    inSameDayAs: date
+                ) else { return }
+                item.nutrients.forEach { nutrient, value in
+                    result[nutrient, default: 0.0] += value
                 }
             }
+        }
     }
     
     // MARK: - Summary Calories
@@ -266,8 +286,10 @@ final class MainViewModel: ObservableObject {
         mealItems.values.reduce(
             into: [NutrientType: Double]()) { result, items in
                 items.forEach { item in
-                    guard calendar.isDate(item.date,
-                                          inSameDayAs: date) else { return }
+                    guard calendar.isDate(
+                        item.date,
+                        inSameDayAs: date
+                    ) else { return }
                     item.nutrients.forEach { nutrient, value in
                         result[nutrient, default: 0.0] += value
                     }
@@ -276,8 +298,10 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Filter Meal Items
-    func filteredMealItems(for mealType: MealType,
-                           on date: Date) -> [MealItem] {
+    func filteredMealItems(
+        for mealType: MealType,
+        on date: Date
+    ) -> [MealItem] {
         return mealItems[mealType, default: []].filter {
             calendar.isDate($0.date, inSameDayAs: date)
         }
@@ -289,8 +313,7 @@ final class MainViewModel: ObservableObject {
             .getDetailedNutrients(from: nutrientSummaries)
         
         switch isExpanded {
-        case true:
-            return allNutrients
+        case true: return allNutrients
         case false:
             return allNutrients.filter {
                 [.calories, .fat, .protein, .carbohydrate].contains($0.type)
@@ -298,18 +321,15 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Value for Nutrient Type
-    func value(for type: NutrientType) -> Double {
-        nutrientSummaries[type] ?? 0.0
-    }
-    
     // MARK: - Format Serving Size
-    func formattedServingSize(for mealItem: MealItem) -> String {
-        return formatter.formattedValue(mealItem.nutrients[.servingSize],
-                                        unit: .empty)
+    private func formattedServingSize(for mealItem: MealItem) -> String {
+        return formatter.formattedValue(
+            mealItem.nutrients[.servingSize],
+            unit: .empty
+        )
     }
     
-    func formattedMeasurement(for mealItem: MealItem) -> String {
+    private func formattedMeasurement(for mealItem: MealItem) -> String {
         if mealItem.measurementDescription.starts(with: "serving (") {
             return "serving"
         } else {
@@ -335,23 +355,31 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Format Calories
     func formattedCalories(_ calories: Double) -> String {
-        return formatter.formattedValue(calories,
-                                        unit: .empty,
-                                        alwaysRoundUp: true)
+        return formatter.formattedValue(
+            calories,
+            unit: .empty,
+            alwaysRoundUp: true
+        )
     }
     
     // MARK: - Format Value
-    func formattedValue(_ value: Double,
-                        unit: Formatter.Unit,
-                        alwaysRoundUp: Bool) -> String {
-        return formatter.formattedValue(value,
-                                        unit: unit,
-                                        alwaysRoundUp: alwaysRoundUp)
+    func formattedValue(
+        _ value: Double,
+        unit: Formatter.Unit,
+        alwaysRoundUp: Bool
+    ) -> String {
+        return formatter.formattedValue(
+            value,
+            unit: unit,
+            alwaysRoundUp: alwaysRoundUp
+        )
     }
     
     // MARK: - Calculate Totals for Nutrients
-    func totalNutrient(_ nutrient: NutrientType,
-                       for mealItems: [MealItem]) -> Double {
+    func totalNutrient(
+        _ nutrient: NutrientType,
+        for mealItems: [MealItem]
+    ) -> Double {
         mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
     }
     
@@ -381,9 +409,11 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Calculate Date Offset
     func dateByAddingOffset(for offset: Int) -> Date {
-        Calendar.current.date(byAdding: .day,
-                              value: offset,
-                              to: Date()) ?? Date()
+        Calendar.current.date(
+            byAdding: .day,
+            value: offset,
+            to: Date()
+        ) ?? Date()
     }
     
     
@@ -392,36 +422,27 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Formatted year for Calendar
-    func formattedDate(isAbbreviated: Bool) -> String {
-        var monthFormat: Date.FormatStyle.Symbol.Month
-        var weekdayFormat: Date.FormatStyle.Symbol.Weekday
-        
-        if isAbbreviated {
-            monthFormat = .abbreviated
-            weekdayFormat = .abbreviated
-        } else {
-            monthFormat = .wide
-            weekdayFormat = .wide
-        }
-        
+    func formattedDate() -> String {
         if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
             return date.formatted(
-                .dateTime.weekday(weekdayFormat).day().month(.wide)
+                .dateTime.weekday(.wide).day().month(.wide)
             )
         } else {
             return date.formatted(
-                .dateTime.weekday(weekdayFormat).day().month(monthFormat).year()
+                .dateTime.weekday(.wide).day().month(.wide).year()
             )
         }
     }
     
     // MARK: - Color for Calendar
-    func color(for element: DisplayElement,
-               date: Date? = nil,
-               isSelected: Bool = false,
-               isToday: Bool = false,
-               forBackground: Bool = false,
-               forcePrimary: Bool = false) -> Color {
+    func color(
+        for element: DisplayElement,
+        date: Date? = nil,
+        isSelected: Bool = false,
+        isToday: Bool = false,
+        forBackground: Bool = false,
+        forcePrimary: Bool = false
+    ) -> Color {
         if forBackground {
             return isSelected ? .customGreen.opacity(0.2) : .clear
         }
@@ -431,9 +452,11 @@ final class MainViewModel: ObservableObject {
         if forcePrimary {
             return .primary
         }
-        if let date, !calendar.isDate(date,
-                                      equalTo: self.date,
-                                      toGranularity: .month) {
+        if let date, !calendar.isDate(
+            date,
+            equalTo: self.date,
+            toGranularity: .month
+        ) {
             return .secondary
         }
         return element == .day ? .primary : .secondary
@@ -446,17 +469,21 @@ final class MainViewModel: ObservableObject {
         } != nil
     }
     
-    func selectDate(_ date: Date,
-                    selectedDate: inout Date,
-                    isPresented: inout Bool) {
+    func selectDate(
+        _ date: Date,
+        selectedDate: inout Date,
+        isPresented: inout Bool
+    ) {
         selectedDate = date
         isPresented = false
     }
     
     func changeMonth(by value: Int, selectedDate: inout Date) {
-        if let newDate = calendar.date(byAdding: .month,
-                                       value: value,
-                                       to: selectedDate) {
+        if let newDate = calendar.date(
+            byAdding: .month,
+            value: value,
+            to: selectedDate
+        ) {
             selectedDate = newDate
         }
     }
@@ -469,15 +496,21 @@ final class MainViewModel: ObservableObject {
                 day: 1
             )
         ),
-              let range = calendar.range(of: .day,
-                                         in: .month,
-                                         for: startOfMonth),
-              let prevMonth = calendar.date(byAdding: .month,
-                                            value: -1,
-                                            to: startOfMonth),
-              let prevMonthRange = calendar.range(of: .day,
-                                                  in: .month,
-                                                  for: prevMonth)
+              let range = calendar.range(
+                of: .day,
+                in: .month,
+                for: startOfMonth
+              ),
+              let prevMonth = calendar.date(
+                byAdding: .month,
+                value: -1,
+                to: startOfMonth
+              ),
+              let prevMonthRange = calendar.range(
+                of: .day,
+                in: .month,
+                for: prevMonth
+              )
         else { return [] }
         
         let days = range.compactMap {
@@ -489,34 +522,51 @@ final class MainViewModel: ObservableObject {
         
         let prevDays = prevMonthRange.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)
-        }
-            .suffix(adjustedWeekday)
+        }.suffix(adjustedWeekday)
         
         let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
         
-        let nextDays: [Date] = (fillerCount > 0
-                                ? Array(1...fillerCount)
-                                : []
+        let nextDays: [Date] = (
+            fillerCount > 0
+            ? Array(1...fillerCount)
+            : []
         ).compactMap {
             guard let last = days.last else { return nil }
             let candidate = calendar.date(byAdding: .day, value: $0, to: last)
             
             guard let date = candidate else { return nil }
             
-            return calendar.isDate(date,
-                                   equalTo: startOfMonth,
-                                   toGranularity: .month)
-            ? nil : date
+            return calendar.isDate(
+                date,
+                equalTo: startOfMonth,
+                toGranularity: .month
+            ) ? nil : date
         }
         
         return Array(prevDays) + days + nextDays
     }
     
-    //MARK: - Close all sections
+    private func handleDateChange(from oldDate: Date, to newDate: Date) {
+        guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
+        
+        recalculateNutrients(for: newDate)
+        updateProgress()
+        collapseAllSections()
+    }
+    
+    // MARK: - Close sections
     func collapseAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = false
         }
+    }
+    
+    // MARK: - Reset State
+    func resetMainState() {
+        updateIntake(to: "")
+        collapseAllSections()
+        resetDateToToday()
+        setDisplayIntake(true)
     }
 }
 
@@ -530,11 +580,24 @@ enum DisplayElement {
     case weekday
 }
 
+extension MainViewModel: MainViewModelProtocol {
+    func resetDateToToday() {
+        date = Date()
+    }
+    
+    func collapseSection(for mealType: MealType, to isExpanded: Bool) {
+        expandedSections[mealType] = isExpanded
+    }
+    
+    func setDisplayIntake(_ value: Bool) {
+        displayIntake = value
+    }
+    
+    func updateIntake(to value: String) {
+        intake = value
+    }
+}
+
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

@@ -20,7 +20,8 @@ struct ResetView: View {
                 LoginTextFieldView(
                     text: $resetViewModel.email,
                     titleColor: resetViewModel.titleColor(
-                        for: resetViewModel.email)
+                        for: resetViewModel.email
+                    )
                 )
                 
                 if resetViewModel.isLoading {

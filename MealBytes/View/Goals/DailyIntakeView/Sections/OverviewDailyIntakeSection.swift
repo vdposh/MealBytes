@@ -1,0 +1,31 @@
+//
+//  OverviewDailyIntakeSection.swift
+//  MealBytes
+//
+//  Created by Vlad Posherstnik on 19/07/2025.
+//
+
+import SwiftUI
+
+struct OverviewDailyIntakeSection: View {
+    
+    var body: some View {
+        SectionStyleContainer(
+            mainContent: {
+                EmptyView()
+            },
+            title: "Set daily intake by entering calories directly or calculate it based on macronutrient distribution."
+        )
+    }
+}
+
+#Preview {
+    let mainViewModel = MainViewModel()
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
+    
+    return NavigationStack {
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
+    }
+}

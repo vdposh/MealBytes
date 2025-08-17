@@ -8,6 +8,12 @@
 import SwiftUI
 import Combine
 
+protocol SearchViewModelProtocol {
+    func toggleBookmarkSearchView(for food: Food) async
+    func loadBookmarksData(for mealType: MealType) async
+    func isBookmarkedSearchView(_ food: Food) -> Bool
+}
+
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
@@ -15,84 +21,92 @@ final class SearchViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var foodToRemove: Food?
     @Published var selectedMealType: MealType = .breakfast
-    @Published var showBookmarkDialog: Bool = false
-    @Published var showMealType: Bool = false
-    @Published var isLoading: Bool = false
     @Published var query: String = "" {
         didSet {
-            guard query != oldValue else { return }
-            currentPage = 0
-            switch query.isEmpty {
-            case true:
+            if query.isEmpty {
                 resetSearch()
-            case false:
-                queueSearch(query)
             }
         }
     }
+    @Published var showBookmarkDialog: Bool = false
+    @Published var showMealType: Bool = false
+    @Published var isLoading: Bool = false
     
-    var shouldResetQuery = false
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
     
     private let networkManager: NetworkManagerProtocol = NetworkManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
-    let mainViewModel: MainViewModel
+    let mainViewModel: MainViewModelProtocol
     
-    private var searchCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     
-    init(mainViewModel: MainViewModel) {
+    init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        setupBindingsSearchView()
     }
     
     deinit {
-        searchCancellable?.cancel()
+        cancellables.removeAll()
     }
     
     // MARK: - Search
-    func queueSearch(_ query: String) {
-        searchCancellable?.cancel()
-        searchCancellable = $query
+    private func setupBindingsSearchView() {
+        $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
+            .filter { !$0.isEmpty }
             .sink { [weak self] query in
                 guard let self else { return }
-                
-                if query.isEmpty {
-                    self.foods = self.favoriteFoods
-                    self.appError = nil
-                    return
-                }
-                
-                self.isLoading = true
-                
-                Task {
-                    do {
-                        let foods = try await self.networkManager
-                            .fetchFoods(query: query,
-                                        page: self.currentPage)
-                        await MainActor.run {
-                            self.foods = foods
-                            self.appError = nil
-                            self.isLoading = false
-                        }
-                    } catch {
-                        await MainActor.run {
-                            switch error {
-                            case let appError as AppError:
-                                self.appError = appError
-                            default:
-                                self.appError = .network
-                            }
-                            self.isLoading = false
-                        }
-                    }
-                }
+                self.currentPage = 0
+                self.performSearch(query)
             }
+            .store(in: &cancellables)
     }
     
-    // MARK: - Load Bookmarks
+    func performSearch(_ query: String) {
+        if query.isEmpty {
+            foods = favoriteFoods
+            appError = nil
+            isLoading = false
+            return
+        }
+        
+        isLoading = true
+        
+        Task {
+            do {
+                let foods = try await networkManager.fetchFoods(
+                    query: query,
+                    page: currentPage
+                )
+                await MainActor.run {
+                    self.foods = foods
+                    self.appError = nil
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    switch error {
+                    case let appError as AppError:
+                        self.appError = appError
+                    default: self.appError = .networkRefresh
+                    }
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func resetSearch() {
+        currentPage = 0
+        foods = favoriteFoods
+        appError = nil
+        isLoading = false
+    }
+    
+    // MARK: - Load Bookmarks Data
     func loadBookmarksSearchView(for mealType: MealType) async {
         guard firebaseAuth.currentUserExists() else { return }
         
@@ -101,38 +115,31 @@ final class SearchViewModel: ObservableObject {
         }
         
         do {
-            let favoriteFoods = try await firestore
-                .loadBookmarksFirestore(for: mealType)
-            let bookmarked = Set(favoriteFoods.map { $0.searchFoodId })
-            
+            let favorites = try await firestore.loadBookmarksFirestore(
+                for: mealType
+            )
+            let bookmarked = Set(favorites.map { $0.searchFoodId })
             await MainActor.run {
-                self.favoriteFoods = favoriteFoods
+                self.favoriteFoods = favorites
                 self.bookmarkedFoods = bookmarked
                 if query.isEmpty {
-                    self.foods = favoriteFoods
+                    self.foods = favorites
                 }
                 self.isLoading = false
                 self.appError = nil
             }
         } catch {
             await MainActor.run {
-                self.appError = .disconnected
                 self.isLoading = false
             }
         }
     }
     
     func loadBookmarksData(for mealType: MealType) async {
-        shouldResetQuery = true
-        
-        if shouldResetQuery {
-            await MainActor.run {
-                query = ""
-                isLoading = true
-            }
-            shouldResetQuery = false
+        await MainActor.run {
+            query = ""
+            isLoading = true
         }
-        
         await loadBookmarksSearchView(for: mealType)
     }
     
@@ -143,42 +150,48 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - Toggle Bookmark
-    func toggleBookmarkSearchView(for food: Food) {
-        Task {
-            let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
-            
-            let updatedBookmarkedFoods: Set<Int>
-            if isAdding {
-                updatedBookmarkedFoods = bookmarkedFoods
-                    .union([food.searchFoodId])
+    func toggleBookmarkSearchView(for food: Food) async {
+        let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
+        
+        let updatedBookmarkedFoods: Set<Int>
+        if isAdding {
+            updatedBookmarkedFoods = bookmarkedFoods
+                .union([food.searchFoodId])
+        } else {
+            updatedBookmarkedFoods = bookmarkedFoods
+                .subtracting([food.searchFoodId])
+        }
+        
+        let updatedFavorites: [Food]
+        if isAdding {
+            if !favoriteFoods.contains(food) {
+                updatedFavorites = favoriteFoods + [food]
             } else {
-                updatedBookmarkedFoods = bookmarkedFoods
-                    .subtracting([food.searchFoodId])
+                updatedFavorites = favoriteFoods
             }
-            
-            let updatedFavorites: [Food]
-            if isAdding {
-                if !favoriteFoods.contains(food) {
-                    updatedFavorites = favoriteFoods + [food]
-                } else {
-                    updatedFavorites = favoriteFoods
-                }
+        } else {
+            updatedFavorites = favoriteFoods.filter { $0 != food }
+        }
+        
+        await MainActor.run {
+            self.favoriteFoods = updatedFavorites
+            self.bookmarkedFoods = updatedBookmarkedFoods
+            if query.isEmpty {
+                self.foods = updatedFavorites
             } else {
-                updatedFavorites = favoriteFoods.filter { $0 != food }
+                self.foods = self.foods
             }
-            
+        }
+        
+        do {
+            try await firestore.addBookmarkFirestore(
+                updatedFavorites,
+                for: selectedMealType
+            )
+        } catch {
             await MainActor.run {
-                self.favoriteFoods = updatedFavorites
-                self.bookmarkedFoods = updatedBookmarkedFoods
-                if query.isEmpty {
-                    self.foods = updatedFavorites
-                } else {
-                    self.foods = self.foods
-                }
+                self.appError = .network
             }
-            
-            try await firestore.addBookmarkFirestore(updatedFavorites,
-                                                     for: selectedMealType)
         }
     }
     
@@ -187,20 +200,25 @@ final class SearchViewModel: ObservableObject {
         bookmarkedFoods.contains(food.searchFoodId)
     }
     
-    func handleBookmarkAction(for food: Food) {
+    func handleBookmarkAction(for food: Food) async {
         if isBookmarkedSearchView(food) {
-            foodToRemove = food
-            showBookmarkDialog = true
+            await MainActor.run {
+                foodToRemove = food
+                showBookmarkDialog = true
+            }
         } else {
-            toggleBookmarkSearchView(for: food)
+            await toggleBookmarkSearchView(for: food)
         }
     }
     
-    func confirmRemoveBookmark() {
+    func confirmRemoveBookmark() async {
         if let foodToRemove {
-            toggleBookmarkSearchView(for: foodToRemove)
+            await toggleBookmarkSearchView(for: foodToRemove)
         }
-        foodToRemove = nil
+        
+        await MainActor.run {
+            foodToRemove = nil
+        }
     }
     
     var bookmarkTitle: String {
@@ -218,48 +236,36 @@ final class SearchViewModel: ObservableObject {
     
     func canLoadPage(direction: PageDirection) -> Bool {
         switch direction {
-        case .next:
-            foods.count == maxResultsPerPage
-        case .previous:
-            currentPage > 0
+        case .next: foods.count == maxResultsPerPage
+        case .previous: currentPage > 0
         }
     }
     
     func loadPage(direction: PageDirection) {
         isLoading = true
         switch direction {
-        case .next:
-            currentPage += 1
+        case .next: currentPage += 1
         case .previous:
             if currentPage > 0 {
                 currentPage -= 1
             }
         }
-        queueSearch(query)
-    }
-    
-    // MARK: - Reset Search
-    private func resetSearch() {
-        currentPage = 0
-        foods = favoriteFoods
-        appError = nil
-        isLoading = false
+        performSearch(query)
     }
 }
 
+extension SearchViewModel: SearchViewModelProtocol {}
+
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }
 
 #Preview {
     NavigationStack {
         SearchView(
-            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            searchViewModel: SearchViewModel(
+                mainViewModel: MainViewModel()
+            ),
             mealType: .breakfast
         )
     }

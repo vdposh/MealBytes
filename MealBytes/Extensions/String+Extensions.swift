@@ -16,6 +16,41 @@ extension String {
         self.replacingOccurrences(of: ".", with: ",")
     }
     
+    var trimmedLeadingZeros: String {
+        let cleaned = self.sanitizedForDouble
+        let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard let number = Double(cleaned) else {
+            return self
+        }
+        
+        if number == 0 && trimmed
+            .sanitizedForDouble
+            .preparedForLocaleDecimal
+            .allSatisfy({ $0 == "0" }) {
+            return ""
+        }
+        
+        return number.truncatingRemainder(dividingBy: 1) == 0
+        ? String(Int(number))
+        : String(number)
+    }
+    
+    func isValidNumericInput(in range: ClosedRange<Double>? = nil) -> Bool {
+        let trimmed = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        let sanitized = trimmed.sanitizedForDouble
+        
+        guard let value = Double(sanitized), value > 0 else {
+            return false
+        }
+        
+        if let range {
+            return range.contains(value)
+        }
+        
+        return true
+    }
+    
     func pluralized(for amount: Double) -> String {
         guard amount != 1 else { return self }
         
@@ -73,6 +108,8 @@ enum Pluralizer {
         "apple": "apples",
         "banana": "bananas",
         "carrot": "carrots",
+        "floweret": "flowerets",
+        "floret": "florets",
         "plum": "plums",
         "cherry": "cherries",
         "grape": "grapes",

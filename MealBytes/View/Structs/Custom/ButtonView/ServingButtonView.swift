@@ -34,6 +34,7 @@ struct ServingButtonView: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 1)
+                        .opacity(0.4)
                         .foregroundColor(.secondary),
                     alignment: .bottom
                 )
@@ -45,10 +46,5 @@ struct ServingButtonView: View {
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

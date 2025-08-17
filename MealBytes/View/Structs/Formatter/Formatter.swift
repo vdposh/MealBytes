@@ -46,18 +46,15 @@ struct Formatter {
         let finalValue = cleaned.preparedForLocaleDecimal
         
         switch unit {
-        case .empty:
-            return finalValue
-        default:
-            return "\(finalValue) \(unit.description)"
+        case .empty: return finalValue
+        default: return "\(finalValue) \(unit.description)"
         }
     }
     
     func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
         let roundedValue = ceil(value)
         switch unit {
-        case .empty:
-            return String(format: "%.0f", roundedValue)
+        case .empty: return String(format: "%.0f", roundedValue)
         default:
             return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
         }

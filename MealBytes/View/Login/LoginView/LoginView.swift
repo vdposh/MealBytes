@@ -20,7 +20,8 @@ struct LoginView: View {
                 LoginTextFieldView(
                     text: $loginViewModel.email,
                     titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.email)
+                        for: loginViewModel.email
+                    )
                 )
                 
                 SecureFieldView(
@@ -28,7 +29,8 @@ struct LoginView: View {
                     title: "Password",
                     placeholder: "Enter password",
                     titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.password)
+                        for: loginViewModel.password
+                    )
                 )
                 
                 ActionButtonView(
@@ -76,7 +78,24 @@ struct LoginView: View {
 }
 
 #Preview {
+    let mainViewModel = MainViewModel()
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
+    )
+    let rdiViewModel = RdiViewModel(
+        mainViewModel: mainViewModel
+    )
+    let goalsViewModel = GoalsViewModel(
+        mainViewModel: mainViewModel,
+        dailyIntakeViewModel: dailyIntakeViewModel,
+        rdiViewModel: rdiViewModel
+    )
+    let loginViewModel = LoginViewModel(
+        mainViewModel: mainViewModel,
+        goalsViewModel: goalsViewModel
+    )
+    
     NavigationStack {
-        LoginView(loginViewModel: LoginViewModel())
+        LoginView(loginViewModel: loginViewModel)
     }
 }

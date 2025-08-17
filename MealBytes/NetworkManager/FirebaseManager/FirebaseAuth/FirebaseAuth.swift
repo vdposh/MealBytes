@@ -19,22 +19,28 @@ protocol FirebaseAuthProtocol {
     func signOutAuth() throws
     func deleteAccountAuth() async throws
     func resendVerificationAuth() async throws
-    func changePasswordAuth(currentPassword: String,
-                            newPassword: String) async throws
+    func changePasswordAuth(
+        currentPassword: String,
+        newPassword: String
+    ) async throws
 }
 
 final class FirebaseAuth: FirebaseAuthProtocol {
     // MARK: - Sign In
     func signInAuth(email: String, password: String) async throws -> User {
-        let result = try await Auth.auth().signIn(withEmail: email,
-                                                  password: password)
+        let result = try await Auth.auth().signIn(
+            withEmail: email,
+            password: password
+        )
         return result.user
     }
     
     // MARK: - Sign Up
     func signUpAuth(email: String, password: String) async throws {
-        let result = try await Auth.auth().createUser(withEmail: email,
-                                                      password: password)
+        let result = try await Auth.auth().createUser(
+            withEmail: email,
+            password: password
+        )
         try await result.user.sendEmailVerification()
     }
     
@@ -64,25 +70,33 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         try await user.delete()
     }
     
-    func reauthenticateAuth(email: String,
-                            password: String) async throws {
+    func reauthenticateAuth(
+        email: String,
+        password: String
+    ) async throws {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
-        let credential = EmailAuthProvider.credential(withEmail: email,
-                                                      password: password)
+        let credential = EmailAuthProvider.credential(
+            withEmail: email,
+            password: password
+        )
         try await user.reauthenticate(with: credential)
     }
     
     // MARK: - Change Password
-    func changePasswordAuth(currentPassword: String,
-                            newPassword: String) async throws {
+    func changePasswordAuth(
+        currentPassword: String,
+        newPassword: String
+    ) async throws {
         guard let user = Auth.auth().currentUser,
               let email = user.email else {
             throw AuthError.userNotFound
         }
-        let credential = EmailAuthProvider.credential(withEmail: email,
-                                                      password: currentPassword)
+        let credential = EmailAuthProvider.credential(
+            withEmail: email,
+            password: currentPassword
+        )
         try await user.reauthenticate(with: credential)
         try await user.updatePassword(to: newPassword)
     }

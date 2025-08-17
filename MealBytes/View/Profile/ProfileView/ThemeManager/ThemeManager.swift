@@ -9,15 +9,12 @@ import SwiftUI
 
 final class ThemeManager: ObservableObject {
     @AppStorage("selectedTheme") var selectedTheme: ThemeMode = .automatic
-
+    
     var appliedColorScheme: ColorScheme? {
         switch selectedTheme {
-        case .automatic:
-            return nil
-        case .dark:
-            return .dark
-        case .light:
-            return .light
+        case .automatic: return nil
+        case .dark: return .dark
+        case .light: return .light
         }
     }
 }

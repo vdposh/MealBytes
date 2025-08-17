@@ -13,6 +13,7 @@ enum AppError: Error, Identifiable, LocalizedError {
     }
     
     case network
+    case networkRefresh
     case decoding
     case results
     case noBookmarks
@@ -20,7 +21,7 @@ enum AppError: Error, Identifiable, LocalizedError {
     
     var errorDescription: String {
         switch self {
-        case .network:
+        case .network, .networkRefresh:
             """
             Unable to connect to the network.
             Ensure internet access and try again.

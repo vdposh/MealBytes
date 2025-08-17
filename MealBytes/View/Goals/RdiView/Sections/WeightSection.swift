@@ -12,43 +12,73 @@ struct WeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 11) {
+        SectionStyleContainer(
+            mainContent: {
                 ServingTextFieldView(
                     text: $rdiViewModel.weight,
                     title: "Weight",
                     titleColor: rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.weight),
+                        for: rdiViewModel.weight
+                    ),
                     maxIntegerDigits: 3
                 )
                 .focused($focusedField, equals: .weight)
-                
-                Picker(
-                    "Weight unit",
-                    selection: $rdiViewModel.selectedWeightUnit
-                ) {
-                    if rdiViewModel.selectedWeightUnit == .notSelected {
-                        Text("Not Selected").tag(WeightUnit.notSelected)
+            },
+            secondaryContent: {
+                AnyView(
+                    HStack {
+                        Text("Weight Unit")
+                        
+                        Picker(
+                            "Weight Unit",
+                            selection: $rdiViewModel.selectedWeightUnit
+                        ) {
+                            if rdiViewModel
+                                .selectedWeightUnit == .notSelected {
+                                Text("Not Selected")
+                                    .tag(WeightUnit.notSelected)
+                            }
+                            ForEach(
+                                WeightUnit.allCases.filter {
+                                    $0 != .notSelected },
+                                id: \.self
+                            ) { unit in
+                                Text(unit.rawValue).tag(unit)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .accentColor(
+                            rdiViewModel.selectedWeightUnit.accentColor
+                        )
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                    ForEach(WeightUnit.allCases.filter { $0 != .notSelected },
-                            id: \.self) { weight in
-                        Text(weight.rawValue).tag(weight)
-                    }
-                }
-                .pickerStyle(.menu)
-                .accentColor(rdiViewModel.selectedWeightUnit.accentColor)
-            }
-            .id("weightField")
-        } header: {
-            Text("Weight Details")
-        } footer: {
-            Text("Enter weight and adjust the unit as needed (kilograms or pounds).")
+                )
+            },
+            layout: .pickerUnitStyle,
+            description: "Enter weight and adjust the unit as needed (kilograms or pounds)."
+        )
+        .id("weightField")
+    }
+}
+
+enum WeightUnit: String, CaseIterable {
+    case notSelected = "Not selected"
+    case kg = "kg"
+    case lbs = "lbs"
+    
+    var accentColor: Color {
+        switch self {
+        case .notSelected: return .customRed
+        default: return .customGreen
         }
     }
 }
 
 #Preview {
-    NavigationStack {
-        RdiView()
+    let mainViewModel = MainViewModel()
+    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+    
+    return NavigationStack {
+        RdiView(rdiViewModel: rdiViewModel)
     }
 }

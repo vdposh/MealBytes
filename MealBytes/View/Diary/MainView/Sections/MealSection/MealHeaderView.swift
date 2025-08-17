@@ -62,17 +62,22 @@ struct MealHeaderView: View {
                             .fontWeight(.bold)
                     }
                 }
-                .background(
-                    NavigationLink(
-                        destination: SearchView(
-                            searchViewModel: mainViewModel.searchViewModel,
-                            mealType: mealType
-                        )
-                    ) {
+                .background {
+                    if let searchModel = mainViewModel
+                        .searchViewModel as? SearchViewModel {
+                        NavigationLink(
+                            destination: SearchView(
+                                searchViewModel: searchModel,
+                                mealType: mealType
+                            )
+                        ) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+                    } else {
                         EmptyView()
                     }
-                        .opacity(0)
-                )
+                }
             }
             
             if mainViewModel.expandedSections[mealType] == true {
@@ -92,13 +97,11 @@ struct MealHeaderView: View {
                             Button(role: mainViewModel.deletionButtonRole(
                                 for: mealType
                             )) {
-                                Task {
-                                    mainViewModel.deleteMealItemMainView(
-                                        with: item.id,
-                                        for: mealType
-                                    )
-                                }
-                                mainViewModel.uniqueID = UUID()
+                                mainViewModel.deleteMealItemMainView(
+                                    with: item.id,
+                                    for: mealType
+                                )
+                                mainViewModel.uniqueId = UUID()
                             } label: {
                                 Image(systemName: "trash")
                             }
@@ -119,10 +122,5 @@ struct MealHeaderView: View {
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

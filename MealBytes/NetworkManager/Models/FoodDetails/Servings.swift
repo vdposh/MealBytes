@@ -14,11 +14,15 @@ struct Servings: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         do {
-            serving = try container.decode([Serving].self,
-                                           forKey: .serving)
+            serving = try container.decode(
+                [Serving].self,
+                forKey: .serving
+            )
         } catch DecodingError.typeMismatch {
-            serving = [try container.decode(Serving.self,
-                                            forKey: .serving)]
+            serving = [try container.decode(
+                Serving.self,
+                forKey: .serving
+            )]
         }
     }
     

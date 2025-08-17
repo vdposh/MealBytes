@@ -12,35 +12,32 @@ struct ContentView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
+    @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
-        ZStack {
-            if loginViewModel.isSignIn {
+        ZStack(alignment: .bottom) {
+            switch loginViewModel.loginState {
+            case .signingIn:
                 LoginLoadingView()
-            } else if loginViewModel.isLoading {
+            case .loadingLogo:
                 LoginLogoView()
-            } else if loginViewModel.isLoggedIn {
+            case .loggedIn:
                 TabBarView(
                     loginViewModel: loginViewModel,
                     mainViewModel: mainViewModel,
-                    goalsViewModel: goalsViewModel
+                    goalsViewModel: goalsViewModel,
+                    profileViewModel: profileViewModel
                 )
-            } else {
+            case .notLoggedIn:
                 LoginView(loginViewModel: loginViewModel)
             }
         }
         .task {
-            await mainViewModel.loadMainData()
-            await loginViewModel.loadLoginData()
+            await loginViewModel.loadData()
         }
     }
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }

@@ -32,9 +32,10 @@ struct Serving: Decodable, Hashable {
     }
     
     var isMetricMeasurement: Bool {
-        [MeasurementType.grams.description,
-         MeasurementType.milliliters.description]
-            .contains(measurementDescription)
+        [
+            MeasurementType.grams.description,
+            MeasurementType.milliliters.description
+        ].contains(measurementDescription)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -59,8 +60,10 @@ struct Serving: Decodable, Hashable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         func decodeDouble(forKey key: CodingKeys) -> Double {
-            (try? Double(container.decodeIfPresent(String.self,
-                                                   forKey: key) ?? "")) ?? 0
+            (try? Double(container.decodeIfPresent(
+                String.self,
+                forKey: key
+            ) ?? "")) ?? 0
         }
         
         func decodeString(forKey key: CodingKeys) -> String {

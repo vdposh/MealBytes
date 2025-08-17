@@ -13,36 +13,41 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
-    func loadLoginDataFirestore() async throws -> (email: String,
-                                                   isLoggedIn: Bool)
-    func loadCustomRdiFirestore() async throws -> CustomRdiData
+    func loadLoginDataFirestore() async throws -> (
+        email: String,
+        isLoggedIn: Bool
+    )
+    func loadDailyIntakeFirestore() async throws -> DailyIntake
     func loadRdiFirestore() async throws -> RdiData
-    func loadMainRdiFirestore() async throws -> String
-    func loadDisplayRdiFirestore() async throws -> Bool
+    func loadCurrentIntakeFirestore() async throws -> CurrentIntake
+    func loadDisplayIntakeFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
-    func addBookmarkFirestore(_ foods: [Food],
-                              for mealType: MealType) async throws
+    func addBookmarkFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
-    func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) async throws
+    func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
-    func saveMainRdiFirestore(_ rdi: String) async throws
-    func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws
+    func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
+    func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteLoginDataFirestore() async throws
 }
 
 final class FirebaseFirestore: FirebaseFirestoreProtocol {
-    private let firestore: Firestore = Firestore.firestore()
+    private lazy var firestore = Firestore.firestore()
     
-    // MARK: - Fetch Data
+    // MARK: - Load Meal
     func loadMealItemsFirestore() async throws -> [MealItem] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let snapshot = try await firestore.collection("users")
+        let snapshot = try await firestore
+            .collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .order(by: "createdAt")
             .getDocuments()
         
@@ -53,56 +58,62 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return mealItems
     }
     
-    // MARK: - Save Data
+    // MARK: - Save Meal
     func addMealItemFirestore(_ mealItem: MealItem) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .document(mealItem.id.uuidString)
         try documentReference.setData(from: mealItem)
     }
     
-    // MARK: - Update Data
+    // MARK: - Update Meal
     func updateMealItemFirestore(_ mealItem: MealItem) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .document(mealItem.id.uuidString)
         try documentReference.setData(from: mealItem, merge: true)
     }
     
-    // MARK: - Delete Data
+    // MARK: - Delete Meal
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("meals")
+            .collection("MainView")
             .document(mealItem.id.uuidString)
         try await documentReference.delete()
     }
     
-    // MARK: - Load bookmarks
-    func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food] {
+    // MARK: - Load Bookmarks
+    func loadBookmarksFirestore(
+        for mealType: MealType
+    ) async throws -> [Food] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let snapshot = try await firestore.collection("users")
+        
+        let snapshot = try await firestore
+            .collection("Users")
             .document(uid)
-            .collection("favoriteFoods")
-            .document("favorites")
+            .collection("SearchView")
+            .document(mealType.rawValue.lowercased())
             .getDocument()
         
         guard let data = snapshot.data(),
-              let foodsArray = data[mealType.rawValue.lowercased()] as?
-                [[String: Any]] else {
+              let foodsArray = data["items"] as? [[String: Any]] else {
             return []
         }
         
@@ -110,148 +121,161 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             Food(
                 searchFoodId: foodData["food_id"] as? Int ?? 0,
                 searchFoodName: foodData["food_name"] as? String ?? "",
-                searchFoodDescription: foodData["food_description"] as? 
+                searchFoodDescription: foodData["food_description"] as?
                 String ?? ""
             )
         }
     }
     
-    // MARK: - Add bookmarks
-    func addBookmarkFirestore(_ foods: [Food],
-                              for mealType: MealType) async throws {
+    // MARK: - Add Bookmarks
+    func addBookmarkFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
         
         let encodedFoods = try foods.map { try Firestore.Encoder().encode($0) }
         
-        try await firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("favoriteFoods")
-            .document("favorites")
-            .setData([mealType.rawValue.lowercased(): encodedFoods],
-                     merge: true)
+            .collection("SearchView")
+            .document(mealType.rawValue.lowercased())
+        
+        try await documentReference.setData(
+            ["items": encodedFoods],
+            merge: true
+        )
     }
     
-    // MARK: - Load customRDI Data
-    func loadCustomRdiFirestore() async throws -> CustomRdiData {
+    // MARK: - Load DailyIntake
+    func loadDailyIntakeFirestore() async throws -> DailyIntake {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("userCustomRdiGoals")
-            .document("currentCustomGoals")
-        return try await documentReference.getDocument(as: CustomRdiData.self)
+            .collection("GoalsView")
+            .document("DailyIntakeView")
+        return try await documentReference.getDocument(as: DailyIntake.self)
     }
     
-    // MARK: - Save customRDI Data
-    func saveCustomRdiFirestore(_ customGoalsData: CustomRdiData) throws {
+    // MARK: - Save DailyIntake
+    func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("userCustomRdiGoals")
-            .document("currentCustomGoals")
-        try documentReference.setData(from: customGoalsData)
+            .collection("GoalsView")
+            .document("DailyIntakeView")
+        try documentReference.setData(from: DailyIntakeData)
     }
     
-    // MARK: - Load RDI Data
+    // MARK: - Load RDI
     func loadRdiFirestore() async throws -> RdiData {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("userRdiGoals")
-            .document("currentRdiGoals")
+            .collection("GoalsView")
+            .document("RdiView")
         return try await documentReference.getDocument(as: RdiData.self)
     }
     
-    // MARK: - Save RDI Data
+    // MARK: - Save RDI
     func saveRdiFirestore(_ rdiData: RdiData) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("userRdiGoals")
-            .document("currentRdiGoals")
+            .collection("GoalsView")
+            .document("RdiView")
         try documentReference.setData(from: rdiData)
     }
     
-    // MARK: - Load RDI String
-    func loadMainRdiFirestore() async throws -> String {
+    // MARK: - Load Intake
+    func loadCurrentIntakeFirestore() async throws -> CurrentIntake {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("rdi")
-            .document("myRdi")
+            .collection("GoalsView")
+            .document("CurrentIntake")
+        let snapshot = try await documentReference.getDocument()
+        return try snapshot.data(as: CurrentIntake.self)
+    }
+    
+    // MARK: - Save Intake
+    func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        let documentReference = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("GoalsView")
+            .document("CurrentIntake")
+        try documentReference.setData(from: data)
+    }
+    
+    // MARK: - Load Display Intake
+    func loadDisplayIntakeFirestore() async throws -> Bool {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        let documentReference = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("ProfileView")
+            .document("DisplayIntake")
         let snapshot = try await documentReference.getDocument()
         guard let data = snapshot.data(),
-              let rdi = data["rdi"] as? String else {
-            return ""
+              let displayIntake = data["displayIntake"] as? Bool else {
+            throw AppError.decoding
         }
-        return rdi
+        return displayIntake
     }
     
-    // MARK: - Save RDI String
-    func saveMainRdiFirestore(_ rdi: String) async throws {
+    // MARK: - Save Display Intake
+    func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("rdi")
-            .document("myRdi")
-        try await documentReference.setData(["rdi": rdi])
-    }
-    
-    // MARK: - Load Display RDI
-    func loadDisplayRdiFirestore() async throws -> Bool {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
-        let documentReference = firestore.collection("users")
-            .document(uid)
-            .collection("settings")
-            .document("displayRdi")
-        let snapshot = try await documentReference.getDocument()
-        guard let data = snapshot.data(),
-              let shouldDisplayRdi = data["shouldDisplayRdi"] as? Bool else {
-            throw AppError.decoding
-        }
-        return shouldDisplayRdi
-    }
-    
-    // MARK: - Save Display RDI
-    func saveDisplayRdiFirestore(_ shouldDisplayRdi: Bool) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
-        let documentReference = firestore.collection("users")
-            .document(uid)
-            .collection("settings")
-            .document("displayRdi")
+            .collection("ProfileView")
+            .document("DisplayIntake")
         try await documentReference.setData(
-            ["shouldDisplayRdi": shouldDisplayRdi]
+            ["displayIntake": displayIntake]
         )
     }
     
     // MARK: - Current User
-    func loadLoginDataFirestore() async throws -> (email: String,
-                                                   isLoggedIn: Bool) {
+    func loadLoginDataFirestore() async throws -> (
+        email: String,
+        isLoggedIn: Bool
+    ) {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AuthError.userNotFound
         }
         
-        let snapshot = try await firestore.collection("users")
+        let snapshot = try await firestore
+            .collection("Users")
             .document(uid)
-            .collection("LoginData")
-            .document("loginInfo")
+            .collection("ProfileView")
+            .document("LoginInfo")
             .getDocument()
         
         guard let data = snapshot.data(),
@@ -263,8 +287,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return (email, isLoggedIn)
     }
     
-    func saveLoginDataFirestore(email: String,
-                                isLoggedIn: Bool) async throws {
+    func saveLoginDataFirestore(
+        email: String,
+        isLoggedIn: Bool
+    ) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -272,10 +298,11 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             "email": email,
             "isLoggedIn": isLoggedIn
         ]
-        try await firestore.collection("users")
+        try await firestore
+            .collection("Users")
             .document(uid)
-            .collection("LoginData")
-            .document("loginInfo")
+            .collection("ProfileView")
+            .document("LoginInfo")
             .setData(data, merge: true)
     }
     
@@ -284,10 +311,15 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AppError.decoding
         }
         
-        let documentReference = firestore.collection("users")
+        let documentReference = firestore
+            .collection("Users")
             .document(uid)
-            .collection("LoginData")
-            .document("loginInfo")
+            .collection("ProfileView")
+            .document("LoginInfo")
         try await documentReference.delete()
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

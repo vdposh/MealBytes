@@ -21,6 +21,62 @@ final class LoginViewModel: ObservableObject {
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
+    private let mainViewModel: MainViewModelProtocol
+    private let goalsViewModel: GoalsViewModelProtocol
+    
+    init(
+        mainViewModel: MainViewModelProtocol,
+        goalsViewModel: GoalsViewModelProtocol
+    ) {
+        self.mainViewModel = mainViewModel
+        self.goalsViewModel = goalsViewModel
+    }
+    
+    // MARK: - Load Data
+    func loadData() async {
+        async let mainData: () = mainViewModel.loadMainData()
+        async let loginData: () = loadLoginData()
+        
+        _ = await (mainData, loginData)
+        
+        await MainActor.run {
+            isLoading = false
+        }
+    }
+    
+    // MARK: - Load Login Data
+    func loadLoginData() async {
+        async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
+        async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
+        
+        do {
+            let (_, isAuthenticated) = try await (tokenTask, authTask)
+            let (email, isLoggedIn) = try await firestore
+                .loadLoginDataFirestore()
+            
+            await MainActor.run {
+                self.isLoggedIn = isAuthenticated && isLoggedIn
+                self.email = email
+            }
+        } catch {
+            do {
+                let (email, isLoggedIn) = try await firestore
+                    .loadLoginDataFirestore()
+                
+                await MainActor.run {
+                    self.email = email
+                    self.isLoggedIn = isLoggedIn
+                    self.error = .offlineMode
+                    self.showErrorAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = .sessionExpired
+                    self.showErrorAlert = true
+                }
+            }
+        }
+    }
     
     // MARK: - Sign In
     func signIn() async {
@@ -29,8 +85,11 @@ final class LoginViewModel: ObservableObject {
         }
         
         do {
-            let user = try await firebaseAuth.signInAuth(email: email,
-                                                         password: password)
+            let user = try await firebaseAuth.signInAuth(
+                email: email,
+                password: password
+            )
+            
             
             if !user.isEmailVerified {
                 await MainActor.run {
@@ -42,8 +101,10 @@ final class LoginViewModel: ObservableObject {
             }
             
             do {
-                try await firestore.saveLoginDataFirestore(email: email,
-                                                           isLoggedIn: true)
+                try await firestore.saveLoginDataFirestore(
+                    email: email,
+                    isLoggedIn: true
+                )
             } catch {
                 await MainActor.run {
                     self.error = .networkError
@@ -52,6 +113,8 @@ final class LoginViewModel: ObservableObject {
                 }
                 return
             }
+            
+            await mainViewModel.loadMainData()
             
             await MainActor.run {
                 self.error = nil
@@ -69,80 +132,32 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Data
-    func loadLoginData() async {
-        async let tokenTask: String? = firebaseAuth.refreshTokenAuth()
-        async let authTask: Bool = firebaseAuth.checkCurrentUserAuth()
-        
-        do {
-            let (_, isAuthenticated) = try await (tokenTask, authTask)
-            let (email,
-                 isLoggedIn) = try await firestore.loadLoginDataFirestore()
-            
-            await MainActor.run {
-                self.isLoggedIn = isAuthenticated && isLoggedIn
-                self.email = email
-            }
-        } catch {
-            do {
-                let (email,
-                     isLoggedIn) = try await firestore.loadLoginDataFirestore()
-                
-                await MainActor.run {
-                    self.email = email
-                    self.isLoggedIn = isLoggedIn
-                    self.error = .offlineMode
-                    self.showErrorAlert = true
-                }
-            } catch {
-                await MainActor.run {
-                    self.error = .sessionExpired
-                    self.showErrorAlert = true
-                }
-            }
+    var loginState: LoginState {
+        switch true {
+        case isSignIn: return .signingIn
+        case isLoading: return .loadingLogo
+        case isLoggedIn: return .loggedIn
+        default: return .notLoggedIn
         }
+    }
+    
+    // MARK: - Reset State
+    func resetLoginState() {
+        email = ""
+        password = ""
+        showAlert = false
+        showErrorAlert = false
+        isLoggedIn = false
+        isSignIn = false
+        error = nil
         
-        await MainActor.run {
-            isLoading = false
-        }
+        mainViewModel.resetMainState()
+        goalsViewModel.clearGoalsView()
     }
     
     // MARK: - Alert
     private func updateAlertState() {
-        Task {
-            await MainActor.run {
-                showAlert = error != nil
-            }
-        }
-    }
-    
-    func getErrorAlert() -> Alert {
-        if let error {
-            switch error {
-            case .offlineMode:
-                return Alert(
-                    title: Text("Warning!"),
-                    message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK"))
-                )
-            case .sessionExpired:
-                return Alert(
-                    title: Text("Session Expired"),
-                    message: Text(error.errorDescription ?? ""),
-                    dismissButton: .default(Text("OK")) {
-                        Task {
-                            await MainActor.run {
-                                self.isLoggedIn = false
-                            }
-                        }
-                    }
-                )
-            default:
-                return commonErrorAlert()
-            }
-        } else {
-            return commonErrorAlert()
-        }
+        showAlert = error != nil
     }
     
     func getLoginErrorAlert() -> Alert {
@@ -172,7 +187,7 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
-    private func commonErrorAlert() -> Alert {
+    func commonErrorAlert() -> Alert {
         return Alert(
             title: Text("Error"),
             message: Text("Something went wrong while processing the request. Try again."),
@@ -180,12 +195,36 @@ final class LoginViewModel: ObservableObject {
         )
     }
     
+    func getSessionAlert(onDismiss: @escaping () -> Void) -> Alert {
+        return Alert(
+            title: Text("Session Expired"),
+            message: Text(error?.errorDescription ?? ""),
+            dismissButton: .default(Text("OK"), action: onDismiss)
+        )
+    }
+    
+    func getOfflineAlert() -> Alert {
+        return Alert(
+            title: Text("Warning!"),
+            message: Text(error?.errorDescription ?? ""),
+            dismissButton: .default(Text("OK"))
+        )
+    }
+    
+    var alertType: AlertTypeLoginView {
+        switch error {
+        case .sessionExpired: return .sessionExpired
+        case .offlineMode: return .offlineMode
+        default: return .generic
+        }
+    }
+    
     // MARK: - Button State
     func isLoginEnabled() -> Bool {
         return !email.isEmpty && !password.isEmpty
     }
     
-    // MARK: - Colors
+    // MARK: - Color
     func titleColor(for text: String) -> Color {
         return text.isEmpty ? .customRed : .secondary
     }
@@ -194,16 +233,29 @@ final class LoginViewModel: ObservableObject {
     private func handleError(_ error: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: error.code) {
             switch authErrorCode {
-            case .invalidEmail:
-                return .invalidEmail
-            case .networkError:
-                return .networkError
-            case .userDisabled:
-                return .userNotVerified
-            default:
-                return .incorrectCredentials
+            case .invalidEmail: return .invalidEmail
+            case .networkError: return .networkError
+            case .userDisabled: return .userNotVerified
+            default: return .incorrectCredentials
             }
         }
         return .unknownError
     }
+}
+
+enum LoginState {
+    case loadingLogo
+    case signingIn
+    case loggedIn
+    case notLoggedIn
+}
+
+enum AlertTypeLoginView {
+    case sessionExpired
+    case offlineMode
+    case generic
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

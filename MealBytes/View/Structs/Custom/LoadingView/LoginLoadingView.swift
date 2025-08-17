@@ -17,7 +17,8 @@ struct LoginLoadingView: View {
                 VStack {
                     ProgressView()
                         .progressViewStyle(
-                            CircularProgressViewStyle(tint: .customGreen))
+                            CircularProgressViewStyle(tint: .customGreen)
+                        )
                 }
             }
         }

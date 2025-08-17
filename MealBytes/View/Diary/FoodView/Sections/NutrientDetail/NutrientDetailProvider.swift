@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct NutrientDetailProvider {
-    func getNutrientDetails(from serving:
-                            Serving) -> [NutrientDetail] {
+    func getNutrientDetails(
+        from serving:
+        Serving
+    ) -> [NutrientDetail] {
         [
             NutrientDetail(
                 type: .calories,

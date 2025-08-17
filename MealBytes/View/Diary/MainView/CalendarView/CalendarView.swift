@@ -1,5 +1,5 @@
 //
-//  DatePickerView.swift
+//  CalendarView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 19/03/2025.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct DatePickerView: View {
+struct CalendarView: View {
     @Binding var selectedDate: Date
     @Binding var isPresented: Bool
-    let mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         VStack {
@@ -31,7 +31,6 @@ struct DatePickerView: View {
                         )
                     } label: {
                         Image(systemName: "chevron.left")
-                        
                             .padding(.trailing)
                     }
                 }
@@ -72,7 +71,9 @@ struct DatePickerView: View {
                                     for: .day,
                                     date: date,
                                     isSelected: mainViewModel.calendar.isDate(
-                                        selectedDate, inSameDayAs: date),
+                                        selectedDate,
+                                        inSameDayAs: date
+                                    ),
                                     isToday: mainViewModel
                                         .calendar.isDateInToday(date)
                                 ))
@@ -90,7 +91,9 @@ struct DatePickerView: View {
                                 for: .day,
                                 date: date,
                                 isSelected: mainViewModel.calendar.isDate(
-                                    selectedDate, inSameDayAs: date),
+                                    selectedDate,
+                                    inSameDayAs: date
+                                ),
                                 forBackground: true
                             )
                         )

@@ -12,29 +12,31 @@ struct AgeSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            ServingTextFieldView(
-                text: $rdiViewModel.age,
-                title: "Age",
-                keyboardType: .numberPad,
-                inputMode: .integer,
-                titleColor: rdiViewModel.fieldTitleColor(
-                    for: rdiViewModel.age),
-                maxIntegerDigits: 3
-            )
-            .focused($focusedField, equals: .age)
-            .padding(.bottom, 5)
-            .id("ageField")
-        } header: {
-            Text("Age Details")
-        } footer: {
-            Text("Enter age to personalize recommendations.")
-        }
+        SectionStyleContainer(
+            mainContent: {
+                ServingTextFieldView(
+                    text: $rdiViewModel.age,
+                    title: "Age",
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    titleColor: rdiViewModel.fieldTitleColor(
+                        for: rdiViewModel.age
+                    ),
+                    maxIntegerDigits: 3
+                )
+                .focused($focusedField, equals: .age)
+            },
+            layout: .textStyle,
+            description: "Enter age to personalize recommendations."
+        )
     }
 }
 
 #Preview {
-    NavigationStack {
-        RdiView()
+    let mainViewModel = MainViewModel()
+    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+    
+    return NavigationStack {
+        RdiView(rdiViewModel: rdiViewModel)
     }
 }

@@ -19,14 +19,9 @@ struct MainView: View {
                 }
                 .zIndex(2)
                 
-                Button {
+                CalendarButtonView {
                     mainViewModel.isExpandedCalendar = false
-                } label: {
-                    Color.primary
-                        .opacity(0.4)
-                        .ignoresSafeArea()
                 }
-                .buttonStyle(InvisibleButtonStyle())
                 .zIndex(1)
             }
             
@@ -36,15 +31,16 @@ struct MainView: View {
                 mealSections
                 detailedInformationSection
             }
+            .scrollIndicators(.hidden)
             .listSectionSpacing(15)
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitle("Diary", displayMode: .inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Button {
                     mainViewModel.isExpandedCalendar.toggle()
                 } label: {
-                    Text(mainViewModel.formattedDate(isAbbreviated: false))
+                    Text(mainViewModel.formattedDate())
                         .font(.headline)
                 }
             }
@@ -56,9 +52,11 @@ struct MainView: View {
     
     private var datePickerView: some View {
         VStack {
-            DatePickerView(selectedDate: $mainViewModel.date,
-                           isPresented: $mainViewModel.isExpandedCalendar,
-                           mainViewModel: mainViewModel)
+            CalendarView(
+                selectedDate: $mainViewModel.date,
+                isPresented: $mainViewModel.isExpandedCalendar,
+                mainViewModel: mainViewModel
+            )
         }
         .background(Color(.systemBackground))
     }
@@ -71,8 +69,9 @@ struct MainView: View {
                         mainViewModel.date = mainViewModel
                             .dateByAddingOffset(for: offset)
                     } label: {
-                        dateView(for: mainViewModel
-                            .dateByAddingOffset(for: offset))
+                        dateView(
+                            for: mainViewModel.dateByAddingOffset(for: offset)
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -125,12 +124,7 @@ struct MainView: View {
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }
 
 #Preview {

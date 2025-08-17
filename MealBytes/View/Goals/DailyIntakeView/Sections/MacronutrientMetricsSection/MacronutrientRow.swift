@@ -12,7 +12,7 @@ struct MacronutrientRow: View {
     var focusedField: FocusState<MacronutrientsFocus?>.Binding
     let title: String
     let titleColor: Color
-    @ObservedObject var customRdiViewModel: CustomRdiViewModel
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -33,29 +33,21 @@ struct MacronutrientRow: View {
     
     private var focusValue: MacronutrientsFocus {
         switch title {
-        case "Fat":
-            return .fat
-        case "Carbohydrate":
-            return .carbohydrate
-        case "Protein":
-            return .protein
-        default:
-            return .fat
+        case "Fat": return .fat
+        case "Carbohydrate": return .carbohydrate
+        case "Protein": return .protein
+        default: return .fat
         }
     }
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
+    let mainViewModel = MainViewModel()
+    let dailyIntakeViewModel = DailyIntakeViewModel(
+        mainViewModel: mainViewModel
     )
-    .environmentObject(ThemeManager())
-}
-
-#Preview {
-    NavigationStack {
-        CustomRdiView()
+    
+    return NavigationStack {
+        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
     }
 }

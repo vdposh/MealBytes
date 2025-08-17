@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct CompactNutrientDetailProvider {
-    func getCompactNutrientDetails(from serving:
-                                   Serving) -> [CompactNutrientDetail] {
+    func getCompactNutrientDetails(
+        from serving:
+        Serving
+    ) -> [CompactNutrientDetail] {
         [
             CompactNutrientDetail(
                 type: .calories,

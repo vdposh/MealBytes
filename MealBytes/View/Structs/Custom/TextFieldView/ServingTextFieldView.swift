@@ -17,37 +17,25 @@ struct ServingTextFieldView: View {
     var inputMode: InputMode = .decimal
     var titleColor: Color = .secondary
     var textColor: Color = .primary
-    var opacity: Double = 1.0
     var maxInteger: Int = 100000
     var maxFractionalDigits: Int = 2
     var maxIntegerDigits: Int = 4
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button(action: {
-                isFocused = true
-            }) {
-                HStack(spacing: 0) {
-                    Text(title)
-                        .font(.caption)
-                        .foregroundColor(titleColor)
-                    if showStar {
-                        Text("*")
-                            .foregroundColor(.customRed)
-                    }
-                }
-                .frame(height: 15)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
+            FieldTitleView(
+                title: title,
+                showStar: showStar,
+                titleColor: titleColor,
+                isFocused: Binding(
+                    get: { isFocused },
+                    set: { isFocused = $0 }
+                )
+            )
             
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
-                .frame(height: 35)
-                .lineLimit(1)
                 .foregroundColor(textColor)
-                .focused($isFocused)
                 .onChange(of: text) {
                     validateInput(&text)
                 }
@@ -56,13 +44,7 @@ struct ServingTextFieldView: View {
                         finalizeInput(&text)
                     }
                 }
-                .overlay(
-                    Rectangle()
-                        .frame(height: 1)
-                        .opacity(opacity)
-                        .foregroundColor(isFocused ? .customGreen : .secondary),
-                    alignment: .bottom
-                )
+                .modifier(FieldStyleModifier(isFocused: $isFocused))
         }
     }
     
@@ -91,7 +73,9 @@ struct ServingTextFieldView: View {
             
         case .integer:
             let separators: [Character] = [",", "."]
-            if let separatorIndex = input.firstIndex(where: { separators.contains($0) }) {
+            if let separatorIndex = input.firstIndex(where: {
+                separators.contains($0)
+            }) {
                 input = String(input[..<separatorIndex])
             }
             
@@ -115,7 +99,7 @@ struct ServingTextFieldView: View {
                 input.removeLast()
                 return
             }
-
+            
             let suffixesToTrim = [",00", ".00", ",0", ".0"]
             for suffix in suffixesToTrim {
                 if input.hasSuffix(suffix) {
@@ -123,14 +107,14 @@ struct ServingTextFieldView: View {
                     return
                 }
             }
-
+            
             if let commaIndex = input.firstIndex(of: ",") {
                 let fractional = input[commaIndex...]
                 if fractional.hasSuffix("0") && fractional.count == 3 {
                     input.removeLast()
                 }
             }
-
+            
         case .integer:
             break
         }
@@ -143,10 +127,5 @@ enum InputMode {
 }
 
 #Preview {
-    ContentView(
-        loginViewModel: LoginViewModel(),
-        mainViewModel: MainViewModel(),
-        goalsViewModel: GoalsViewModel()
-    )
-    .environmentObject(ThemeManager())
+    PreviewContentView.contentView
 }
