@@ -22,7 +22,6 @@ struct CompactNutrientDetailRow: View {
         }
         .lineLimit(1)
         .frame(maxWidth: .infinity)
-        .frame(height: 80)
     }
 }
 
