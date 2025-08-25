@@ -43,12 +43,11 @@ struct TabBarView: View {
             }
             .tag(2)
         }
+        .task {
+            selectedTab = 0
+        }
         .onChange(of: selectedTab) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if mainViewModel.isExpandedCalendar {
-                    mainViewModel.isExpandedCalendar = false
-                }
-            }
+            mainViewModel.handleTabChange(to: selectedTab)
         }
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             switch loginViewModel.alertType {
@@ -62,15 +61,15 @@ struct TabBarView: View {
                 return loginViewModel.commonErrorAlert()
             }
         }
-        .task {
-            selectedTab = 0
-        }
         .overlay {
             if profileViewModel.isLoading {
                 LoadingProfileView(
                     isLoading: $profileViewModel.isPasswordChanging
                 )
             }
+        }
+        .overlay {
+            FoodAlertOverlay(alertType: $mainViewModel.activeFoodAlert)
         }
     }
 }

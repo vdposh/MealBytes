@@ -18,6 +18,7 @@ protocol MainViewModelProtocol {
     func saveCurrentIntakeMainView(source: String) async
     func saveDisplayIntakeMainView(_ newValue: Bool) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
+    func triggerFoodAlert(_ type: ActiveFoodAlertType)
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType)
@@ -39,6 +40,7 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var appError: AppError?
+    @Published var activeFoodAlert: ActiveFoodAlertType? = nil
     @Published var uniqueId = UUID()
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
@@ -561,12 +563,35 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func handleTabChange(to tab: Int) {
+        if tab != 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if self.isExpandedCalendar {
+                    self.isExpandedCalendar = false
+                }
+            }
+        }
+    }
+    
     // MARK: - Reset State
     func resetMainState() {
         updateIntake(to: "")
         collapseAllSections()
         resetDateToToday()
         setDisplayIntake(true)
+    }
+    
+    // MARK: - Alert
+    func triggerFoodAlert(_ type: ActiveFoodAlertType) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.activeFoodAlert = type
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+                if self.activeFoodAlert == type {
+                    self.activeFoodAlert = nil
+                }
+            }
+        }
     }
 }
 
