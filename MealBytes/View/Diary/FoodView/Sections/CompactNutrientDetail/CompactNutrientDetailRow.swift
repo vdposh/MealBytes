@@ -11,7 +11,7 @@ struct CompactNutrientDetailRow: View {
     let nutrient: CompactNutrientDetail
     
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 9) {
             Text(nutrient.type.alternativeTitle)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
