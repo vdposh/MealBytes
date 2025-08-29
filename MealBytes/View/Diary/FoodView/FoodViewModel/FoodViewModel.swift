@@ -131,7 +131,6 @@ final class FoodViewModel: ObservableObject {
         
         await MainActor.run {
             mainViewModel.addMealItemMainView(newItem, to: section, for: date)
-            mainViewModel.triggerFoodAlert(.added)
         }
         
         do {
@@ -141,6 +140,8 @@ final class FoodViewModel: ObservableObject {
                 appError = .network
             }
         }
+        
+        mainViewModel.triggerFoodAlert()
     }
     
     // MARK: - Update Food Item
@@ -172,7 +173,6 @@ final class FoodViewModel: ObservableObject {
                         for: mealType,
                         on: date
                     )
-                    mainViewModel.triggerFoodAlert(.saved)
                 }
                 
                 try await firestore.updateMealItemFirestore(updatedMealItem)
@@ -223,7 +223,6 @@ final class FoodViewModel: ObservableObject {
             with: originalMealItemId,
             for: originalMealType
         )
-        mainViewModel.triggerFoodAlert(.removed)
     }
     
     // MARK: - Bookmark Management
