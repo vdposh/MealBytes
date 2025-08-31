@@ -67,7 +67,7 @@ struct CalendarView: View {
                     } label: {
                         VStack(spacing: 3) {
                             Text("\(mainViewModel.dayComponent(for: date))")
-                                .foregroundColor(mainViewModel.color(
+                                .foregroundStyle(mainViewModel.color(
                                     for: .day,
                                     date: date,
                                     isSelected: mainViewModel.calendar.isDate(

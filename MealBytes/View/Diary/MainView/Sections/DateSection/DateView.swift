@@ -16,7 +16,7 @@ struct DateView: View {
     var body: some View {
         VStack {
             Text(date.formatted(.dateTime.day()))
-                .foregroundColor(
+                .foregroundStyle(
                     mainViewModel.color(
                         for: .day,
                         date: date,
@@ -27,7 +27,7 @@ struct DateView: View {
                 )
             
             Text(date.formatted(.dateTime.weekday(.short)))
-                .foregroundColor(
+                .foregroundStyle(
                     mainViewModel.color(
                         for: .weekday,
                         date: date,

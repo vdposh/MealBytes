@@ -33,10 +33,10 @@ struct MealHeaderView: View {
                             HStack {
                                 Image(systemName: iconName)
                                     .frame(width: 22)
-                                    .foregroundColor(color)
+                                    .foregroundStyle(color)
                                 Text(title)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                                    .foregroundStyle(Color.primary)
                                     .frame(
                                         maxWidth: .infinity,
                                         alignment: .leading
@@ -45,7 +45,7 @@ struct MealHeaderView: View {
                                     .lineLimit(1)
                                     .font(.callout)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                                    .foregroundStyle(Color.primary)
                             }
                             NutrientSummaryRow(
                                 fat: fat,

@@ -14,7 +14,7 @@ struct OverviewRdiSection: View {
         SectionStyleContainer(
             mainContent: {
                 Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
-                    .foregroundColor(
+                    .foregroundStyle(
                         rdiViewModel.color(for: rdiViewModel.calculatedRdi)
                     )
             },

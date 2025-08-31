@@ -33,7 +33,7 @@ struct SignOutSection: View {
                     }
                     .font(.footnote)
                     .fontWeight(.semibold)
-                    .foregroundColor(.customRed)
+                    .foregroundStyle(Color.customRed)
                     .buttonStyle(.borderless)
                     
                     Text("the account?")
@@ -44,4 +44,8 @@ struct SignOutSection: View {
             }
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

@@ -12,7 +12,7 @@ struct LoadingView: View {
         VStack {
             ProgressView()
                 .progressViewStyle(
-                    CircularProgressViewStyle(tint: .accent)
+                    CircularProgressViewStyle(tint: .accentColor)
                 )
         }
     }

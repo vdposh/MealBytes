@@ -48,7 +48,7 @@ struct WeightSection: View {
                         }
                         .pickerStyle(.menu)
                         .accentColor(
-                            rdiViewModel.selectedWeightUnit.accentColor
+                            rdiViewModel.selectedWeightUnit.selectedColor
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
@@ -66,10 +66,10 @@ enum WeightUnit: String, CaseIterable {
     case kg = "kg"
     case lbs = "lbs"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
         case .notSelected: return .customRed
-        default: return .accent
+        default: return .accentColor
         }
     }
 }

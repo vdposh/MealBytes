@@ -32,7 +32,7 @@ struct CalorieMetricsSection: View {
                     .padding(.trailing, 5)
                     
                     Text("kcal")
-                        .foregroundColor(dailyIntakeViewModel.caloriesTextColor)
+                        .foregroundStyle(dailyIntakeViewModel.caloriesTextColor)
                 }
                 .id("macronutrientsField")
             },

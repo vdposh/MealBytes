@@ -74,7 +74,7 @@ final class GoalsViewModel: ObservableObject {
         
         return IntakeDisplayState(
             text: text,
-            color: isActive ? .accent : .secondary,
+            color: isActive ? .accentColor : .secondary,
             weight: isActive ? .medium : .regular,
             icon: isActive ? "person.fill" : "person"
         )

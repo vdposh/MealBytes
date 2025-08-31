@@ -15,7 +15,7 @@ struct FoodDetailView: View {
             Text(food.searchFoodName)
             if let parsedDescription = food.parsedDescription {
                 Text(parsedDescription)
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(Color.accentColor)
                     .font(.subheadline)
             }
         }

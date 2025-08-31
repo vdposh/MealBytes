@@ -31,7 +31,7 @@ struct GenderSection: View {
                         }
                     }
                     .pickerStyle(.menu)
-                    .accentColor(rdiViewModel.selectedGender.accentColor)
+                    .accentColor(rdiViewModel.selectedGender.selectedColor)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             },
@@ -47,10 +47,10 @@ enum Gender: String, CaseIterable {
     case male = "Male"
     case female = "Female"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
         case .notSelected: return .customRed
-        case .male, .female: return .accent
+        case .male, .female: return .accentColor
         }
     }
 }

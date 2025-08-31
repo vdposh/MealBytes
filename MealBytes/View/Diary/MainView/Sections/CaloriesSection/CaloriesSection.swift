@@ -45,7 +45,7 @@ struct CaloriesSection: View {
                     if mainViewModel.canDisplayIntake() {
                         ProgressView(value: mainViewModel.intakeProgress)
                             .progressViewStyle(.linear)
-                            .background(Color.accent.opacity(0.2))
+                            .background(Color.accentColor.opacity(0.2))
                             .scaleEffect(x: 1, y: 2, anchor: .center)
                             .frame(height: 6)
                             .cornerRadius(4)
@@ -67,7 +67,7 @@ struct CaloriesSection: View {
                                 for: summaries[.calories])
                             )
                             .lineLimit(1)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                         }

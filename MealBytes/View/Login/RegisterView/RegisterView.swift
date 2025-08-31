@@ -60,7 +60,7 @@ struct RegisterView: View {
                             } label: {
                                 Text("Resend")
                                     .fontWeight(.semibold)
-                                    .foregroundColor(
+                                    .foregroundStyle(
                                         registerViewModel.resendButtonColor()
                                     )
                             }
@@ -75,7 +75,7 @@ struct RegisterView: View {
                             }
                         }
                         .font(.footnote)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
@@ -87,7 +87,7 @@ struct RegisterView: View {
                                     await registerViewModel.signUp()
                                 }
                             },
-                            backgroundColor: .accent,
+                            color: .accent,
                             isEnabled: registerViewModel.isRegisterEnabled()
                         )
                         .frame(height: 50)

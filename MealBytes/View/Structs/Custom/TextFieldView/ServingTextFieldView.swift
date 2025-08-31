@@ -35,7 +35,7 @@ struct ServingTextFieldView: View {
             
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
-                .foregroundColor(textColor)
+                .foregroundStyle(textColor)
                 .onChange(of: text) {
                     validateInput(&text)
                 }

@@ -34,10 +34,10 @@ struct SearchView: View {
                                 Image(systemName: mealType.iconName)
                                     .font(.system(size: 13))
                                     .frame(width: 15, height: 5)
-                                    .foregroundColor(mealType.color)
+                                    .foregroundStyle(mealType.color)
                                 Text(mealType.rawValue)
                                     .font(.headline)
-                                    .foregroundStyle(.accent)
+                                    .foregroundStyle(Color.accentColor)
                             }
                         }
                         .confirmationDialog(
@@ -181,7 +181,7 @@ struct SearchView: View {
                     }
                 }
             }
-            .foregroundStyle(.accent)
+            .foregroundStyle(Color.accentColor)
         } else {
             EmptyView()
         }

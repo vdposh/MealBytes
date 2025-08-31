@@ -310,7 +310,7 @@ final class RdiViewModel: ObservableObject {
         text(for: calculatedRdi)
     }
     
-    func color(for calculatedRdi: String) -> Color? {
+    func color(for calculatedRdi: String) -> Color {
         guard !calculatedRdi.isEmpty,
               isInputValidForCalculation,
               selectedWeightUnit != .notSelected,

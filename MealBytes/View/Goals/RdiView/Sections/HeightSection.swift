@@ -48,7 +48,7 @@ struct HeightSection: View {
                         }
                         .pickerStyle(.menu)
                         .accentColor(
-                            rdiViewModel.selectedHeightUnit.accentColor
+                            rdiViewModel.selectedHeightUnit.selectedColor
                         )
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
@@ -66,10 +66,10 @@ enum HeightUnit: String, CaseIterable {
     case cm = "cm"
     case inches = "inches"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
         case .notSelected: return .customRed
-        default: return .accent
+        default: return .accentColor
         }
     }
 }

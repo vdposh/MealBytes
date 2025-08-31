@@ -37,7 +37,7 @@ struct NutrientDetailSection: View {
                                 )
                             
                             Text(nutrient.formattedValue)
-                                .foregroundColor(
+                                .foregroundStyle(
                                     nutrient.isSubValue ? .secondary : .primary
                                 )
                                 .font(.subheadline)

@@ -20,7 +20,7 @@ struct ServingButtonView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 
                 HStack {
                     Text(description)
@@ -35,7 +35,7 @@ struct ServingButtonView: View {
                     Rectangle()
                         .frame(height: 1)
                         .opacity(0.4)
-                        .foregroundColor(.secondary),
+                        .foregroundStyle(.secondary),
                     alignment: .bottom
                 )
             }

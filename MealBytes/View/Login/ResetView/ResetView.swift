@@ -31,7 +31,7 @@ struct ResetView: View {
                 } else if resetViewModel.isEmailSent {
                     Text("A reset link has been sent to the email \"\(resetViewModel.sentEmail)\".")
                         .font(.footnote)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
@@ -43,7 +43,6 @@ struct ResetView: View {
                                 await resetViewModel.resetPassword()
                             }
                         },
-                        backgroundColor: .accent,
                         isEnabled: resetViewModel.isResetEnabled()
                     )
                     .frame(height: 50)

@@ -16,8 +16,12 @@ struct SignOutButtonView: View {
             action()
         } label: {
             Text(title)
-                .foregroundColor(.customRed)
+                .foregroundStyle(Color.customRed)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

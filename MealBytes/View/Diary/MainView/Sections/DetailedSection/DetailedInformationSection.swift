@@ -22,14 +22,14 @@ struct DetailedInformationSection: View {
             ForEach(nutrients, id: \.id) { nutrient in
                 HStack {
                     Text(nutrient.type.title)
-                        .foregroundColor(
+                        .foregroundStyle(
                             nutrient.isSubValue ? .secondary : .primary
                         )
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(nutrient.formattedValue)
-                        .foregroundColor(
+                        .foregroundStyle(
                             nutrient.isSubValue ? .secondary : .primary
                         )
                         .font(.subheadline)

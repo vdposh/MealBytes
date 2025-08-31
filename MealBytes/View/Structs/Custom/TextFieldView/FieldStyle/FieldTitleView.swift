@@ -20,10 +20,10 @@ struct FieldTitleView: View {
             HStack(spacing: 0) {
                 Text(title)
                     .font(.caption)
-                    .foregroundColor(titleColor)
+                    .foregroundStyle(titleColor)
                 if showStar {
                     Text("*")
-                        .foregroundColor(.customRed)
+                        .foregroundStyle(Color.customRed)
                 }
             }
             .frame(height: 15)
@@ -32,4 +32,8 @@ struct FieldTitleView: View {
         }
         .buttonStyle(.plain)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

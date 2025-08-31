@@ -48,7 +48,7 @@ struct DailyIntakeView: View {
                                     moveFocus(.up)
                                 } label: {
                                     Image(systemName: "chevron.up")
-                                        .foregroundColor(
+                                        .foregroundStyle(
                                             colorForFocus(
                                                 isActive: canMoveFocus(.up)
                                             )
@@ -60,7 +60,7 @@ struct DailyIntakeView: View {
                                     moveFocus(.down)
                                 } label: {
                                     Image(systemName: "chevron.down")
-                                        .foregroundColor(
+                                        .foregroundStyle(
                                             colorForFocus(
                                                 isActive: canMoveFocus(.down)
                                             )
@@ -159,7 +159,7 @@ struct DailyIntakeView: View {
     }
     
     private func colorForFocus(isActive: Bool) -> Color {
-        isActive ? .accent : .secondary
+        isActive ? .accentColor : .secondary
     }
 }
 

@@ -116,7 +116,7 @@ final class RegisterViewModel: ObservableObject {
     }
     
     func resendButtonColor() -> Color {
-        return isResendEnabled ? .accent : .secondary
+        return isResendEnabled ? .accentColor : .secondary
     }
     
     // MARK: - Alert

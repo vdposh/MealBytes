@@ -40,7 +40,6 @@ struct LoginView: View {
                             await loginViewModel.signIn()
                         }
                     },
-                    backgroundColor: .accent,
                     isEnabled: loginViewModel.isLoginEnabled()
                 )
                 .frame(height: 50)
@@ -51,7 +50,7 @@ struct LoginView: View {
             VStack(spacing: 10) {
                 HStack(spacing: 4) {
                     Text("Don't have a MealBytes account?")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                     
                     NavigationLink(destination: RegisterView()) {
                         Text("Sign up")
@@ -61,7 +60,7 @@ struct LoginView: View {
                 
                 HStack(spacing: 4) {
                     Text("Forgot the password?")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                     
                     NavigationLink(destination: ResetView()) {
                         Text("Reset")

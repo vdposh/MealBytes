@@ -39,7 +39,7 @@ struct FoodItemRow: View {
                         Text(mealItem.foodName)
                         Text(mainViewModel.formattedMealText(for: mealItem))
                             .font(.subheadline)
-                            .foregroundStyle(.accent)
+                            .foregroundStyle(Color.accentColor)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .layoutPriority(0)
@@ -52,7 +52,7 @@ struct FoodItemRow: View {
                     .lineLimit(1)
                     .font(.callout)
                     .fontWeight(.medium)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .layoutPriority(1)
                 }
                 
@@ -83,7 +83,7 @@ struct FoodItemRow: View {
                             for: mealItem.nutrients[.calories])
                         )
                         .lineLimit(1)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }

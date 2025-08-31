@@ -10,7 +10,7 @@ import SwiftUI
 struct ActionButtonView: View {
     let title: String
     let action: () -> Void
-    let backgroundColor: Color
+    var color: Color = .accent
     var isEnabled: Bool = true
     
     var body: some View {
@@ -21,8 +21,8 @@ struct ActionButtonView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal)
                 .frame(height: 45)
-                .background(backgroundColor)
-                .foregroundColor(.white)
+                .background(color)
+                .foregroundStyle(.white)
                 .font(.headline)
                 .lineLimit(1)
                 .cornerRadius(12)

@@ -193,7 +193,6 @@ struct FoodView: View {
                                 dismiss()
                             }
                         },
-                        backgroundColor: .accent,
                         isEnabled: foodViewModel.canAddFood
                     )
                     
@@ -203,6 +202,7 @@ struct FoodView: View {
                                 await foodViewModel.toggleBookmarkFoodView()
                             }
                         },
+                        color: .accent,
                         isFilled: foodViewModel.isBookmarkFilled,
                         width: 55,
                         height: 30
@@ -214,7 +214,7 @@ struct FoodView: View {
                             foodViewModel.deleteMealItemFoodView()
                             dismiss()
                         },
-                        backgroundColor: .customRed
+                        color: .customRed
                     )
                     
                     ActionButtonView(
@@ -227,7 +227,6 @@ struct FoodView: View {
                                 dismiss()
                             }
                         },
-                        backgroundColor: .accent,
                         isEnabled: foodViewModel.canAddFood
                     )
                 }

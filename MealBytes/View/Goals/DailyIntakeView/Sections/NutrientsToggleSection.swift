@@ -16,7 +16,7 @@ struct NutrientsToggleSection: View {
                 Toggle(isOn: $toggleOn) {
                     Text("Macronutrient Metrics")
                 }
-                .toggleStyle(SwitchToggleStyle(tint: .accent))
+                .toggleStyle(SwitchToggleStyle(tint: .accentColor))
             },
             layout: .pickerStyle,
             description: "Enable this option to calculate intake using macronutrients.",

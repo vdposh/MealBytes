@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BookmarkButtonView: View {
     var action: () -> Void
+    var color: Color = .accentColor
     var isFilled: Bool
     var width: CGFloat? = nil
     var height: CGFloat? = nil
@@ -26,6 +27,6 @@ struct BookmarkButtonView: View {
                 )
         }
         .buttonStyle(.plain)
-        .foregroundStyle(.accent)
+        .foregroundStyle(color)
     }
 }

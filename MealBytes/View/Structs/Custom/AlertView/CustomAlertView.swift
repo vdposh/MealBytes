@@ -14,7 +14,7 @@ struct CustomAlertView: View {
         if isVisible {
             HStack {
                 Image(systemName: "text.badge.plus")
-                    .foregroundColor(.accent.opacity(0.8))
+                    .foregroundStyle(Color.accentColor.opacity(0.8))
                     .frame(width: 12)
                 Text("Added to Diary")
                     .fontWeight(.medium)

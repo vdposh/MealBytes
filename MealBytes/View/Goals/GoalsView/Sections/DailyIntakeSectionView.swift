@@ -26,12 +26,12 @@ struct DailyIntakeSectionView: View {
                         
                         LabeledContent {
                             Text(dailyIntakeState.text)
-                                .foregroundColor(dailyIntakeState.color)
+                                .foregroundStyle(dailyIntakeState.color)
                                 .fontWeight(dailyIntakeState.weight)
                         } label: {
                             HStack {
                                 Image(systemName: dailyIntakeState.icon)
-                                    .foregroundStyle(.accent)
+                                    .foregroundStyle(Color.accentColor)
                                 Text("Daily Intake")
                             }
                         }
@@ -43,12 +43,12 @@ struct DailyIntakeSectionView: View {
                     HStack {
                         LoadingView()
                         Text("Loading...")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 } label: {
                     HStack {
                         Image(systemName: "person")
-                            .foregroundStyle(.accent)
+                            .foregroundStyle(Color.accentColor)
                         Text("Daily Intake")
                     }
                 }

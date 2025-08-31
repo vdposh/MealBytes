@@ -31,7 +31,7 @@ struct ActivitySection: View {
                         }
                     }
                     .pickerStyle(.menu)
-                    .accentColor(rdiViewModel.selectedActivity.accentColor)
+                    .accentColor(rdiViewModel.selectedActivity.selectedColor)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             },
@@ -52,10 +52,10 @@ enum Activity: String, CaseIterable {
     case veryActive = "Very Active"
     case extraActive = "Extra Active"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
         case .notSelected: return .customRed
-        default: return .accent
+        default: return .accentColor
         }
     }
 }

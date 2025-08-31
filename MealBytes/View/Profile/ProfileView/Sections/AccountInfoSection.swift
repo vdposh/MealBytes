@@ -16,14 +16,14 @@ struct AccountInfoSection: View {
                 VStack {
                     Text("This account is signed in:")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                     Text(email)
                         .font(.headline)
                 }
             } else {
                 Text("Account disconnected.")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding(.bottom)
