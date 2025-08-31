@@ -18,9 +18,7 @@ struct ShowHideButtonView: View {
         } label: {
             HStack {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .foregroundColor(.customGreen)
                 Text(isExpanded ? "Hide" : "Show")
-                    .foregroundColor(.customGreen)
             }
             .lineLimit(1)
             .font(.footnote)

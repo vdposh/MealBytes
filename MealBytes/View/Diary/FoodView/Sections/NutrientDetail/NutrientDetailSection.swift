@@ -27,7 +27,7 @@ struct NutrientDetailSection: View {
                     ) { index, nutrient in
                         HStack {
                             Text(nutrient.type.title)
-                                .foregroundColor(
+                                .foregroundStyle(
                                     nutrient.isSubValue ? .secondary : .primary
                                 )
                                 .font(.subheadline)

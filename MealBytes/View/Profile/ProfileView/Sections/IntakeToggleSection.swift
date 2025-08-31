@@ -25,7 +25,7 @@ struct IntakeToggleSection: View {
                     }
                 )
             )
-            .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+            .toggleStyle(SwitchToggleStyle(tint: .accent))
         } footer: {
             Text("Enable this option to display daily intake progress directly in the Diary.")
         }

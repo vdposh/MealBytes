@@ -193,7 +193,7 @@ struct FoodView: View {
                                 dismiss()
                             }
                         },
-                        backgroundColor: .customGreen,
+                        backgroundColor: .accent,
                         isEnabled: foodViewModel.canAddFood
                     )
                     
@@ -227,7 +227,7 @@ struct FoodView: View {
                                 dismiss()
                             }
                         },
-                        backgroundColor: .customGreen,
+                        backgroundColor: .accent,
                         isEnabled: foodViewModel.canAddFood
                     )
                 }

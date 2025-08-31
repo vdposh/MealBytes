@@ -29,7 +29,7 @@ struct RdiSectionView: View {
                         } label: {
                             HStack {
                                 Image(systemName: rdiState.icon)
-                                    .foregroundStyle(.customGreen)
+                                    .foregroundStyle(.accent)
                                 Text("RDI")
                             }
                         }
@@ -46,7 +46,7 @@ struct RdiSectionView: View {
                 } label: {
                     HStack {
                         Image(systemName: "person")
-                            .foregroundStyle(.customGreen)
+                            .foregroundStyle(.accent)
                         Text("RDI")
                     }
                 }

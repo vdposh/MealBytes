@@ -39,7 +39,7 @@ struct FoodItemRow: View {
                         Text(mealItem.foodName)
                         Text(mainViewModel.formattedMealText(for: mealItem))
                             .font(.subheadline)
-                            .foregroundColor(.customGreen)
+                            .foregroundStyle(.accent)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .layoutPriority(0)

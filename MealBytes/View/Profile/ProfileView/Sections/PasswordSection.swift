@@ -17,7 +17,7 @@ struct PasswordSection: View {
                 profileViewModel.prepareAlert(for: .changePassword)
             } label: {
                 Text("Change Password")
-                    .foregroundStyle(.customGreen)
+                    .foregroundStyle(.accent)
             }
             .disabled(profileViewModel.isPasswordChanging)
         } footer: {
@@ -25,4 +25,8 @@ struct PasswordSection: View {
                 .padding(.bottom)
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

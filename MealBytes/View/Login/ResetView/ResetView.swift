@@ -43,7 +43,7 @@ struct ResetView: View {
                                 await resetViewModel.resetPassword()
                             }
                         },
-                        backgroundColor: .customGreen,
+                        backgroundColor: .accent,
                         isEnabled: resetViewModel.isResetEnabled()
                     )
                     .frame(height: 50)

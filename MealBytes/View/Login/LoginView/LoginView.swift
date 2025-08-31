@@ -40,7 +40,7 @@ struct LoginView: View {
                             await loginViewModel.signIn()
                         }
                     },
-                    backgroundColor: .customGreen,
+                    backgroundColor: .accent,
                     isEnabled: loginViewModel.isLoginEnabled()
                 )
                 .frame(height: 50)

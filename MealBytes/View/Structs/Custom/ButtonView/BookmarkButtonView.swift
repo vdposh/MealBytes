@@ -26,6 +26,6 @@ struct BookmarkButtonView: View {
                 )
         }
         .buttonStyle(.plain)
-        .foregroundStyle(.customGreen)
+        .foregroundStyle(.accent)
     }
 }

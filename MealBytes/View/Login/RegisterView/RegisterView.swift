@@ -87,7 +87,7 @@ struct RegisterView: View {
                                     await registerViewModel.signUp()
                                 }
                             },
-                            backgroundColor: .customGreen,
+                            backgroundColor: .accent,
                             isEnabled: registerViewModel.isRegisterEnabled()
                         )
                         .frame(height: 50)

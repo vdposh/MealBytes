@@ -147,7 +147,7 @@ struct RdiView: View {
     }
     
     private func colorForFocus(isActive: Bool) -> Color {
-        isActive ? .customGreen : .secondary
+        isActive ? .accent : .secondary
     }
 }
 
