@@ -16,7 +16,7 @@ struct SignOutButtonView: View {
             action()
         } label: {
             Text(title)
-                .foregroundStyle(Color.customRed)
+                .accentColor(.customRed)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }

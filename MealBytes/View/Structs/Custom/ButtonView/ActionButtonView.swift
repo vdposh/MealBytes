@@ -19,15 +19,14 @@ struct ActionButtonView: View {
         } label: {
             Text(title)
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal)
                 .frame(height: 45)
-                .background(color)
+                .background(Color.accentColor)
                 .foregroundStyle(.white)
                 .font(.headline)
                 .lineLimit(1)
                 .cornerRadius(12)
         }
-        .buttonStyle(.plain)
+        .accentColor(color.opacity(isEnabled ? 1 : 0.6))
         .disabled(!isEnabled)
     }
 }

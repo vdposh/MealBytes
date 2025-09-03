@@ -14,34 +14,55 @@ struct ServingButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: {
-            action()
-        }) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                
-                HStack {
-                    Text(description)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .lineLimit(1)
-                    Image(systemName: "chevron.down")
-                        .resizable()
-                        .frame(width: 10, height: 6)
-                }
-                .frame(height: 35)
-                .overlay(
-                    Rectangle()
-                        .frame(height: 1)
-                        .opacity(0.4)
-                        .foregroundStyle(.secondary),
-                    alignment: .bottom
-                )
+        VStack(alignment: .leading, spacing: 0) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            
+            HStack {
+                Text(description)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                Image(systemName: "chevron.down")
+                    .resizable()
+                    .frame(width: 10, height: 6)
             }
-            .contentShape(Rectangle())
+            .frame(height: 35)
+            .overlay(
+                FieldUnderlineView(isFocused: false),
+                alignment: .bottom
+            )
         }
-        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .overlay(
+            Button(action: {
+                action()
+            }) {
+                Color.clear
+            }
+        )
+    }
+}
+
+#Preview {
+    NavigationStack {
+        FoodView(
+            navigationTitle: "Add to Diary",
+            food: Food(
+                searchFoodId: 3092,
+                searchFoodName: "Egg",
+                searchFoodDescription: "1 cup"
+            ),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "1",
+            measurementDescription: "Grams",
+            showAddButton: false,
+            showSaveRemoveButton: true,
+            showMealTypeButton: true,
+            originalMealItemId: UUID()
+        )
     }
 }
 

@@ -51,6 +51,7 @@ struct CaloriesSection: View {
                             .cornerRadius(4)
                             .padding(.bottom, 10)
                     }
+                    
                     HStack {
                         let nutrients = mainViewModel.formattedNutrients(
                             source: .summaries(summaries)
@@ -62,6 +63,7 @@ struct CaloriesSection: View {
                                 formattedValue: nutrients[key] ?? ""
                             )
                         }
+                        
                         if mainViewModel.canDisplayIntake() {
                             Text(mainViewModel.intakePercentageText(
                                 for: summaries[.calories])
@@ -79,4 +81,8 @@ struct CaloriesSection: View {
         }
         .id(mainViewModel.displayIntake)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

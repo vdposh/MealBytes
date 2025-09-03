@@ -37,7 +37,6 @@ struct SearchView: View {
                                     .foregroundStyle(mealType.color)
                                 Text(mealType.rawValue)
                                     .font(.headline)
-                                    .foregroundStyle(Color.accentColor)
                             }
                         }
                         .confirmationDialog(

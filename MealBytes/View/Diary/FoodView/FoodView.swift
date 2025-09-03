@@ -202,7 +202,6 @@ struct FoodView: View {
                                 await foodViewModel.toggleBookmarkFoodView()
                             }
                         },
-                        color: .accent,
                         isFilled: foodViewModel.isBookmarkFilled,
                         width: 55,
                         height: 30

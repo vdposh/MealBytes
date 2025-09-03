@@ -31,3 +31,7 @@ struct IntakeToggleSection: View {
         }
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

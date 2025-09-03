@@ -20,17 +20,45 @@ struct FieldTitleView: View {
             HStack(spacing: 0) {
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(titleColor)
+                    .accentColor(titleColor)
                 if showStar {
                     Text("*")
-                        .foregroundStyle(Color.customRed)
+                        .accentColor(.customRed)
                 }
             }
             .frame(height: 15)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
+            .overlay(
+                Button(action: {
+                    isFocused.wrappedValue = true
+                }) {
+                    Color.clear
+                }
+            )
         }
-        .buttonStyle(.plain)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        FoodView(
+            navigationTitle: "Add to Diary",
+            food: Food(
+                searchFoodId: 3092,
+                searchFoodName: "Egg",
+                searchFoodDescription: "1 cup"
+            ),
+            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
+            mainViewModel: MainViewModel(),
+            mealType: .breakfast,
+            amount: "1",
+            measurementDescription: "Grams",
+            showAddButton: false,
+            showSaveRemoveButton: true,
+            showMealTypeButton: true,
+            originalMealItemId: UUID()
+        )
     }
 }
 
