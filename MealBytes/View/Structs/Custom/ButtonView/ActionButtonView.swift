@@ -20,13 +20,17 @@ struct ActionButtonView: View {
             Text(title)
                 .frame(maxWidth: .infinity)
                 .frame(height: 45)
-                .background(Color.accentColor)
+                .background(
+                    isEnabled
+                    ? Color.accentColor
+                    : color.opacity(isEnabled ? 1 : 0.5)
+                )
                 .foregroundStyle(.white)
                 .font(.headline)
                 .lineLimit(1)
                 .cornerRadius(12)
         }
-        .accentColor(color.opacity(isEnabled ? 1 : 0.6))
+        .accentColor(color.opacity(isEnabled ? 1 : 0.5))
         .disabled(!isEnabled)
     }
 }

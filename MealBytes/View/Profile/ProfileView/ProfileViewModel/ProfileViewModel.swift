@@ -10,6 +10,7 @@ import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
+    @Published var uniqueId = UUID()
     @Published var password: String = ""
     @Published var newPassword: String = ""
     @Published var confirmPassword: String = ""
@@ -68,6 +69,8 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Delete Account
     private func deleteAccount(email: String, password: String) async {
+        uniqueId = UUID()
+        
         do {
             try await firebaseAuth.reauthenticateAuth(
                 email: email,
@@ -96,6 +99,8 @@ final class ProfileViewModel: ObservableObject {
         currentPassword: String,
         newPassword: String
     ) async throws {
+        uniqueId = UUID()
+        
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,
             newPassword: newPassword

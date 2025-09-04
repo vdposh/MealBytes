@@ -40,11 +40,11 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var appError: AppError?
-    @Published var isFoodAddedAlertVisible: Bool = false
     @Published var uniqueId = UUID()
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
+    @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isExpandedCalendar: Bool = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
