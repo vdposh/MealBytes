@@ -30,7 +30,7 @@ struct ActionButtonView: View {
                 .lineLimit(1)
                 .cornerRadius(12)
         }
-        .accentColor(color.opacity(isEnabled ? 1 : 0.5))
+        .accentColor(color)
         .disabled(!isEnabled)
     }
 }
