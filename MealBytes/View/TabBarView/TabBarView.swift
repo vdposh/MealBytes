@@ -67,7 +67,7 @@ struct TabBarView: View {
             )
         }
         .overlay {
-            if profileViewModel.isDeletingAccount {
+            if profileViewModel.isLoading {
                 LoadingProfileView()
             }
         }
