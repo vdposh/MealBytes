@@ -33,16 +33,20 @@ struct LoginView: View {
                     )
                 )
                 
-                ActionButtonView(
-                    title: "Login",
-                    action: {
-                        Task {
-                            await loginViewModel.signIn()
-                        }
-                    },
-                    isEnabled: loginViewModel.isLoginEnabled()
-                )
-                .frame(height: 50)
+                if loginViewModel.isSignIn {
+                    LoadingView(showFrame: true)
+                } else {
+                    ActionButtonView(
+                        title: "Login",
+                        action: {
+                            Task {
+                                await loginViewModel.signIn()
+                            }
+                        },
+                        isEnabled: loginViewModel.isLoginEnabled()
+                    )
+                    .frame(height: 50)
+                }
             }
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
@@ -69,11 +73,15 @@ struct LoginView: View {
                 }
             }
             .font(.footnote)
-            .alert(isPresented: $loginViewModel.showAlert) {
-                loginViewModel.getLoginErrorAlert()
-            }
+        }
+        .alert(isPresented: $loginViewModel.showAlert) {
+            loginViewModel.getLoginErrorAlert()
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }
 
 #Preview {

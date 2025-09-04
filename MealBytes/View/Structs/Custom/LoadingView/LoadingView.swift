@@ -9,9 +9,10 @@ import SwiftUI
 
 struct LoadingView: View {
     var showLabel: Bool = false
+    var showFrame: Bool = false
     
     var body: some View {
-        HStack {
+        let progressView = HStack {
             ProgressView()
                 .progressViewStyle(
                     CircularProgressViewStyle(tint: .accentColor)
@@ -21,6 +22,14 @@ struct LoadingView: View {
                 Text("Loading...")
                     .foregroundStyle(.secondary)
             }
+        }
+        
+        if showFrame {
+            progressView
+                .frame(height: 50)
+                .frame(maxWidth: .infinity)
+        } else {
+            progressView
         }
     }
 }

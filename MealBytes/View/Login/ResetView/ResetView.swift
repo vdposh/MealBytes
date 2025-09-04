@@ -25,9 +25,7 @@ struct ResetView: View {
                 )
                 
                 if resetViewModel.isLoading {
-                    LoadingView()
-                        .frame(height: 50)
-                        .frame(maxWidth: .infinity)
+                    LoadingView(showFrame: true)
                 } else if resetViewModel.isEmailSent {
                     Text("A reset link has been sent to the email \"\(resetViewModel.sentEmail)\".")
                         .font(.footnote)

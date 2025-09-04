@@ -44,9 +44,7 @@ struct RegisterView: View {
                 )
                 
                 if registerViewModel.isRegisterLoading {
-                    LoadingView()
-                        .frame(height: 50)
-                        .frame(maxWidth: .infinity)
+                    LoadingView(showFrame: true)
                 } else {
                     if registerViewModel.showResendOptions {
                         HStack(spacing: 4) {
