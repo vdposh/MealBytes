@@ -38,11 +38,7 @@ struct RdiSectionView: View {
                 }
             } else {
                 LabeledContent {
-                    HStack {
-                        LoadingView()
-                        Text("Loading...")
-                            .foregroundStyle(.secondary)
-                    }
+                    LoadingView(showLabel: true)
                 } label: {
                     HStack {
                         Image(systemName: "person")

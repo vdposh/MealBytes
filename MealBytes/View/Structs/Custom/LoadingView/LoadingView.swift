@@ -8,12 +8,19 @@
 import SwiftUI
 
 struct LoadingView: View {
+    var showLabel: Bool = false
+    
     var body: some View {
-        VStack {
+        HStack {
             ProgressView()
                 .progressViewStyle(
                     CircularProgressViewStyle(tint: .accentColor)
                 )
+            
+            if showLabel {
+                Text("Loading...")
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

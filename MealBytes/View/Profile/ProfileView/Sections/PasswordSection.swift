@@ -13,12 +13,15 @@ struct PasswordSection: View {
     
     var body: some View {
         Section {
-            Button {
-                profileViewModel.prepareAlert(for: .changePassword)
-            } label: {
-                Text("Change Password")
+            if profileViewModel.isPasswordChanging {
+                LoadingView(showLabel: true)
+            } else {
+                Button {
+                    profileViewModel.prepareAlert(for: .changePassword)
+                } label: {
+                    Text("Change Password")
+                }
             }
-            .disabled(profileViewModel.isPasswordChanging)
         } footer: {
             Text("Use this option to update the account password for improved security.")
                 .padding(.bottom)

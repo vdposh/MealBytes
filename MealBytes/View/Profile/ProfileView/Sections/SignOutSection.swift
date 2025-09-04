@@ -34,7 +34,6 @@ struct SignOutSection: View {
                     .font(.footnote)
                     .fontWeight(.semibold)
                     .accentColor(.customRed)
-                    .buttonStyle(.borderless)
                     
                     Text("the account?")
                 }

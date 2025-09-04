@@ -62,16 +62,14 @@ struct TabBarView: View {
             }
         }
         .overlay {
-            if profileViewModel.isLoading {
-                LoadingProfileView(
-                    isLoading: $profileViewModel.isPasswordChanging
-                )
-            }
-        }
-        .overlay {
             FoodAlertOverlay(
                 isVisible: $mainViewModel.isFoodAddedAlertVisible
             )
+        }
+        .overlay {
+            if profileViewModel.isDeletingAccount {
+                LoadingProfileView()
+            }
         }
     }
 }

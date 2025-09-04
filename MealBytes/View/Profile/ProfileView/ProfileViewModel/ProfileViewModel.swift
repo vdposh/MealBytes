@@ -223,10 +223,6 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-    var isLoading: Bool {
-        isDeletingAccount || isPasswordChanging
-    }
-    
     var alertTitle: String {
         alertContent?.title ?? "Alert"
     }
