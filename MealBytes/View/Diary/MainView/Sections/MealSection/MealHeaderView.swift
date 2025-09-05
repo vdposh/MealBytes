@@ -21,62 +21,60 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            ZStack {
-                Button {
-                    Task {
-                        await mainViewModel.searchViewModel
-                            .loadBookmarksData(for: mealType)
-                    }
-                } label: {
-                    HStack {
-                        VStack(spacing: 15) {
-                            HStack {
-                                Image(systemName: iconName)
-                                    .frame(width: 22)
-                                    .foregroundStyle(color)
-                                Text(title)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(Color.primary)
-                                    .frame(
-                                        maxWidth: .infinity,
-                                        alignment: .leading
-                                    )
-                                Text(mainViewModel.formattedCalories(calories))
-                                    .lineLimit(1)
-                                    .font(.callout)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(Color.primary)
-                            }
-                            NutrientSummaryRow(
-                                fat: fat,
-                                carbohydrate: carbohydrate,
-                                protein: protein,
-                                calories: calories,
-                                mainViewModel: mainViewModel
-                            )
-                        }
-                        .padding(.vertical, 5)
-                        .padding(.trailing, 5)
-                        
-                        Image(systemName: "plus")
-                            .fontWeight(.bold)
-                    }
+            Button {
+                Task {
+                    await mainViewModel.searchViewModel
+                        .loadBookmarksData(for: mealType)
                 }
-                .background {
-                    if let searchModel = mainViewModel
-                        .searchViewModel as? SearchViewModel {
-                        NavigationLink(
-                            destination: SearchView(
-                                searchViewModel: searchModel,
-                                mealType: mealType
-                            )
-                        ) {
-                            EmptyView()
+            } label: {
+                HStack {
+                    VStack(spacing: 15) {
+                        HStack {
+                            Image(systemName: iconName)
+                                .frame(width: 22)
+                                .foregroundStyle(color)
+                            Text(title)
+                                .fontWeight(.medium)
+                                .foregroundStyle(Color.primary)
+                                .frame(
+                                    maxWidth: .infinity,
+                                    alignment: .leading
+                                )
+                            Text(mainViewModel.formattedCalories(calories))
+                                .lineLimit(1)
+                                .font(.callout)
+                                .fontWeight(.medium)
+                                .foregroundStyle(Color.primary)
                         }
-                        .opacity(0)
-                    } else {
+                        NutrientSummaryRow(
+                            fat: fat,
+                            carbohydrate: carbohydrate,
+                            protein: protein,
+                            calories: calories,
+                            mainViewModel: mainViewModel
+                        )
+                    }
+                    .padding(.vertical, 5)
+                    .padding(.trailing, 5)
+                    
+                    Image(systemName: "plus")
+                        .fontWeight(.bold)
+                }
+            }
+            .background {
+                if let searchModel = mainViewModel
+                    .searchViewModel as? SearchViewModel {
+                    NavigationLink(
+                        destination: SearchView(
+                            searchViewModel: searchModel,
+                            mealType: mealType
+                        )
+                    ) {
                         EmptyView()
                     }
+                    .opacity(0)
+                } else {
+                    EmptyView()
                 }
             }
             
@@ -94,9 +92,11 @@ struct MealHeaderView: View {
                             mainViewModel: mainViewModel
                         )
                         .swipeActions(allowsFullSwipe: false) {
-                            Button(role: mainViewModel.deletionButtonRole(
-                                for: mealType
-                            )) {
+                            Button(
+                                role: mainViewModel.deletionButtonRole(
+                                    for: mealType
+                                )
+                            ) {
                                 mainViewModel.deleteMealItemMainView(
                                     with: item.id,
                                     for: mealType

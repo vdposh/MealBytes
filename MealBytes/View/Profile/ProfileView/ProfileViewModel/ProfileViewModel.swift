@@ -124,9 +124,7 @@ final class ProfileViewModel: ObservableObject {
             signOut()
             
         case .deleteAccount:
-            await MainActor.run {
-                isDeletingAccount = true
-            }
+            isDeletingAccount = true
             
             guard let email = email, !email.isEmpty else {
                 await showOverrideMessage(
@@ -155,9 +153,7 @@ final class ProfileViewModel: ObservableObject {
             }
             
         case .changePassword:
-            await MainActor.run {
-                isPasswordChanging = true
-            }
+            isPasswordChanging = true
             
             if let validationError = validatePassword() {
                 await showOverrideMessage(
@@ -228,10 +224,6 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-    var isLoading: Bool {
-        isDeletingAccount || isPasswordChanging
-    }
-    
     var alertTitle: String {
         alertContent?.title ?? "Alert"
     }

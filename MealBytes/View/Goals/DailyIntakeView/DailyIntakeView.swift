@@ -88,6 +88,7 @@ struct DailyIntakeView: View {
                             }
                             caloriesFocused = false
                             focusMacronutrients = nil
+                            dailyIntakeViewModel.normalizeInputs()
                         }
                     }
                 }
