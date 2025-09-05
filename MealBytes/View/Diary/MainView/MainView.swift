@@ -126,9 +126,3 @@ struct MainView: View {
 #Preview {
     PreviewContentView.contentView
 }
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
-}

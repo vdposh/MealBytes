@@ -42,12 +42,5 @@ struct MacronutrientRow: View {
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    return NavigationStack {
-        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
-    }
+    PreviewDailyIntakeView.dailyIntakeView
 }

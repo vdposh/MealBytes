@@ -21,6 +21,12 @@ struct SystemStatsView: View {
     }
 }
 
+
+
+#Preview {
+    PreviewContentView.contentView
+}
+
 //#if DEBUG
 //            VStack {
 //                SystemStatsView()
@@ -29,7 +35,3 @@ struct SystemStatsView: View {
 //            }
 //            .allowsHitTesting(false)
 //#endif
-
-#Preview {
-    PreviewContentView.contentView
-}

@@ -190,3 +190,7 @@ struct SearchView: View {
 #Preview {
     PreviewContentView.contentView
 }
+
+#Preview {
+    PreviewSearchView.searchView
+}

@@ -259,3 +259,7 @@ enum AlertTypeLoginView {
 #Preview {
     PreviewContentView.contentView
 }
+
+#Preview {
+    PreviewLoginView.loginView
+}

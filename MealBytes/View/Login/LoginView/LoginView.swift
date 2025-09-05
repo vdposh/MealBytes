@@ -85,24 +85,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    let rdiViewModel = RdiViewModel(
-        mainViewModel: mainViewModel
-    )
-    let goalsViewModel = GoalsViewModel(
-        mainViewModel: mainViewModel,
-        dailyIntakeViewModel: dailyIntakeViewModel,
-        rdiViewModel: rdiViewModel
-    )
-    let loginViewModel = LoginViewModel(
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    
-    NavigationStack {
-        LoginView(loginViewModel: loginViewModel)
-    }
+    PreviewLoginView.loginView
 }

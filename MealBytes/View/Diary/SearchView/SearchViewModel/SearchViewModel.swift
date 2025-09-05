@@ -261,12 +261,5 @@ extension SearchViewModel: SearchViewModelProtocol {}
 }
 
 #Preview {
-    NavigationStack {
-        SearchView(
-            searchViewModel: SearchViewModel(
-                mainViewModel: MainViewModel()
-            ),
-            mealType: .breakfast
-        )
-    }
+    PreviewSearchView.searchView
 }

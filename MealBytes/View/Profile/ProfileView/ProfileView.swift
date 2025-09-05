@@ -109,31 +109,5 @@ struct ProfileView: View {
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    let rdiViewModel = RdiViewModel(
-        mainViewModel: mainViewModel
-    )
-    let goalsViewModel = GoalsViewModel(
-        mainViewModel: mainViewModel,
-        dailyIntakeViewModel: dailyIntakeViewModel,
-        rdiViewModel: rdiViewModel
-    )
-    let loginViewModel = LoginViewModel(
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    let themeManager = ThemeManager()
-    
-    NavigationStack {
-        ProfileView(
-            profileViewModel: ProfileViewModel(
-                loginViewModel: loginViewModel,
-                mainViewModel: mainViewModel
-            )
-        )
-        .environmentObject(themeManager)
-    }
+    PreviewProfileView.profileView
 }

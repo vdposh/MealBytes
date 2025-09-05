@@ -106,7 +106,5 @@ struct CalendarView: View {
 }
 
 #Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
+    PreviewContentView.contentView
 }

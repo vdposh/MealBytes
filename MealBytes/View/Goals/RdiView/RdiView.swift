@@ -179,10 +179,5 @@ enum RdiFocus: Hashable {
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-    
-    return NavigationStack {
-        RdiView(rdiViewModel: rdiViewModel)
-    }
+    PreviewRdiView.rdiView
 }

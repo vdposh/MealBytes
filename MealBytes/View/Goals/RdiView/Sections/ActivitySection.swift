@@ -61,10 +61,5 @@ enum Activity: String, CaseIterable {
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-    
-    return NavigationStack {
-        RdiView(rdiViewModel: rdiViewModel)
-    }
+    PreviewRdiView.rdiView
 }
