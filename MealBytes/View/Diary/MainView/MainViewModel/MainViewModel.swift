@@ -481,12 +481,30 @@ final class MainViewModel: ObservableObject {
     }
     
     func changeMonth(by value: Int, selectedDate: inout Date) {
-        if let newDate = calendar.date(
+        guard let newMonth = calendar.date(
             byAdding: .month,
             value: value,
             to: selectedDate
-        ) {
-            selectedDate = newDate
+        ) else { return }
+        
+        let components = calendar.dateComponents(
+            [.year, .month],
+            from: newMonth
+        )
+        
+        if value > 0 {
+            if let firstDay = calendar.date(from: components) {
+                selectedDate = firstDay
+            }
+        } else {
+            if let range = calendar.range(of: .day, in: .month, for: newMonth),
+               let lastDay = calendar.date(from: DateComponents(
+                year: components.year,
+                month: components.month,
+                day: range.count
+               )) {
+                selectedDate = lastDay
+            }
         }
     }
     

@@ -26,3 +26,7 @@ struct CalendarButtonView: View {
         .buttonStyle(InvisibleButtonStyle())
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

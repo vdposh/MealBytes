@@ -40,3 +40,7 @@ struct DetailedInformationSection: View {
         }
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}
