@@ -47,11 +47,17 @@ struct NutrientDetailSection: View {
                                 SeparatorOverlay(topInset: -22)
                             }
                         }
+                        .padding(.horizontal, 4)
+                        .padding(
+                            .vertical,
+                            index == nutrientDetails.count - 1 ? 0 : 6
+                        )
+                        .padding(
+                            .top,
+                            index == nutrientDetails.count - 1 ? 6 : 0
+                        )
                     }
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 6)
                 }
-                
             },
             layout: .textStyle,
             hasTopTextPadding: false,

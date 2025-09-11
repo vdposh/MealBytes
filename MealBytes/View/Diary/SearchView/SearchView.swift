@@ -94,6 +94,8 @@ struct SearchView: View {
                 ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
                     foodRow(for: food)
                 }
+                .listRowSeparatorTint(.secondary.opacity(0.4))
+                
                 pageButton(direction: .next)
                 pageButton(direction: .previous)
             }
@@ -105,7 +107,7 @@ struct SearchView: View {
                     contentUnavailableView(
                         for: .noBookmarks,
                         mealType: mealType
-                    ) { }
+                    ) {}
                 }
             }
         }
@@ -139,6 +141,7 @@ struct SearchView: View {
                     )
                 }
             }
+            
             NavigationLink(
                 destination: FoodView(
                     navigationTitle: "Add to \(mealType.rawValue)",
@@ -181,6 +184,7 @@ struct SearchView: View {
                 }
             }
             .foregroundStyle(Color.accentColor)
+            .listRowSeparatorTint(.secondary.opacity(0.4))
         } else {
             EmptyView()
         }
