@@ -19,14 +19,20 @@ struct DetailedInformationSection: View {
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
-            ForEach(nutrients, id: \.id) { nutrient in
+            ForEach(
+                Array(nutrients.enumerated()),
+                id: \.element.id
+            ) { index, nutrient in
                 HStack {
                     Text(nutrient.type.title)
                         .foregroundStyle(
                             nutrient.isSubValue ? .secondary : .primary
                         )
                         .font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
                     
                     Text(nutrient.formattedValue)
                         .foregroundStyle(
@@ -35,9 +41,16 @@ struct DetailedInformationSection: View {
                         .font(.subheadline)
                         .lineLimit(1)
                 }
+                .overlay(alignment: .top) {
+                    if index != 0 {
+                        SeparatorOverlay()
+                    }
+                }
             }
+            
             ShowHideButtonView(isExpanded: $isExpanded)
         }
+        .listRowSeparator(.hidden)
     }
 }
 

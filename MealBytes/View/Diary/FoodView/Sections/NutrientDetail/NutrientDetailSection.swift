@@ -18,7 +18,6 @@ struct NutrientDetailSection: View {
                     Text(title)
                         .font(.callout)
                         .fontWeight(.medium)
-                        .padding(.bottom, 6)
                         .padding(.horizontal, 4)
                     
                     ForEach(
@@ -43,13 +42,14 @@ struct NutrientDetailSection: View {
                                 .font(.subheadline)
                                 .lineLimit(1)
                         }
-                        
-                        if index < nutrientDetails.count - 1 {
-                            Divider()
-                                .padding(.trailing, -21)
+                        .overlay {
+                            if index != 0 {
+                                SeparatorOverlay(topInset: -22)
+                            }
                         }
                     }
                     .padding(.horizontal, 4)
+                    .padding(.vertical, 6)
                 }
                 
             },
