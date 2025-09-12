@@ -12,7 +12,6 @@ struct SeparatorOverlay: View {
     
     var body: some View {
         Divider()
-            .opacity(0.6)
             .padding(.trailing, -20)
             .padding(.top, topInset)
     }

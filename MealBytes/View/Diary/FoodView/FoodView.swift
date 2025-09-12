@@ -253,7 +253,6 @@ struct FoodView: View {
     
     private var nutrientDetailSection: some View {
         NutrientDetailSection(
-            title: "Detailed Information",
             nutrientDetails: foodViewModel.nutrientDetails
         )
     }

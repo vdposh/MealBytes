@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct NutrientDetailSection: View {
-    let title: String
     let nutrientDetails: [NutrientDetail]
     
     var body: some View {
         SectionStyleContainer(
             mainContent: {
                 VStack(alignment: .leading, spacing: 14) {
-                    Text(title)
+                    Text("Detailed Information")
                         .font(.callout)
                         .fontWeight(.medium)
                         .padding(.horizontal, 4)

@@ -107,9 +107,6 @@ struct MealHeaderView: View {
                             .tint(.red)
                         }
                     }
-                    .overlay(alignment: .top) {
-                        SeparatorOverlay(topInset: -11)
-                    }
                 }
             }
             

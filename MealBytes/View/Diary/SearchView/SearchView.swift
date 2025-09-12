@@ -94,7 +94,6 @@ struct SearchView: View {
                 ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
                     foodRow(for: food)
                 }
-                .listRowSeparatorTint(.secondary.opacity(0.4))
                 
                 pageButton(direction: .next)
                 pageButton(direction: .previous)
@@ -184,7 +183,6 @@ struct SearchView: View {
                 }
             }
             .foregroundStyle(Color.accentColor)
-            .listRowSeparatorTint(.secondary.opacity(0.4))
         } else {
             EmptyView()
         }
