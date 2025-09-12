@@ -92,9 +92,6 @@ struct FoodItemRow: View {
             }
             .padding(.trailing, 5)
         }
-        .overlay(alignment: .top) {
-            SeparatorOverlay(topInset: -11)
-        }
     }
 }
 

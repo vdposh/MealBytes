@@ -19,10 +19,7 @@ struct DetailedInformationSection: View {
                 .listRowSeparator(.hidden)
                 .padding(.top, 10)
             
-            ForEach(
-                Array(nutrients.enumerated()),
-                id: \.element.id
-            ) { index, nutrient in
+            ForEach(nutrients, id: \.id) { nutrient in
                 HStack {
                     Text(nutrient.type.title)
                         .foregroundStyle(
@@ -41,16 +38,10 @@ struct DetailedInformationSection: View {
                         .font(.subheadline)
                         .lineLimit(1)
                 }
-                .overlay(alignment: .top) {
-                    if index != 0 {
-                        SeparatorOverlay()
-                    }
-                }
             }
             
             ShowHideButtonView(isExpanded: $isExpanded)
         }
-        .listRowSeparator(.hidden)
     }
 }
 
