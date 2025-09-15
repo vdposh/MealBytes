@@ -101,7 +101,6 @@ struct MealHeaderView: View {
                                     with: item.id,
                                     for: mealType
                                 )
-                                mainViewModel.uniqueId = UUID()
                             } label: {
                                 Image(systemName: "trash")
                             }
@@ -118,6 +117,7 @@ struct MealHeaderView: View {
                 ))
             }
         }
+        .listRowSeparator(.hidden)
     }
 }
 
