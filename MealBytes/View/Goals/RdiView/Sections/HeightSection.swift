@@ -12,7 +12,7 @@ struct HeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 ServingTextFieldView(
                     text: $rdiViewModel.height,

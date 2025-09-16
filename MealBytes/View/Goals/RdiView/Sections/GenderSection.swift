@@ -11,7 +11,7 @@ struct GenderSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 HStack {
                     Text("Gender")

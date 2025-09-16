@@ -38,7 +38,7 @@ struct MealSectionView: View {
         )
         
         return MealSection(
-            model: model,
+            mealSectionModel: model,
             mainViewModel: mainViewModel
         )
     }

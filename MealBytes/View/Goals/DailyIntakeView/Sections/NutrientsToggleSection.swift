@@ -11,7 +11,7 @@ struct NutrientsToggleSection: View {
     @Binding var toggleOn: Bool
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 Toggle(isOn: $toggleOn) {
                     Text("Macronutrient Metrics")

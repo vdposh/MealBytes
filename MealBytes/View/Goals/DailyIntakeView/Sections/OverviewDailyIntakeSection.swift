@@ -10,7 +10,7 @@ import SwiftUI
 struct OverviewDailyIntakeSection: View {
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 EmptyView()
             },

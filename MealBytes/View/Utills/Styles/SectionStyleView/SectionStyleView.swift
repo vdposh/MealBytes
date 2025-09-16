@@ -1,5 +1,5 @@
 //
-//  SectionStyle.swift
+//  SectionStyleView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 19/07/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SectionStyleContainer<Content: View>: View {
+struct SectionStyleView<Content: View>: View {
     var mainContent: Content
     var secondaryContent: AnyView?
     var layout: SectionCardLayout
@@ -90,7 +90,7 @@ struct SectionStyleContainer<Content: View>: View {
             case .textStyle:
                 mainContent
                     .padding(.horizontal, 16)
-                    .padding(.top, hasTopTextPadding ? 12 : 18)
+                    .padding(.top, hasTopTextPadding ? 12 : 16)
                     .padding(.bottom)
                     .background(
                         Color(.secondarySystemGroupedBackground)

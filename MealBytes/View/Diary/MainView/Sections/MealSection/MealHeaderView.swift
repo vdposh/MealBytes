@@ -61,6 +61,18 @@ struct MealHeaderView: View {
                         .fontWeight(.bold)
                 }
             }
+            .overlay {
+                let isExpanded = mainViewModel
+                    .expandedSections[mealType] == true
+                let hasItems = !mainViewModel.filteredMealItems(
+                    for: mealType,
+                    on: mainViewModel.date
+                ).isEmpty
+                
+                if isExpanded && hasItems {
+                    SeparatorView(topInset: 85)
+                }
+            }
             .background {
                 if let searchModel = mainViewModel
                     .searchViewModel as? SearchViewModel {
@@ -85,12 +97,20 @@ struct MealHeaderView: View {
                 )
                 
                 if !foodItems.isEmpty {
-                    ForEach(foodItems, id: \.id) { item in
+                    ForEach(
+                        Array(foodItems.enumerated()),
+                        id: \.element.id
+                    ) { index, item in
                         FoodItemRow(
                             mealItem: item,
                             mealType: mealType,
                             mainViewModel: mainViewModel
                         )
+                        .overlay {
+                            if index < foodItems.count - 1 {
+                                SeparatorView(topInset: 90)
+                            }
+                        }
                         .swipeActions(allowsFullSwipe: false) {
                             Button(
                                 role: mainViewModel.deletionButtonRole(

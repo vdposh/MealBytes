@@ -11,7 +11,7 @@ struct OverviewRdiSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
                     .foregroundStyle(

@@ -39,7 +39,7 @@ final class FoodViewModel: ObservableObject {
     let food: Food
     var mealType: MealType
     
-    private let networkManager: NetworkManagerProtocol = NetworkManager()
+    private let fatSecretManager: FatSecretManagerProtocol = FatSecretManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let searchViewModel: SearchViewModelProtocol
     let mainViewModel: MainViewModelProtocol
@@ -80,7 +80,7 @@ final class FoodViewModel: ObservableObject {
         isLoading = true
         
         do {
-            let fetchedFoodDetail = try await networkManager
+            let fetchedFoodDetail = try await fatSecretManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
             self.foodDetail = fetchedFoodDetail
             

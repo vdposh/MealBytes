@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct MealSection: View {
-    let model: MealSectionModel
+    let mealSectionModel: MealSectionModel
     let mainViewModel: MainViewModel
     
     var body: some View {
         MealHeaderView(
-            mealType: model.mealType,
-            title: model.title,
-            iconName: model.iconName,
-            color: model.color,
-            calories: model.calories,
-            fat: model.fat,
-            protein: model.protein,
-            carbohydrate: model.carbohydrate,
-            foodItems: model.foodItems,
+            mealType: mealSectionModel.mealType,
+            title: mealSectionModel.title,
+            iconName: mealSectionModel.iconName,
+            color: mealSectionModel.color,
+            calories: mealSectionModel.calories,
+            fat: mealSectionModel.fat,
+            protein: mealSectionModel.protein,
+            carbohydrate: mealSectionModel.carbohydrate,
+            foodItems: mealSectionModel.foodItems,
             mainViewModel: mainViewModel
         )
     }

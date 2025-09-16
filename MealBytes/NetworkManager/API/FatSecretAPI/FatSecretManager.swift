@@ -1,5 +1,5 @@
 //
-//  NetworkManager.swift
+//  FatSecretManager.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 04/03/2025.
@@ -8,12 +8,12 @@
 import SwiftUI
 import Moya
 
-protocol NetworkManagerProtocol {
+protocol FatSecretManagerProtocol {
     func fetchFoods(query: String, page: Int) async throws -> [Food]
     func fetchFoodDetails(foodId: Int) async throws -> FoodDetail
 }
 
-final class NetworkManager: NetworkManagerProtocol {
+final class FatSecretManager: FatSecretManagerProtocol {
     
     private lazy var provider = MoyaProvider<FatSecretAPI>()
     

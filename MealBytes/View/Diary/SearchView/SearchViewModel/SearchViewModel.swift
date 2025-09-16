@@ -35,7 +35,7 @@ final class SearchViewModel: ObservableObject {
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
     
-    private let networkManager: NetworkManagerProtocol = NetworkManager()
+    private let fatSecretManager: FatSecretManagerProtocol = FatSecretManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModelProtocol
@@ -77,7 +77,7 @@ final class SearchViewModel: ObservableObject {
         
         Task {
             do {
-                let foods = try await networkManager.fetchFoods(
+                let foods = try await fatSecretManager.fetchFoods(
                     query: query,
                     page: currentPage
                 )

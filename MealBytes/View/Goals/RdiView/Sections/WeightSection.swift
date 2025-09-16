@@ -12,7 +12,7 @@ struct WeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 ServingTextFieldView(
                     text: $rdiViewModel.weight,

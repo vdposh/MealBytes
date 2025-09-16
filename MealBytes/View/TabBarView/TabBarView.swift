@@ -62,7 +62,7 @@ struct TabBarView: View {
             }
         }
         .overlay {
-            FoodAlertOverlay(
+            FoodAlertView(
                 isVisible: $mainViewModel.isFoodAddedAlertVisible
             )
         }

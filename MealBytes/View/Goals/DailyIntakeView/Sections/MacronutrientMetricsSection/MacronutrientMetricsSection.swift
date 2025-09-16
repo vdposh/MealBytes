@@ -12,7 +12,7 @@ struct MacronutrientMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 VStack(spacing: 15) {
                     MacronutrientRow(

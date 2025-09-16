@@ -43,7 +43,7 @@ struct DetailedInformationSection: View {
                 }
                 .overlay(alignment: .top) {
                     if index != 0 {
-                        SeparatorOverlay()
+                        SeparatorView()
                     }
                 }
             }

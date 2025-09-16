@@ -12,7 +12,7 @@ struct CalorieMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 HStack(alignment: .bottom) {
                     ServingTextFieldView(

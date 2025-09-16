@@ -11,7 +11,7 @@ struct NutrientDetailSection: View {
     let nutrientDetails: [NutrientDetail]
     
     var body: some View {
-        SectionStyleContainer(
+        SectionStyleView(
             mainContent: {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Detailed Information")
@@ -43,7 +43,7 @@ struct NutrientDetailSection: View {
                         }
                         .overlay {
                             if index != 0 {
-                                SeparatorOverlay(topInset: -22)
+                                SeparatorView(topInset: -22)
                             }
                         }
                         .padding(.horizontal, 4)
