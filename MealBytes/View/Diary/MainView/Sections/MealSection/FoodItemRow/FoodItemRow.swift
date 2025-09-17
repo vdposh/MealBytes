@@ -92,7 +92,6 @@ struct FoodItemRow: View {
             }
             .padding(.trailing, 5)
         }
-//        .listRowSeparator(.hidden, edges: .bottom)
     }
 }
 

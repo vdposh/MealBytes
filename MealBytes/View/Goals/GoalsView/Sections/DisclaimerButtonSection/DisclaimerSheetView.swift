@@ -15,10 +15,10 @@ struct DisclaimerSheetView: View {
             List {
                 Section {
                     EmptyView()
-                } header: {
-                    Text("Daily Intake and Recommendations")
                 } footer: {
                     Text("""
+                \(String("Daily Intake and Recommendations".uppercased()))
+                
                 The daily intake values displayed in MealBytes are an estimate based on your personal input and are not intended as medical advice or dietary recommendations.
                 
                 Please consult a qualified healthcare professional or registered dietitian before making significant dietary changes or if you have specific medical conditions or nutritional needs. MealBytes does not replace individualized clinical advice.
@@ -32,13 +32,8 @@ struct DisclaimerSheetView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                            .font(.title2)
-                            .foregroundStyle(.secondary)
+                        Image(systemName: "xmark")
                     }
-                    .accessibilityLabel("Close")
-                    .foregroundStyle(.secondary)
                 }
             }
         }

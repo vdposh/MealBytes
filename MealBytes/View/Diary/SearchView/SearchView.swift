@@ -33,11 +33,11 @@ struct SearchView: View {
                             HStack {
                                 Image(systemName: mealType.iconName)
                                     .font(.system(size: 13))
-                                    .frame(width: 15, height: 5)
+                                    .frame(width: 17)
                                     .foregroundStyle(mealType.color)
                                 Text(mealType.rawValue)
-                                    .font(.headline)
                             }
+                            .padding(.horizontal, 10)
                         }
                         .confirmationDialog(
                             "Select a Meal Type",

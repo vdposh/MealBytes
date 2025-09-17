@@ -19,20 +19,14 @@ struct NutrientDetailSection: View {
                         .fontWeight(.medium)
                         .padding(.horizontal, 4)
                     
-                    ForEach(
-                        Array(nutrientDetails.enumerated()),
-                        id: \.1.id
-                    ) { index, nutrient in
+                    ForEach(nutrientDetails, id: \.id) { nutrient in
                         HStack {
                             Text(nutrient.type.title)
                                 .foregroundStyle(
                                     nutrient.isSubValue ? .secondary : .primary
                                 )
                                 .font(.subheadline)
-                                .frame(
-                                    maxWidth: .infinity,
-                                    alignment: .leading
-                                )
+                                .frame(maxWidth: .infinity,alignment: .leading)
                             
                             Text(nutrient.formattedValue)
                                 .foregroundStyle(
@@ -41,20 +35,7 @@ struct NutrientDetailSection: View {
                                 .font(.subheadline)
                                 .lineLimit(1)
                         }
-                        .overlay {
-                            if index != 0 {
-                                SeparatorView(topInset: -22)
-                            }
-                        }
                         .padding(.horizontal, 4)
-                        .padding(
-                            .vertical,
-                            index == nutrientDetails.count - 1 ? 0 : 6
-                        )
-                        .padding(
-                            .top,
-                            index == nutrientDetails.count - 1 ? 6 : 0
-                        )
                     }
                 }
             },
