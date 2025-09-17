@@ -24,7 +24,7 @@ struct CustomFoodAlertView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 15)
             .background(.regularMaterial)
-            .cornerRadius(14)
+            .cornerRadius(20)
             .frame(maxHeight: .infinity, alignment: .bottom)
             .padding(.bottom, 100)
             .allowsHitTesting(false)

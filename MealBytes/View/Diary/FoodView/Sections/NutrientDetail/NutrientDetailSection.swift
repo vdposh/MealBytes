@@ -11,38 +11,34 @@ struct NutrientDetailSection: View {
     let nutrientDetails: [NutrientDetail]
     
     var body: some View {
-        SectionStyleView(
-            mainContent: {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text("Detailed Information")
-                        .font(.callout)
-                        .fontWeight(.medium)
-                        .padding(.horizontal, 4)
+        Section {
+            Text("Detailed Information")
+                .font(.callout)
+                .fontWeight(.medium)
+                .listRowSeparator(.hidden)
+                .padding(.top, 5)
+            
+            ForEach(nutrientDetails, id: \.id) { nutrient in
+                HStack {
+                    Text(nutrient.type.title)
+                        .foregroundStyle(
+                            nutrient.isSubValue ? .secondary : .primary
+                        )
+                        .font(.subheadline)
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
                     
-                    ForEach(nutrientDetails, id: \.id) { nutrient in
-                        HStack {
-                            Text(nutrient.type.title)
-                                .foregroundStyle(
-                                    nutrient.isSubValue ? .secondary : .primary
-                                )
-                                .font(.subheadline)
-                                .frame(maxWidth: .infinity,alignment: .leading)
-                            
-                            Text(nutrient.formattedValue)
-                                .foregroundStyle(
-                                    nutrient.isSubValue ? .secondary : .primary
-                                )
-                                .font(.subheadline)
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal, 4)
-                    }
+                    Text(nutrient.formattedValue)
+                        .foregroundStyle(
+                            nutrient.isSubValue ? .secondary : .primary
+                        )
+                        .font(.subheadline)
+                        .lineLimit(1)
                 }
-            },
-            layout: .textStyle,
-            hasTopTextPadding: false,
-            useLargeCornerRadius: true
-        )
+            }
+        }
     }
 }
 

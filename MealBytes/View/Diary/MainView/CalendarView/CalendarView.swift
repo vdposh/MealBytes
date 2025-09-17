@@ -96,8 +96,9 @@ struct CalendarView: View {
                                 forBackground: true
                             )
                         )
-                        .cornerRadius(12)
+                        .clipShape(Circle())
                     }
+                    .buttonStyle(.borderless)
                 }
             }
         }

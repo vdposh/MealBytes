@@ -51,9 +51,6 @@ struct FoodView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-            
             switch foodViewModel.viewState {
             case .loading:
                 Color(.secondarySystemGroupedBackground)
@@ -74,11 +71,12 @@ struct FoodView: View {
                 }
                 
             case .loaded:
-                ScrollView {
+                List {
                     servingSizeSection
                     nutrientActionSection
                     nutrientDetailSection
                 }
+                .listSectionSpacing(10)
                 .scrollIndicators(.hidden)
             }
         }
@@ -97,7 +95,7 @@ struct FoodView: View {
     }
     
     private var servingSizeSection: some View {
-        VStack {
+        Section {
             VStack(alignment: .leading, spacing: 15) {
                 Text(foodViewModel.food.searchFoodName)
                     .font(.headline)
@@ -169,16 +167,12 @@ struct FoodView: View {
                     }
                 }
             }
-            .padding(20)
-            .background(Color(.secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .padding(.vertical, 5)
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 36)
     }
     
     private var nutrientActionSection: some View {
-        VStack {
+        Section {
             HStack {
                 switch showAddButton {
                 case true:
@@ -245,10 +239,11 @@ struct FoodView: View {
                     }
                 }
             }
-            .padding(.vertical, 12)
         }
-        .padding(.top, 12)
-        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
     
     private var nutrientDetailSection: some View {

@@ -14,29 +14,26 @@ struct FieldTitleView: View {
     let isFocused: Binding<Bool>
     
     var body: some View {
-        Button {
-            isFocused.wrappedValue = true
-        } label: {
-            HStack(spacing: 0) {
-                Text(title)
-                    .font(.caption)
-                    .accentColor(titleColor)
-                if showStar {
-                    Text("*")
-                        .accentColor(.customRed)
-                }
+        HStack(spacing: 0) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(titleColor)
+            if showStar {
+                Text("*")
+                    .foregroundStyle(.customRed)
             }
-            .frame(height: 15)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .overlay(
-                Button(action: {
-                    isFocused.wrappedValue = true
-                }) {
-                    Color.clear
-                }
-            )
         }
+        .frame(height: 15)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .overlay(
+            Button(action: {
+                isFocused.wrappedValue = true
+            }) {
+                Color.clear
+            }
+        )
+        .buttonStyle(.borderless)
     }
 }
 

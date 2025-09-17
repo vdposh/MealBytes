@@ -41,6 +41,7 @@ struct ServingButtonView: View {
                 Color.clear
             }
         )
+        .buttonStyle(.borderless)
     }
 }
 

@@ -40,6 +40,7 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var appError: AppError?
+    @Published var uniqueId: UUID?
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
@@ -156,6 +157,8 @@ final class MainViewModel: ObservableObject {
                 }
             }
         }
+        
+        uniqueId = UUID()
     }
     
     func deletionButtonRole(for mealType: MealType) -> ButtonRole? {

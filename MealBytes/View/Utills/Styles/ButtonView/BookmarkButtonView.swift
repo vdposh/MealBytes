@@ -25,6 +25,7 @@ struct BookmarkButtonView: View {
                     height: height
                 )
         }
+        .buttonStyle(.borderless)
     }
 }
 

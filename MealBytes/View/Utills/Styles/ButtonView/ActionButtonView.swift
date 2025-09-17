@@ -36,8 +36,9 @@ struct ActionButtonView: View {
                 )
                 .font(.headline)
                 .lineLimit(1)
-                .cornerRadius(12)
+                .cornerRadius(18)
         }
+        .buttonStyle(.borderless)
         .accentColor(color)
         .disabled(!isEnabled)
     }

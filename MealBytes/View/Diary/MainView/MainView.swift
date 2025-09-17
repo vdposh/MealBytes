@@ -73,7 +73,7 @@ struct MainView: View {
                             for: mainViewModel.dateByAddingOffset(for: offset)
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderless)
                 }
             }
         }

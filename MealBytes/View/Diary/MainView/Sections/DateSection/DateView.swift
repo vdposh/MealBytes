@@ -14,7 +14,7 @@ struct DateView: View {
     let mainViewModel: MainViewModel
     
     var body: some View {
-        VStack {
+        VStack(spacing: 1) {
             Text(date.formatted(.dateTime.day()))
                 .foregroundStyle(
                     mainViewModel.color(
@@ -37,8 +37,7 @@ struct DateView: View {
                 )
                 .font(.footnote)
         }
-        .frame(maxWidth: .infinity)
-        .padding(5)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             mainViewModel.color(
                 for: .day,
@@ -47,6 +46,10 @@ struct DateView: View {
                 forBackground: true
             )
         )
-        .cornerRadius(12)
+        .clipShape(Circle())
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }
