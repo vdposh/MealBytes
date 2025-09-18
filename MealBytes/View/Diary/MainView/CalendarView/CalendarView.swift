@@ -8,62 +8,28 @@
 import SwiftUI
 
 struct CalendarView: View {
-    @Binding var selectedDate: Date
-    @Binding var isPresented: Bool
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         VStack {
-            HStack {
-                Button("Today") {
-                    mainViewModel.selectDate(
-                        Date(),
-                        selectedDate: &selectedDate,
-                        isPresented: &isPresented
-                    )
-                }
-                
-                HStack {
-                    Button {
-                        mainViewModel.changeMonth(
-                            by: -1,
-                            selectedDate: &selectedDate
-                        )
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .padding(.trailing)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                
-                Button {
-                    mainViewModel.changeMonth(
-                        by: 1,
-                        selectedDate: &selectedDate
-                    )
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
-            }
-            .font(.headline)
-            .accentForeground()
-            .padding(.bottom)
-            .padding(.horizontal)
+            Text(mainViewModel.formattedDate())
+                .font(.headline)
+                .padding(.bottom)
             
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible()), count: 7)
             ) {
                 ForEach(
                     mainViewModel.daysForCurrentMonth(
-                        selectedDate: selectedDate
+                        selectedDate: mainViewModel.date
                     ),
                     id: \.self
                 ) { date in
                     Button {
                         mainViewModel.selectDate(
                             date,
-                            selectedDate: &selectedDate,
-                            isPresented: &isPresented
+                            selectedDate: &mainViewModel.date,
+                            isPresented: &mainViewModel.isExpandedCalendar
                         )
                     } label: {
                         VStack(spacing: 3) {
@@ -72,7 +38,7 @@ struct CalendarView: View {
                                     for: .day,
                                     date: date,
                                     isSelected: mainViewModel.calendar.isDate(
-                                        selectedDate,
+                                        mainViewModel.date,
                                         inSameDayAs: date
                                     ),
                                     isToday: mainViewModel
@@ -92,7 +58,7 @@ struct CalendarView: View {
                                 for: .day,
                                 date: date,
                                 isSelected: mainViewModel.calendar.isDate(
-                                    selectedDate,
+                                    mainViewModel.date,
                                     inSameDayAs: date
                                 ),
                                 forBackground: true

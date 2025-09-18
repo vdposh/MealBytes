@@ -37,15 +37,62 @@ struct MainView: View {
         .navigationBarTitle("Diary", displayMode: .inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(mainViewModel.formattedDate())
-                    .font(.headline)
+                if mainViewModel.isExpandedCalendar {
+                    Text("")
+                } else {
+                    Text(mainViewModel.formattedDate())
+                        .font(.headline)
+                }
             }
             
-            ToolbarItem(placement: .confirmationAction) {
+            ToolbarItem() {
+                if mainViewModel.isExpandedCalendar {
+                    HStack {
+                        Button {
+                            mainViewModel.changeMonth(by: -1, selectedDate: &mainViewModel.date)
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .padding(.trailing)
+                        }
+                        
+                        Button {
+                            mainViewModel.changeMonth(by: 1, selectedDate: &mainViewModel.date)
+                            
+                        } label: {
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                }
+            }
+            
+            ToolbarSpacer(.fixed)
+            
+            ToolbarItem() {
                 Button {
                     mainViewModel.isExpandedCalendar.toggle()
                 } label: {
-                    Image(systemName: "calendar")
+                    Image(
+                        systemName: mainViewModel.isExpandedCalendar
+                        ? "xmark"
+                        : "calendar"
+                    )
+                }
+            }
+            
+            ToolbarItem(placement: .cancellationAction) {
+                if mainViewModel.isExpandedCalendar {
+                    Button {
+                        mainViewModel.selectDate(
+                            Date(),
+                            selectedDate: &mainViewModel.date,
+                            isPresented: &mainViewModel.isExpandedCalendar
+                        )
+                    } label: {
+                        Text("Today")
+                            .font(.headline)
+                            .padding(.horizontal, 4)
+                    }
                 }
             }
         }
@@ -57,11 +104,7 @@ struct MainView: View {
     
     private var datePickerView: some View {
         VStack {
-            CalendarView(
-                selectedDate: $mainViewModel.date,
-                isPresented: $mainViewModel.isExpandedCalendar,
-                mainViewModel: mainViewModel
-            )
+            CalendarView(mainViewModel: mainViewModel)
         }
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20))
