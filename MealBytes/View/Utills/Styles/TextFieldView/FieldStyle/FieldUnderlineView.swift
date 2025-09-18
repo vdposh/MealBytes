@@ -16,7 +16,9 @@ struct FieldUnderlineView: View {
             .frame(height: 1)
             .scaleEffect(x: 1, y: isFocused ? 1.1 : 1, anchor: .center)
             .opacity(isFocused ? 1 : 0.4)
-            .foregroundStyle(isFocused ? Color.accentColor : .secondary)
+            .foregroundStyle(
+                isFocused ? Color.accentColor.opacity(1) : .secondary
+            )
     }
 }
 

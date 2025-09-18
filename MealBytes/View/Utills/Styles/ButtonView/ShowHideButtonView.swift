@@ -22,6 +22,7 @@ struct ShowHideButtonView: View {
             }
             .lineLimit(1)
             .font(.footnote)
+            .accentForeground()
             .frame(maxWidth: .infinity)
         }
         .listRowSeparator(.hidden)

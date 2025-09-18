@@ -14,9 +14,6 @@ struct LoadingView: View {
     var body: some View {
         let progressView = HStack {
             ProgressView()
-                .progressViewStyle(
-                    CircularProgressViewStyle(tint: .accentColor)
-                )
             
             if showLabel {
                 Text("Loading...")

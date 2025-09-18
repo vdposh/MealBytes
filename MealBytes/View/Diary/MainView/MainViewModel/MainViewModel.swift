@@ -451,7 +451,7 @@ final class MainViewModel: ObservableObject {
             return isSelected ? .accentColor.opacity(0.2) : .clear
         }
         if isSelected || isToday {
-            return .accentColor
+            return .accentColor.opacity(1)
         }
         if forcePrimary {
             return .primary

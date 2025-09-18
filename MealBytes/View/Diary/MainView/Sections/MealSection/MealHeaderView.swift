@@ -59,6 +59,7 @@ struct MealHeaderView: View {
                     
                     Image(systemName: "plus")
                         .fontWeight(.bold)
+                        .accentForeground()
                 }
             }
             .background {

@@ -23,7 +23,7 @@ struct ActionButtonView: View {
                 .frame(maxWidth: .infinity, minHeight: 45)
                 .background(
                     isEnabled
-                    ? Color.accentColor
+                    ? Color.accentColor.opacity(1)
                     : color.opacity(
                         colorScheme == .light ? 0.5 : 0.6
                     )

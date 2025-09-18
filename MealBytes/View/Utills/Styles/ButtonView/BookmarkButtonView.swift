@@ -20,6 +20,7 @@ struct BookmarkButtonView: View {
             Image(systemName: isFilled ? "bookmark.fill" : "bookmark")
                 .resizable()
                 .scaledToFit()
+                .accentForeground()
                 .frame(
                     width: width,
                     height: height

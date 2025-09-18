@@ -37,14 +37,19 @@ struct MainView: View {
         .navigationBarTitle("Diary", displayMode: .inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
+                Text(mainViewModel.formattedDate())
+                    .font(.headline)
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
                 Button {
                     mainViewModel.isExpandedCalendar.toggle()
                 } label: {
-                    Text(mainViewModel.formattedDate())
-                        .font(.headline)
+                    Image(systemName: "calendar")
                 }
             }
         }
+        
         .task {
             await mainViewModel.loadMainData()
         }
@@ -59,6 +64,7 @@ struct MainView: View {
             )
         }
         .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
     
     private var dateSection: some View {

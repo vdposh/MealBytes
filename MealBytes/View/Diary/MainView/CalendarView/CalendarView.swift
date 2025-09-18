@@ -46,6 +46,7 @@ struct CalendarView: View {
                 }
             }
             .font(.headline)
+            .accentForeground()
             .padding(.bottom)
             .padding(.horizontal)
             
@@ -82,6 +83,7 @@ struct CalendarView: View {
                             if mainViewModel.hasMealItems(for: date) {
                                 Circle()
                                     .frame(width: 5, height: 5)
+                                    .accentForeground()
                             }
                         }
                         .frame(width: 40, height: 40)
@@ -102,7 +104,9 @@ struct CalendarView: View {
                 }
             }
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.bottom)
+        .padding(.top, 24)
     }
 }
 

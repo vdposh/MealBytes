@@ -30,14 +30,8 @@ struct SearchView: View {
                         Button {
                             searchViewModel.showMealType = true
                         } label: {
-                            HStack {
-                                Image(systemName: mealType.iconName)
-                                    .font(.system(size: 13))
-                                    .frame(width: 17)
-                                    .foregroundStyle(mealType.color)
-                                Text(mealType.rawValue)
-                            }
-                            .padding(.horizontal, 10)
+                            Text(mealType.rawValue)
+                                .padding(.horizontal, 4)
                         }
                         .confirmationDialog(
                             "Select a Meal Type",
@@ -62,15 +56,17 @@ struct SearchView: View {
                         }
                     }
                 }
-                .confirmationDialog(
+                .alert(
                     searchViewModel.bookmarkTitle,
-                    isPresented: $searchViewModel.showBookmarkDialog,
-                    titleVisibility: .visible
+                    isPresented: $searchViewModel.showBookmarkDialog
                 ) {
                     Button("Remove bookmark", role: .destructive) {
                         Task {
                             await searchViewModel.confirmRemoveBookmark()
                         }
+                    }
+                    Button("Cancel", role: .cancel) {
+                        searchViewModel.showBookmarkDialog = false
                     }
                 }
                 .searchable(
@@ -182,7 +178,7 @@ struct SearchView: View {
                     }
                 }
             }
-            .foregroundStyle(Color.accentColor)
+            .accentForeground()
         } else {
             EmptyView()
         }
