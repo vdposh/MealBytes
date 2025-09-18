@@ -20,6 +20,20 @@ struct CalendarView: View {
                 columns: Array(repeating: GridItem(.flexible()), count: 7)
             ) {
                 ForEach(
+                    mainViewModel.weekdaySymbols(),
+                    id: \.self
+                ) { symbol in
+                    Text(symbol)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.bottom, 2)
+            
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible()), count: 7)
+            ) {
+                ForEach(
                     mainViewModel.daysForCurrentMonth(
                         selectedDate: mainViewModel.date
                     ),
@@ -50,6 +64,7 @@ struct CalendarView: View {
                                 Circle()
                                     .frame(width: 5, height: 5)
                                     .accentForeground()
+                                    .padding(.bottom, 2)
                             }
                         }
                         .frame(width: 40, height: 40)
@@ -70,7 +85,7 @@ struct CalendarView: View {
                 }
             }
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 12)
         .padding(.bottom)
         .padding(.top, 24)
     }

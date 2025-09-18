@@ -13,26 +13,8 @@ struct MainView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            if mainViewModel.isExpandedCalendar {
-                VStack {
-                    datePickerView
-                }
-                .zIndex(2)
-                
-                CalendarButtonView {
-                    mainViewModel.isExpandedCalendar = false
-                }
-                .zIndex(1)
-            }
-            
-            List {
-                dateSection
-                caloriesSection
-                mealSections
-                detailedInformationSection
-            }
-            .scrollIndicators(.hidden)
-            .listSectionSpacing(15)
+            listLayer
+            calendarLayer
         }
         .navigationBarTitle("Diary", displayMode: .inline)
         .toolbar {
@@ -102,12 +84,37 @@ struct MainView: View {
         }
     }
     
-    private var datePickerView: some View {
-        VStack {
-            CalendarView(mainViewModel: mainViewModel)
+    private var listLayer: some View {
+        List {
+            dateSection
+            caloriesSection
+            mealSections
+            detailedInformationSection
         }
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .scrollIndicators(.hidden)
+        .listSectionSpacing(15)
+        .transaction { $0.disablesAnimations = true }
+    }
+    
+    private var calendarLayer: some View {
+        ZStack(alignment: .top) {
+            if mainViewModel.isExpandedCalendar {
+                CalendarView(mainViewModel: mainViewModel)
+                    .background(Color(.systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .transition(.blurReplace)
+                    .zIndex(2)
+                
+                CalendarButtonView {
+                    mainViewModel.isExpandedCalendar = false
+                }
+                .zIndex(1)
+            }
+        }
+        .animation(
+            .interpolatingSpring(duration: 0.3),
+            value: mainViewModel.isExpandedCalendar
+        )
     }
     
     private var dateSection: some View {

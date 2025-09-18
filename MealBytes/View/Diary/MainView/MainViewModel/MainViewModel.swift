@@ -568,6 +568,14 @@ final class MainViewModel: ObservableObject {
         return Array(prevDays) + days + nextDays
     }
     
+    func weekdaySymbols() -> [String] {
+        let symbols = calendar.shortWeekdaySymbols
+        let firstWeekdayIndex = calendar.firstWeekday - 1
+        return Array(
+            symbols[firstWeekdayIndex...] + symbols[..<firstWeekdayIndex]
+        )
+    }
+    
     private func handleDateChange(from oldDate: Date, to newDate: Date) {
         guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
         
