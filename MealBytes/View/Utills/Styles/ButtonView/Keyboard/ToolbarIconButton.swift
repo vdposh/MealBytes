@@ -16,7 +16,6 @@ struct ToolbarIconButton: View {
         Button(action: action) {
             Image(systemName: systemImage)
         }
-        .padding(.trailing)
         .disabled(!isActive)
     }
 }

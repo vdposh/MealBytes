@@ -23,6 +23,7 @@ struct KeyboardToolbarView: View {
                     isActive: canMoveUp,
                     action: moveUp
                 )
+                .padding(.trailing)
                 
                 ToolbarIconButton(
                     systemImage: "chevron.down",
