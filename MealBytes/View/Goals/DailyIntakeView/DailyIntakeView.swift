@@ -15,113 +15,110 @@ struct DailyIntakeView: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        ZStack {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-            ScrollViewReader { proxy in
-                ScrollView {
-                    OverviewDailyIntakeSection()
-                    
-                    CalorieMetricsSection(
-                        isFocused: $caloriesFocused,
+        ScrollViewReader { proxy in
+            List {
+                OverviewDailyIntakeSection()
+                
+                CalorieMetricsSection(
+                    isFocused: $caloriesFocused,
+                    dailyIntakeViewModel: dailyIntakeViewModel
+                )
+                .disabled(dailyIntakeViewModel.toggleOn)
+                
+                if dailyIntakeViewModel.toggleOn {
+                    MacronutrientMetricsSection(
+                        focusedField: _focusMacronutrients,
                         dailyIntakeViewModel: dailyIntakeViewModel
                     )
-                    .disabled(dailyIntakeViewModel.toggleOn)
+                }
+                
+                NutrientsToggleSection(
+                    toggleOn: $dailyIntakeViewModel.toggleOn
+                )
+            }
+            .navigationBarTitle("Daily Intake", displayMode: .inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    HStack(spacing: 0) {
+                        if focusMacronutrients != nil {
+                            Button {
+                                moveFocus(.up)
+                            } label: {
+                                Image(systemName: "chevron.up")
+                                    .foregroundStyle(
+                                        colorForFocus(
+                                            isActive: canMoveFocus(.up)
+                                        )
+                                    )
+                            }
+                            .disabled(!canMoveFocus(.up))
+                            
+                            Button {
+                                moveFocus(.down)
+                            } label: {
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(
+                                        colorForFocus(
+                                            isActive: canMoveFocus(.down)
+                                        )
+                                    )
+                            }
+                            .disabled(!canMoveFocus(.down))
+                        }
+                    }
                     
-                    if dailyIntakeViewModel.toggleOn {
-                        MacronutrientMetricsSection(
-                            focusedField: _focusMacronutrients,
-                            dailyIntakeViewModel: dailyIntakeViewModel
+                    DoneButtonView {
+                        caloriesFocused = false
+                        focusMacronutrients = nil
+                        dailyIntakeViewModel.normalizeInputs()
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if dailyIntakeViewModel.handleSave() {
+                            Task {
+                                await dailyIntakeViewModel
+                                    .saveDailyIntakeView()
+                            }
+                            dismiss()
+                        }
+                        caloriesFocused = false
+                        focusMacronutrients = nil
+                        dailyIntakeViewModel.normalizeInputs()
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+            .onChange(of: focusMacronutrients) {
+                if let focusMacronutrients {
+                    dailyIntakeViewModel
+                        .handleMacronutrientFocusChange(
+                            focus: focusMacronutrients,
+                            didGainFocus: false
+                        )
+                }
+            }
+            .onChange(of: focusMacronutrients) {
+                guard let field = focusMacronutrients else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation {
+                        proxy.scrollTo(
+                            field.scrollID,
+                            anchor: field.scrollAnchor
                         )
                     }
-                    
-                    NutrientsToggleSection(
-                        toggleOn: $dailyIntakeViewModel.toggleOn
-                    )
                 }
-                .navigationBarTitle("Daily Intake", displayMode: .inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        HStack(spacing: 0) {
-                            if focusMacronutrients != nil {
-                                Button {
-                                    moveFocus(.up)
-                                } label: {
-                                    Image(systemName: "chevron.up")
-                                        .foregroundStyle(
-                                            colorForFocus(
-                                                isActive: canMoveFocus(.up)
-                                            )
-                                        )
-                                }
-                                .disabled(!canMoveFocus(.up))
-                                
-                                Button {
-                                    moveFocus(.down)
-                                } label: {
-                                    Image(systemName: "chevron.down")
-                                        .foregroundStyle(
-                                            colorForFocus(
-                                                isActive: canMoveFocus(.down)
-                                            )
-                                        )
-                                }
-                                .disabled(!canMoveFocus(.down))
-                            }
-                        }
-                        
-                        DoneButtonView {
-                            caloriesFocused = false
-                            focusMacronutrients = nil
-                            dailyIntakeViewModel.normalizeInputs()
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            if dailyIntakeViewModel.handleSave() {
-                                Task {
-                                    await dailyIntakeViewModel
-                                        .saveDailyIntakeView()
-                                }
-                                dismiss()
-                            }
-                            caloriesFocused = false
-                            focusMacronutrients = nil
-                            dailyIntakeViewModel.normalizeInputs()
-                        }
-                    }
+            }
+            .alert(
+                "Error",
+                isPresented: $dailyIntakeViewModel.showAlert
+            ) {
+                Button("OK") {
+                    dailyIntakeViewModel.showAlert = false
                 }
-                .onChange(of: focusMacronutrients) {
-                    if let focusMacronutrients {
-                        dailyIntakeViewModel
-                            .handleMacronutrientFocusChange(
-                                focus: focusMacronutrients,
-                                didGainFocus: false
-                            )
-                    }
-                }
-                .onChange(of: focusMacronutrients) {
-                    guard let field = focusMacronutrients else { return }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation {
-                            proxy.scrollTo(
-                                field.scrollID,
-                                anchor: field.scrollAnchor
-                            )
-                        }
-                    }
-                }
-                .alert(
-                    "Error",
-                    isPresented: $dailyIntakeViewModel.showAlert
-                ) {
-                    Button("OK") {
-                        dailyIntakeViewModel.showAlert = false
-                    }
-                } message: {
-                    Text(dailyIntakeViewModel.alertMessage)
-                }
+            } message: {
+                Text(dailyIntakeViewModel.alertMessage)
             }
         }
     }

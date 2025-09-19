@@ -12,33 +12,31 @@ struct CalorieMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        SectionStyleView(
-            mainContent: {
-                HStack(alignment: .bottom) {
-                    ServingTextFieldView(
-                        text: $dailyIntakeViewModel.calories,
-                        title: "Calories",
-                        showStar: dailyIntakeViewModel.showStar,
-                        keyboardType: .numberPad,
-                        inputMode: .integer,
-                        titleColor: dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.calories,
-                            isCalorie: true
-                        ),
-                        textColor: dailyIntakeViewModel.caloriesTextColor,
-                        maxIntegerDigits: 5
-                    )
-                    .focused(isFocused)
-                    .padding(.trailing, 5)
-                    
-                    Text("kcal")
-                        .foregroundStyle(dailyIntakeViewModel.caloriesTextColor)
-                }
-                .id("macronutrientsField")
-            },
-            layout: .textStyle,
-            description: (dailyIntakeViewModel.footerText)
-        )
+        Section {
+            HStack(alignment: .bottom) {
+                ServingTextFieldView(
+                    text: $dailyIntakeViewModel.calories,
+                    title: "Calories",
+                    showStar: dailyIntakeViewModel.showStar,
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    titleColor: dailyIntakeViewModel.titleColor(
+                        for: dailyIntakeViewModel.calories,
+                        isCalorie: true
+                    ),
+                    textColor: dailyIntakeViewModel.caloriesTextColor,
+                    maxIntegerDigits: 5
+                )
+                .focused(isFocused)
+                .padding(.trailing, 5)
+                
+                Text("kcal")
+                    .foregroundStyle(dailyIntakeViewModel.caloriesTextColor)
+            }
+            .id("macronutrientsField")
+        } footer: {
+            Text(dailyIntakeViewModel.footerText)
+        }
     }
 }
 

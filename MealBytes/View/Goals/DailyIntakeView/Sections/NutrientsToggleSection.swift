@@ -11,17 +11,14 @@ struct NutrientsToggleSection: View {
     @Binding var toggleOn: Bool
     
     var body: some View {
-        SectionStyleView(
-            mainContent: {
-                Toggle(isOn: $toggleOn) {
-                    Text("Macronutrient Metrics")
-                }
-                .toggleStyle(SwitchToggleStyle(tint: .accentColor))
-            },
-            layout: .pickerStyle,
-            description: "Enable this option to calculate intake using macronutrients.",
-            useWideTrailingPadding: true
-        )
+        Section {
+            Toggle(isOn: $toggleOn) {
+                Text("Macronutrient Metrics")
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .accent))
+        } footer: {
+            Text("Enable this option to calculate intake using macronutrients.")
+        }
     }
 }
 

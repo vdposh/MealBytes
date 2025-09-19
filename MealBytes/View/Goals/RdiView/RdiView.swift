@@ -14,103 +14,100 @@ struct RdiView: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        ZStack {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-            ScrollViewReader { proxy in
-                ScrollView {
-                    OverviewRdiSection(rdiViewModel: rdiViewModel)
-                    
-                    GenderSection(rdiViewModel: rdiViewModel)
-                    
-                    ActivitySection(rdiViewModel: rdiViewModel)
-                    
-                    AgeSection(
-                        focusedField: _focusedField,
-                        rdiViewModel: rdiViewModel
-                    )
-                    
-                    WeightSection(
-                        focusedField: _focusedField,
-                        rdiViewModel: rdiViewModel
-                    )
-                    
-                    HeightSection(
-                        focusedField: _focusedField,
-                        rdiViewModel: rdiViewModel
-                    )
-                }
-                .navigationBarTitle("RDI", displayMode: .inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        HStack(spacing: 0) {
-                            if focusedField != nil {
-                                Button {
-                                    moveFocus(.up)
-                                } label: {
-                                    Image(systemName: "chevron.up")
-                                        .foregroundStyle(
-                                            colorForFocus(
-                                                isActive: canMoveFocus(.up)
-                                            )
+        ScrollViewReader { proxy in
+            List {
+                OverviewRdiSection(rdiViewModel: rdiViewModel)
+                
+                GenderSection(rdiViewModel: rdiViewModel)
+                
+                ActivitySection(rdiViewModel: rdiViewModel)
+                
+                AgeSection(
+                    focusedField: _focusedField,
+                    rdiViewModel: rdiViewModel
+                )
+                
+                WeightSection(
+                    focusedField: _focusedField,
+                    rdiViewModel: rdiViewModel
+                )
+                
+                HeightSection(
+                    focusedField: _focusedField,
+                    rdiViewModel: rdiViewModel
+                )
+            }
+            .navigationBarTitle("RDI", displayMode: .inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    HStack(spacing: 0) {
+                        if focusedField != nil {
+                            Button {
+                                moveFocus(.up)
+                            } label: {
+                                Image(systemName: "chevron.up")
+                                    .foregroundStyle(
+                                        colorForFocus(
+                                            isActive: canMoveFocus(.up)
                                         )
-                                }
-                                .disabled(!canMoveFocus(.up))
-                                
-                                Button {
-                                    moveFocus(.down)
-                                } label: {
-                                    Image(systemName: "chevron.down")
-                                        .foregroundStyle(
-                                            colorForFocus(
-                                                isActive: canMoveFocus(.down)
-                                            )
-                                        )
-                                }
-                                .disabled(!canMoveFocus(.down))
+                                    )
                             }
-                        }
-                        
-                        DoneButtonView {
-                            focusedField = nil
-                            rdiViewModel.normalizeInputs()
+                            .disabled(!canMoveFocus(.up))
+                            
+                            Button {
+                                moveFocus(.down)
+                            } label: {
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(
+                                        colorForFocus(
+                                            isActive: canMoveFocus(.down)
+                                        )
+                                    )
+                            }
+                            .disabled(!canMoveFocus(.down))
                         }
                     }
                     
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            if rdiViewModel.handleSave() {
-                                Task {
-                                    await rdiViewModel.saveRdiView()
-                                }
-                                dismiss()
+                    DoneButtonView {
+                        focusedField = nil
+                        rdiViewModel.normalizeInputs()
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if rdiViewModel.handleSave() {
+                            Task {
+                                await rdiViewModel.saveRdiView()
                             }
-                            focusedField = nil
-                            rdiViewModel.normalizeInputs()
+                            dismiss()
                         }
+                        focusedField = nil
+                        rdiViewModel.normalizeInputs()
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+            .onChange(of: focusedField) {
+                rdiViewModel.handleFocusChange(from: focusedField)
+            }
+            .onChange(of: focusedField) {
+                guard let field = focusedField else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation {
+                        proxy.scrollTo(
+                            field.scrollID,
+                            anchor: field.scrollAnchor
+                        )
                     }
                 }
-                .onChange(of: focusedField) {
-                    rdiViewModel.handleFocusChange(from: focusedField)
+            }
+            .alert("Error", isPresented: $rdiViewModel.showAlert) {
+                Button("OK") {
+                    rdiViewModel.showAlert = false
                 }
-                .onChange(of: focusedField) {
-                    guard let field = focusedField else { return }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation {
-                            proxy.scrollTo(
-                                field.scrollID,
-                                anchor: field.scrollAnchor
-                            )
-                        }
-                    }
-                }
-                .alert("Error", isPresented: $rdiViewModel.showAlert) {
-                    Button("OK") {
-                        rdiViewModel.showAlert = false
-                    }
-                } message: {
-                    Text(rdiViewModel.alertMessage)
-                }
+            } message: {
+                Text(rdiViewModel.alertMessage)
             }
         }
     }
