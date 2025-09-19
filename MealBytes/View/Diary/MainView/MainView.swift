@@ -73,7 +73,6 @@ struct MainView: View {
                     } label: {
                         Text("Today")
                             .font(.headline)
-                            .padding(.horizontal, 4)
                     }
                 }
             }

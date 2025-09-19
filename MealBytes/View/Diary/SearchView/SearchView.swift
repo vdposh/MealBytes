@@ -31,7 +31,6 @@ struct SearchView: View {
                             searchViewModel.showMealType = true
                         } label: {
                             Text(mealType.rawValue)
-                                .padding(.horizontal, 4)
                         }
                         .confirmationDialog(
                             "Select a Meal Type",

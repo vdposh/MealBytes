@@ -39,39 +39,18 @@ struct DailyIntakeView: View {
             .navigationBarTitle("Daily Intake", displayMode: .inline)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    HStack(spacing: 0) {
-                        if focusMacronutrients != nil {
-                            Button {
-                                moveFocus(.up)
-                            } label: {
-                                Image(systemName: "chevron.up")
-                                    .foregroundStyle(
-                                        colorForFocus(
-                                            isActive: canMoveFocus(.up)
-                                        )
-                                    )
-                            }
-                            .disabled(!canMoveFocus(.up))
-                            
-                            Button {
-                                moveFocus(.down)
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .foregroundStyle(
-                                        colorForFocus(
-                                            isActive: canMoveFocus(.down)
-                                        )
-                                    )
-                            }
-                            .disabled(!canMoveFocus(.down))
+                    KeyboardToolbarView(
+                        showArrows: true,
+                        canMoveUp: canMoveFocus(.up),
+                        canMoveDown: canMoveFocus(.down),
+                        moveUp: { moveFocus(.up) },
+                        moveDown: { moveFocus(.down) },
+                        done: {
+                            caloriesFocused = false
+                            focusMacronutrients = nil
+                            dailyIntakeViewModel.normalizeInputs()
                         }
-                    }
-                    
-                    DoneButtonView {
-                        caloriesFocused = false
-                        focusMacronutrients = nil
-                        dailyIntakeViewModel.normalizeInputs()
-                    }
+                    )
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -87,7 +66,6 @@ struct DailyIntakeView: View {
                         focusMacronutrients = nil
                         dailyIntakeViewModel.normalizeInputs()
                     }
-                    .padding(.horizontal, 4)
                 }
             }
             .onChange(of: focusMacronutrients) {
@@ -154,10 +132,6 @@ struct DailyIntakeView: View {
     private enum FocusDirection {
         case up
         case down
-    }
-    
-    private func colorForFocus(isActive: Bool) -> Color {
-        isActive ? .accentColor : .secondary
     }
 }
 

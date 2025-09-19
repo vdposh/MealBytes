@@ -24,6 +24,7 @@ struct SignOutSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
+                .padding(.bottom)
             } else {
                 HStack(spacing: 4) {
                     Text("Do you want to")
@@ -40,6 +41,7 @@ struct SignOutSection: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
+                .padding(.bottom)
             }
         }
     }

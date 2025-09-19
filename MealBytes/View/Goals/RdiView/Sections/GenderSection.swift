@@ -11,34 +11,26 @@ struct GenderSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleView(
-            mainContent: {
-                HStack {
-                    Text("Gender")
-                    
-                    Picker(
-                        "Gender",
-                        selection: $rdiViewModel.selectedGender
-                    ) {
-                        if rdiViewModel.selectedGender == .notSelected {
-                            Text("Not Selected").tag(Gender.notSelected)
-                        }
-                        ForEach(
-                            Gender.allCases.filter { $0 != .notSelected },
-                            id: \.self
-                        ) { gender in
-                            Text(gender.rawValue).tag(gender)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .accentColor(rdiViewModel.selectedGender.selectedColor)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+        Section {
+            Picker(
+                "Gender",
+                selection: $rdiViewModel.selectedGender
+            ) {
+                if rdiViewModel.selectedGender == .notSelected {
+                    Text("Not Selected").tag(Gender.notSelected)
                 }
-            },
-            layout: .pickerStyle,
-            description: "Specify gender to ensure RDI calculations.",
-            useCompactVerticalPadding: true
-        )
+                ForEach(
+                    Gender.allCases.filter { $0 != .notSelected },
+                    id: \.self
+                ) { gender in
+                    Text(gender.rawValue).tag(gender)
+                }
+            }
+            .pickerStyle(.menu)
+            .tint(rdiViewModel.selectedGender.selectedColor)
+        } footer: {
+            Text("Specify gender to ensure RDI calculations.")
+        }
     }
 }
 

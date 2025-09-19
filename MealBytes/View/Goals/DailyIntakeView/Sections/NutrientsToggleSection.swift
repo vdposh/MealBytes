@@ -18,6 +18,7 @@ struct NutrientsToggleSection: View {
             .toggleStyle(SwitchToggleStyle(tint: .accent))
         } footer: {
             Text("Enable this option to calculate intake using macronutrients.")
+                .padding(.bottom)
         }
     }
 }

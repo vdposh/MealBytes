@@ -40,38 +40,17 @@ struct RdiView: View {
             .navigationBarTitle("RDI", displayMode: .inline)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    HStack(spacing: 0) {
-                        if focusedField != nil {
-                            Button {
-                                moveFocus(.up)
-                            } label: {
-                                Image(systemName: "chevron.up")
-                                    .foregroundStyle(
-                                        colorForFocus(
-                                            isActive: canMoveFocus(.up)
-                                        )
-                                    )
-                            }
-                            .disabled(!canMoveFocus(.up))
-                            
-                            Button {
-                                moveFocus(.down)
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .foregroundStyle(
-                                        colorForFocus(
-                                            isActive: canMoveFocus(.down)
-                                        )
-                                    )
-                            }
-                            .disabled(!canMoveFocus(.down))
+                    KeyboardToolbarView(
+                        showArrows: true,
+                        canMoveUp: canMoveFocus(.up),
+                        canMoveDown: canMoveFocus(.down),
+                        moveUp: { moveFocus(.up) },
+                        moveDown: { moveFocus(.down) },
+                        done: {
+                            focusedField = nil
+                            rdiViewModel.normalizeInputs()
                         }
-                    }
-                    
-                    DoneButtonView {
-                        focusedField = nil
-                        rdiViewModel.normalizeInputs()
-                    }
+                    )
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -85,7 +64,6 @@ struct RdiView: View {
                         focusedField = nil
                         rdiViewModel.normalizeInputs()
                     }
-                    .padding(.horizontal, 4)
                 }
             }
             .onChange(of: focusedField) {
@@ -142,10 +120,6 @@ struct RdiView: View {
     private enum FocusDirection {
         case up
         case down
-    }
-    
-    private func colorForFocus(isActive: Bool) -> Color {
-        isActive ? .accentColor : .secondary
     }
 }
 
