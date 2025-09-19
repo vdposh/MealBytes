@@ -83,10 +83,10 @@ struct FoodView: View {
         .navigationBarTitle(navigationTitle, displayMode: .inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
-                DoneButtonView {
+                KeyboardToolbarView(done: {
                     amountFocused = false
                     foodViewModel.normalizeAmount()
-                }
+                })
             }
         }
         .task {

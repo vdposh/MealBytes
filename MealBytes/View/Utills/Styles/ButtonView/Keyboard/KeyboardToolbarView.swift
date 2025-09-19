@@ -9,29 +9,34 @@ import SwiftUI
 
 struct KeyboardToolbarView: View {
     var showArrows: Bool = false
-    var canMoveUp: Bool
-    var canMoveDown: Bool
-    var moveUp: () -> Void
-    var moveDown: () -> Void
+    var canMoveUp: Bool = false
+    var canMoveDown: Bool = false
+    var moveUp: () -> Void = {}
+    var moveDown: () -> Void = {}
     var done: () -> Void
     
     var body: some View {
         HStack {
             if showArrows {
-                FocusArrowButtonView(
-                    direction: .up,
+                ToolbarIconButton(
+                    systemImage: "chevron.up",
                     isActive: canMoveUp,
                     action: moveUp
                 )
                 
-                FocusArrowButtonView(
-                    direction: .down,
+                ToolbarIconButton(
+                    systemImage: "chevron.down",
                     isActive: canMoveDown,
                     action: moveDown
                 )
             }
             
-            DoneButtonView(action: done)
+            ToolbarIconButton(
+                systemImage: "checkmark",
+                isActive: true,
+                action: done
+            )
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.horizontal, 8)
     }
