@@ -13,33 +13,25 @@ struct ActionButtonView: View {
     var color: Color = .accent
     var isEnabled: Bool = true
     
-    @Environment(\.colorScheme) private var colorScheme
-    
     var body: some View {
         Button {
             action()
         } label: {
             Text(title)
-                .frame(maxWidth: .infinity, minHeight: 45)
-                .background(
-                    isEnabled
-                    ? Color.accentColor.opacity(1)
-                    : color.opacity(
-                        colorScheme == .light ? 0.5 : 0.6
-                    )
-                )
-                .saturation(colorScheme == .dark && !isEnabled ? 0.5 : 1)
-                .foregroundStyle(
-                    Color.white.opacity(
-                        isEnabled ? 1 : (colorScheme == .dark ? 0.3 : 0.5)
-                    )
-                )
                 .font(.headline)
-                .lineLimit(1)
-                .cornerRadius(18)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 50)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(
+                            isEnabled
+                            ? color
+                            : color.opacity(0.3)
+                        )
+                )
+            
         }
         .buttonStyle(.borderless)
-        .accentColor(color)
         .disabled(!isEnabled)
     }
 }

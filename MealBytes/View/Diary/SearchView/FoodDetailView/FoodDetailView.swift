@@ -23,7 +23,7 @@ struct FoodDetailView: View {
             .frame(width: 5)
             .padding(.trailing, 6)
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(food.searchFoodName)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 

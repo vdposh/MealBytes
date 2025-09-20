@@ -26,7 +26,7 @@ struct PreviewFoodView {
                 mealType: .breakfast,
                 amount: "1",
                 measurementDescription: "Grams",
-                showAddButton: false,
+                showAddButton: true,
                 showSaveRemoveButton: true,
                 showMealTypeButton: true,
                 originalMealItemId: UUID()

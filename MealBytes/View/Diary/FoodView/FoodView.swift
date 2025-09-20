@@ -196,8 +196,7 @@ struct FoodView: View {
                                 await foodViewModel.toggleBookmarkFoodView()
                             }
                         },
-                        isFilled: foodViewModel.isBookmarkFilled,
-                        size: 32
+                        isFilled: foodViewModel.isBookmarkFilled
                     )
                 case false:
                     ActionButtonView(

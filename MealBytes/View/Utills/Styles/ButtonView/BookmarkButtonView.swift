@@ -10,7 +10,6 @@ import SwiftUI
 struct BookmarkButtonView: View {
     var action: () -> Void
     var isFilled: Bool
-    var size: CGFloat = 24
     
     var body: some View {
         Button(action: action) {
@@ -18,11 +17,15 @@ struct BookmarkButtonView: View {
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(.accent)
-                .frame(width: size, height: size)
+                .frame(width: 35, height: 35)
         }
         .padding(.horizontal)
         .buttonStyle(.borderless)
     }
+}
+
+#Preview {
+    PreviewFoodView.foodView
 }
 
 #Preview {
