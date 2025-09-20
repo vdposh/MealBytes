@@ -10,26 +10,25 @@ import SwiftUI
 struct BookmarkButtonView: View {
     var action: () -> Void
     var isFilled: Bool
-    var width: CGFloat? = nil
-    var height: CGFloat? = nil
+    var size: CGFloat = 24
     
     var body: some View {
-        Button {
-            action()
-        } label: {
+        Button(action: action) {
             Image(systemName: isFilled ? "bookmark.fill" : "bookmark")
                 .resizable()
                 .scaledToFit()
-                .accentForeground()
-                .frame(
-                    width: width,
-                    height: height
-                )
+                .foregroundStyle(.accent)
+                .frame(width: size, height: size)
         }
+        .padding(.horizontal)
         .buttonStyle(.borderless)
     }
 }
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewSearchView.searchView
 }

@@ -14,7 +14,7 @@ struct CustomFoodAlertView: View {
         if isVisible {
             HStack {
                 Image(systemName: "text.badge.plus")
-                    .foregroundStyle(Color.accentColor.opacity(0.8))
+                    .foregroundStyle(Color.accent.opacity(0.8))
                     .frame(width: 12)
                 Text("Added to Diary")
                     .fontWeight(.medium)

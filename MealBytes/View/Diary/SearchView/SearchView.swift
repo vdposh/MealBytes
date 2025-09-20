@@ -27,16 +27,8 @@ struct SearchView: View {
                 .navigationBarTitle("Search", displayMode: .large)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button {
-                            searchViewModel.showMealType = true
-                        } label: {
-                            Text(mealType.rawValue)
-                        }
-                        .confirmationDialog(
-                            "Select a Meal Type",
-                            isPresented: $searchViewModel.showMealType,
-                            titleVisibility: .visible
-                        ) {
+                        Menu {
+                            Text("Select a Meal Type")
                             ForEach(MealType.allCases, id: \.self) { meal in
                                 Button {
                                     if searchViewModel.mealSwitch(to: meal) {
@@ -49,23 +41,18 @@ struct SearchView: View {
                                         }
                                     }
                                 } label: {
-                                    Text(meal.rawValue)
+                                    Label {
+                                        Text(meal.rawValue)
+                                    } icon: {
+                                        if meal == mealType {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
                                 }
                             }
+                        } label: {
+                            Text(mealType.rawValue)
                         }
-                    }
-                }
-                .alert(
-                    searchViewModel.bookmarkTitle,
-                    isPresented: $searchViewModel.showBookmarkDialog
-                ) {
-                    Button("Remove bookmark", role: .destructive) {
-                        Task {
-                            await searchViewModel.confirmRemoveBookmark()
-                        }
-                    }
-                    Button("Cancel", role: .cancel) {
-                        searchViewModel.showBookmarkDialog = false
                     }
                 }
                 .searchable(
@@ -109,50 +96,40 @@ struct SearchView: View {
     
     @ViewBuilder
     private func foodRow(for food: Food) -> some View {
-        ZStack {
-            Button {
-                selectedFood = food
-            } label: {
-                HStack {
-                    FoodDetailView(food: food)
-                        .frame(
-                            maxWidth: .infinity,
-                            alignment: .leading
-                        )
-                        .padding(.vertical, 1)
-                    
-                    BookmarkButtonView(
-                        action: {
-                            Task {
-                                await searchViewModel.handleBookmarkAction(
-                                    for: food
-                                )
-                            }
-                        },
-                        isFilled: searchViewModel.isBookmarkedSearchView(food),
-                        width: 45,
-                        height: 24
-                    )
+        NavigationLink {
+            FoodView(
+                navigationTitle: "Add to \(mealType.rawValue)",
+                food: food,
+                searchViewModel: searchViewModel,
+                mainViewModel: searchViewModel.mainViewModel,
+                mealType: mealType,
+                amount: "",
+                measurementDescription: "",
+                showAddButton: true,
+                showSaveRemoveButton: false,
+                showMealTypeButton: false
+            )
+        } label: {
+            FoodDetailView(food: food, searchViewModel: searchViewModel)
+        }
+        .swipeActions(allowsFullSwipe: false) {
+            Button(role: searchViewModel.bookmarkButtonRole(for: food)) {
+                Task {
+                    await searchViewModel.toggleBookmarkSearchView(for: food)
                 }
-            }
-            
-            NavigationLink(
-                destination: FoodView(
-                    navigationTitle: "Add to \(mealType.rawValue)",
-                    food: food,
-                    searchViewModel: searchViewModel,
-                    mainViewModel: searchViewModel.mainViewModel,
-                    mealType: mealType,
-                    amount: "",
-                    measurementDescription: "",
-                    showAddButton: true,
-                    showSaveRemoveButton: false,
-                    showMealTypeButton: false
+                searchViewModel.uniqueId = UUID()
+            } label: {
+                Image(
+                    systemName: searchViewModel.isBookmarkedSearchView(food)
+                    ? "bookmark.slash"
+                    : "bookmark"
                 )
-            ) {
-                EmptyView()
             }
-            .opacity(0)
+            .tint(
+                searchViewModel.isBookmarkedSearchView(food)
+                ? .red
+                : .accentColor
+            )
         }
     }
     
@@ -177,7 +154,7 @@ struct SearchView: View {
                     }
                 }
             }
-            .accentForeground()
+            .foregroundStyle(.accent)
         } else {
             EmptyView()
         }

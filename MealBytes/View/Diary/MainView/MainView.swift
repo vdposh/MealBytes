@@ -92,7 +92,6 @@ struct MainView: View {
         }
         .scrollIndicators(.hidden)
         .listSectionSpacing(15)
-        .transaction { $0.disablesAnimations = true }
     }
     
     private var calendarLayer: some View {
@@ -101,7 +100,6 @@ struct MainView: View {
                 CalendarView(mainViewModel: mainViewModel)
                     .background(Color(.systemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .transition(.blurReplace)
                     .zIndex(2)
                 
                 CalendarButtonView {
@@ -110,10 +108,6 @@ struct MainView: View {
                 .zIndex(1)
             }
         }
-        .animation(
-            .interpolatingSpring(duration: 0.3),
-            value: mainViewModel.isExpandedCalendar
-        )
     }
     
     private var dateSection: some View {

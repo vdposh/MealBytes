@@ -197,8 +197,7 @@ struct FoodView: View {
                             }
                         },
                         isFilled: foodViewModel.isBookmarkFilled,
-                        width: 55,
-                        height: 30
+                        size: 32
                     )
                 case false:
                     ActionButtonView(

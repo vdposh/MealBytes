@@ -19,7 +19,7 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var appError: AppError?
-    @Published var foodToRemove: Food?
+    @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
     @Published var query: String = "" {
         didSet {
@@ -28,7 +28,6 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
-    @Published var showBookmarkDialog: Bool = false
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     
@@ -119,12 +118,14 @@ final class SearchViewModel: ObservableObject {
                 for: mealType
             )
             let bookmarked = Set(favorites.map { $0.searchFoodId })
+            
             await MainActor.run {
                 self.favoriteFoods = favorites
                 self.bookmarkedFoods = bookmarked
                 if query.isEmpty {
                     self.foods = favorites
                 }
+                
                 self.isLoading = false
                 self.appError = nil
             }
@@ -195,37 +196,18 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    func bookmarkButtonRole(for food: Food) -> ButtonRole? {
+        let isBookmarked = isBookmarkedSearchView(food)
+        let isShowingBookmarks = query.isEmpty
+        let isLastBookmark = favoriteFoods.count == 1
+        return isBookmarked && isShowingBookmarks && !isLastBookmark
+        ? .destructive
+        : nil
+    }
+    
     // MARK: - Bookmark Management
     func isBookmarkedSearchView(_ food: Food) -> Bool {
         bookmarkedFoods.contains(food.searchFoodId)
-    }
-    
-    func handleBookmarkAction(for food: Food) async {
-        if isBookmarkedSearchView(food) {
-            await MainActor.run {
-                foodToRemove = food
-                showBookmarkDialog = true
-            }
-        } else {
-            await toggleBookmarkSearchView(for: food)
-        }
-    }
-    
-    func confirmRemoveBookmark() async {
-        if let foodToRemove {
-            await toggleBookmarkSearchView(for: foodToRemove)
-        }
-        
-        await MainActor.run {
-            foodToRemove = nil
-        }
-    }
-    
-    var bookmarkTitle: String {
-        guard let foodName = foodToRemove?.searchFoodName else {
-            return ""
-        }
-        return "Remove \"\(foodName)\" from favorite foods?"
     }
     
     // MARK: - Pagination

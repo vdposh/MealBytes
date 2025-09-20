@@ -569,6 +569,8 @@ final class MainViewModel: ObservableObject {
     }
     
     func weekdaySymbols() -> [String] {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2
         let symbols = calendar.shortWeekdaySymbols
         let firstWeekdayIndex = calendar.firstWeekday - 1
         return Array(
