@@ -91,7 +91,7 @@ struct MainView: View {
             detailedInformationSection
         }
         .scrollIndicators(.hidden)
-        .listSectionSpacing(15)
+        .listSectionSpacing(16)
     }
     
     private var calendarLayer: some View {
@@ -126,6 +126,7 @@ struct MainView: View {
                 }
             }
         }
+        .padding(.vertical, 10)
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
     }

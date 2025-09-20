@@ -64,7 +64,6 @@ struct CalendarView: View {
                                 Circle()
                                     .frame(width: 5, height: 5)
                                     .accentForeground()
-                                    .padding(.bottom, 2)
                             }
                         }
                         .frame(width: 40, height: 40)
@@ -79,7 +78,7 @@ struct CalendarView: View {
                                 forBackground: true
                             )
                         )
-                        .clipShape(Circle())
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
                     .buttonStyle(.borderless)
                 }

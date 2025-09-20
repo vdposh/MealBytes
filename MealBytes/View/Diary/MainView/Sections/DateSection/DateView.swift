@@ -14,7 +14,7 @@ struct DateView: View {
     let mainViewModel: MainViewModel
     
     var body: some View {
-        VStack(spacing: 1) {
+        VStack {
             Text(date.formatted(.dateTime.day()))
                 .foregroundStyle(
                     mainViewModel.color(
@@ -37,6 +37,7 @@ struct DateView: View {
                 )
                 .font(.footnote)
         }
+        .padding(.vertical, 4)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             mainViewModel.color(
@@ -46,7 +47,7 @@ struct DateView: View {
                 forBackground: true
             )
         )
-        .clipShape(Circle())
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
