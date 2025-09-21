@@ -26,8 +26,8 @@ struct AccountInfoSection: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.bottom)
-        .frame(maxWidth: .infinity, alignment: .center)
         .listRowBackground(Color.clear)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.bottom)
     }
 }

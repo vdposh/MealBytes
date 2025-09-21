@@ -41,7 +41,6 @@ struct SignOutSection: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .padding(.bottom)
             }
         }
     }

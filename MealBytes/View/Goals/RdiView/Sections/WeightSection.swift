@@ -48,7 +48,7 @@ struct WeightSection: View {
         } footer: {
             Text("Enter weight and adjust the unit as needed (kilograms or pounds).")
         }
-        .padding(.vertical, 4)
+        .padding(.bottom, 4)
         .id("weightField")
     }
 }

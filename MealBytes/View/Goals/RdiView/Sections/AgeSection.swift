@@ -27,7 +27,7 @@ struct AgeSection: View {
         } footer: {
             Text("Enter age to personalize recommendations.")
         }
-        .padding(.vertical, 4)
+        .padding(.bottom, 2)
     }
 }
 

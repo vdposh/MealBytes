@@ -44,9 +44,8 @@ struct HeightSection: View {
             }
         } footer: {
             Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
-                .padding(.bottom)
         }
-        .padding(.vertical, 4)
+        .padding(.bottom, 4)
         .id("heightField")
     }
 }

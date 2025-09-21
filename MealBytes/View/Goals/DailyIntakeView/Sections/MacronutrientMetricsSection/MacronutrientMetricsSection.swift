@@ -51,7 +51,8 @@ struct MacronutrientMetricsSection: View {
         } footer: {
             Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
         }
-        .padding(.vertical, 4)
+        .padding(.top, 2)
+        .padding(.bottom, 4)
     }
 }
 

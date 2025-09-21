@@ -12,6 +12,12 @@ struct DailyIntakeView: View {
     @FocusState private var caloriesFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
+    private let macroOrder: [MacronutrientsFocus] = [
+        .fat,
+        .carbohydrate,
+        .protein
+    ]
+    
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
@@ -39,17 +45,12 @@ struct DailyIntakeView: View {
             .navigationBarTitle("Daily Intake", displayMode: .inline)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    KeyboardToolbarView(
-                        showArrows: true,
-                        canMoveUp: canMoveFocus(.up),
-                        canMoveDown: canMoveFocus(.down),
-                        moveUp: { moveFocus(.up) },
-                        moveDown: { moveFocus(.down) },
-                        done: {
-                            caloriesFocused = false
-                            focusMacronutrients = nil
-                            dailyIntakeViewModel.normalizeInputs()
-                        }
+                    buildKeyboardToolbar(
+                        current: focusMacronutrients,
+                        ordered: macroOrder,
+                        set: { focusMacronutrients = $0 },
+                        normalize: dailyIntakeViewModel.normalizeInputs,
+                        extraDone: { caloriesFocused = false }
                     )
                 }
                 
@@ -78,15 +79,12 @@ struct DailyIntakeView: View {
                 }
             }
             .onChange(of: focusMacronutrients) {
-                guard let field = focusMacronutrients else { return }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    withAnimation {
-                        proxy.scrollTo(
-                            field.scrollID,
-                            anchor: field.scrollAnchor
-                        )
-                    }
-                }
+                scrollToFocus(
+                    proxy: proxy,
+                    focus: focusMacronutrients,
+                    scrollID: { $0.scrollID },
+                    scrollAnchor: { $0.scrollAnchor }
+                )
             }
             .alert(
                 "Error",
@@ -99,39 +97,6 @@ struct DailyIntakeView: View {
                 Text(dailyIntakeViewModel.alertMessage)
             }
         }
-    }
-    
-    // MARK: - Keyboard
-    private func moveFocus(_ direction: FocusDirection) {
-        guard canMoveFocus(direction) else { return }
-        switch direction {
-        case .up:
-            switch focusMacronutrients {
-            case .carbohydrate: focusMacronutrients = .fat
-            case .protein: focusMacronutrients = .carbohydrate
-            default: break
-            }
-        case .down:
-            switch focusMacronutrients {
-            case .fat: focusMacronutrients = .carbohydrate
-            case .carbohydrate: focusMacronutrients = .protein
-            case .protein: focusMacronutrients = nil
-            default: break
-            }
-        }
-    }
-    
-    private func canMoveFocus(_ direction: FocusDirection) -> Bool {
-        guard let focus = focusMacronutrients else { return false }
-        switch direction {
-        case .up: return focus != .fat
-        case .down: return focus != .protein
-        }
-    }
-    
-    private enum FocusDirection {
-        case up
-        case down
     }
 }
 

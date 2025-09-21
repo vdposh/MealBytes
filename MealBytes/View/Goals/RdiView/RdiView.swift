@@ -11,6 +11,8 @@ struct RdiView: View {
     @FocusState private var focusedField: RdiFocus?
     @Environment(\.dismiss) private var dismiss
     
+    private let rdiOrder: [RdiFocus] = [.age, .weight, .height]
+    
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
@@ -40,19 +42,13 @@ struct RdiView: View {
             .navigationBarTitle("RDI", displayMode: .inline)
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    KeyboardToolbarView(
-                        showArrows: true,
-                        canMoveUp: canMoveFocus(.up),
-                        canMoveDown: canMoveFocus(.down),
-                        moveUp: { moveFocus(.up) },
-                        moveDown: { moveFocus(.down) },
-                        done: {
-                            focusedField = nil
-                            rdiViewModel.normalizeInputs()
-                        }
+                    buildKeyboardToolbar(
+                        current: focusedField,
+                        ordered: rdiOrder,
+                        set: { focusedField = $0 },
+                        normalize: rdiViewModel.normalizeInputs
                     )
                 }
-                
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         if rdiViewModel.handleSave() {
@@ -70,15 +66,12 @@ struct RdiView: View {
                 rdiViewModel.handleFocusChange(from: focusedField)
             }
             .onChange(of: focusedField) {
-                guard let field = focusedField else { return }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    withAnimation {
-                        proxy.scrollTo(
-                            field.scrollID,
-                            anchor: field.scrollAnchor
-                        )
-                    }
-                }
+                scrollToFocus(
+                    proxy: proxy,
+                    focus: focusedField,
+                    scrollID: { $0.scrollID },
+                    scrollAnchor: { $0.scrollAnchor }
+                )
             }
             .alert("Error", isPresented: $rdiViewModel.showAlert) {
                 Button("OK") {
@@ -88,38 +81,6 @@ struct RdiView: View {
                 Text(rdiViewModel.alertMessage)
             }
         }
-    }
-    
-    // MARK: - Keyboard
-    private func moveFocus(_ direction: FocusDirection) {
-        guard canMoveFocus(direction) else { return }
-        switch direction {
-        case .up:
-            switch focusedField {
-            case .weight: focusedField = .age
-            case .height: focusedField = .weight
-            default: break
-            }
-        case .down:
-            switch focusedField {
-            case .age: focusedField = .weight
-            case .weight: focusedField = .height
-            default: break
-            }
-        }
-    }
-    
-    private func canMoveFocus(_ direction: FocusDirection) -> Bool {
-        guard let focus = focusedField else { return false }
-        switch direction {
-        case .up: return focus != .age
-        case .down: return focus != .height
-        }
-    }
-    
-    private enum FocusDirection {
-        case up
-        case down
     }
 }
 

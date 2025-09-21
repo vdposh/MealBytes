@@ -37,7 +37,7 @@ struct CalorieMetricsSection: View {
         } footer: {
             Text(dailyIntakeViewModel.footerText)
         }
-        .padding(.vertical, 4)
+        .padding(.bottom, 2)
     }
 }
 
