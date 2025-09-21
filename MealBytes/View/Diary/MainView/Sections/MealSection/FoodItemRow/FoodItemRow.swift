@@ -35,7 +35,7 @@ struct FoodItemRow: View {
         ) {
             VStack(spacing: 12) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(mealItem.foodName)
                         Text(mainViewModel.formattedMealText(for: mealItem))
                             .font(.subheadline)

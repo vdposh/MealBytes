@@ -19,7 +19,7 @@ struct BookmarkButtonView: View {
                 .foregroundStyle(.accent)
                 .frame(width: 30, height: 30)
         }
-        .padding(.horizontal, 22)
+        .padding(.horizontal, 20)
         .buttonStyle(.borderless)
     }
 }
