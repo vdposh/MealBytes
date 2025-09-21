@@ -13,7 +13,7 @@ struct MacronutrientMetricsSection: View {
     
     var body: some View {
         Section {
-            VStack(spacing: 15) {
+            VStack(spacing: 20) {
                 MacronutrientRow(
                     textFieldBinding: $dailyIntakeViewModel.fat,
                     focusedField: $focusedField,
@@ -51,6 +51,7 @@ struct MacronutrientMetricsSection: View {
         } footer: {
             Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
         }
+        .padding(.vertical, 4)
     }
 }
 

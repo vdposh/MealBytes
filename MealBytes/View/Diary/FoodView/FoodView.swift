@@ -53,13 +53,9 @@ struct FoodView: View {
         ZStack {
             switch foodViewModel.viewState {
             case .loading:
-                Color(.secondarySystemGroupedBackground)
-                    .ignoresSafeArea()
                 LoadingView()
                 
             case .error(let error):
-                Color(.secondarySystemGroupedBackground)
-                    .ignoresSafeArea()
                 contentUnavailableView(
                     for: error,
                     mealType: foodViewModel.mealType
@@ -76,7 +72,7 @@ struct FoodView: View {
                     nutrientActionSection
                     nutrientDetailSection
                 }
-                .listSectionSpacing(10)
+                .listSectionSpacing(15)
                 .scrollIndicators(.hidden)
             }
         }
@@ -96,9 +92,10 @@ struct FoodView: View {
     
     private var servingSizeSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 15) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text(foodViewModel.food.searchFoodName)
-                    .font(.headline)
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
                 
                 ServingTextFieldView(
                     text: $foodViewModel.amount,
@@ -167,7 +164,8 @@ struct FoodView: View {
                     }
                 }
             }
-            .padding(.vertical, 5)
+            .padding(.top, 6)
+            .padding(.bottom, 4)
         }
     }
     

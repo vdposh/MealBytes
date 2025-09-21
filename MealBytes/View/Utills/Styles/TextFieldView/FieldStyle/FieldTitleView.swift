@@ -16,13 +16,14 @@ struct FieldTitleView: View {
     var body: some View {
         HStack(spacing: 0) {
             Text(title)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(titleColor)
             if showStar {
                 Text("*")
                     .foregroundStyle(.customRed)
             }
         }
+        .fontWeight(.medium)
         .frame(height: 15)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())

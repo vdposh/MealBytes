@@ -14,10 +14,10 @@ struct CompactNutrientDetailRow: View {
         VStack(spacing: 9) {
             Text(nutrient.type.alternativeTitle)
                 .font(.footnote)
+                .fontWeight(.medium)
                 .foregroundStyle(.secondary)
             
             Text(nutrient.formattedValue)
-                .font(.callout)
                 .fontWeight(.medium)
         }
         .lineLimit(1)
@@ -27,4 +27,8 @@ struct CompactNutrientDetailRow: View {
 
 #Preview {
     PreviewFoodView.foodView
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

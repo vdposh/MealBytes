@@ -41,12 +41,12 @@ struct HeightSection: View {
                 }
                 .pickerStyle(.menu)
                 .tint(rdiViewModel.selectedHeightUnit.selectedColor)
-                .padding(.bottom, 4)
             }
         } footer: {
             Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
                 .padding(.bottom)
         }
+        .padding(.vertical, 4)
         .id("heightField")
     }
 }

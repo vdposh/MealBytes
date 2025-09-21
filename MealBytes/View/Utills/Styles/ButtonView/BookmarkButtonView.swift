@@ -17,15 +17,11 @@ struct BookmarkButtonView: View {
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(.accent)
-                .frame(width: 35, height: 35)
+                .frame(width: 30, height: 30)
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 22)
         .buttonStyle(.borderless)
     }
-}
-
-#Preview {
-    PreviewFoodView.foodView
 }
 
 #Preview {
@@ -33,5 +29,5 @@ struct BookmarkButtonView: View {
 }
 
 #Preview {
-    PreviewSearchView.searchView
+    PreviewFoodView.foodView
 }

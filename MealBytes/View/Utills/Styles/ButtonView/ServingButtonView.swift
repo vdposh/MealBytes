@@ -16,7 +16,8 @@ struct ServingButtonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
-                .font(.caption)
+                .font(.footnote)
+                .fontWeight(.medium)
                 .foregroundStyle(.secondary)
             
             HStack {

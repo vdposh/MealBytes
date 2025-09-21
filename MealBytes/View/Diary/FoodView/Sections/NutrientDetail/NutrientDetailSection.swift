@@ -13,10 +13,9 @@ struct NutrientDetailSection: View {
     var body: some View {
         Section {
             Text("Detailed Information")
-                .font(.callout)
                 .fontWeight(.medium)
                 .listRowSeparator(.hidden)
-                .padding(.top, 5)
+                .padding(.top, 6)
             
             ForEach(nutrientDetails, id: \.id) { nutrient in
                 HStack {

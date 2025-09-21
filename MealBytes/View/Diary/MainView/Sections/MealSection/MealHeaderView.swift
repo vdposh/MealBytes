@@ -46,6 +46,7 @@ struct MealHeaderView: View {
                                 .fontWeight(.medium)
                                 .foregroundStyle(Color.primary)
                         }
+                        
                         NutrientSummaryRow(
                             fat: fat,
                             carbohydrate: carbohydrate,

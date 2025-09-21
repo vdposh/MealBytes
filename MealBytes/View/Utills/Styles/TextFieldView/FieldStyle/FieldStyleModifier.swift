@@ -22,3 +22,11 @@ struct FieldStyleModifier: ViewModifier {
             )
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewFoodView.foodView
+}

@@ -127,5 +127,9 @@ enum InputMode {
 }
 
 #Preview {
+    PreviewFoodView.foodView
+}
+
+#Preview {
     PreviewContentView.contentView
 }
