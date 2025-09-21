@@ -12,7 +12,7 @@ struct FoodDetailView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
-        HStack(alignment: .firstTextBaseline) {
+        HStack(spacing: 12) {
             ZStack {
                 if searchViewModel.isBookmarkedSearchView(food) {
                     Image(systemName: "bookmark.fill")
@@ -20,12 +20,10 @@ struct FoodDetailView: View {
                         .foregroundStyle(.accent)
                 }
             }
-            .frame(width: 5)
-            .padding(.trailing, 6)
+            .frame(width: 20)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(food.searchFoodName)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if let parsedDescription = food.parsedDescription {
                     Text(parsedDescription)
@@ -34,8 +32,10 @@ struct FoodDetailView: View {
                 }
             }
         }
+        .padding(.vertical, 4)
     }
 }
+
 
 #Preview {
     PreviewContentView.contentView
