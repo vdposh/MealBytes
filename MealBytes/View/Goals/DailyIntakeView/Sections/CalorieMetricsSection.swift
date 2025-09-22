@@ -12,32 +12,31 @@ struct CalorieMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        Section {
-            HStack(alignment: .bottom) {
-                ServingTextFieldView(
-                    text: $dailyIntakeViewModel.calories,
-                    title: "Calories",
-                    showStar: dailyIntakeViewModel.showStar,
-                    keyboardType: .numberPad,
-                    inputMode: .integer,
-                    titleColor: dailyIntakeViewModel.titleColor(
-                        for: dailyIntakeViewModel.calories,
-                        isCalorie: true
-                    ),
-                    textColor: dailyIntakeViewModel.caloriesTextColor,
-                    maxIntegerDigits: 5
-                )
-                .focused(isFocused)
-                .padding(.trailing, 5)
-                
-                Text("kcal")
-                    .foregroundStyle(dailyIntakeViewModel.caloriesTextColor)
+        if !dailyIntakeViewModel.toggleOn {
+            Section {
+                HStack(alignment: .bottom) {
+                    ServingTextFieldView(
+                        text: $dailyIntakeViewModel.calories,
+                        title: "Calories",
+                        showStar: dailyIntakeViewModel.showStar,
+                        keyboardType: .numberPad,
+                        inputMode: .integer,
+                        titleColor: dailyIntakeViewModel.titleColor(
+                            for: dailyIntakeViewModel.calories,
+                            isCalorie: true
+                        ),
+                        maxIntegerDigits: 5
+                    )
+                    .focused(isFocused)
+                    .padding(.trailing, 5)
+                    
+                    Text("kcal")
+                }
+            } footer: {
+                Text("Necessary calorie amount can be entered directly.")
             }
-            .id("macronutrientsField")
-        } footer: {
-            Text(dailyIntakeViewModel.footerText)
+            .padding(.bottom, 2)
         }
-        .padding(.bottom, 2)
     }
 }
 

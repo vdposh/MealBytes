@@ -31,7 +31,6 @@ struct ActivitySection: View {
         } footer: {
             Text("Select the necessary indicator based on daily activity level.")
         }
-        .id("ageField")
     }
 }
 

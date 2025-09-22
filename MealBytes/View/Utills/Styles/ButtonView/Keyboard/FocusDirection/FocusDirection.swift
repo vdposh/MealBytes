@@ -84,17 +84,3 @@ func buildKeyboardToolbar<T: Equatable>(
         }
     )
 }
-
-func scrollToFocus<T>(
-    proxy: ScrollViewProxy,
-    focus: T?,
-    scrollID: @escaping (T) -> String,
-    scrollAnchor: @escaping (T) -> UnitPoint
-) {
-    guard let focus else { return }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-        withAnimation {
-            proxy.scrollTo(scrollID(focus), anchor: scrollAnchor(focus))
-        }
-    }
-}

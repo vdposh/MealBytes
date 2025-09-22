@@ -420,7 +420,6 @@ final class MainViewModel: ObservableObject {
         ) ?? Date()
     }
     
-    
     func dayComponent(for date: Date) -> Int {
         calendar.component(.day, from: date)
     }

@@ -229,6 +229,10 @@ final class DailyIntakeViewModel: ObservableObject {
             }
         }
         
+        if validateInputs() != nil {
+            return "Fill in the data"
+        }
+        
         return intakeValue == 1
         ? "\(calculatedIntake) calorie"
         : "\(calculatedIntake) calories"
@@ -243,28 +247,19 @@ final class DailyIntakeViewModel: ObservableObject {
         for value: String,
         isCalorie: Bool = false
     ) -> Color {
+        let isValid = value.isValidNumericInput()
+        
         if isCalorie && toggleOn {
-            return .secondary
+            return validateInputs() == nil ? .primary : .secondary
         }
         
-        return value.isValidNumericInput() ? .secondary : .customRed
-    }
-    
-    var caloriesTextColor: Color {
-        switch toggleOn {
-        case true: .secondary
-        case false: .primary
-        }
+        return isValid
+        ? (validateInputs() == nil ? .secondary : .secondary)
+        : .customRed
     }
     
     var showStar: Bool {
         !toggleOn
-    }
-    
-    var footerText: String {
-        toggleOn
-        ? "Calories will be calculated automatically based on the entered macronutrients."
-        : "Necessary calorie amount can be entered directly."
     }
     
     // MARK: - Keyboard
