@@ -13,6 +13,7 @@ struct FoodAlertView: View {
     var body: some View {
         CustomFoodAlertView(isVisible: $isVisible)
             .animation(.easeOut(duration: 0.3), value: isVisible)
+            .ignoresSafeArea()
     }
 }
 

@@ -34,6 +34,7 @@ struct MealHeaderView: View {
                                 .frame(width: 22)
                                 .foregroundStyle(color)
                             Text(title)
+                                .font(.system(size: 18))
                                 .fontWeight(.medium)
                                 .foregroundStyle(Color.primary)
                                 .frame(
@@ -55,7 +56,7 @@ struct MealHeaderView: View {
                             mainViewModel: mainViewModel
                         )
                     }
-                    .padding(.vertical, 5)
+                    .padding(.vertical, 4)
                     .padding(.trailing, 5)
                     
                     Image(systemName: "plus")

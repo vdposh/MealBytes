@@ -65,32 +65,27 @@ struct SearchView: View {
     
     @ViewBuilder
     private var contentBody: some View {
-        if searchViewModel.isLoading {
+        switch searchViewModel.contentState {
+        case .loading:
             LoadingView()
-        } else if let error = searchViewModel.appError {
+        case .error(let error):
             contentUnavailableView(for: error, mealType: mealType) {
                 searchViewModel.performSearch(searchViewModel.query)
             }
-        } else {
+        case .empty:
+            contentUnavailableView(for: .noBookmarks, mealType: mealType) {
+                searchViewModel.performSearch(searchViewModel.query)
+            }
+        case .results:
             List {
                 ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
                     foodRow(for: food)
                 }
-                
                 pageButton(direction: .next)
                 pageButton(direction: .previous)
             }
             .listStyle(.plain)
-            .ignoresSafeArea(.keyboard)
             .scrollDismissesKeyboard(.immediately)
-            .background {
-                if searchViewModel.foods.isEmpty {
-                    contentUnavailableView(
-                        for: .noBookmarks,
-                        mealType: mealType
-                    ) {}
-                }
-            }
         }
     }
     

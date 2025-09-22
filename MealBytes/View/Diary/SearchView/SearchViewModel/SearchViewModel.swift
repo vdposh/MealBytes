@@ -150,6 +150,18 @@ final class SearchViewModel: ObservableObject {
         return true
     }
     
+    var contentState: SearchContentState {
+        if isLoading {
+            .loading
+        } else if let error = appError {
+            .error(error)
+        } else if foods.isEmpty {
+            .empty
+        } else {
+            .results
+        }
+    }
+    
     // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
@@ -234,6 +246,13 @@ final class SearchViewModel: ObservableObject {
         }
         performSearch(query)
     }
+}
+
+enum SearchContentState {
+    case loading
+    case error(AppError)
+    case empty
+    case results
 }
 
 extension SearchViewModel: SearchViewModelProtocol {}

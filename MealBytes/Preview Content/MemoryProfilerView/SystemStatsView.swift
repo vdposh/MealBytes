@@ -26,12 +26,3 @@ struct SystemStatsView: View {
 #Preview {
     PreviewContentView.contentView
 }
-
-//#if DEBUG
-//            VStack {
-//                SystemStatsView()
-//                    .background(.ultraThickMaterial.opacity(0.8))
-//                    .cornerRadius(12)
-//            }
-//            .allowsHitTesting(false)
-//#endif

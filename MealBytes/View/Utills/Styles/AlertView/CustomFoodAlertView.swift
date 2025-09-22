@@ -15,18 +15,18 @@ struct CustomFoodAlertView: View {
             HStack {
                 Image(systemName: "text.badge.plus")
                     .foregroundStyle(Color.accent.opacity(0.8))
-                    .frame(width: 12)
+                    .frame(width: 20)
                 Text("Added to Diary")
                     .fontWeight(.medium)
                     .foregroundStyle(.secondary)
             }
             .font(.system(size: 14.5))
-            .padding(.horizontal, 20)
-            .padding(.vertical, 15)
+            .padding(.vertical, 16)
+            .padding(.horizontal, 18)
             .background(.regularMaterial)
-            .cornerRadius(20)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
             .frame(maxHeight: .infinity, alignment: .bottom)
-            .padding(.bottom, 100)
+            .padding(.bottom, 140)
             .allowsHitTesting(false)
         }
     }

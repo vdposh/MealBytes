@@ -12,8 +12,10 @@ struct SystemStatsOverlay: View {
 #if DEBUG
         VStack {
             SystemStatsView()
-                .background(.ultraThickMaterial.opacity(0.8))
-                .cornerRadius(12)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.ultraThickMaterial.opacity(0.8))
+                }
         }
         .allowsHitTesting(false)
 #else
