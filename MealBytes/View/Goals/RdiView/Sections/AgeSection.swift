@@ -25,7 +25,7 @@ struct AgeSection: View {
             )
             .focused($focusedField, equals: .age)
         } footer: {
-            Text("Enter age to personalize recommendations.")
+            Text("Enter full age to personalize recommendations.")
         }
         .padding(.bottom, 2)
     }

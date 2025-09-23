@@ -57,7 +57,7 @@ struct MealHeaderView: View {
                         )
                     }
                     .padding(.vertical, 4)
-                    .padding(.trailing, 5)
+                    .padding(.trailing, 4)
                     
                     Image(systemName: "plus")
                         .fontWeight(.bold)

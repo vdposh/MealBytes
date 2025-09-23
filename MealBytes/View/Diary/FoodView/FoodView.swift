@@ -165,7 +165,7 @@ struct FoodView: View {
                 }
             }
             .padding(.top, 6)
-            .padding(.bottom, 4)
+            .padding(.bottom, 2)
         }
     }
     
