@@ -45,7 +45,6 @@ struct CaloriesSection: View {
                     if mainViewModel.canDisplayIntake() {
                         ProgressView(value: mainViewModel.intakeProgress)
                             .progressViewStyle(.linear)
-                            .background(Color.accentColor.opacity(0.2))
                             .scaleEffect(x: 1, y: 2, anchor: .center)
                             .frame(height: 6)
                             .clipShape(RoundedRectangle(cornerRadius: 4))

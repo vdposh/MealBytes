@@ -25,6 +25,6 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     }
     
     var color: Color {
-        .accentColor.opacity(0.6)
+        .accentColor.opacity(0.8)
     }
 }
