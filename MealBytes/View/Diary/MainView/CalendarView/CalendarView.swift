@@ -15,7 +15,7 @@ struct CalendarView: View {
             Text(mainViewModel.formattedDate())
                 .font(.system(size: 18))
                 .fontWeight(.semibold)
-                .padding(.bottom, 30)
+                .padding(.bottom, 26)
             
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible()), count: 7)

@@ -26,34 +26,7 @@ struct SearchView: View {
             contentBody
                 .navigationBarTitle("Search", displayMode: .large)
                 .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Menu {
-                            Text("Select a Meal Type")
-                            ForEach(MealType.allCases, id: \.self) { meal in
-                                Button {
-                                    if searchViewModel.mealSwitch(to: meal) {
-                                        mealType = meal
-                                        Task {
-                                            await searchViewModel
-                                                .loadBookmarksSearchView(
-                                                    for: meal
-                                                )
-                                        }
-                                    }
-                                } label: {
-                                    Label {
-                                        Text(meal.rawValue)
-                                    } icon: {
-                                        if meal == mealType {
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
-                            }
-                        } label: {
-                            Text(mealType.rawValue)
-                        }
-                    }
+                    mealTypeMenuToolbar
                 }
                 .searchable(
                     text: $searchViewModel.query,
@@ -152,6 +125,36 @@ struct SearchView: View {
             .foregroundStyle(.accent)
         } else {
             EmptyView()
+        }
+    }
+    
+    private var mealTypeMenuToolbar: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            Menu {
+                Text("Select a Meal Type")
+                
+                ForEach(MealType.allCases, id: \.self) { meal in
+                    Button {
+                        if searchViewModel.mealSwitch(to: meal) {
+                            mealType = meal
+                            Task {
+                                await searchViewModel
+                                    .loadBookmarksSearchView(for: meal)
+                            }
+                        }
+                    } label: {
+                        Label {
+                            Text(meal.rawValue)
+                        } icon: {
+                            if meal == mealType {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                Text(mealType.rawValue)
+            }
         }
     }
 }

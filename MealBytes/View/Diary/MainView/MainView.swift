@@ -16,72 +16,13 @@ struct MainView: View {
             listLayer
             calendarLayer
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitle("Diary", displayMode: .inline)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                if mainViewModel.isExpandedCalendar {
-                    Text("")
-                } else {
-                    Text(mainViewModel.formattedDate())
-                        .font(.headline)
-                }
-            }
-            
-            ToolbarItem() {
-                if mainViewModel.isExpandedCalendar {
-                    HStack {
-                        Button {
-                            mainViewModel.changeMonth(
-                                by: -1,
-                                selectedDate: &mainViewModel.date
-                            )
-                        } label: {
-                            Image(systemName: "chevron.left")
-                                .padding(.trailing)
-                        }
-                        
-                        Button {
-                            mainViewModel.changeMonth(
-                                by: 1,
-                                selectedDate: &mainViewModel.date
-                            )
-                            
-                        } label: {
-                            Image(systemName: "chevron.right")
-                        }
-                    }
-                    .padding(.horizontal, 8)
-                }
-            }
-            
+            principalDate
+            calendarControls
             ToolbarSpacer(.fixed)
-            
-            ToolbarItem() {
-                Button {
-                    mainViewModel.isExpandedCalendar.toggle()
-                } label: {
-                    Image(
-                        systemName: mainViewModel.isExpandedCalendar
-                        ? "xmark"
-                        : "calendar"
-                    )
-                }
-            }
-            
-            ToolbarItem(placement: .cancellationAction) {
-                if mainViewModel.isExpandedCalendar {
-                    Button {
-                        mainViewModel.selectDate(
-                            Date(),
-                            selectedDate: &mainViewModel.date,
-                            isPresented: &mainViewModel.isExpandedCalendar
-                        )
-                    } label: {
-                        Text("Today")
-                            .font(.headline)
-                    }
-                }
-            }
+            calendarToggle
+            calendarTodayButton
         }
         
         .task {
@@ -177,6 +118,76 @@ struct MainView: View {
             nutrients: mainViewModel.filteredNutrientValues,
             isExpandable: $mainViewModel.isExpanded
         )
+    }
+    
+    private var principalDate: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            if mainViewModel.isExpandedCalendar {
+                Text("")
+            } else {
+                Text(mainViewModel.formattedDate())
+                    .font(.headline)
+            }
+        }
+    }
+    
+    private var calendarControls: some ToolbarContent {
+        ToolbarItem {
+            if mainViewModel.isExpandedCalendar {
+                HStack {
+                    Button {
+                        mainViewModel
+                            .changeMonth(
+                                by: -1,
+                                selectedDate: &mainViewModel.date
+                            )
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    
+                    Button {
+                        mainViewModel
+                            .changeMonth(
+                                by: 1,
+                                selectedDate: &mainViewModel.date
+                            )
+                    } label: {
+                        Image(systemName: "chevron.right")
+                    }
+                }
+            }
+        }
+    }
+    
+    private var calendarToggle: some ToolbarContent {
+        ToolbarItem {
+            Button {
+                mainViewModel.isExpandedCalendar.toggle()
+            } label: {
+                Image(
+                    systemName: mainViewModel.isExpandedCalendar
+                    ? "xmark"
+                    : "calendar"
+                )
+            }
+        }
+    }
+    
+    private var calendarTodayButton: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            if mainViewModel.isExpandedCalendar {
+                Button {
+                    mainViewModel.selectDate(
+                        Date(),
+                        selectedDate: &mainViewModel.date,
+                        isPresented: &mainViewModel.isExpandedCalendar
+                    )
+                } label: {
+                    Text("Today")
+                        .font(.headline)
+                }
+            }
+        }
     }
 }
 
