@@ -1,5 +1,5 @@
 //
-//  CompactNutrientDetailRow.swift
+//  CompactNutrientValueRow.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 04/03/2025.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct CompactNutrientDetailRow: View {
-    let nutrient: CompactNutrientDetail
+struct CompactNutrientValueRow: View {
+    let nutrient: CompactNutrientValue
     
     var body: some View {
         VStack(spacing: 9) {
@@ -17,7 +17,7 @@ struct CompactNutrientDetailRow: View {
                 .fontWeight(.medium)
                 .foregroundStyle(.secondary)
             
-            Text(nutrient.formattedValue)
+            Text(nutrient.formattedCompactNutrientValue)
                 .fontWeight(.medium)
         }
         .lineLimit(1)

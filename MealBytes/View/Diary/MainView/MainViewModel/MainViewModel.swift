@@ -158,7 +158,7 @@ final class MainViewModel: ObservableObject {
             }
         }
         
-//        uniqueId = UUID()
+        uniqueId = UUID()
     }
     
     func deletionButtonRole(for mealType: MealType) -> ButtonRole? {
@@ -312,16 +312,14 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Filtered Nutrients
-    var filteredNutrients: [DetailedNutrient] {
-        let allNutrients = DetailedNutrientProvider()
-            .getDetailedNutrients(from: nutrientSummaries)
+    var filteredNutrientValues: [NutrientValue] {
+        let all = NutrientValueProvider()
+            .fromSummary(nutrientSummaries)
         
-        switch isExpanded {
-        case true: return allNutrients
-        case false:
-            return allNutrients.filter {
-                [.calories, .fat, .protein, .carbohydrate].contains($0.type)
-            }
+        return isExpanded
+        ? all
+        : all.filter {
+            [.calories, .fat, .protein, .carbohydrate].contains($0.type)
         }
     }
     

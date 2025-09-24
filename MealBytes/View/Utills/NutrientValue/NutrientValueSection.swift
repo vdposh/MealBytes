@@ -1,34 +1,32 @@
 //
-//  DetailedInformationSection.swift
+//  NutrientValueSection.swift
 //  MealBytes
 //
-//  Created by Vlad Posherstnik on 16/03/2025.
+//  Created by Vlad Posherstnik on 24/09/2025.
 //
 
 import SwiftUI
 
-struct DetailedInformationSection: View {
-    @Binding var isExpanded: Bool
-    let nutrients: [DetailedNutrient]
+struct NutrientValueSection: View {
+    let title: String
+    let nutrients: [NutrientValue]
+    let isExpandable: Binding<Bool>?
     
     var body: some View {
         Section {
-            Text("Detailed Information")
+            Text(title)
                 .fontWeight(.medium)
                 .listRowSeparator(.hidden)
                 .padding(.top, 6)
             
-            ForEach(nutrients, id: \.id) { nutrient in
+            ForEach(nutrients) { nutrient in
                 HStack {
                     Text(nutrient.type.title)
                         .foregroundStyle(
                             nutrient.isSubValue ? .secondary : .primary
                         )
                         .font(.subheadline)
-                        .frame(
-                            maxWidth: .infinity,
-                            alignment: .leading
-                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(nutrient.formattedValue)
                         .foregroundStyle(
@@ -39,11 +37,9 @@ struct DetailedInformationSection: View {
                 }
             }
             
-            ShowHideButtonView(isExpanded: $isExpanded)
+            if let isExpandable {
+                ShowHideButtonView(isExpanded: isExpandable)
+            }
         }
     }
-}
-
-#Preview {
-    PreviewContentView.contentView
 }

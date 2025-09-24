@@ -70,7 +70,7 @@ struct FoodView: View {
                 List {
                     servingSizeSection
                     nutrientActionSection
-                    nutrientDetailSection
+                    detailedInformationSection
                 }
                 .listSectionSpacing(15)
                 .scrollIndicators(.hidden)
@@ -225,7 +225,7 @@ struct FoodView: View {
                     Array(foodViewModel.compactNutrientDetails.enumerated()),
                     id: \.element.id
                 ) { index, nutrient in
-                    CompactNutrientDetailRow(nutrient: nutrient)
+                    CompactNutrientValueRow(nutrient: nutrient)
                     
                     if index < foodViewModel.compactNutrientDetails.count - 1 {
                         Rectangle()
@@ -241,9 +241,11 @@ struct FoodView: View {
         .listRowSeparator(.hidden)
     }
     
-    private var nutrientDetailSection: some View {
-        NutrientDetailSection(
-            nutrientDetails: foodViewModel.nutrientDetails
+    private var detailedInformationSection: some View {
+        NutrientValueSection(
+            title: "Detailed Information",
+            nutrients: foodViewModel.nutrientValues,
+            isExpandable: nil
         )
     }
 }

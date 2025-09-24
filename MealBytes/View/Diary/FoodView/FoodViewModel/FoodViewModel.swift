@@ -110,7 +110,7 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Add Food Item
     func addMealItemFoodView(in section: MealType, for date: Date) async {
-        let nutrients = nutrientDetails.reduce(
+        let nutrients = nutrientValues.reduce(
             into: [NutrientType: Double]()
         ) {
             result, detail in
@@ -119,9 +119,7 @@ final class FoodViewModel: ObservableObject {
         let newItem = MealItem(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
-            portionUnit: nutrientDetails.first(where: {
-                $0.type == .servingSize
-            })?.serving.metricServingUnit ?? "",
+            portionUnit: selectedServing?.metricServingUnit ?? "",
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
@@ -155,7 +153,7 @@ final class FoodViewModel: ObservableObject {
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             portionUnit: selectedServing.metricServingUnit,
-            nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
+            nutrients: nutrientValues.reduce(into: [NutrientType: Double]()) {
                 result, detail in result[detail.type] = detail.value
             },
             measurementDescription: selectedServing.measurementDescription,
@@ -313,12 +311,12 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    var compactNutrientDetails: [CompactNutrientDetail] {
+    var compactNutrientDetails: [CompactNutrientValue] {
         guard let selectedServing else { return [] }
-        return CompactNutrientDetailProvider()
+        return CompactNutrientValueProvider()
             .getCompactNutrientDetails(from: selectedServing)
             .map { detail in
-                CompactNutrientDetail(
+                CompactNutrientValue(
                     type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
                     serving: detail.serving
@@ -326,16 +324,17 @@ final class FoodViewModel: ObservableObject {
             }
     }
     
-    var nutrientDetails: [NutrientDetail] {
+    var nutrientValues: [NutrientValue] {
         guard let selectedServing else { return [] }
-        return NutrientDetailProvider()
-            .getNutrientDetails(from: selectedServing)
-            .map { detail in
-                NutrientDetail(
-                    type: detail.type,
-                    value: detail.value * calculateSelectedAmountValue(),
-                    serving: selectedServing,
-                    isSubValue: detail.isSubValue
+        
+        return NutrientValueProvider()
+            .fromServing(selectedServing)
+            .map { value in
+                NutrientValue(
+                    type: value.type,
+                    value: value.value * calculateSelectedAmountValue(),
+                    isSubValue: value.isSubValue,
+                    unit: value.unit
                 )
             }
     }

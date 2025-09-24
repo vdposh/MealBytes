@@ -1,5 +1,5 @@
 //
-//  CompactNutrientDetail.swift
+//  CompactNutrientValue.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 10/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CompactNutrientDetail: Identifiable {
+struct CompactNutrientValue: Identifiable {
     var id: NutrientType { type }
     let type: NutrientType
     let value: Double
@@ -22,8 +22,8 @@ struct CompactNutrientDetail: Identifiable {
     }
 }
 
-extension CompactNutrientDetail {
-    var formattedValue: String {
+extension CompactNutrientValue {
+    var formattedCompactNutrientValue: String {
         Formatter().formattedValue(
             value,
             unit: {

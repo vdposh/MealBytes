@@ -172,9 +172,10 @@ struct MainView: View {
     }
     
     private var detailedInformationSection: some View {
-        DetailedInformationSection(
-            isExpanded: $mainViewModel.isExpanded,
-            nutrients: mainViewModel.filteredNutrients
+        NutrientValueSection(
+            title: "Detailed Information",
+            nutrients: mainViewModel.filteredNutrientValues,
+            isExpandable: $mainViewModel.isExpanded
         )
     }
 }
