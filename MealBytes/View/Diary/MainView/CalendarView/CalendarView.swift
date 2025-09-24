@@ -13,8 +13,9 @@ struct CalendarView: View {
     var body: some View {
         VStack {
             Text(mainViewModel.formattedDate())
-                .font(.headline)
-                .padding(.bottom)
+                .font(.system(size: 18))
+                .fontWeight(.semibold)
+                .padding(.bottom, 30)
             
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible()), count: 7)

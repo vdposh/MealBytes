@@ -35,7 +35,6 @@ struct CalorieMetricsSection: View {
             } footer: {
                 Text("Necessary calorie amount can be entered directly.")
             }
-            .padding(.bottom, 2)
         }
     }
 }

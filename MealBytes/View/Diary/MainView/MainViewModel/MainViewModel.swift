@@ -158,7 +158,7 @@ final class MainViewModel: ObservableObject {
             }
         }
         
-        uniqueId = UUID()
+//        uniqueId = UUID()
     }
     
     func deletionButtonRole(for mealType: MealType) -> ButtonRole? {

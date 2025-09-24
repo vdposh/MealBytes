@@ -16,7 +16,7 @@ struct MainView: View {
             listLayer
             calendarLayer
         }
-        .navigationBarTitle("Diary", displayMode: .inline)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 if mainViewModel.isExpandedCalendar {
@@ -31,14 +31,20 @@ struct MainView: View {
                 if mainViewModel.isExpandedCalendar {
                     HStack {
                         Button {
-                            mainViewModel.changeMonth(by: -1, selectedDate: &mainViewModel.date)
+                            mainViewModel.changeMonth(
+                                by: -1,
+                                selectedDate: &mainViewModel.date
+                            )
                         } label: {
                             Image(systemName: "chevron.left")
                                 .padding(.trailing)
                         }
                         
                         Button {
-                            mainViewModel.changeMonth(by: 1, selectedDate: &mainViewModel.date)
+                            mainViewModel.changeMonth(
+                                by: 1,
+                                selectedDate: &mainViewModel.date
+                            )
                             
                         } label: {
                             Image(systemName: "chevron.right")

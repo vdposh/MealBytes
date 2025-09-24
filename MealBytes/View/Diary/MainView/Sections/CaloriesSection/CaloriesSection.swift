@@ -50,7 +50,7 @@ struct CaloriesSection: View {
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
                 }
-                .padding(.bottom, mainViewModel.canDisplayIntake() ? 12 : 2)
+                .padding(.bottom, mainViewModel.canDisplayIntake() ? 12 : 4)
                 
                 HStack {
                     let nutrients = mainViewModel.formattedNutrients(
