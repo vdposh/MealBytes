@@ -11,7 +11,6 @@ struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
     let title: String
-    var showStar: Bool = true
     var placeholder: String = "Enter value"
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
@@ -22,10 +21,9 @@ struct ServingTextFieldView: View {
     var maxIntegerDigits: Int = 4
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading) {
             FieldTitleView(
                 title: title,
-                showStar: showStar,
                 titleColor: titleColor,
                 isFocused: Binding(
                     get: { isFocused },
@@ -44,7 +42,7 @@ struct ServingTextFieldView: View {
                         finalizeInput(&text)
                     }
                 }
-                .modifier(FieldStyleModifier(isFocused: $isFocused))
+                .focused($isFocused)
         }
     }
     

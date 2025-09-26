@@ -15,7 +15,6 @@ struct FoodItemRow: View {
     var body: some View {
         NavigationLink(
             destination: FoodView(
-                navigationTitle: "Edit Food Entry",
                 food: Food(
                     searchFoodId: mealItem.foodId,
                     searchFoodName: mealItem.foodName,

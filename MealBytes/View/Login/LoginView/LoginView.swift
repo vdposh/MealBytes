@@ -27,7 +27,6 @@ struct LoginView: View {
                 SecureFieldView(
                     text: $loginViewModel.password,
                     title: "Password",
-                    placeholder: "Enter password",
                     titleColor: loginViewModel.titleColor(
                         for: loginViewModel.password
                     )

@@ -14,11 +14,10 @@ struct CalorieMetricsSection: View {
     var body: some View {
         if !dailyIntakeViewModel.toggleOn {
             Section {
-                HStack(alignment: .bottom) {
+                HStack {
                     ServingTextFieldView(
                         text: $dailyIntakeViewModel.calories,
                         title: "Calories",
-                        showStar: dailyIntakeViewModel.showStar,
                         keyboardType: .numberPad,
                         inputMode: .integer,
                         titleColor: dailyIntakeViewModel.titleColor(
@@ -28,9 +27,6 @@ struct CalorieMetricsSection: View {
                         maxIntegerDigits: 5
                     )
                     .focused(isFocused)
-                    .padding(.trailing, 5)
-                    
-                    Text("kcal")
                 }
             } footer: {
                 Text("Necessary calorie amount can be entered directly.")

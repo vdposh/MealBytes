@@ -30,7 +30,7 @@ struct ProfileView: View {
                 switch profileViewModel.alertContent?.type {
                 case .deleteAccount:
                     SecureField(
-                        "Enter password",
+                        "Current Password",
                         text: $profileViewModel.password
                     )
                     .font(.callout)

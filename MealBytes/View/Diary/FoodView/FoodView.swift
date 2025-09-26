@@ -11,7 +11,6 @@ struct FoodView: View {
     @FocusState private var amountFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
-    private let navigationTitle: String
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
     private let showMealTypeButton: Bool
@@ -19,7 +18,6 @@ struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
     
     init(
-        navigationTitle: String,
         food: Food,
         searchViewModel: SearchViewModelProtocol,
         mainViewModel: MainViewModelProtocol,
@@ -32,7 +30,6 @@ struct FoodView: View {
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
-        self.navigationTitle = navigationTitle
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
         self.showMealTypeButton = showMealTypeButton
@@ -68,6 +65,7 @@ struct FoodView: View {
                 
             case .loaded:
                 List {
+                    foodTitleRow
                     servingSizeSection
                     nutrientActionSection
                     detailedInformationSection
@@ -76,9 +74,34 @@ struct FoodView: View {
                 .scrollIndicators(.hidden)
             }
         }
-        .navigationBarTitle(navigationTitle, displayMode: .inline)
+        .navigationBarTitle(
+            Text(showMealTypeButton
+                 ? foodViewModel.mealType.rawValue
+                 : "Add to \(foodViewModel.mealType.rawValue)")
+        )
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
+            if showMealTypeButton {
+                ToolbarTitleMenu {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Button {
+                            foodViewModel.mealType = meal
+                            amountFocused = false
+                            foodViewModel.normalizeAmount()
+                        } label: {
+                            Label {
+                                Text(meal.rawValue)
+                            } icon: {
+                                if meal == foodViewModel.mealType {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            ToolbarItem(placement: .keyboard) {
                 KeyboardToolbarView(done: {
                     amountFocused = false
                     foodViewModel.normalizeAmount()
@@ -90,81 +113,60 @@ struct FoodView: View {
         }
     }
     
+    private var foodTitleRow: some View {
+        Text(foodViewModel.food.searchFoodName)
+            .font(.title)
+            .fontWeight(.bold)
+            .padding(.leading)
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+    }
+    
     private var servingSizeSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 20) {
-                Text(foodViewModel.food.searchFoodName)
-                    .font(.system(size: 18))
-                    .fontWeight(.semibold)
-                
-                ServingTextFieldView(
-                    text: $foodViewModel.amount,
-                    title: "Size",
-                    placeholder: "Enter serving size",
-                    titleColor: foodViewModel.titleColor(
-                        for: foodViewModel.amount
-                    )
+            ServingTextFieldView(
+                text: $foodViewModel.amount,
+                title: "Size",
+                placeholder: "Enter serving size",
+                titleColor: foodViewModel.titleColor(
+                    for: foodViewModel.amount
                 )
-                .focused($amountFocused)
-                .onChange(of: amountFocused) {
-                    foodViewModel.handleFocusChange(
-                        from: !amountFocused,
-                        to: amountFocused
-                    )
-                }
-                
-                ServingButtonView(
-                    showActionSheet: $foodViewModel.showServingDialog,
-                    title: "Serving",
-                    description: foodViewModel.servingDescription
-                ) {
-                    foodViewModel.showServingDialog.toggle()
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
-                }
-                .confirmationDialog(
-                    "Select a Serving",
-                    isPresented: $foodViewModel.showServingDialog,
-                    titleVisibility: .visible
-                ) {
-                    if let servings = foodViewModel
-                        .foodDetail?.servings.serving {
-                        ForEach(servings, id: \.self) { serving in
-                            Button(
-                                foodViewModel.servingDescription(
-                                    for: serving
-                                )
-                            ) {
-                                foodViewModel.updateServing(serving)
-                            }
-                        }
-                    }
-                }
-                
-                if showMealTypeButton {
-                    ServingButtonView(
-                        showActionSheet: $foodViewModel.showMealTypeDialog,
-                        title: "Meal Type",
-                        description: foodViewModel.mealType.rawValue
-                    ) {
-                        foodViewModel.showMealTypeDialog.toggle()
-                        amountFocused = false
-                        foodViewModel.normalizeAmount()
-                    }
-                    .confirmationDialog(
-                        "Select a Meal Type",
-                        isPresented: $foodViewModel.showMealTypeDialog,
-                        titleVisibility: .visible
-                    ) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Button(meal.rawValue) {
-                                foodViewModel.mealType = meal
-                            }
+            )
+            .focused($amountFocused)
+            .onChange(of: amountFocused) {
+                foodViewModel.handleFocusChange(
+                    from: !amountFocused,
+                    to: amountFocused
+                )
+            }
+            
+            ServingButtonView(
+                showActionSheet: $foodViewModel.showServingDialog,
+                title: "Serving",
+                description: foodViewModel.servingDescription
+            ) {
+                foodViewModel.showServingDialog.toggle()
+                amountFocused = false
+                foodViewModel.normalizeAmount()
+            }
+            .confirmationDialog(
+                "Select a Serving",
+                isPresented: $foodViewModel.showServingDialog,
+                titleVisibility: .visible
+            ) {
+                if let servings = foodViewModel
+                    .foodDetail?.servings.serving {
+                    ForEach(servings, id: \.self) { serving in
+                        Button(
+                            foodViewModel.servingDescription(
+                                for: serving
+                            )
+                        ) {
+                            foodViewModel.updateServing(serving)
                         }
                     }
                 }
             }
-            .padding(.top, 6)
         }
     }
     
@@ -243,7 +245,6 @@ struct FoodView: View {
     
     private var detailedInformationSection: some View {
         NutrientValueSection(
-            title: "Detailed Information",
             nutrients: foodViewModel.nutrientValues,
             isExpandable: nil
         )

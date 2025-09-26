@@ -14,11 +14,12 @@ struct ServingButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading) {
             Text(title)
                 .font(.footnote)
                 .fontWeight(.medium)
                 .foregroundStyle(.secondary)
+                .frame(height: 10)
             
             HStack {
                 Text(description)
@@ -28,13 +29,7 @@ struct ServingButtonView: View {
                     .resizable()
                     .frame(width: 10, height: 6)
             }
-            .frame(height: 35)
-            .overlay(
-                FieldUnderlineView(isFocused: false),
-                alignment: .bottom
-            )
         }
-        .contentShape(Rectangle())
         .overlay(
             Button(action: {
                 action()

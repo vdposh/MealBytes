@@ -16,15 +16,12 @@ struct MainView: View {
             listLayer
             calendarLayer
         }
-        .navigationBarTitle("Diary", displayMode: .inline)
+        .navigationBarTitle(mainViewModel.navigationTitle)
+        .navigationSubtitle(mainViewModel.navigationSubtitle)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            principalDate
-            calendarControls
-            ToolbarSpacer(.fixed)
-            calendarToggle
-            calendarTodayButton
+            calendarToolbar
         }
-        
         .task {
             await mainViewModel.loadMainData()
         }
@@ -61,33 +58,30 @@ struct MainView: View {
         Section {
             HStack {
                 ForEach(-3...3, id: \.self) { offset in
+                    let date = mainViewModel.dateByAddingOffset(for: offset)
                     Button {
-                        mainViewModel.date = mainViewModel
-                            .dateByAddingOffset(for: offset)
+                        mainViewModel.date = date
                     } label: {
-                        dateView(
-                            for: mainViewModel.dateByAddingOffset(for: offset)
+                        DateView(
+                            date: date,
+                            isToday: Calendar.current.isDate(
+                                date,
+                                inSameDayAs: Date()
+                            ),
+                            isSelected: Calendar.current.isDate(
+                                date,
+                                inSameDayAs: mainViewModel.date
+                            ),
+                            mainViewModel: mainViewModel
                         )
                     }
                     .buttonStyle(.borderless)
                 }
             }
+            .padding(.vertical, 10)
         }
-        .padding(.vertical, 10)
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
-    }
-    
-    private func dateView(for date: Date) -> some View {
-        DateView(
-            date: date,
-            isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
-            isSelected: Calendar.current.isDate(
-                date,
-                inSameDayAs: mainViewModel.date
-            ),
-            mainViewModel: mainViewModel
-        )
     }
     
     private var caloriesSection: some View {
@@ -114,68 +108,35 @@ struct MainView: View {
     
     private var detailedInformationSection: some View {
         NutrientValueSection(
-            title: "Detailed Information",
             nutrients: mainViewModel.filteredNutrientValues,
             isExpandable: $mainViewModel.isExpanded
         )
     }
     
-    private var principalDate: some ToolbarContent {
-        ToolbarItem(placement: .principal) {
-            if mainViewModel.isExpandedCalendar {
-                Text("")
-            } else {
-                Text(mainViewModel.formattedDate())
-                    .font(.headline)
-            }
-        }
-    }
-    
-    private var calendarControls: some ToolbarContent {
-        ToolbarItem {
-            if mainViewModel.isExpandedCalendar {
-                HStack {
-                    Button {
-                        mainViewModel
-                            .changeMonth(
-                                by: -1,
-                                selectedDate: &mainViewModel.date
-                            )
-                    } label: {
-                        Image(systemName: "chevron.left")
-                    }
-                    
-                    Button {
-                        mainViewModel
-                            .changeMonth(
-                                by: 1,
-                                selectedDate: &mainViewModel.date
-                            )
-                    } label: {
-                        Image(systemName: "chevron.right")
-                    }
+    @ToolbarContentBuilder
+    private var calendarToolbar: some ToolbarContent {
+        if mainViewModel.isExpandedCalendar {
+            ToolbarItemGroup {
+                Button {
+                    mainViewModel.changeMonth(
+                        by: -1,
+                        selectedDate: &mainViewModel.date
+                    )
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                
+                Button {
+                    mainViewModel.changeMonth(
+                        by: 1,
+                        selectedDate: &mainViewModel.date
+                    )
+                } label: {
+                    Image(systemName: "chevron.right")
                 }
             }
-        }
-    }
-    
-    private var calendarToggle: some ToolbarContent {
-        ToolbarItem {
-            Button {
-                mainViewModel.isExpandedCalendar.toggle()
-            } label: {
-                Image(
-                    systemName: mainViewModel.isExpandedCalendar
-                    ? "xmark"
-                    : "calendar"
-                )
-            }
-        }
-    }
-    
-    private var calendarTodayButton: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            if mainViewModel.isExpandedCalendar {
+            
+            ToolbarItem(placement: .topBarLeading) {
                 Button {
                     mainViewModel.selectDate(
                         Date(),
@@ -186,6 +147,20 @@ struct MainView: View {
                     Text("Today")
                         .font(.headline)
                 }
+            }
+        }
+        
+        ToolbarSpacer(.fixed)
+        
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                mainViewModel.isExpandedCalendar.toggle()
+            } label: {
+                Image(
+                    systemName: mainViewModel.isExpandedCalendar
+                    ? "xmark"
+                    : "calendar"
+                )
             }
         }
     }

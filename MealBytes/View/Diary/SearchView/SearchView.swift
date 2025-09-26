@@ -31,7 +31,7 @@ struct SearchView: View {
                 .searchable(
                     text: $searchViewModel.query,
                     placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Enter a food name"
+                    prompt: "Search for food"
                 )
         }
     }
@@ -66,7 +66,6 @@ struct SearchView: View {
     private func foodRow(for food: Food) -> some View {
         NavigationLink {
             FoodView(
-                navigationTitle: "Add to \(mealType.rawValue)",
                 food: food,
                 searchViewModel: searchViewModel,
                 mainViewModel: searchViewModel.mainViewModel,
@@ -131,8 +130,6 @@ struct SearchView: View {
     private var mealTypeMenuToolbar: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
             Menu {
-                Text("Select a Meal Type")
-                
                 ForEach(MealType.allCases, id: \.self) { meal in
                     Button {
                         if searchViewModel.mealSwitch(to: meal) {

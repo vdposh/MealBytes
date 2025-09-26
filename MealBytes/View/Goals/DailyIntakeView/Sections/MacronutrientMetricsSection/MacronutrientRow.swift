@@ -15,7 +15,7 @@ struct MacronutrientRow: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        HStack(alignment: .bottom) {
+        HStack {
             ServingTextFieldView(
                 text: $textFieldBinding,
                 title: title,
@@ -25,9 +25,6 @@ struct MacronutrientRow: View {
                 maxIntegerDigits: 3
             )
             .focused(focusedField, equals: focusValue)
-            .padding(.trailing, 5)
-            
-            Text("g")
         }
     }
     

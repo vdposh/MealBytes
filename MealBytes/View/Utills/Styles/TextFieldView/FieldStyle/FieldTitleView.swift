@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FieldTitleView: View {
     let title: String
-    let showStar: Bool
     let titleColor: Color
     let isFocused: Binding<Bool>
     
@@ -18,15 +17,12 @@ struct FieldTitleView: View {
             Text(title)
                 .font(.footnote)
                 .foregroundStyle(titleColor)
-            if showStar {
-                Text("*")
-                    .foregroundStyle(.customRed)
-            }
+            Text("*")
+                .foregroundStyle(.customRed)
         }
         .fontWeight(.medium)
-        .frame(height: 15)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(Rectangle())
+        .frame(height: 10)
         .overlay(
             Button(action: {
                 isFocused.wrappedValue = true

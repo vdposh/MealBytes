@@ -618,6 +618,15 @@ final class MainViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - UI Helper
+    var navigationTitle: String {
+        isExpandedCalendar ? "" : "Diary"
+    }
+    
+    var navigationSubtitle: String {
+        isExpandedCalendar ? "" : formattedDate()
+    }
 }
 
 enum NutrientSource {

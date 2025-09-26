@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct NutrientValueSection: View {
-    let title: String
     let nutrients: [NutrientValue]
     let isExpandable: Binding<Bool>?
     
     var body: some View {
         Section {
-            Text(title)
+            Text("Detailed Information")
                 .fontWeight(.medium)
                 .listRowSeparator(.hidden)
                 .padding(.top, 6)
@@ -42,4 +41,8 @@ struct NutrientValueSection: View {
             }
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

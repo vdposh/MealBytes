@@ -19,7 +19,6 @@ struct PreviewFoodView {
         
         return NavigationStack {
             FoodView(
-                navigationTitle: "Add to Diary",
                 food: food,
                 searchViewModel: searchViewModel,
                 mainViewModel: mainViewModel,

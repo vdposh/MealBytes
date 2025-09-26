@@ -28,3 +28,7 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         .accentColor.opacity(0.8)
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

@@ -13,36 +13,33 @@ struct HeightSection: View {
     
     var body: some View {
         Section {
-            VStack(spacing: 20) {
-                ServingTextFieldView(
-                    text: $rdiViewModel.height,
-                    title: "Height",
-                    titleColor: rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.height
-                    ),
-                    maxIntegerDigits: 3
-                )
-                .focused($focusedField, equals: .height)
-                
-                Picker(
-                    "Height Unit",
-                    selection: $rdiViewModel.selectedHeightUnit
-                ) {
-                    if rdiViewModel.selectedHeightUnit == .notSelected {
-                        Text("Not Selected")
-                            .tag(HeightUnit.notSelected)
-                    }
-                    ForEach(
-                        HeightUnit.allCases.filter { $0 != .notSelected },
-                        id: \.self
-                    ) { unit in
-                        Text(unit.rawValue).tag(unit)
-                    }
+            ServingTextFieldView(
+                text: $rdiViewModel.height,
+                title: "Height",
+                titleColor: rdiViewModel.fieldTitleColor(
+                    for: rdiViewModel.height
+                ),
+                maxIntegerDigits: 3
+            )
+            .focused($focusedField, equals: .height)
+            
+            Picker(
+                "Height Unit",
+                selection: $rdiViewModel.selectedHeightUnit
+            ) {
+                if rdiViewModel.selectedHeightUnit == .notSelected {
+                    Text("Not Selected")
+                        .tag(HeightUnit.notSelected)
                 }
-                .pickerStyle(.menu)
-                .tint(rdiViewModel.selectedHeightUnit.selectedColor)
-                .padding(.bottom, 4)
+                ForEach(
+                    HeightUnit.allCases.filter { $0 != .notSelected },
+                    id: \.self
+                ) { unit in
+                    Text(unit.rawValue).tag(unit)
+                }
             }
+            .pickerStyle(.menu)
+            .tint(rdiViewModel.selectedHeightUnit.selectedColor)
         } footer: {
             Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
         }

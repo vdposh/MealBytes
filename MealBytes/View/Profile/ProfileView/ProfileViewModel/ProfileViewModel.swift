@@ -235,6 +235,10 @@ final class ProfileViewModel: ObservableObject {
     var destructiveTitle: String {
         alertContent?.destructiveTitle ?? "Confirm"
     }
+    
+    var isLoading: Bool {
+        isPasswordChanging || isDeletingAccount
+    }
 }
 
 #Preview {

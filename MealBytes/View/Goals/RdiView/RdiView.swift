@@ -48,6 +48,7 @@ struct RdiView: View {
                     normalize: rdiViewModel.normalizeInputs
                 )
             }
+            
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
                     if rdiViewModel.handleSave() {

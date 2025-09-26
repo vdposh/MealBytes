@@ -11,14 +11,13 @@ struct LoginTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
     var title: String = "Email"
-    var placeholder: String = "Enter email"
+    var placeholder: String = "Enter Email"
     var titleColor: Color = .primary
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             FieldTitleView(
                 title: title,
-                showStar: true,
                 titleColor: titleColor,
                 isFocused: Binding(
                     get: { isFocused },
@@ -30,7 +29,15 @@ struct LoginTextFieldView: View {
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
-                .modifier(FieldStyleModifier(isFocused: $isFocused))
+                .frame(height: 35)
+                .overlay(
+                    Divider(),
+                    alignment: .bottom
+                )
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

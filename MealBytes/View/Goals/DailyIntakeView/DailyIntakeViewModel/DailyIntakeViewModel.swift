@@ -258,10 +258,6 @@ final class DailyIntakeViewModel: ObservableObject {
         : .customRed
     }
     
-    var showStar: Bool {
-        !toggleOn
-    }
-    
     // MARK: - Keyboard
     func normalizeInputs() {
         calories = calories.trimmedLeadingZeros

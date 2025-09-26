@@ -28,7 +28,6 @@ struct RegisterView: View {
                 SecureFieldView(
                     text: $registerViewModel.password,
                     title: "Password",
-                    placeholder: "Enter password",
                     titleColor: registerViewModel.titleColor(
                         for: registerViewModel.password
                     )
@@ -37,7 +36,7 @@ struct RegisterView: View {
                 SecureFieldView(
                     text: $registerViewModel.confirmPassword,
                     title: "Confirm Password",
-                    placeholder: "Re-enter password",
+                    placeholder: "Re-enter Password",
                     titleColor: registerViewModel.titleColor(
                         for: registerViewModel.confirmPassword
                     )
