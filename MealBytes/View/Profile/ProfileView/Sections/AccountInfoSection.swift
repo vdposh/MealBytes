@@ -12,18 +12,18 @@ struct AccountInfoSection: View {
     
     var body: some View {
         Section {
+        } footer: {
             if let email = profileViewModel.email {
                 VStack {
                     Text("This account is signed in:")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
                     Text(email)
                         .font(.headline)
+                        .foregroundStyle(Color.primary)
                 }
             } else {
                 Text("Account disconnected.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
         }
         .listRowBackground(Color.clear)

@@ -23,10 +23,10 @@ struct SearchView: View {
     
     var body: some View {
         NavigationStack {
-            contentBody
+            SearchViewContentBody
                 .navigationBarTitle("Search", displayMode: .large)
                 .toolbar {
-                    mealTypeMenuToolbar
+                    SearchViewToolbar
                 }
                 .searchable(
                     text: $searchViewModel.query,
@@ -37,7 +37,7 @@ struct SearchView: View {
     }
     
     @ViewBuilder
-    private var contentBody: some View {
+    private var SearchViewContentBody: some View {
         switch searchViewModel.contentState {
         case .loading:
             LoadingView()
@@ -127,7 +127,7 @@ struct SearchView: View {
         }
     }
     
-    private var mealTypeMenuToolbar: some ToolbarContent {
+    private var SearchViewToolbar: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
             Menu {
                 ForEach(MealType.allCases, id: \.self) { meal in

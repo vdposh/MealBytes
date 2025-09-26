@@ -16,62 +16,73 @@ struct RdiView: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
+        rdiViewContentBody
+            .navigationBarTitle("RDI")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                rdiViewToolbar
+            }
+            .alert(isPresented: $rdiViewModel.showAlert) {
+                rdiViewAlert
+            }
+            .onChange(of: focusedField) {
+                rdiViewModel.handleFocusChange(from: focusedField)
+            }
+    }
+    
+    private var rdiViewContentBody: some View {
         List {
             OverviewRdiSection(rdiViewModel: rdiViewModel)
-            
             GenderSection(rdiViewModel: rdiViewModel)
-            
             ActivitySection(rdiViewModel: rdiViewModel)
-            
             AgeSection(
                 focusedField: _focusedField,
                 rdiViewModel: rdiViewModel
             )
-            
             WeightSection(
                 focusedField: _focusedField,
                 rdiViewModel: rdiViewModel
             )
-            
             HeightSection(
                 focusedField: _focusedField,
                 rdiViewModel: rdiViewModel
             )
         }
-        .navigationBarTitle("RDI", displayMode: .inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                buildKeyboardToolbar(
-                    current: focusedField,
-                    ordered: rdiOrder,
-                    set: { focusedField = $0 },
-                    normalize: rdiViewModel.normalizeInputs
-                )
-            }
-            
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    if rdiViewModel.handleSave() {
-                        Task {
-                            await rdiViewModel.saveRdiView()
-                        }
-                        dismiss()
+    }
+    
+    @ToolbarContentBuilder
+    private var rdiViewToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            buildKeyboardToolbar(
+                current: focusedField,
+                ordered: rdiOrder,
+                set: { focusedField = $0 },
+                normalize: rdiViewModel.normalizeInputs
+            )
+        }
+        
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Save") {
+                if rdiViewModel.handleSave() {
+                    Task {
+                        await rdiViewModel.saveRdiView()
                     }
-                    focusedField = nil
-                    rdiViewModel.normalizeInputs()
+                    dismiss()
                 }
+                focusedField = nil
+                rdiViewModel.normalizeInputs()
             }
         }
-        .onChange(of: focusedField) {
-            rdiViewModel.handleFocusChange(from: focusedField)
-        }
-        .alert("Error", isPresented: $rdiViewModel.showAlert) {
-            Button("OK") {
+    }
+    
+    private var rdiViewAlert: Alert {
+        Alert(
+            title: Text("Error"),
+            message: Text(rdiViewModel.alertMessage),
+            dismissButton: .default(Text("OK")) {
                 rdiViewModel.showAlert = false
             }
-        } message: {
-            Text(rdiViewModel.alertMessage)
-        }
+        )
     }
 }
 

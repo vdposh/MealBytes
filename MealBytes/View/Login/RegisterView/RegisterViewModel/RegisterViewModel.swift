@@ -1,5 +1,5 @@
 //
-//  RegisterViewMode.swift
+//  RegisterViewModel.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 29/03/2025.
@@ -171,4 +171,21 @@ final class RegisterViewModel: ObservableObject {
         }
         return .unknownError
     }
+    
+    // MARK: - UI Helper
+    var registerState: RegisterState {
+        if isRegisterLoading {
+            return .loading
+        } else if showResendOptions {
+            return .resend
+        } else {
+            return .register
+        }
+    }
+}
+
+enum RegisterState {
+    case loading
+    case resend
+    case register
 }

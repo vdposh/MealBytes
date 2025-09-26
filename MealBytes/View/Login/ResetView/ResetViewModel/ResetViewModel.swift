@@ -95,4 +95,21 @@ final class ResetViewModel: ObservableObject {
         }
         return .unknownError
     }
+    
+    // MARK: - UI Helper
+    var resetState: ResetState {
+        if isLoading {
+            return .loading
+        } else if isEmailSent {
+            return .emailSent
+        } else {
+            return .ready
+        }
+    }
+}
+
+enum ResetState {
+    case loading
+    case emailSent
+    case ready
 }

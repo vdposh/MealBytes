@@ -21,72 +21,80 @@ struct DailyIntakeView: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
+        dailyIntakeViewContentBody
+            .navigationBarTitle("Daily Intake")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                dailyIntakeViewToolbar
+            }
+            .alert(isPresented: $dailyIntakeViewModel.showAlert) {
+                dailyIntakeViewAlert
+            }
+            .onChange(of: focusMacronutrients) {
+                handleFocusLoss(focusMacronutrients)
+            }
+    }
+    
+    private var dailyIntakeViewContentBody: some View {
         List {
             OverviewDailyIntakeSection(
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
-            
             CalorieMetricsSection(
                 isFocused: $caloriesFocused,
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
-            .disabled(dailyIntakeViewModel.toggleOn)
-            
             MacronutrientMetricsSection(
                 focusedField: _focusMacronutrients,
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
-            
-            NutrientsToggleSection(
-                toggleOn: $dailyIntakeViewModel.toggleOn
+            NutrientsToggleSection(toggleOn: $dailyIntakeViewModel.toggleOn)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var dailyIntakeViewToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            buildKeyboardToolbar(
+                current: focusMacronutrients,
+                ordered: macroOrder,
+                set: { focusMacronutrients = $0 },
+                normalize: dailyIntakeViewModel.normalizeInputs,
+                extraDone: { caloriesFocused = false }
             )
         }
-        .navigationBarTitle("Daily Intake", displayMode: .inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                buildKeyboardToolbar(
-                    current: focusMacronutrients,
-                    ordered: macroOrder,
-                    set: { focusMacronutrients = $0 },
-                    normalize: dailyIntakeViewModel.normalizeInputs,
-                    extraDone: { caloriesFocused = false }
-                )
-            }
-            
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    if dailyIntakeViewModel.handleSave() {
-                        Task {
-                            await dailyIntakeViewModel
-                                .saveDailyIntakeView()
-                        }
-                        dismiss()
+        
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Save") {
+                if dailyIntakeViewModel.handleSave() {
+                    Task {
+                        await dailyIntakeViewModel.saveDailyIntakeView()
                     }
-                    caloriesFocused = false
-                    focusMacronutrients = nil
-                    dailyIntakeViewModel.normalizeInputs()
+                    dismiss()
                 }
+                caloriesFocused = false
+                focusMacronutrients = nil
+                dailyIntakeViewModel.normalizeInputs()
             }
         }
-        .onChange(of: focusMacronutrients) {
-            if let focusMacronutrients {
-                dailyIntakeViewModel
-                    .handleMacronutrientFocusChange(
-                        focus: focusMacronutrients,
-                        didGainFocus: false
-                    )
-            }
-        }
-        .alert(
-            "Error",
-            isPresented: $dailyIntakeViewModel.showAlert
-        ) {
-            Button("OK") {
+    }
+    
+    private var dailyIntakeViewAlert: Alert {
+        Alert(
+            title: Text("Error"),
+            message: Text(dailyIntakeViewModel.alertMessage),
+            dismissButton: .default(Text("OK")) {
                 dailyIntakeViewModel.showAlert = false
             }
-        } message: {
-            Text(dailyIntakeViewModel.alertMessage)
-        }
+        )
+    }
+    
+    private func handleFocusLoss(_ focus: MacronutrientsFocus?) {
+        guard let focus else { return }
+        dailyIntakeViewModel.handleMacronutrientFocusChange(
+            focus: focus,
+            didGainFocus: false
+        )
     }
 }
 

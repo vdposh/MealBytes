@@ -15,7 +15,7 @@ struct SecureFieldView: View {
     var titleColor: Color = .primary
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 5) {
             FieldTitleView(
                 title: title,
                 titleColor: titleColor,
@@ -27,11 +27,11 @@ struct SecureFieldView: View {
             
             SecureField(placeholder, text: $text)
                 .autocapitalization(.none)
-                .frame(height: 35)
-                .overlay(
-                    Divider(),
-                    alignment: .bottom
-                )
+                .frame(height: 30)
+                .overlay(alignment: .bottom) {
+                    Divider()
+                }
+                .focused($isFocused)
         }
     }
 }

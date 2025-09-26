@@ -33,20 +33,35 @@ struct FoodView: View {
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
         self.showMealTypeButton = showMealTypeButton
-        _foodViewModel = StateObject(wrappedValue: FoodViewModel(
-            food: food,
-            mealType: mealType,
-            searchViewModel: searchViewModel,
-            mainViewModel: mainViewModel,
-            initialAmount: amount,
-            initialMeasurementDescription: measurementDescription,
-            showSaveRemoveButton: showSaveRemoveButton,
-            originalCreatedAt: originalCreatedAt,
-            originalMealItemId: originalMealItemId
-        ))
+        _foodViewModel = StateObject(
+            wrappedValue: FoodViewModel(
+                food: food,
+                mealType: mealType,
+                searchViewModel: searchViewModel,
+                mainViewModel: mainViewModel,
+                initialAmount: amount,
+                initialMeasurementDescription: measurementDescription,
+                showSaveRemoveButton: showSaveRemoveButton,
+                originalCreatedAt: originalCreatedAt,
+                originalMealItemId: originalMealItemId
+            )
+        )
     }
     
     var body: some View {
+        foodViewContentBody
+            .navigationBarTitle(navigationTitleText)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                foodViewToolbar
+            }
+            .task {
+                await foodViewModel.fetchFoodDetails()
+            }
+    }
+    
+    @ViewBuilder
+    private var foodViewContentBody: some View {
         ZStack {
             switch foodViewModel.viewState {
             case .loading:
@@ -65,7 +80,6 @@ struct FoodView: View {
                 
             case .loaded:
                 List {
-                    foodTitleRow
                     servingSizeSection
                     nutrientActionSection
                     detailedInformationSection
@@ -74,52 +88,6 @@ struct FoodView: View {
                 .scrollIndicators(.hidden)
             }
         }
-        .navigationBarTitle(
-            Text(showMealTypeButton
-                 ? foodViewModel.mealType.rawValue
-                 : "Add to \(foodViewModel.mealType.rawValue)")
-        )
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if showMealTypeButton {
-                ToolbarTitleMenu {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Button {
-                            foodViewModel.mealType = meal
-                            amountFocused = false
-                            foodViewModel.normalizeAmount()
-                        } label: {
-                            Label {
-                                Text(meal.rawValue)
-                            } icon: {
-                                if meal == foodViewModel.mealType {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            ToolbarItem(placement: .keyboard) {
-                KeyboardToolbarView(done: {
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
-                })
-            }
-        }
-        .task {
-            await foodViewModel.fetchFoodDetails()
-        }
-    }
-    
-    private var foodTitleRow: some View {
-        Text(foodViewModel.food.searchFoodName)
-            .font(.title)
-            .fontWeight(.bold)
-            .padding(.leading)
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
     }
     
     private var servingSizeSection: some View {
@@ -167,6 +135,12 @@ struct FoodView: View {
                     }
                 }
             }
+        } header: {
+            Text(foodViewModel.food.searchFoodName)
+                .font(.title)
+                .foregroundStyle(Color.primary)
+                .fontWeight(.bold)
+                .padding(.vertical, 10)
         }
     }
     
@@ -248,6 +222,44 @@ struct FoodView: View {
             nutrients: foodViewModel.nutrientValues,
             isExpandable: nil
         )
+    }
+    
+    private var navigationTitleText: Text {
+        Text(
+            showMealTypeButton
+            ? foodViewModel.mealType.rawValue
+            : "Add to \(foodViewModel.mealType.rawValue)"
+        )
+    }
+    
+    @ToolbarContentBuilder
+    private var foodViewToolbar: some ToolbarContent {
+        if showMealTypeButton {
+            ToolbarTitleMenu {
+                ForEach(MealType.allCases, id: \.self) { meal in
+                    Button {
+                        foodViewModel.mealType = meal
+                        amountFocused = false
+                        foodViewModel.normalizeAmount()
+                    } label: {
+                        Label {
+                            Text(meal.rawValue)
+                        } icon: {
+                            if meal == foodViewModel.mealType {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        ToolbarItem(placement: .keyboard) {
+            KeyboardToolbarView(done: {
+                amountFocused = false
+                foodViewModel.normalizeAmount()
+            })
+        }
     }
 }
 

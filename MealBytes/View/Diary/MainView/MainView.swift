@@ -12,44 +12,41 @@ struct MainView: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        ZStack(alignment: .top) {
-            listLayer
-            calendarLayer
-        }
-        .navigationBarTitle(mainViewModel.navigationTitle)
-        .navigationSubtitle(mainViewModel.navigationSubtitle)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            calendarToolbar
-        }
-        .task {
-            await mainViewModel.loadMainData()
-        }
+        mainViewContentBody
+            .navigationBarTitle(mainViewModel.navigationTitle)
+            .navigationSubtitle(mainViewModel.navigationSubtitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                mainViewToolbar
+            }
+            .task {
+                await mainViewModel.loadMainData()
+            }
     }
     
-    private var listLayer: some View {
-        List {
-            dateSection
-            caloriesSection
-            mealSections
-            detailedInformationSection
-        }
-        .scrollIndicators(.hidden)
-        .listSectionSpacing(16)
-    }
-    
-    private var calendarLayer: some View {
+    private var mainViewContentBody: some View {
         ZStack(alignment: .top) {
+            List {
+                dateSection
+                caloriesSection
+                mealSections
+                detailedInformationSection
+            }
+            .scrollIndicators(.hidden)
+            .listSectionSpacing(16)
+            
             if mainViewModel.isExpandedCalendar {
-                CalendarView(mainViewModel: mainViewModel)
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .zIndex(2)
-                
-                CalendarButtonView {
-                    mainViewModel.isExpandedCalendar = false
+                ZStack(alignment: .top) {
+                    CalendarView(mainViewModel: mainViewModel)
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .zIndex(2)
+                    
+                    CalendarButtonView {
+                        mainViewModel.isExpandedCalendar = false
+                    }
+                    .zIndex(1)
                 }
-                .zIndex(1)
             }
         }
     }
@@ -114,7 +111,7 @@ struct MainView: View {
     }
     
     @ToolbarContentBuilder
-    private var calendarToolbar: some ToolbarContent {
+    private var mainViewToolbar: some ToolbarContent {
         if mainViewModel.isExpandedCalendar {
             ToolbarItemGroup {
                 Button {

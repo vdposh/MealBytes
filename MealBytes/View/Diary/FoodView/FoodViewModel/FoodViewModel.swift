@@ -338,17 +338,6 @@ final class FoodViewModel: ObservableObject {
             }
     }
     
-    // MARK: - UI Helper
-    var viewState: FoodViewState {
-        if let error = appError {
-            return .error(error)
-        } else if isLoading {
-            return .loading
-        } else {
-            return .loaded
-        }
-    }
-    
     // MARK: - Text
     func titleColor(for value: String) -> Color {
         value.isValidNumericInput() ? .secondary : .customRed
@@ -371,6 +360,17 @@ final class FoodViewModel: ObservableObject {
             } else {
                 amount = originalAmount
             }
+        }
+    }
+    
+    // MARK: - UI Helper
+    var viewState: FoodViewState {
+        if let error = appError {
+            return .error(error)
+        } else if isLoading {
+            return .loading
+        } else {
+            return .loaded
         }
     }
 }

@@ -12,70 +12,71 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Sign in")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                LoginTextFieldView(
-                    text: $loginViewModel.email,
-                    titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.email
-                    )
-                )
-                
-                SecureFieldView(
-                    text: $loginViewModel.password,
-                    title: "Password",
-                    titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.password
-                    )
-                )
-                
-                if loginViewModel.isSignIn {
-                    LoadingView(showFrame: true)
-                } else {
-                    ActionButtonView(
-                        title: "Login",
-                        action: {
-                            Task {
-                                await loginViewModel.signIn()
-                            }
-                        },
-                        isEnabled: loginViewModel.isLoginEnabled()
-                    )
-                    .frame(height: 50)
-                }
-            }
-            .padding(.horizontal, 30)
-            .padding(.vertical, 15)
-            
-            VStack(spacing: 10) {
-                HStack(spacing: 4) {
-                    Text("Don't have a MealBytes account?")
-                        .foregroundStyle(.secondary)
-                    
-                    NavigationLink(destination: RegisterView()) {
-                        Text("Sign up")
-                            .fontWeight(.semibold)
-                    }
-                }
-                
-                HStack(spacing: 4) {
-                    Text("Forgot the password?")
-                        .foregroundStyle(.secondary)
-                    
-                    NavigationLink(destination: ResetView()) {
-                        Text("Reset")
-                            .fontWeight(.semibold)
-                    }
-                }
-            }
-            .font(.footnote)
+            loginViewContentBody
+            loginViewFooter
         }
         .alert(isPresented: $loginViewModel.showAlert) {
             loginViewModel.getLoginErrorAlert()
         }
+    }
+    
+    private var loginViewContentBody: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Sign in")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            LoginTextFieldView(
+                text: $loginViewModel.email,
+                titleColor: loginViewModel.titleColor(
+                    for: loginViewModel.email
+                )
+            )
+            
+            SecureFieldView(
+                text: $loginViewModel.password,
+                title: "Password",
+                titleColor: loginViewModel.titleColor(
+                    for: loginViewModel.password
+                )
+            )
+            
+            if loginViewModel.isSignIn {
+                LoadingView(showFrame: true)
+            } else {
+                ActionButtonView(
+                    title: "Login",
+                    action: {
+                        Task { await loginViewModel.signIn() }
+                    },
+                    isEnabled: loginViewModel.isLoginEnabled()
+                )
+                .frame(height: 50)
+            }
+        }
+        .padding(.horizontal, 30)
+        .padding(.vertical, 15)
+    }
+    
+    private var loginViewFooter: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 4) {
+                Text("Don't have a MealBytes account?")
+                    .foregroundStyle(.secondary)
+                NavigationLink(destination: RegisterView()) {
+                    Text("Sign up").fontWeight(.semibold)
+                }
+            }
+            
+            HStack(spacing: 4) {
+                Text("Forgot the password?")
+                    .foregroundStyle(.secondary)
+                NavigationLink(destination: ResetView()) {
+                    Text("Reset").fontWeight(.semibold)
+                }
+            }
+        }
+        .font(.footnote)
     }
 }
 

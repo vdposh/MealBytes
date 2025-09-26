@@ -15,7 +15,7 @@ struct LoginTextFieldView: View {
     var titleColor: Color = .primary
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 5) {
             FieldTitleView(
                 title: title,
                 titleColor: titleColor,
@@ -29,11 +29,11 @@ struct LoginTextFieldView: View {
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
-                .frame(height: 35)
-                .overlay(
-                    Divider(),
-                    alignment: .bottom
-                )
+                .frame(height: 30)
+                .overlay(alignment: .bottom) {
+                    Divider()
+                }
+                .focused($isFocused)
         }
     }
 }
