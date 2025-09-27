@@ -15,13 +15,16 @@ struct OverviewDailyIntakeSection: View {
         } footer: {
             VStack(alignment: .leading) {
                 Text("Set daily intake by entering calories directly or calculate it based on macronutrient distribution.")
+                    .padding(.bottom, dailyIntakeViewModel.toggleOn ? 0 : 10)
+                
                 if dailyIntakeViewModel.toggleOn {
                     Text(
                         dailyIntakeViewModel.text(
                             for: dailyIntakeViewModel.calories
                         )
                     )
-                    .font(.headline)
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
                     .foregroundColor(
                         dailyIntakeViewModel.titleColor(
                             for: dailyIntakeViewModel.calories,
@@ -29,6 +32,7 @@ struct OverviewDailyIntakeSection: View {
                         )
                     )
                     .padding(.top)
+                    .padding(.bottom, 10)
                 }
             }
         }

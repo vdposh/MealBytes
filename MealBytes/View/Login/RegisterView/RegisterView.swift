@@ -27,28 +27,17 @@ struct RegisterView: View {
                 .fontWeight(.bold)
             
             LoginTextFieldView(
-                text: $registerViewModel.email,
-                titleColor: registerViewModel.titleColor(
-                    for: registerViewModel.email
-                )
+                text: $registerViewModel.email
             )
             .textContentType(.emailAddress)
             
             SecureFieldView(
-                text: $registerViewModel.password,
-                title: "Password",
-                titleColor: registerViewModel.titleColor(
-                    for: registerViewModel.password
-                )
+                text: $registerViewModel.password
             )
             
             SecureFieldView(
                 text: $registerViewModel.confirmPassword,
-                title: "Confirm Password",
-                placeholder: "Re-enter Password",
-                titleColor: registerViewModel.titleColor(
-                    for: registerViewModel.confirmPassword
-                )
+                placeholder: "Re-enter Password"
             )
             
             registerStateContent

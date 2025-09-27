@@ -15,10 +15,7 @@ struct HeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.height,
-                title: "Height",
-                titleColor: rdiViewModel.fieldTitleColor(
-                    for: rdiViewModel.height
-                ),
+                placeholder: "Height",
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .height)
@@ -40,6 +37,15 @@ struct HeightSection: View {
             }
             .pickerStyle(.menu)
             .tint(rdiViewModel.selectedHeightUnit.selectedColor)
+        } header: {
+            Text("Height")
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundStyle(
+                    rdiViewModel.fieldTitleColor(
+                        for: rdiViewModel.height
+                    )
+                )
         } footer: {
             Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
         }

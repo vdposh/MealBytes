@@ -10,31 +10,26 @@ import SwiftUI
 struct LoginTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
-    var title: String = "Email"
-    var placeholder: String = "Enter Email"
-    var titleColor: Color = .primary
+    var placeholder: String = "Email"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            FieldTitleView(
-                title: title,
-                titleColor: titleColor,
-                isFocused: Binding(
-                    get: { isFocused },
-                    set: { isFocused = $0 }
-                )
-            )
-            
-            TextField(placeholder, text: $text)
-                .keyboardType(.emailAddress)
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
-                .frame(height: 30)
-                .overlay(alignment: .bottom) {
-                    Divider()
+        TextField(placeholder, text: $text)
+            .keyboardType(.emailAddress)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+            .frame(height: 35)
+            .overlay(alignment: .bottom) {
+                Divider()
+            }
+            .overlay(
+                Button(action: {
+                    $isFocused.wrappedValue = true
+                }) {
+                    Color.clear
                 }
-                .focused($isFocused)
-        }
+            )
+            .buttonStyle(.borderless)
+            .focused($isFocused)
     }
 }
 

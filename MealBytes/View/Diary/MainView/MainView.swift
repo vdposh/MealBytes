@@ -27,7 +27,6 @@ struct MainView: View {
     private var mainViewContentBody: some View {
         ZStack(alignment: .top) {
             List {
-                dateSection
                 caloriesSection
                 mealSections
                 detailedInformationSection
@@ -49,36 +48,6 @@ struct MainView: View {
                 }
             }
         }
-    }
-    
-    private var dateSection: some View {
-        Section {
-            HStack {
-                ForEach(-3...3, id: \.self) { offset in
-                    let date = mainViewModel.dateByAddingOffset(for: offset)
-                    Button {
-                        mainViewModel.date = date
-                    } label: {
-                        DateView(
-                            date: date,
-                            isToday: Calendar.current.isDate(
-                                date,
-                                inSameDayAs: Date()
-                            ),
-                            isSelected: Calendar.current.isDate(
-                                date,
-                                inSameDayAs: mainViewModel.date
-                            ),
-                            mainViewModel: mainViewModel
-                        )
-                    }
-                    .buttonStyle(.borderless)
-                }
-            }
-            .padding(.vertical, 10)
-        }
-        .listRowInsets(EdgeInsets())
-        .listRowBackground(Color.clear)
     }
     
     private var caloriesSection: some View {

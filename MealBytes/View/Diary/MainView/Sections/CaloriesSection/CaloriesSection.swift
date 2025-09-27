@@ -50,7 +50,7 @@ struct CaloriesSection: View {
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
                 }
-                .padding(.bottom, mainViewModel.canDisplayIntake() ? 12 : 4)
+                .padding(.bottom, mainViewModel.canDisplayIntake() ? 12 : 2)
                 
                 HStack {
                     let nutrients = mainViewModel.formattedNutrients(
@@ -76,8 +76,38 @@ struct CaloriesSection: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+        } header: {
+            dateSection
         }
         .id(mainViewModel.displayIntake)
+    }
+    
+    private var dateSection: some View {
+        HStack {
+            ForEach(-3...3, id: \.self) { offset in
+                let date = mainViewModel.dateByAddingOffset(for: offset)
+                Button {
+                    mainViewModel.date = date
+                } label: {
+                    DateView(
+                        date: date,
+                        isToday: Calendar.current.isDate(
+                            date,
+                            inSameDayAs: Date()
+                        ),
+                        isSelected: Calendar.current.isDate(
+                            date,
+                            inSameDayAs: mainViewModel.date
+                        ),
+                        mainViewModel: mainViewModel
+                    )
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .listRowInsets(
+            EdgeInsets(top: 40, leading: 0, bottom: 16, trailing: 0)
+        )
     }
 }
 

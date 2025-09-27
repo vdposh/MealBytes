@@ -13,11 +13,6 @@ struct NutrientValueSection: View {
     
     var body: some View {
         Section {
-            Text("Detailed Information")
-                .fontWeight(.medium)
-                .listRowSeparator(.hidden)
-                .padding(.top, 6)
-            
             ForEach(nutrients) { nutrient in
                 HStack {
                     Text(nutrient.type.title)

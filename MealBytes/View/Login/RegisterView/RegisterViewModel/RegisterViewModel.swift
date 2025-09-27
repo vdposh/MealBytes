@@ -146,11 +146,6 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Color
-    func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .secondary
-    }
-    
     // MARK: - Button State
     func isRegisterEnabled() -> Bool {
         return !email.isEmpty &&

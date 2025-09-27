@@ -18,10 +18,12 @@ struct OverviewRdiSection: View {
                     .padding(.bottom)
                 
                 Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
-                    .font(.headline)
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
                     .foregroundColor(
                         rdiViewModel.color(for: rdiViewModel.calculatedRdi)
                     )
+                    .padding(.bottom, 10)
             }
         }
     }

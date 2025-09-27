@@ -338,11 +338,6 @@ final class FoodViewModel: ObservableObject {
             }
     }
     
-    // MARK: - Text
-    func titleColor(for value: String) -> Color {
-        value.isValidNumericInput() ? .secondary : .customRed
-    }
-    
     // MARK: - Keyboard
     func normalizeAmount() {
         amount = amount.trimmedLeadingZeros

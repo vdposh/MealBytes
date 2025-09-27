@@ -10,40 +10,33 @@ import SwiftUI
 struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
-    let title: String
     var placeholder: String = "Enter value"
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
-    var titleColor: Color = .secondary
-    var textColor: Color = .primary
     var maxInteger: Int = 100000
     var maxFractionalDigits: Int = 2
     var maxIntegerDigits: Int = 4
     
     var body: some View {
-        VStack(alignment: .leading) {
-            FieldTitleView(
-                title: title,
-                titleColor: titleColor,
-                isFocused: Binding(
-                    get: { isFocused },
-                    set: { isFocused = $0 }
-                )
+        TextField(placeholder, text: $text)
+            .keyboardType(keyboardType)
+            .onChange(of: text) {
+                validateInput(&text)
+            }
+            .onChange(of: isFocused) {
+                if !isFocused {
+                    finalizeInput(&text)
+                }
+            }
+            .overlay(
+                Button(action: {
+                    $isFocused.wrappedValue = true
+                }) {
+                    Color.clear
+                }
             )
-            
-            TextField(placeholder, text: $text)
-                .keyboardType(keyboardType)
-                .foregroundStyle(textColor)
-                .onChange(of: text) {
-                    validateInput(&text)
-                }
-                .onChange(of: isFocused) {
-                    if !isFocused {
-                        finalizeInput(&text)
-                    }
-                }
-                .focused($isFocused)
-        }
+            .buttonStyle(.borderless)
+            .focused($isFocused)
     }
     
     private func validateInput(_ input: inout String) {

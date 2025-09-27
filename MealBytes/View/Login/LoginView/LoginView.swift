@@ -27,18 +27,11 @@ struct LoginView: View {
                 .fontWeight(.bold)
             
             LoginTextFieldView(
-                text: $loginViewModel.email,
-                titleColor: loginViewModel.titleColor(
-                    for: loginViewModel.email
-                )
+                text: $loginViewModel.email
             )
             
             SecureFieldView(
-                text: $loginViewModel.password,
-                title: "Password",
-                titleColor: loginViewModel.titleColor(
-                    for: loginViewModel.password
-                )
+                text: $loginViewModel.password
             )
             
             if loginViewModel.isSignIn {

@@ -15,10 +15,7 @@ struct WeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.weight,
-                title: "Weight",
-                titleColor: rdiViewModel.fieldTitleColor(
-                    for: rdiViewModel.weight
-                ),
+                placeholder: "Weight",
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .weight)
@@ -42,6 +39,15 @@ struct WeightSection: View {
             }
             .pickerStyle(.menu)
             .tint(rdiViewModel.selectedWeightUnit.selectedColor)
+        } header: {
+            Text("Weight")
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundStyle(
+                    rdiViewModel.fieldTitleColor(
+                        for: rdiViewModel.weight
+                    )
+                )
         } footer: {
             Text("Enter weight and adjust the unit as needed (kilograms or pounds).")
         }

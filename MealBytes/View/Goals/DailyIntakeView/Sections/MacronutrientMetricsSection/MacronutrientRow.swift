@@ -11,6 +11,7 @@ struct MacronutrientRow: View {
     @Binding var textFieldBinding: String
     var focusedField: FocusState<MacronutrientsFocus?>.Binding
     let title: String
+    let placeholder: String
     let titleColor: Color
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
@@ -18,10 +19,9 @@ struct MacronutrientRow: View {
         HStack {
             ServingTextFieldView(
                 text: $textFieldBinding,
-                title: title,
+                placeholder: placeholder,
                 keyboardType: .numberPad,
                 inputMode: .integer,
-                titleColor: titleColor,
                 maxIntegerDigits: 3
             )
             .focused(focusedField, equals: focusValue)

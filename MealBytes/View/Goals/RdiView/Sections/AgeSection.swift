@@ -15,15 +15,21 @@ struct AgeSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.age,
-                title: "Age",
+                placeholder: "Age",
                 keyboardType: .numberPad,
                 inputMode: .integer,
-                titleColor: rdiViewModel.fieldTitleColor(
-                    for: rdiViewModel.age
-                ),
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .age)
+        } header: {
+            Text("Age")
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundStyle(
+                    rdiViewModel.fieldTitleColor(
+                        for: rdiViewModel.age
+                    )
+                )
         } footer: {
             Text("Enter full age to personalize recommendations.")
         }

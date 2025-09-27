@@ -10,29 +10,24 @@ import SwiftUI
 struct SecureFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
-    let title: String
-    var placeholder: String = "Enter Password"
-    var titleColor: Color = .primary
+    var placeholder: String = "Password"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            FieldTitleView(
-                title: title,
-                titleColor: titleColor,
-                isFocused: Binding(
-                    get: { isFocused },
-                    set: { isFocused = $0 }
-                )
-            )
-            
-            SecureField(placeholder, text: $text)
-                .autocapitalization(.none)
-                .frame(height: 30)
-                .overlay(alignment: .bottom) {
-                    Divider()
+        SecureField(placeholder, text: $text)
+            .autocapitalization(.none)
+            .frame(height: 35)
+            .overlay(alignment: .bottom) {
+                Divider()
+            }
+            .overlay(
+                Button(action: {
+                    $isFocused.wrappedValue = true
+                }) {
+                    Color.clear
                 }
-                .focused($isFocused)
-        }
+            )
+            .buttonStyle(.borderless)
+            .focused($isFocused)
     }
 }
 

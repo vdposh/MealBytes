@@ -224,11 +224,6 @@ final class LoginViewModel: ObservableObject {
         return !email.isEmpty && !password.isEmpty
     }
     
-    // MARK: - Color
-    func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .secondary
-    }
-    
     // MARK: - Error
     private func handleError(_ error: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: error.code) {

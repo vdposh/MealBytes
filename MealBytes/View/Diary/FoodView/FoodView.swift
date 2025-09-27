@@ -84,7 +84,7 @@ struct FoodView: View {
                     nutrientActionSection
                     detailedInformationSection
                 }
-                .listSectionSpacing(15)
+                .listSectionSpacing(16)
                 .scrollIndicators(.hidden)
             }
         }
@@ -94,11 +94,7 @@ struct FoodView: View {
         Section {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
-                title: "Size",
-                placeholder: "Enter serving size",
-                titleColor: foodViewModel.titleColor(
-                    for: foodViewModel.amount
-                )
+                placeholder: "Serving size"
             )
             .focused($amountFocused)
             .onChange(of: amountFocused) {
@@ -140,7 +136,9 @@ struct FoodView: View {
                 .font(.title)
                 .foregroundStyle(Color.primary)
                 .fontWeight(.bold)
-                .padding(.vertical, 10)
+                .listRowInsets(
+                    EdgeInsets(top: 34, leading: 16, bottom: 20, trailing: 16)
+                )
         }
     }
     

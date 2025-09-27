@@ -14,21 +14,13 @@ struct ServingButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.footnote)
-                .fontWeight(.medium)
-                .foregroundStyle(.secondary)
-                .frame(height: 10)
-            
-            HStack {
-                Text(description)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(1)
-                Image(systemName: "chevron.down")
-                    .resizable()
-                    .frame(width: 10, height: 6)
-            }
+        HStack {
+            Text(description)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
+            Image(systemName: "chevron.down")
+                .resizable()
+                .frame(width: 10, height: 6)
         }
         .overlay(
             Button(action: {

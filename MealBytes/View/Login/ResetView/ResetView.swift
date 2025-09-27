@@ -26,10 +26,7 @@ struct ResetView: View {
                 .fontWeight(.bold)
             
             LoginTextFieldView(
-                text: $resetViewModel.email,
-                titleColor: resetViewModel.titleColor(
-                    for: resetViewModel.email
-                )
+                text: $resetViewModel.email
             )
             
             resetStateContent
