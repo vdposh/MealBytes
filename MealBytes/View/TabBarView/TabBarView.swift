@@ -13,6 +13,7 @@ struct TabBarView: View {
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
         tabBarViewContentBody
@@ -32,39 +33,42 @@ struct TabBarView: View {
             .onChange(of: selectedTab) {
                 mainViewModel.handleTabChange(to: selectedTab)
             }
-            .task {
-                selectedTab = 0
-            }
     }
     
     private var tabBarViewContentBody: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack {
-                GoalsView(goalsViewModel: goalsViewModel)
+            Tab(value: 1) {
+                NavigationStack {
+                    GoalsView(goalsViewModel: goalsViewModel)
+                }
+            } label: {
+                Label("Goals", systemImage: "chart.bar")
             }
-            .tabItem {
-                Image(systemName: "chart.bar")
-                Text("Goals")
-            }
-            .tag(1)
             
-            NavigationStack {
-                MainView(mainViewModel: mainViewModel)
+            Tab(value: 0) {
+                NavigationStack {
+                    MainView(mainViewModel: mainViewModel)
+                }
+            } label: {
+                Label("Diary", systemImage: "fork.knife")
             }
-            .tabItem {
-                Image(systemName: "fork.knife")
-                Text("Diary")
-            }
-            .tag(0)
             
-            NavigationStack {
-                ProfileView(profileViewModel: profileViewModel)
+            Tab(value: 2) {
+                NavigationStack {
+                    ProfileView(profileViewModel: profileViewModel)
+                }
+            } label: {
+                Label("Profile", systemImage: "person.fill")
             }
-            .tabItem {
-                Image(systemName: "person.fill")
-                Text("Profile")
+            
+            Tab(value: 3, role: .search) {
+                NavigationStack {
+                    SearchView(
+                        searchViewModel: searchViewModel,
+                        mealType: .breakfast
+                    )
+                }
             }
-            .tag(2)
         }
     }
     

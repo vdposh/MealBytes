@@ -13,6 +13,7 @@ struct ContentView: View {
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -26,7 +27,8 @@ struct ContentView: View {
                     loginViewModel: loginViewModel,
                     mainViewModel: mainViewModel,
                     goalsViewModel: goalsViewModel,
-                    profileViewModel: profileViewModel
+                    profileViewModel: profileViewModel,
+                    searchViewModel: searchViewModel
                 )
             case .notLoggedIn:
                 LoginView(loginViewModel: loginViewModel)
@@ -34,6 +36,7 @@ struct ContentView: View {
         }
         .task {
             await loginViewModel.loadData()
+            await searchViewModel.loadBookmarksData(for: .breakfast)
         }
     }
 }

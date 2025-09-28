@@ -33,6 +33,9 @@ struct SearchView: View {
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: "Search for food"
                 )
+                .task {
+                    await searchViewModel.loadBookmarksData(for: mealType)
+                }
         }
     }
     

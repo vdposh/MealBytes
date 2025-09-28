@@ -16,33 +16,29 @@ struct KeyboardToolbarView: View {
     var done: () -> Void
     
     var body: some View {
-        HStack {
-            if showArrows {
-                ToolbarIconButton(
-                    systemImage: "chevron.up",
-                    isActive: canMoveUp,
-                    action: moveUp
-                )
-                .padding(.trailing)
-                
-                ToolbarIconButton(
-                    systemImage: "chevron.down",
-                    isActive: canMoveDown,
-                    action: moveDown
-                )
-            }
+        if showArrows {
+            ToolbarIconButton(
+                systemImage: "chevron.up",
+                isActive: canMoveUp,
+                action: moveUp
+            )
             
             ToolbarIconButton(
-                systemImage: "checkmark",
-                isActive: true,
-                action: done
+                systemImage: "chevron.down",
+                isActive: canMoveDown,
+                action: moveDown
             )
-            .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .padding(.horizontal, 8)
+        
+        ToolbarIconButton(
+            systemImage: "checkmark",
+            isActive: true,
+            action: done
+        )
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewContentView.contentView
 }

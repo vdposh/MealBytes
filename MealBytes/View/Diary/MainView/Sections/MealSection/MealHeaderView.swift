@@ -21,12 +21,20 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            Button {
-                Task {
-                    await mainViewModel.searchViewModel
-                        .loadBookmarksData(for: mealType)
+            ZStack {
+                if let searchModel = mainViewModel
+                    .searchViewModel as? SearchViewModel {
+                    NavigationLink {
+                        SearchView(
+                            searchViewModel: searchModel,
+                            mealType: mealType
+                        )
+                    } label: {
+                        Color.clear
+                    }
+                    .opacity(0)
                 }
-            } label: {
+                
                 HStack {
                     VStack(spacing: 15) {
                         HStack {
@@ -62,22 +70,6 @@ struct MealHeaderView: View {
                     Image(systemName: "plus")
                         .fontWeight(.bold)
                         .accentForeground()
-                }
-            }
-            .background {
-                if let searchModel = mainViewModel
-                    .searchViewModel as? SearchViewModel {
-                    NavigationLink(
-                        destination: SearchView(
-                            searchViewModel: searchModel,
-                            mealType: mealType
-                        )
-                    ) {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                } else {
-                    EmptyView()
                 }
             }
             
