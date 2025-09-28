@@ -16,8 +16,6 @@ struct MacronutrientMetricsSection: View {
             Section {
                 MacronutrientRow(
                     textFieldBinding: $dailyIntakeViewModel.fat,
-                    focusedField: $focusedField,
-                    title: "Fat",
                     placeholder: "Fat value",
                     titleColor: dailyIntakeViewModel.titleColor(
                         for: dailyIntakeViewModel.fat
@@ -39,8 +37,6 @@ struct MacronutrientMetricsSection: View {
             Section {
                 MacronutrientRow(
                     textFieldBinding: $dailyIntakeViewModel.carbohydrate,
-                    focusedField: $focusedField,
-                    title: "Carbohydrate",
                     placeholder: "Carbohydrate value",
                     titleColor: dailyIntakeViewModel.titleColor(
                         for: dailyIntakeViewModel.carbohydrate
@@ -63,8 +59,6 @@ struct MacronutrientMetricsSection: View {
             Section {
                 MacronutrientRow(
                     textFieldBinding: $dailyIntakeViewModel.protein,
-                    focusedField: $focusedField,
-                    title: "Protein",
                     placeholder: "Protein value",
                     titleColor: dailyIntakeViewModel.titleColor(
                         for: dailyIntakeViewModel.protein

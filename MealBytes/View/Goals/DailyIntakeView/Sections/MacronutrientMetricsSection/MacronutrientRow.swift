@@ -9,8 +9,6 @@ import SwiftUI
 
 struct MacronutrientRow: View {
     @Binding var textFieldBinding: String
-    var focusedField: FocusState<MacronutrientsFocus?>.Binding
-    let title: String
     let placeholder: String
     let titleColor: Color
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
@@ -24,16 +22,6 @@ struct MacronutrientRow: View {
                 inputMode: .integer,
                 maxIntegerDigits: 3
             )
-            .focused(focusedField, equals: focusValue)
-        }
-    }
-    
-    private var focusValue: MacronutrientsFocus {
-        switch title {
-        case "Fat": return .fat
-        case "Carbohydrate": return .carbohydrate
-        case "Protein": return .protein
-        default: return .fat
         }
     }
 }

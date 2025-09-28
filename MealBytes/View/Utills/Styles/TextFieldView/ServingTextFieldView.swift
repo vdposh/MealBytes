@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct ServingTextFieldView: View {
+    @State private var textWidth: CGFloat = 0
     @Binding var text: String
     @FocusState private var isFocused: Bool
     var placeholder: String = "Enter value"
+    var activeLabel: String? = nil
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -37,6 +39,29 @@ struct ServingTextFieldView: View {
             )
             .buttonStyle(.borderless)
             .focused($isFocused)
+            .overlay(alignment: .leading) {
+                ZStack(alignment: .leading) {
+                    Text(text)
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .task {
+                                        textWidth = geo.size.width
+                                    }
+                                    .onChange(of: text) {
+                                        textWidth = geo.size.width
+                                    }
+                            }
+                        )
+                        .opacity(0)
+                    
+                    if let label = activeLabel, !text.isEmpty {
+                        Text(label)
+                            .foregroundStyle(.tertiary)
+                            .padding(.leading, textWidth + 4)
+                    }
+                }
+            }
     }
     
     private func validateInput(_ input: inout String) {

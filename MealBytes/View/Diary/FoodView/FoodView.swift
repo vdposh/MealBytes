@@ -253,10 +253,12 @@ struct FoodView: View {
         }
         
         ToolbarItem(placement: .keyboard) {
-            KeyboardToolbarView(done: {
-                amountFocused = false
-                foodViewModel.normalizeAmount()
-            })
+            KeyboardToolbarView(
+                done: {
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                }
+            )
         }
     }
 }

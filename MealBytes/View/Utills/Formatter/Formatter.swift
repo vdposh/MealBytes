@@ -24,9 +24,11 @@ struct Formatter {
         }
     }
     
-    func formattedValue(_ value: Double?,
-                        unit: Unit,
-                        alwaysRoundUp: Bool = false) -> String {
+    func formattedValue(
+        _ value: Double?,
+        unit: Unit,
+        alwaysRoundUp: Bool = false
+    ) -> String {
         let safeValue = value ?? 0.0
         let baseValue = alwaysRoundUp ? ceil(safeValue) : safeValue
         
@@ -59,4 +61,8 @@ struct Formatter {
             return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

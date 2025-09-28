@@ -56,7 +56,7 @@ func buildKeyboardToolbar<T: Equatable>(
     extraDone: (() -> Void)? = nil
 ) -> KeyboardToolbarView {
     KeyboardToolbarView(
-        showArrows: true,
+        showArrows: current != nil,
         canMoveUp: canMoveFocus(
             direction: .up,
             current: current,
