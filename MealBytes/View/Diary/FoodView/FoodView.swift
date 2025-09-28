@@ -132,7 +132,7 @@ struct FoodView: View {
                 }
             }
         } header: {
-            HStack(spacing: 8) {
+            HStack(alignment: .lastTextBaseline ,spacing: 8) {
                 Text(foodViewModel.food.searchFoodName)
                     .font(.title)
                     .fontWeight(.bold)
@@ -140,7 +140,9 @@ struct FoodView: View {
                 
                 if foodViewModel.isBookmarkFilled {
                     Image(systemName: "bookmark.fill")
+                        .imageScale(.small)
                         .foregroundStyle(.accent)
+                        .offset(y: -7)
                 }
             }
             .listRowInsets(
@@ -239,20 +241,18 @@ struct FoodView: View {
     
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
-        if showMealTypeButton {
-            ToolbarTitleMenu {
-                ForEach(MealType.allCases, id: \.self) { meal in
-                    Button {
-                        foodViewModel.mealType = meal
-                        amountFocused = false
-                        foodViewModel.normalizeAmount()
-                    } label: {
-                        Label {
-                            Text(meal.rawValue)
-                        } icon: {
-                            if meal == foodViewModel.mealType {
-                                Image(systemName: "checkmark")
-                            }
+        ToolbarTitleMenu {
+            ForEach(MealType.allCases, id: \.self) { meal in
+                Button {
+                    foodViewModel.mealType = meal
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                } label: {
+                    Label {
+                        Text(meal.rawValue)
+                    } icon: {
+                        if meal == foodViewModel.mealType {
+                            Image(systemName: "checkmark")
                         }
                     }
                 }

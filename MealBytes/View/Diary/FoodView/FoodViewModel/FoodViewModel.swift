@@ -65,7 +65,6 @@ final class FoodViewModel: ObservableObject {
         self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
-        self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
         self.showSaveRemoveButton = showSaveRemoveButton
@@ -77,6 +76,9 @@ final class FoodViewModel: ObservableObject {
     @MainActor
     func fetchFoodDetails() async {
         isLoading = true
+        
+        await searchViewModel.loadBookmarksSearchView(for: mealType)
+        self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
         
         do {
             let fetchedFoodDetail = try await fatSecretManager

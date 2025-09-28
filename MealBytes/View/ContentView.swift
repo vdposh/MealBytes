@@ -36,7 +36,6 @@ struct ContentView: View {
         }
         .task {
             await loginViewModel.loadData()
-            await searchViewModel.loadBookmarksData(for: .breakfast)
         }
     }
 }

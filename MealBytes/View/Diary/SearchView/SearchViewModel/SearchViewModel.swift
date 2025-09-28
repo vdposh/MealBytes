@@ -10,8 +10,9 @@ import Combine
 
 protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
-    func loadBookmarksData(for mealType: MealType) async
+    func loadBookmarksSearchView(for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
+    func resetQuery()
 }
 
 final class SearchViewModel: ObservableObject {
@@ -110,6 +111,9 @@ final class SearchViewModel: ObservableObject {
         guard firebaseAuth.currentUserExists() else { return }
         
         await MainActor.run {
+            if query.isEmpty {
+                isLoading = true
+            }
             selectedMealType = mealType
         }
         
@@ -136,30 +140,14 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    func loadBookmarksData(for mealType: MealType) async {
-        await MainActor.run {
-            query = ""
-            isLoading = true
-        }
-        await loadBookmarksSearchView(for: mealType)
+    func resetQuery() {
+        query = ""
     }
     
     func mealSwitch(to meal: MealType) -> Bool {
         guard meal != selectedMealType else { return false }
         isLoading = true
         return true
-    }
-    
-    var contentState: SearchContentState {
-        if isLoading {
-            .loading
-        } else if let error = appError {
-            .error(error)
-        } else if foods.isEmpty {
-            .empty
-        } else {
-            .results
-        }
     }
     
     // MARK: - Toggle Bookmark
@@ -245,6 +233,19 @@ final class SearchViewModel: ObservableObject {
             }
         }
         performSearch(query)
+    }
+    
+    // MARK: - UI Helper
+    var contentState: SearchContentState {
+        if isLoading {
+            .loading
+        } else if let error = appError {
+            .error(error)
+        } else if foods.isEmpty {
+            .empty
+        } else {
+            .results
+        }
     }
 }
 

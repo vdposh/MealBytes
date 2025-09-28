@@ -24,7 +24,8 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             SearchViewContentBody
-                .navigationBarTitle("Search", displayMode: .large)
+                .navigationBarTitle("Search")
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
                     SearchViewToolbar
                 }
@@ -34,7 +35,8 @@ struct SearchView: View {
                     prompt: "Search for food"
                 )
                 .task {
-                    await searchViewModel.loadBookmarksData(for: mealType)
+                    await searchViewModel
+                        .loadBookmarksSearchView(for: mealType)
                 }
         }
     }
