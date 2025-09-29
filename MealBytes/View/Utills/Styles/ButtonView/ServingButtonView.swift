@@ -17,7 +17,6 @@ struct ServingButtonView: View {
         HStack {
             Text(description)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .lineLimit(1)
             Image(systemName: "chevron.down")
                 .resizable()
                 .frame(width: 10, height: 6)

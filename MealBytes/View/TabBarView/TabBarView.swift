@@ -16,26 +16,6 @@ struct TabBarView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
-        tabBarViewContentBody
-            .overlay {
-                FoodAlertView(
-                    isVisible: $mainViewModel.isFoodAddedAlertVisible
-                )
-            }
-            .overlay {
-                if profileViewModel.isLoading {
-                    LoadingProfileView()
-                }
-            }
-            .alert(isPresented: $loginViewModel.showErrorAlert) {
-                loginErrorAlert
-            }
-            .onChange(of: selectedTab) {
-                mainViewModel.handleTabChange(to: selectedTab)
-            }
-    }
-    
-    private var tabBarViewContentBody: some View {
         TabView(selection: $selectedTab) {
             Tab(value: 1) {
                 NavigationStack {
@@ -69,6 +49,22 @@ struct TabBarView: View {
                     )
                 }
             }
+        }
+        .overlay {
+            FoodAlertView(
+                isVisible: $mainViewModel.isFoodAddedAlertVisible
+            )
+        }
+        .overlay {
+            if profileViewModel.isLoading {
+                LoadingProfileView()
+            }
+        }
+        .alert(isPresented: $loginViewModel.showErrorAlert) {
+            loginErrorAlert
+        }
+        .onChange(of: selectedTab) {
+            mainViewModel.handleTabChange(to: selectedTab)
         }
     }
     
