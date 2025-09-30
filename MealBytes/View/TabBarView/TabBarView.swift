@@ -40,16 +40,8 @@ struct TabBarView: View {
             } label: {
                 Label("Profile", systemImage: "person.fill")
             }
-            
-            Tab(value: 3, role: .search) {
-                NavigationStack {
-                    SearchView(
-                        searchViewModel: searchViewModel,
-                        mealType: .breakfast
-                    )
-                }
-            }
         }
+        .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
             FoodAlertView(
                 isVisible: $mainViewModel.isFoodAddedAlertVisible
