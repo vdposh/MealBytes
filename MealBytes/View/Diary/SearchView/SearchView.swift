@@ -34,6 +34,14 @@ struct SearchView: View {
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: "Search for food"
                 )
+                .onChange(of: mealType) {
+                    if searchViewModel.mealSwitch(to: mealType) {
+                        Task {
+                            await searchViewModel
+                                .loadBookmarksSearchView(for: mealType)
+                        }
+                    }
+                }
                 .task {
                     await searchViewModel
                         .loadBookmarksSearchView(for: mealType)
@@ -133,31 +141,20 @@ struct SearchView: View {
     }
     
     private var SearchViewToolbar: some ToolbarContent {
-        ToolbarItem(placement: .confirmationAction) {
+        ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                Section("Meal Type") {
+                Picker("Meal Type", selection: $mealType) {
                     ForEach(MealType.allCases, id: \.self) { meal in
-                        Button {
-                            if searchViewModel.mealSwitch(to: meal) {
-                                mealType = meal
-                                Task {
-                                    await searchViewModel
-                                        .loadBookmarksSearchView(for: meal)
-                                }
-                            }
-                        } label: {
-                            Label {
-                                Text(meal.rawValue)
-                            } icon: {
-                                if meal == mealType {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
+                        Label(meal.rawValue, systemImage: meal.iconName)
+                            .tag(meal)
                     }
                 }
             } label: {
-                Text(mealType.rawValue)
+                HStack(spacing: 10) {
+                    Image(systemName: mealType.iconName)
+                        .font(.system(size: 14))
+                    Text(mealType.rawValue)
+                }
             }
         }
     }

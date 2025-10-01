@@ -132,7 +132,7 @@ struct FoodView: View {
                 }
             }
         } header: {
-            HStack(alignment: .lastTextBaseline ,spacing: 8) {
+            HStack(alignment: .lastTextBaseline, spacing: 6) {
                 Text(foodViewModel.food.searchFoodName)
                     .font(.title)
                     .fontWeight(.bold)
@@ -242,21 +242,10 @@ struct FoodView: View {
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
         ToolbarTitleMenu {
-            Section("Meal Type") {
+            Picker("Meal Type", selection: $foodViewModel.mealType) {
                 ForEach(MealType.allCases, id: \.self) { meal in
-                    Button {
-                        foodViewModel.mealType = meal
-                        amountFocused = false
-                        foodViewModel.normalizeAmount()
-                    } label: {
-                        Label {
-                            Text(meal.rawValue)
-                        } icon: {
-                            if meal == foodViewModel.mealType {
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
+                    Label(meal.rawValue, systemImage: meal.iconName)
+                        .tag(meal)
                 }
             }
         }
