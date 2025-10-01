@@ -135,21 +135,23 @@ struct SearchView: View {
     private var SearchViewToolbar: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
             Menu {
-                ForEach(MealType.allCases, id: \.self) { meal in
-                    Button {
-                        if searchViewModel.mealSwitch(to: meal) {
-                            mealType = meal
-                            Task {
-                                await searchViewModel
-                                    .loadBookmarksSearchView(for: meal)
+                Section("Meal Type") {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Button {
+                            if searchViewModel.mealSwitch(to: meal) {
+                                mealType = meal
+                                Task {
+                                    await searchViewModel
+                                        .loadBookmarksSearchView(for: meal)
+                                }
                             }
-                        }
-                    } label: {
-                        Label {
-                            Text(meal.rawValue)
-                        } icon: {
-                            if meal == mealType {
-                                Image(systemName: "checkmark")
+                        } label: {
+                            Label {
+                                Text(meal.rawValue)
+                            } icon: {
+                                if meal == mealType {
+                                    Image(systemName: "checkmark")
+                                }
                             }
                         }
                     }

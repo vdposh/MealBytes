@@ -26,7 +26,7 @@ struct MainView: View {
     
     private var mainViewContentBody: some View {
         ZStack(alignment: .top) {
-            List {
+            Form {
                 caloriesSection
                 mealSections
                 detailedInformationSection

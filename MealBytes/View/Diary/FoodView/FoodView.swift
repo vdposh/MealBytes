@@ -79,7 +79,7 @@ struct FoodView: View {
                 }
                 
             case .loaded:
-                List {
+                Form {
                     servingSizeSection
                     nutrientActionSection
                     detailedInformationSection
@@ -242,17 +242,19 @@ struct FoodView: View {
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
         ToolbarTitleMenu {
-            ForEach(MealType.allCases, id: \.self) { meal in
-                Button {
-                    foodViewModel.mealType = meal
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
-                } label: {
-                    Label {
-                        Text(meal.rawValue)
-                    } icon: {
-                        if meal == foodViewModel.mealType {
-                            Image(systemName: "checkmark")
+            Section("Meal Type") {
+                ForEach(MealType.allCases, id: \.self) { meal in
+                    Button {
+                        foodViewModel.mealType = meal
+                        amountFocused = false
+                        foodViewModel.normalizeAmount()
+                    } label: {
+                        Label {
+                            Text(meal.rawValue)
+                        } icon: {
+                            if meal == foodViewModel.mealType {
+                                Image(systemName: "checkmark")
+                            }
                         }
                     }
                 }

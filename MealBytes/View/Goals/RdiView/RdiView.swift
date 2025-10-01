@@ -31,7 +31,7 @@ struct RdiView: View {
     }
     
     private var rdiViewContentBody: some View {
-        List {
+        Form {
             OverviewRdiSection(rdiViewModel: rdiViewModel)
             GenderSection(rdiViewModel: rdiViewModel)
             ActivitySection(rdiViewModel: rdiViewModel)

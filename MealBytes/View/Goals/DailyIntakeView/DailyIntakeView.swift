@@ -36,7 +36,7 @@ struct DailyIntakeView: View {
     }
     
     private var dailyIntakeViewContentBody: some View {
-        List {
+        Form {
             OverviewDailyIntakeSection(
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
