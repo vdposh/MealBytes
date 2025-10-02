@@ -10,6 +10,9 @@ import SwiftUI
 struct SearchView: View {
     @State private var mealType: MealType
     @State private var selectedFood: Food?
+    @State private var selectedItems = Set<Food.ID>()
+    @State private var editingState: EditingState = .inactive
+    @Environment(\.editMode) private var editMode
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -23,23 +26,25 @@ struct SearchView: View {
     
     var body: some View {
         NavigationStack {
-            SearchViewContentBody
+            searchViewContentBody
+                .overlay(searchableModifier)
                 .navigationBarTitle("Search")
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar {
-                    SearchViewToolbar
+                    searchViewToolbar
                 }
-                .searchable(
-                    text: $searchViewModel.query,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search for food"
-                )
+                .navigationBarBackButtonHidden(isEditing)
                 .onChange(of: mealType) {
                     if searchViewModel.mealSwitch(to: mealType) {
                         Task {
                             await searchViewModel
                                 .loadBookmarksSearchView(for: mealType)
                         }
+                    }
+                }
+                .onChange(of: isEditing) {
+                    if isEditing {
+                        searchViewModel.resetQuery()
                     }
                 }
                 .task {
@@ -50,7 +55,7 @@ struct SearchView: View {
     }
     
     @ViewBuilder
-    private var SearchViewContentBody: some View {
+    private var searchViewContentBody: some View {
         switch searchViewModel.contentState {
         case .loading:
             LoadingView()
@@ -63,9 +68,16 @@ struct SearchView: View {
                 searchViewModel.performSearch(searchViewModel.query)
             }
         case .results:
-            List {
+            List(selection: $selectedItems) {
                 ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
                     foodRow(for: food)
+                        .moveDisabled(!isEditing)
+                }
+                .onMove { indices, newOffset in
+                    searchViewModel.foods.move(
+                        fromOffsets: indices,
+                        toOffset: newOffset
+                    )
                 }
                 pageButton(direction: .next)
                 pageButton(direction: .previous)
@@ -75,41 +87,65 @@ struct SearchView: View {
         }
     }
     
+    private var searchableModifier: some View {
+        return EmptyView()
+            .searchable(
+                text: $searchViewModel.query,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search for food"
+            )
+            .disabled(isEditing)
+    }
+    
     @ViewBuilder
     private func foodRow(for food: Food) -> some View {
-        NavigationLink {
-            FoodView(
+        if isEditing {
+            FoodDetailView(
                 food: food,
-                searchViewModel: searchViewModel,
-                mainViewModel: searchViewModel.mainViewModel,
-                mealType: mealType,
-                amount: "",
-                measurementDescription: "",
-                showAddButton: true,
-                showSaveRemoveButton: false,
-                showMealTypeButton: false
+                isEditing: isEditing,
+                searchViewModel: searchViewModel
             )
-        } label: {
-            FoodDetailView(food: food, searchViewModel: searchViewModel)
-        }
-        .swipeActions(allowsFullSwipe: false) {
-            Button(role: searchViewModel.bookmarkButtonRole(for: food)) {
-                Task {
-                    await searchViewModel.toggleBookmarkSearchView(for: food)
-                }
-                searchViewModel.uniqueId = UUID()
+        } else {
+            NavigationLink {
+                FoodView(
+                    food: food,
+                    searchViewModel: searchViewModel,
+                    mainViewModel: searchViewModel.mainViewModel,
+                    mealType: mealType,
+                    amount: "",
+                    measurementDescription: "",
+                    showAddButton: true,
+                    showSaveRemoveButton: false,
+                    showMealTypeButton: false
+                )
             } label: {
-                Image(
-                    systemName: searchViewModel.isBookmarkedSearchView(food)
-                    ? "bookmark.slash"
-                    : "bookmark"
+                FoodDetailView(
+                    food: food,
+                    isEditing: isEditing,
+                    searchViewModel: searchViewModel
                 )
             }
-            .tint(
-                searchViewModel.isBookmarkedSearchView(food)
-                ? .red
-                : .accentColor
-            )
+            .swipeActions(allowsFullSwipe: false) {
+                Button(role: searchViewModel.bookmarkButtonRole(for: food)) {
+                    Task {
+                        await searchViewModel
+                            .toggleBookmarkSearchView(for: food)
+                    }
+                    searchViewModel.uniqueId = UUID()
+                } label: {
+                    Image(
+                        systemName: searchViewModel
+                            .isBookmarkedSearchView(food)
+                        ? "bookmark.slash"
+                        : "bookmark"
+                    )
+                }
+                .tint(
+                    searchViewModel.isBookmarkedSearchView(food)
+                    ? .red
+                    : .accentColor
+                )
+            }
         }
     }
     
@@ -140,24 +176,89 @@ struct SearchView: View {
         }
     }
     
-    private var SearchViewToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Picker("Meal Type", selection: $mealType) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Label(meal.rawValue, systemImage: meal.iconName)
-                            .tag(meal)
+    @ToolbarContentBuilder
+    private var searchViewToolbar: some ToolbarContent {
+        switch editingState {
+        case .active:
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    editingState = .inactive
+                    withAnimation {
+                        editMode?.wrappedValue = .inactive
                     }
+                    searchViewModel.favoriteFoods = searchViewModel.foods
+                    Task {
+                        await searchViewModel.saveBookmarkOrder()
+                    }
+                } label: {
+                    Image(systemName: "checkmark")
                 }
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: mealType.iconName)
-                        .font(.system(size: 14))
-                    Text(mealType.rawValue)
+            }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    editingState = .inactive
+                    withAnimation {
+                        editMode?.wrappedValue = .inactive
+                    }
+                    searchViewModel.foods = searchViewModel.favoriteFoods
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            }
+            
+            ToolbarSpacer(.fixed, placement: .topBarLeading)
+            
+            ToolbarItemGroup(placement: .cancellationAction) {
+                Button {
+                    
+                } label: {
+                    Image(systemName: "checkmark.circle")
+                }
+                
+                Button {
+                    
+                } label: {
+                    Image(systemName: "circle")
+                }
+            }
+            
+        case .inactive:
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Picker("Meal Type", selection: $mealType) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Label(meal.rawValue, systemImage: meal.iconName)
+                                .tag(meal)
+                        }
+                    }
+                    
+                    Section("Settings") {
+                        Button {
+                            editingState = .active
+                            withAnimation {
+                                editMode?.wrappedValue = .active
+                            }
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                            Text("Customize with drag")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
                 }
             }
         }
     }
+    
+    private var isEditing: Bool {
+        editingState == .active
+    }
+}
+
+enum EditingState {
+    case inactive
+    case active
 }
 
 #Preview {

@@ -150,6 +150,20 @@ final class SearchViewModel: ObservableObject {
         return true
     }
     
+    // MARK: - Save Bookmarks
+    func saveBookmarkOrder() async {
+        do {
+            try await firestore.addBookmarkFirestore(
+                favoriteFoods,
+                for: selectedMealType
+            )
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
+        }
+    }
+    
     // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)

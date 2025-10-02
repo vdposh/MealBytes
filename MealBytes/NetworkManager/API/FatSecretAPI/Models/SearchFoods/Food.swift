@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-struct Food: Codable {
+struct Food: Codable, Identifiable {
     let searchFoodId: Int
     let searchFoodName: String
     let searchFoodDescription: String
+    
+    var id: Int { searchFoodId }
     
     enum CodingKeys: String, CodingKey {
         case searchFoodId = "food_id",

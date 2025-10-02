@@ -132,22 +132,13 @@ struct FoodView: View {
                 }
             }
         } header: {
-            HStack(alignment: .lastTextBaseline, spacing: 6) {
-                Text(foodViewModel.food.searchFoodName)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundStyle(Color.primary)
-                
-                if foodViewModel.isBookmarkFilled {
-                    Image(systemName: "bookmark.fill")
-                        .imageScale(.small)
-                        .foregroundStyle(.accent)
-                        .offset(y: -7)
-                }
-            }
-            .listRowInsets(
-                EdgeInsets(top: 34, leading: 16, bottom: 20, trailing: 16)
-            )
+            Text(foodViewModel.food.searchFoodName)
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundStyle(Color.primary)
+                .listRowInsets(
+                    EdgeInsets(top: 34, leading: 16, bottom: 20, trailing: 16)
+                )
         }
     }
     

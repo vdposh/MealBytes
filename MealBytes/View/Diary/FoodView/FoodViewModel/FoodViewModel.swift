@@ -59,7 +59,6 @@ final class FoodViewModel: ObservableObject {
             unit: .empty,
             alwaysRoundUp: false
         )
-        
         self.food = food
         self.mealType = mealType
         self.originalMealType = mealType

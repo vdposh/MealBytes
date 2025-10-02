@@ -9,20 +9,23 @@ import SwiftUI
 
 struct FoodDetailView: View {
     let food: Food
+    let isEditing: Bool
     @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                if searchViewModel.isBookmarkedSearchView(food) {
-                    Image(systemName: "bookmark.fill")
-                        .imageScale(.small)
-                        .foregroundStyle(.accent)
+        HStack(spacing: 15) {
+            if !isEditing {
+                ZStack {
+                    if searchViewModel.isBookmarkedSearchView(food) {
+                        Image(systemName: "bookmark.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.accent)
+                    }
                 }
+                .frame(width: 5)
             }
-            .frame(width: 20)
             
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(food.searchFoodName)
                 
                 if let parsedDescription = food.parsedDescription {
@@ -35,7 +38,6 @@ struct FoodDetailView: View {
         .padding(.vertical, 4)
     }
 }
-
 
 #Preview {
     PreviewContentView.contentView
