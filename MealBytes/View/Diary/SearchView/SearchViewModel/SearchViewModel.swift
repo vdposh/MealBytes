@@ -19,6 +19,7 @@ final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
+    @Published var removalBookmarks: Set<Int> = []
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
@@ -164,6 +165,33 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Remove Bookmarks
+    func removeBookmarks(for ids: Set<Food.ID>) async {
+        let updatedFavorites = favoriteFoods.filter {
+            !ids.contains($0.searchFoodId)
+        }
+        let updatedBookmarkedFoods = bookmarkedFoods.subtracting(ids)
+        
+        await MainActor.run {
+            self.favoriteFoods = updatedFavorites
+            self.bookmarkedFoods = updatedBookmarkedFoods
+            if query.isEmpty {
+                self.foods = updatedFavorites
+            }
+        }
+        
+        do {
+            try await firestore.addBookmarkFirestore(
+                updatedFavorites,
+                for: selectedMealType
+            )
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
+        }
+    }
+    
     // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
@@ -222,6 +250,7 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Bookmark Management
     func isBookmarkedSearchView(_ food: Food) -> Bool {
         bookmarkedFoods.contains(food.searchFoodId)
+        && !removalBookmarks.contains(food.searchFoodId)
     }
     
     // MARK: - Pagination

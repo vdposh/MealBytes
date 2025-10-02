@@ -180,20 +180,22 @@ struct SearchView: View {
     private var searchViewToolbar: some ToolbarContent {
         switch editingState {
         case .active:
-            ToolbarItem(placement: .confirmationAction) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    editingState = .inactive
-                    withAnimation {
-                        editMode?.wrappedValue = .inactive
+                    searchViewModel.removalBookmarks.formUnion(selectedItems)
+                    searchViewModel.foods.removeAll { food in
+                        selectedItems.contains(food.searchFoodId)
                     }
-                    searchViewModel.favoriteFoods = searchViewModel.foods
-                    Task {
-                        await searchViewModel.saveBookmarkOrder()
-                    }
+                    selectedItems.removeAll()
+                    searchViewModel.uniqueId = UUID()
                 } label: {
-                    Image(systemName: "checkmark")
+                    Image(systemName: "bookmark.slash")
                 }
+                .disabled(selectedItems.isEmpty)
+                .tint(.customRed)
             }
+            
+            ToolbarSpacer(.fixed, placement: .topBarTrailing)
             
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -201,25 +203,32 @@ struct SearchView: View {
                     withAnimation {
                         editMode?.wrappedValue = .inactive
                     }
+                    searchViewModel.removalBookmarks.removeAll()
                     searchViewModel.foods = searchViewModel.favoriteFoods
                 } label: {
                     Image(systemName: "xmark")
                 }
             }
             
-            ToolbarSpacer(.fixed, placement: .topBarLeading)
-            
-            ToolbarItemGroup(placement: .cancellationAction) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
+                    editingState = .inactive
+                    withAnimation {
+                        editMode?.wrappedValue = .inactive
+                    }
+                    searchViewModel.favoriteFoods.removeAll { food in
+                        searchViewModel.removalBookmarks
+                            .contains(food.searchFoodId)
+                    }
+                    searchViewModel.bookmarkedFoods
+                        .subtract(searchViewModel.removalBookmarks)
+                    searchViewModel.removalBookmarks.removeAll()
                     
+                    Task {
+                        await searchViewModel.saveBookmarkOrder()
+                    }
                 } label: {
-                    Image(systemName: "checkmark.circle")
-                }
-                
-                Button {
-                    
-                } label: {
-                    Image(systemName: "circle")
+                    Image(systemName: "checkmark")
                 }
             }
             
