@@ -17,6 +17,7 @@ struct MealHeaderView: View {
     let protein: Double
     let carbohydrate: Double
     let foodItems: [MealItem]
+    @Namespace private var namespace
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -60,6 +61,7 @@ struct MealHeaderView: View {
                         .fontWeight(.bold)
                         .accentForeground()
                 }
+                .matchedTransitionSource(id: "zoom", in: namespace)
             }
             .background {
                 if let searchViewModel = mainViewModel
@@ -68,6 +70,9 @@ struct MealHeaderView: View {
                         destination: SearchView(
                             searchViewModel: searchViewModel,
                             mealType: mealType
+                        )
+                        .navigationTransition(
+                            .zoom(sourceID: "zoom", in: namespace)
                         )
                     ) {
                         EmptyView()

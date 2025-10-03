@@ -57,31 +57,37 @@ struct SearchView: View {
     
     @ViewBuilder
     private var searchViewContentBody: some View {
-        switch searchViewModel.contentState {
-        case .loading:
-            LoadingView()
-        case .error(let error):
-            contentUnavailableView(for: error, mealType: mealType) {
-                searchViewModel.performSearch(searchViewModel.query)
+        ZStack {
+            if searchViewModel.contentState == .loading {
+                LoadingView()
+            } else if case .error(let error) = searchViewModel.contentState {
+                contentUnavailableView(for: error, mealType: mealType) {
+                    searchViewModel.performSearch(searchViewModel.query)
+                }
+            } else if searchViewModel.contentState == .empty {
+                contentUnavailableView(for: .noBookmarks, mealType: mealType) {
+                    searchViewModel.performSearch(searchViewModel.query)
+                }
             }
-        case .empty:
-            contentUnavailableView(for: .noBookmarks, mealType: mealType) {
-                searchViewModel.performSearch(searchViewModel.query)
-            }
-        case .results:
+            
             List(selection: $selectedItems) {
-                ForEach(searchViewModel.foods, id: \.searchFoodId) { food in
-                    foodRow(for: food)
-                        .moveDisabled(!isEditing)
+                if searchViewModel.contentState == .results {
+                    ForEach(
+                        searchViewModel.foods,
+                        id: \.searchFoodId
+                    ) { food in
+                        foodRow(for: food)
+                            .moveDisabled(!isEditing)
+                    }
+                    .onMove { indices, newOffset in
+                        searchViewModel.foods.move(
+                            fromOffsets: indices,
+                            toOffset: newOffset
+                        )
+                    }
+                    pageButton(direction: .next)
+                    pageButton(direction: .previous)
                 }
-                .onMove { indices, newOffset in
-                    searchViewModel.foods.move(
-                        fromOffsets: indices,
-                        toOffset: newOffset
-                    )
-                }
-                pageButton(direction: .next)
-                pageButton(direction: .previous)
             }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
@@ -184,11 +190,12 @@ struct SearchView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     searchViewModel.removalBookmarks.formUnion(selectedItems)
-                    searchViewModel.foods.removeAll { food in
-                        selectedItems.contains(food.searchFoodId)
+                    withAnimation {
+                        searchViewModel.foods.removeAll { food in
+                            selectedItems.contains(food.searchFoodId)
+                        }
                     }
                     selectedItems.removeAll()
-                    searchViewModel.uniqueId = UUID()
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }

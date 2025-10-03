@@ -304,7 +304,7 @@ final class SearchViewModel: ObservableObject {
     }
 }
 
-enum SearchContentState {
+enum SearchContentState: Equatable {
     case loading
     case error(AppError)
     case empty

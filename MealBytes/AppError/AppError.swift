@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum AppError: Error, Identifiable, LocalizedError {
+enum AppError: Error, Identifiable, LocalizedError, Equatable {
     var id: UUID {
         UUID()
     }
