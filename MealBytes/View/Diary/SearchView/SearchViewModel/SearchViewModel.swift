@@ -11,6 +11,7 @@ import Combine
 protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
+    func loadBookmarksData() async
     func isBookmarkedSearchView(_ food: Food) -> Bool
     func resetQuery()
 }
@@ -115,6 +116,7 @@ final class SearchViewModel: ObservableObject {
             if query.isEmpty {
                 isLoading = true
             }
+            
             selectedMealType = mealType
         }
         
@@ -127,6 +129,7 @@ final class SearchViewModel: ObservableObject {
             await MainActor.run {
                 self.favoriteFoods = favorites
                 self.bookmarkedFoods = bookmarked
+                
                 if query.isEmpty {
                     self.foods = favorites
                 }
@@ -139,6 +142,10 @@ final class SearchViewModel: ObservableObject {
                 self.isLoading = false
             }
         }
+    }
+    
+    func loadBookmarksData() async {
+        await loadBookmarksSearchView(for: selectedMealType)
     }
     
     func resetQuery() {
@@ -289,6 +296,11 @@ final class SearchViewModel: ObservableObject {
         } else {
             .results
         }
+    }
+    
+    var bookmarkSubtitle: String {
+        let count = favoriteFoods.count
+        return count == 1 ? "1 bookmark" : "\(count) bookmarks"
     }
 }
 

@@ -28,7 +28,8 @@ struct SearchView: View {
         NavigationStack {
             searchViewContentBody
                 .overlay(searchableModifier)
-                .navigationBarTitle("Search")
+                .navigationBarTitle(mealType.rawValue)
+                .navigationSubtitle(searchViewModel.bookmarkSubtitle)
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar {
                     searchViewToolbar
@@ -263,11 +264,11 @@ struct SearchView: View {
     private var isEditing: Bool {
         editingState == .active
     }
-}
-
-enum EditingState {
-    case inactive
-    case active
+    
+    enum EditingState {
+        case inactive
+        case active
+    }
 }
 
 #Preview {

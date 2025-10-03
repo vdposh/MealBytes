@@ -62,11 +62,11 @@ struct MealHeaderView: View {
                 }
             }
             .background {
-                if let searchModel = mainViewModel
+                if let searchViewModel = mainViewModel
                     .searchViewModel as? SearchViewModel {
                     NavigationLink(
                         destination: SearchView(
-                            searchViewModel: searchModel,
+                            searchViewModel: searchViewModel,
                             mealType: mealType
                         )
                     ) {
