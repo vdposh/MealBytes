@@ -70,7 +70,7 @@ struct SearchView: View {
                 }
             }
             
-            List(selection: $selectedItems) {
+            List(selection: isEditing ? $selectedItems : .constant([])) {
                 if searchViewModel.contentState == .results {
                     ForEach(
                         searchViewModel.foods,
@@ -258,7 +258,7 @@ struct SearchView: View {
                             }
                         } label: {
                             Label("Edit", systemImage: "pencil")
-                            Text("Customize with drag")
+                            Text("Reorder and clean up")
                         }
                     }
                 } label: {

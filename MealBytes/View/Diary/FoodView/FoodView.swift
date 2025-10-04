@@ -232,11 +232,13 @@ struct FoodView: View {
     
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
-        ToolbarTitleMenu {
-            Picker("Meal Type", selection: $foodViewModel.mealType) {
-                ForEach(MealType.allCases, id: \.self) { meal in
-                    Label(meal.rawValue, systemImage: meal.iconName)
-                        .tag(meal)
+        if showSaveRemoveButton {
+            ToolbarTitleMenu {
+                Picker("Meal Type", selection: $foodViewModel.mealType) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Label(meal.rawValue, systemImage: meal.iconName)
+                            .tag(meal)
+                    }
                 }
             }
         }
