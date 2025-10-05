@@ -13,7 +13,6 @@ struct FoodView: View {
     
     private let showAddButton: Bool
     private let showSaveRemoveButton: Bool
-    private let showMealTypeButton: Bool
     
     @StateObject private var foodViewModel: FoodViewModel
     
@@ -26,13 +25,11 @@ struct FoodView: View {
         measurementDescription: String,
         showAddButton: Bool,
         showSaveRemoveButton: Bool,
-        showMealTypeButton: Bool,
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
-        self.showMealTypeButton = showMealTypeButton
         _foodViewModel = StateObject(
             wrappedValue: FoodViewModel(
                 food: food,
@@ -50,8 +47,8 @@ struct FoodView: View {
     
     var body: some View {
         foodViewContentBody
-            .navigationBarTitle(navigationTitleText)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(navigationTitleText)
+            .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 foodViewToolbar
             }
@@ -131,13 +128,36 @@ struct FoodView: View {
                     }
                 }
             }
+            
+            if showSaveRemoveButton {
+                ServingButtonView(
+                    showActionSheet: $foodViewModel.showMealTypeDialog,
+                    title: "MealType",
+                    description: foodViewModel.mealType.rawValue
+                ) {
+                    foodViewModel.showMealTypeDialog.toggle()
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                }
+                .confirmationDialog(
+                    "MealType",
+                    isPresented: $foodViewModel.showMealTypeDialog,
+                    titleVisibility: .visible
+                ) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Button(meal.rawValue) {
+                            foodViewModel.mealType = meal
+                        }
+                    }
+                }
+            }
         } header: {
             Text(foodViewModel.food.searchFoodName)
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundStyle(Color.primary)
                 .listRowInsets(
-                    EdgeInsets(top: 34, leading: 16, bottom: 20, trailing: 16)
+                    EdgeInsets(top: 34, leading: 16, bottom: 16, trailing: 16)
                 )
         }
     }
@@ -222,27 +242,14 @@ struct FoodView: View {
         )
     }
     
-    private var navigationTitleText: Text {
-        Text(
-            showMealTypeButton
-            ? foodViewModel.mealType.rawValue
-            : "Add to \(foodViewModel.mealType.rawValue)"
-        )
+    private var navigationTitleText: String {
+        showSaveRemoveButton
+        ? "Edit in Diary"
+        : "Add to \(foodViewModel.mealType.rawValue)"
     }
     
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
-        if showSaveRemoveButton {
-            ToolbarTitleMenu {
-                Picker("Meal Type", selection: $foodViewModel.mealType) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Label(meal.rawValue, systemImage: meal.iconName)
-                            .tag(meal)
-                    }
-                }
-            }
-        }
-        
         ToolbarItem(placement: .keyboard) {
             KeyboardToolbarView(
                 done: {

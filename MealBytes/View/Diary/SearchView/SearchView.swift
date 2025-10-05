@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
-    @State private var selectedFood: Food?
     @State private var selectedItems = Set<Food.ID>()
     @State private var editingState: EditingState = .inactive
     @Environment(\.editMode) private var editMode
@@ -25,34 +24,31 @@ struct SearchView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            searchViewContentBody
-                .overlay(searchableModifier)
-                .navigationBarTitle(mealType.rawValue)
-                .navigationSubtitle(searchViewModel.bookmarkSubtitle)
-                .navigationBarTitleDisplayMode(.large)
-                .toolbar {
-                    searchViewToolbar
-                }
-                .navigationBarBackButtonHidden(isEditing)
-                .onChange(of: mealType) {
-                    if searchViewModel.mealSwitch(to: mealType) {
-                        Task {
-                            await searchViewModel
-                                .loadBookmarksSearchView(for: mealType)
-                        }
+        searchViewContentBody
+            .overlay(searchableModifier)
+            .navigationTitle(mealType.rawValue)
+            .toolbarTitleDisplayMode(.large)
+            .toolbar {
+                searchViewToolbar
+            }
+            .navigationBarBackButtonHidden(isEditing)
+            .onChange(of: mealType) {
+                if searchViewModel.mealSwitch(to: mealType) {
+                    Task {
+                        await searchViewModel
+                            .loadBookmarksSearchView(for: mealType)
                     }
                 }
-                .onChange(of: isEditing) {
-                    if isEditing {
-                        searchViewModel.resetQuery()
-                    }
+            }
+            .onChange(of: isEditing) {
+                if isEditing {
+                    searchViewModel.resetQuery()
                 }
-                .task {
-                    await searchViewModel
-                        .loadBookmarksSearchView(for: mealType)
-                }
-        }
+            }
+            .task {
+                await searchViewModel
+                    .loadBookmarksSearchView(for: mealType)
+            }
     }
     
     @ViewBuilder
@@ -122,8 +118,7 @@ struct SearchView: View {
                     amount: "",
                     measurementDescription: "",
                     showAddButton: true,
-                    showSaveRemoveButton: false,
-                    showMealTypeButton: false
+                    showSaveRemoveButton: false
                 )
             } label: {
                 FoodDetailView(
@@ -211,6 +206,7 @@ struct SearchView: View {
                     withAnimation {
                         editMode?.wrappedValue = .inactive
                     }
+                    selectedItems.removeAll()
                     searchViewModel.removalBookmarks.removeAll()
                     searchViewModel.foods = searchViewModel.favoriteFoods
                 } label: {
@@ -230,8 +226,8 @@ struct SearchView: View {
                     }
                     searchViewModel.bookmarkedFoods
                         .subtract(searchViewModel.removalBookmarks)
+                    selectedItems.removeAll()
                     searchViewModel.removalBookmarks.removeAll()
-                    
                     Task {
                         await searchViewModel.saveBookmarkOrder()
                     }

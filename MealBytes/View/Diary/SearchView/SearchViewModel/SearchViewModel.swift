@@ -297,11 +297,6 @@ final class SearchViewModel: ObservableObject {
             .results
         }
     }
-    
-    var bookmarkSubtitle: String {
-        let count = favoriteFoods.count
-        return count == 1 ? "1 bookmark" : "\(count) bookmarks"
-    }
 }
 
 enum SearchContentState: Equatable {
