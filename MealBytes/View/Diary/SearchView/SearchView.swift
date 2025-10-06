@@ -31,6 +31,7 @@ struct SearchView: View {
             .toolbar {
                 searchViewToolbar
             }
+            .toolbarVisibility(isEditing ? .hidden : .visible, for: .tabBar)
             .navigationBarBackButtonHidden(isEditing)
             .onChange(of: mealType) {
                 if searchViewModel.mealSwitch(to: mealType) {
@@ -80,6 +81,9 @@ struct SearchView: View {
                             fromOffsets: indices,
                             toOffset: newOffset
                         )
+                        Task {
+                            await searchViewModel.saveBookmarkOrder()
+                        }
                     }
                     pageButton(direction: .next)
                     pageButton(direction: .previous)
@@ -182,35 +186,51 @@ struct SearchView: View {
     private var searchViewToolbar: some ToolbarContent {
         switch editingState {
         case .active:
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    searchViewModel.removalBookmarks.formUnion(selectedItems)
-                    withAnimation {
-                        searchViewModel.foods.removeAll { food in
-                            selectedItems.contains(food.searchFoodId)
+            ToolbarItem(placement: .bottomBar) {
+                Text(selectionStatusText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarItem(placement: .bottomBar) {
+                Menu {
+                    Section("Remove bookmarks from the favorites") {
+                        Button(role: .destructive) {
+                            Task {
+                                await searchViewModel
+                                    .removeBookmarks(for: selectedItems)
+                                selectedItems.removeAll()
+                            }
+                        } label: {
+                            Label(
+                                removeDialogTitle,
+                                systemImage: "bookmark.slash"
+                            )
                         }
                     }
-                    selectedItems.removeAll()
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }
                 .disabled(selectedItems.isEmpty)
-                .tint(.customRed)
             }
             
-            ToolbarSpacer(.fixed, placement: .topBarTrailing)
-            
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    editingState = .inactive
-                    withAnimation {
-                        editMode?.wrappedValue = .inactive
+            ToolbarItemGroup(placement: .topBarLeading) {
+                if selectedItems.count < searchViewModel.foods.count {
+                    Button {
+                        selectedItems = Set(
+                            searchViewModel.foods.map { $0.searchFoodId }
+                        )
+                    } label: {
+                        Text("Select all")
+                            .fontWeight(.medium)
                     }
-                    selectedItems.removeAll()
-                    searchViewModel.removalBookmarks.removeAll()
-                    searchViewModel.foods = searchViewModel.favoriteFoods
-                } label: {
-                    Image(systemName: "xmark")
+                } else {
+                    Button {
+                        selectedItems.removeAll()
+                    } label: {
+                        Text("Cancel select")
+                            .fontWeight(.medium)
+                    }
                 }
             }
             
@@ -220,19 +240,9 @@ struct SearchView: View {
                     withAnimation {
                         editMode?.wrappedValue = .inactive
                     }
-                    searchViewModel.favoriteFoods.removeAll { food in
-                        searchViewModel.removalBookmarks
-                            .contains(food.searchFoodId)
-                    }
-                    searchViewModel.bookmarkedFoods
-                        .subtract(searchViewModel.removalBookmarks)
                     selectedItems.removeAll()
-                    searchViewModel.removalBookmarks.removeAll()
-                    Task {
-                        await searchViewModel.saveBookmarkOrder()
-                    }
                 } label: {
-                    Image(systemName: "checkmark")
+                    Image(systemName: "xmark")
                 }
             }
             
@@ -246,22 +256,35 @@ struct SearchView: View {
                         }
                     }
                     
-                    Section("Settings") {
-                        Button {
-                            editingState = .active
-                            withAnimation {
-                                editMode?.wrappedValue = .active
-                            }
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                            Text("Reorder and clean up")
+                    Button {
+                        editingState = .active
+                        withAnimation {
+                            editMode?.wrappedValue = .active
                         }
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                        Text("Reorder and clean up")
                     }
                 } label: {
                     Image(systemName: "ellipsis")
                 }
             }
         }
+    }
+    
+    private var removeDialogTitle: String {
+        let count = selectedItems.count
+        return count == 1
+        ? "Remove bookmark"
+        : "Remove \(count) bookmarks"
+    }
+    
+    private var selectionStatusText: String {
+        selectedItems.isEmpty
+        ? "Select bookmarks"
+        : selectedItems.count == 1
+        ? "1 Bookmark Selected"
+        : "\(selectedItems.count) Bookmarks Selected"
     }
     
     private var isEditing: Bool {

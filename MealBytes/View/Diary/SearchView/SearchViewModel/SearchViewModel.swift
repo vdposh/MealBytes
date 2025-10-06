@@ -160,6 +160,12 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Save Bookmarks
     func saveBookmarkOrder() async {
+        await MainActor.run {
+            if query.isEmpty {
+                self.favoriteFoods = self.foods
+            }
+        }
+        
         do {
             try await firestore.addBookmarkFirestore(
                 favoriteFoods,
@@ -180,10 +186,12 @@ final class SearchViewModel: ObservableObject {
         let updatedBookmarkedFoods = bookmarkedFoods.subtracting(ids)
         
         await MainActor.run {
-            self.favoriteFoods = updatedFavorites
-            self.bookmarkedFoods = updatedBookmarkedFoods
-            if query.isEmpty {
-                self.foods = updatedFavorites
+            withAnimation {
+                self.favoriteFoods = updatedFavorites
+                self.bookmarkedFoods = updatedBookmarkedFoods
+                if query.isEmpty {
+                    self.foods = updatedFavorites
+                }
             }
         }
         

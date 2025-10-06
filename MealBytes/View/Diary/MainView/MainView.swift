@@ -118,15 +118,19 @@ struct MainView: View {
         
         ToolbarSpacer(.fixed)
         
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                mainViewModel.isExpandedCalendar.toggle()
-            } label: {
-                Image(
-                    systemName: mainViewModel.isExpandedCalendar
-                    ? "xmark"
-                    : "calendar"
-                )
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if mainViewModel.isExpandedCalendar {
+                Button {
+                    mainViewModel.isExpandedCalendar = false
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            } else {
+                Button {
+                    mainViewModel.isExpandedCalendar = true
+                } label: {
+                    Image(systemName: "calendar")
+                }
             }
         }
     }
