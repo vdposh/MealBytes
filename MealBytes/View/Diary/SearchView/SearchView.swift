@@ -33,7 +33,7 @@ struct SearchView: View {
                 searchViewToolbar
             }
             .toolbarVisibility(isEditing ? .hidden : .visible, for: .tabBar)
-            .navigationBarBackButtonHidden()
+            .navigationBarBackButtonHidden(isEditing)
             .onChange(of: mealType) {
                 if searchViewModel.mealSwitch(to: mealType) {
                     Task {
@@ -192,8 +192,15 @@ struct SearchView: View {
         switch editingState {
         case .active:
             ToolbarItem(placement: .bottomBar) {
+                Text("")
+                    .disabled(true)
+                    .opacity(0)
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarItem(placement: .bottomBar) {
                 Text(selectionStatusText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
             .sharedBackgroundVisibility(.hidden)
             
@@ -254,6 +261,13 @@ struct SearchView: View {
             }
             
         case .inactive:
+            ToolbarItem(placement: .topBarLeading) {
+                Text("")
+                    .disabled(true)
+                    .opacity(0)
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Picker("Meal Type", selection: $mealType) {
