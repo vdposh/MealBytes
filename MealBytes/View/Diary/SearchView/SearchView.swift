@@ -12,6 +12,7 @@ struct SearchView: View {
     @State private var selectedItems = Set<Food.ID>()
     @State private var editingState: EditingState = .inactive
     @Environment(\.editMode) private var editMode
+    @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -32,7 +33,7 @@ struct SearchView: View {
                 searchViewToolbar
             }
             .toolbarVisibility(isEditing ? .hidden : .visible, for: .tabBar)
-            .navigationBarBackButtonHidden(isEditing)
+            .navigationBarBackButtonHidden()
             .onChange(of: mealType) {
                 if searchViewModel.mealSwitch(to: mealType) {
                     Task {
@@ -202,6 +203,7 @@ struct SearchView: View {
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }
+                .disabled(selectedItems.isEmpty)
                 .confirmationDialog(
                     removeDialogMessage,
                     isPresented: $searchViewModel.showRemoveConfirmation,
@@ -261,14 +263,16 @@ struct SearchView: View {
                         }
                     }
                     
-                    Button {
-                        editingState = .active
-                        withAnimation {
-                            editMode?.wrappedValue = .active
+                    if !searchViewModel.foods.isEmpty {
+                        Button {
+                            editingState = .active
+                            withAnimation {
+                                editMode?.wrappedValue = .active
+                            }
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                            Text("Reorder and clean up")
                         }
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                        Text("Reorder and clean up")
                     }
                 } label: {
                     Image(systemName: "ellipsis")
