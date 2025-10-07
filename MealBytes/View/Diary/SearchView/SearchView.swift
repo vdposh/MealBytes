@@ -91,6 +91,7 @@ struct SearchView: View {
             }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
+            .disabled(searchViewModel.showRemoveConfirmation)
         }
     }
     
@@ -139,8 +140,11 @@ struct SearchView: View {
                     }
                     searchViewModel.uniqueId = UUID()
                 } label: {
-                    Image(
-                        systemName: searchViewModel
+                    Label(
+                        searchViewModel.isBookmarkedSearchView(food)
+                        ? "Remove from Favorites"
+                        : "Add to Favorites",
+                        systemImage: searchViewModel
                             .isBookmarkedSearchView(food)
                         ? "bookmark.slash"
                         : "bookmark"
@@ -193,28 +197,29 @@ struct SearchView: View {
             .sharedBackgroundVisibility(.hidden)
             
             ToolbarItem(placement: .bottomBar) {
-                Menu {
-                    Section("Remove bookmarks from the favorites") {
-                        Button(role: .destructive) {
-                            Task {
-                                await searchViewModel
-                                    .removeBookmarks(for: selectedItems)
-                                selectedItems.removeAll()
-                            }
-                        } label: {
-                            Label(
-                                removeDialogTitle,
-                                systemImage: "bookmark.slash"
-                            )
-                        }
-                    }
+                Button {
+                    searchViewModel.showRemoveConfirmation = true
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }
-                .disabled(selectedItems.isEmpty)
+                .confirmationDialog(
+                    removeDialogMessage,
+                    isPresented: $searchViewModel.showRemoveConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button(role: .destructive) {
+                        Task {
+                            await searchViewModel
+                                .removeBookmarks(for: selectedItems)
+                            selectedItems.removeAll()
+                        }
+                    } label: {
+                        Text(removeDialogTitle)
+                    }
+                }
             }
             
-            ToolbarItemGroup(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarLeading) {
                 if selectedItems.count < searchViewModel.foods.count {
                     Button {
                         selectedItems = Set(
@@ -272,19 +277,25 @@ struct SearchView: View {
         }
     }
     
-    private var removeDialogTitle: String {
-        let count = selectedItems.count
-        return count == 1
-        ? "Remove bookmark"
-        : "Remove \(count) bookmarks"
-    }
-    
     private var selectionStatusText: String {
         selectedItems.isEmpty
         ? "Select bookmarks"
         : selectedItems.count == 1
         ? "1 Bookmark Selected"
         : "\(selectedItems.count) Bookmarks Selected"
+    }
+    
+    private var removeDialogMessage: String {
+        selectedItems.count == 1
+        ? "The selected bookmark will be removed from Favorites."
+        : "The selected bookmarks will be removed from Favorites."
+    }
+    
+    private var removeDialogTitle: String {
+        let count = selectedItems.count
+        return count == 1
+        ? "Remove bookmark"
+        : "Remove \(count) bookmarks"
     }
     
     private var isEditing: Bool {

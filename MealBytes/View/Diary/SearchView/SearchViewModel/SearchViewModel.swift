@@ -33,6 +33,7 @@ final class SearchViewModel: ObservableObject {
     }
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
+    @Published var showRemoveConfirmation: Bool = false
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
