@@ -22,7 +22,10 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             Button {
-                mainViewModel.searchViewModel.resetQuery()
+                Task {
+                    await mainViewModel.searchViewModel
+                        .loadBookmarksSearchView(for: mealType)
+                }
             } label: {
                 HStack {
                     VStack(spacing: 15) {
@@ -102,7 +105,7 @@ struct MealHeaderView: View {
                                     for: mealType
                                 )
                             } label: {
-                                Image(systemName: "trash")
+                                Label("Remove", systemImage: "trash")
                             }
                             .tint(.red)
                         }

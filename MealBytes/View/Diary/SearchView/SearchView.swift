@@ -42,15 +42,6 @@ struct SearchView: View {
                     }
                 }
             }
-            .onChange(of: isEditing) {
-                if isEditing {
-                    searchViewModel.resetQuery()
-                }
-            }
-            .task {
-                await searchViewModel
-                    .loadBookmarksSearchView(for: mealType)
-            }
     }
     
     @ViewBuilder

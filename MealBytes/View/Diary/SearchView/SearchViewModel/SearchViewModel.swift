@@ -11,9 +11,7 @@ import Combine
 protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
-    func loadBookmarksData() async
     func isBookmarkedSearchView(_ food: Food) -> Bool
-    func resetQuery()
 }
 
 final class SearchViewModel: ObservableObject {
@@ -118,6 +116,7 @@ final class SearchViewModel: ObservableObject {
                 isLoading = true
             }
             
+            query = ""
             selectedMealType = mealType
         }
         
@@ -143,14 +142,6 @@ final class SearchViewModel: ObservableObject {
                 self.isLoading = false
             }
         }
-    }
-    
-    func loadBookmarksData() async {
-        await loadBookmarksSearchView(for: selectedMealType)
-    }
-    
-    func resetQuery() {
-        query = ""
     }
     
     func mealSwitch(to meal: MealType) -> Bool {
