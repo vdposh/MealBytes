@@ -29,9 +29,8 @@ struct CalorieMetricsSection: View {
                     .font(.callout)
                     .fontWeight(.semibold)
                     .foregroundStyle(
-                        dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.calories
-                        )
+                        dailyIntakeViewModel
+                            .titleColor(for: dailyIntakeViewModel.calories)
                     )
             } footer: {
                 Text("Necessary calorie amount can be entered directly.")

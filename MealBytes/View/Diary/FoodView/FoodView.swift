@@ -119,9 +119,7 @@ struct FoodView: View {
                     .foodDetail?.servings.serving {
                     ForEach(servings, id: \.self) { serving in
                         Button(
-                            foodViewModel.servingDescription(
-                                for: serving
-                            )
+                            foodViewModel.servingDescription(for: serving)
                         ) {
                             foodViewModel.updateServing(serving)
                         }
@@ -203,9 +201,10 @@ struct FoodView: View {
                         title: "Save",
                         action: {
                             Task {
-                                await foodViewModel.updateMealItemFoodView(
-                                    for: foodViewModel.mainViewModel.date
-                                )
+                                await foodViewModel
+                                    .updateMealItemFoodView(
+                                        for: foodViewModel.mainViewModel.date
+                                    )
                                 dismiss()
                             }
                         },

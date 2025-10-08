@@ -17,6 +17,7 @@ struct MealHeaderView: View {
     let protein: Double
     let carbohydrate: Double
     let foodItems: [MealItem]
+    @State private var destinationSearchView = false
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -25,6 +26,7 @@ struct MealHeaderView: View {
                 Task {
                     await mainViewModel.searchViewModel
                         .loadBookmarksSearchView(for: mealType)
+                    destinationSearchView = true
                 }
             } label: {
                 HStack {
@@ -64,20 +66,13 @@ struct MealHeaderView: View {
                         .accentForeground()
                 }
             }
-            .background {
+            .navigationDestination(isPresented: $destinationSearchView) {
                 if let searchViewModel = mainViewModel
                     .searchViewModel as? SearchViewModel {
-                    NavigationLink(
-                        destination: SearchView(
-                            searchViewModel: searchViewModel,
-                            mealType: mealType
-                        )
-                    ) {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                } else {
-                    EmptyView()
+                    SearchView(
+                        searchViewModel: searchViewModel,
+                        mealType: mealType
+                    )
                 }
             }
             
@@ -96,9 +91,8 @@ struct MealHeaderView: View {
                         )
                         .swipeActions(allowsFullSwipe: false) {
                             Button(
-                                role: mainViewModel.deletionButtonRole(
-                                    for: mealType
-                                )
+                                role: mainViewModel
+                                    .deletionButtonRole(for: mealType)
                             ) {
                                 mainViewModel.deleteMealItemMainView(
                                     with: item.id,

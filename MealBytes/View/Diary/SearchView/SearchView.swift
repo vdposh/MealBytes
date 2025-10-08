@@ -12,7 +12,6 @@ struct SearchView: View {
     @State private var selectedItems = Set<Food.ID>()
     @State private var editingState: EditingState = .inactive
     @Environment(\.editMode) private var editMode
-    @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -184,14 +183,13 @@ struct SearchView: View {
         case .active:
             ToolbarItem(placement: .bottomBar) {
                 Text("")
-                    .disabled(true)
                     .opacity(0)
             }
             .sharedBackgroundVisibility(.hidden)
             
-            ToolbarItem(placement: .bottomBar) {
+            ToolbarItem(placement: .status) {
                 Text(selectionStatusText)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity)
             }
             .sharedBackgroundVisibility(.hidden)
             

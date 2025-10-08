@@ -42,9 +42,7 @@ struct HeightSection: View {
                 .font(.callout)
                 .fontWeight(.semibold)
                 .foregroundStyle(
-                    rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.height
-                    )
+                    rdiViewModel.fieldTitleColor(for: rdiViewModel.height)
                 )
         } footer: {
             Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")

@@ -26,9 +26,7 @@ struct AgeSection: View {
                 .font(.callout)
                 .fontWeight(.semibold)
                 .foregroundStyle(
-                    rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.age
-                    )
+                    rdiViewModel.fieldTitleColor(for: rdiViewModel.age)
                 )
         } footer: {
             Text("Enter full age to personalize recommendations.")

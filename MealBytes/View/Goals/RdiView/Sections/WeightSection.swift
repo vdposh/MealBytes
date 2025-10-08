@@ -44,9 +44,7 @@ struct WeightSection: View {
                 .font(.callout)
                 .fontWeight(.semibold)
                 .foregroundStyle(
-                    rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.weight
-                    )
+                    rdiViewModel.fieldTitleColor(for: rdiViewModel.weight)
                 )
         } footer: {
             Text("Enter weight and adjust the unit as needed (kilograms or pounds).")

@@ -19,17 +19,17 @@ struct OverviewDailyIntakeSection: View {
                 
                 if dailyIntakeViewModel.toggleOn {
                     Text(
-                        dailyIntakeViewModel.text(
-                            for: dailyIntakeViewModel.calories
-                        )
+                        dailyIntakeViewModel
+                            .text(for: dailyIntakeViewModel.calories)
                     )
                     .font(.system(size: 18))
                     .fontWeight(.semibold)
                     .foregroundColor(
-                        dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.calories,
-                            isCalorie: true
-                        )
+                        dailyIntakeViewModel
+                            .titleColor(
+                                for: dailyIntakeViewModel.calories,
+                                isCalorie: true
+                            )
                     )
                     .padding(.top)
                     .padding(.bottom, 10)

@@ -77,8 +77,11 @@ struct FoodItemRow: View {
                         )
                     )
                     if mainViewModel.canDisplayIntake() {
-                        Text(mainViewModel.intakePercentageText(
-                            for: mealItem.nutrients[.calories])
+                        Text(
+                            mainViewModel
+                                .intakePercentageText(
+                                    for: mealItem.nutrients[.calories]
+                                )
                         )
                         .lineLimit(1)
                         .foregroundStyle(.secondary)

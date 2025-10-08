@@ -65,8 +65,11 @@ struct CaloriesSection: View {
                     }
                     
                     if mainViewModel.canDisplayIntake() {
-                        Text(mainViewModel.intakePercentageText(
-                            for: summaries[.calories])
+                        Text(
+                            mainViewModel
+                                .intakePercentageText(
+                                    for: summaries[.calories]
+                                )
                         )
                         .lineLimit(1)
                         .foregroundStyle(.secondary)
