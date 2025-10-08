@@ -143,8 +143,8 @@ struct SearchView: View {
                 } label: {
                     Label(
                         searchViewModel.isBookmarkedSearchView(food)
-                        ? "Remove from Favorites"
-                        : "Add to Favorites",
+                        ? "Remove bookmark"
+                        : "Add to favorites",
                         systemImage: searchViewModel
                             .isBookmarkedSearchView(food)
                         ? "bookmark.slash"
@@ -217,10 +217,18 @@ struct SearchView: View {
                     titleVisibility: .visible
                 ) {
                     Button(role: .destructive) {
+                        let idsToRemove = selectedItems
+                        searchViewModel.foods.removeAll {
+                            idsToRemove.contains($0.searchFoodId)
+                        }
+                        selectedItems.removeAll()
+                        editingState = .inactive
+                        withAnimation {
+                            editMode?.wrappedValue = .inactive
+                        }
                         Task {
                             await searchViewModel
-                                .removeBookmarks(for: selectedItems)
-                            selectedItems.removeAll()
+                                .removeBookmarks(for: idsToRemove)
                         }
                     } label: {
                         Text(removeDialogTitle)
@@ -261,13 +269,6 @@ struct SearchView: View {
             }
             
         case .inactive:
-            ToolbarItem(placement: .topBarLeading) {
-                Text("")
-                    .disabled(true)
-                    .opacity(0)
-            }
-            .sharedBackgroundVisibility(.hidden)
-            
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Picker("Meal Type", selection: $mealType) {
@@ -305,8 +306,8 @@ struct SearchView: View {
     
     private var removeDialogMessage: String {
         selectedItems.count == 1
-        ? "The selected bookmark will be removed from Favorites."
-        : "The selected bookmarks will be removed from Favorites."
+        ? "The selected bookmark will be removed from favorites."
+        : "The selected bookmarks will be removed from favorites."
     }
     
     private var removeDialogTitle: String {
