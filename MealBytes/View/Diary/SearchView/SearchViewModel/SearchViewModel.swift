@@ -12,6 +12,7 @@ protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
+    func resetQuery()
 }
 
 final class SearchViewModel: ObservableObject {
@@ -19,6 +20,8 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var removalBookmarks: Set<Int> = []
+    @Published var selectedItems = Set<Food.ID>()
+    @Published var editingState: EditingState = .inactive
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
@@ -31,7 +34,7 @@ final class SearchViewModel: ObservableObject {
     }
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
-    @Published var showRemoveConfirmation: Bool = false
+    @Published var showRemoveDialog: Bool = false
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -116,7 +119,6 @@ final class SearchViewModel: ObservableObject {
                 isLoading = true
             }
             
-            query = ""
             selectedMealType = mealType
         }
         
@@ -142,6 +144,10 @@ final class SearchViewModel: ObservableObject {
                 self.isLoading = false
             }
         }
+    }
+    
+    func resetQuery() {
+        query = ""
     }
     
     func mealSwitch(to meal: MealType) -> Bool {
@@ -297,6 +303,42 @@ final class SearchViewModel: ObservableObject {
             .results
         }
     }
+    
+    var bookmarkCountText: String {
+        bookmarkedFoods.count == 1
+        ? "1 bookmark"
+        : "\(bookmarkedFoods.count) bookmarks"
+    }
+    
+    var selectionStatusText: String {
+        selectedItems.isEmpty
+        ? "Select bookmarks"
+        : selectedItems.count == 1
+        ? "1 Bookmark Selected"
+        : "\(selectedItems.count) Bookmarks Selected"
+    }
+    
+    var removeDialogMessage: String {
+        selectedItems.count == 1
+        ? "The selected bookmark will be removed from favorites."
+        : "The selected bookmarks will be removed from favorites."
+    }
+    
+    var removeDialogTitle: String {
+        let count = selectedItems.count
+        return count == 1
+        ? "Remove bookmark"
+        : "Remove \(count) bookmarks"
+    }
+    
+    var isEditing: Bool {
+        editingState == .active
+    }
+}
+
+enum EditingState {
+    case inactive
+    case active
 }
 
 enum SearchContentState: Equatable {

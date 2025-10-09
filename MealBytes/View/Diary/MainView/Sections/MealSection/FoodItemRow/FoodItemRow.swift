@@ -31,13 +31,13 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
         ) {
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 5) {
                         Text(mealItem.foodName)
                         Text(mainViewModel.formattedMealText(for: mealItem))
                             .font(.subheadline)
-                            .accentForeground()
+                            .foregroundStyle(.accent)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .layoutPriority(0)

@@ -64,7 +64,6 @@ struct CalendarView: View {
                             if mainViewModel.hasMealItems(for: date) {
                                 Circle()
                                     .frame(width: 5, height: 5)
-                                    .accentForeground()
                             }
                         }
                         .frame(width: 40, height: 40)

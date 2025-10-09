@@ -9,8 +9,6 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
-    @State private var selectedItems = Set<Food.ID>()
-    @State private var editingState: EditingState = .inactive
     @Environment(\.editMode) private var editMode
     
     @ObservedObject var searchViewModel: SearchViewModel
@@ -27,12 +25,16 @@ struct SearchView: View {
         searchViewContentBody
             .overlay(searchableModifier)
             .navigationTitle(mealType.rawValue)
+            .navigationSubtitle(searchViewModel.bookmarkCountText)
             .toolbarTitleDisplayMode(.large)
             .toolbar {
                 searchViewToolbar
             }
-            .toolbarVisibility(isEditing ? .hidden : .visible, for: .tabBar)
-            .navigationBarBackButtonHidden(isEditing)
+            .toolbarVisibility(
+                searchViewModel.isEditing ? .hidden : .visible,
+                for: .tabBar
+            )
+            .navigationBarBackButtonHidden(searchViewModel.isEditing)
             .onChange(of: mealType) {
                 if searchViewModel.mealSwitch(to: mealType) {
                     Task {
@@ -58,14 +60,18 @@ struct SearchView: View {
                 }
             }
             
-            List(selection: isEditing ? $selectedItems : .constant([])) {
+            List(
+                selection: searchViewModel.isEditing
+                ? $searchViewModel.selectedItems
+                : .constant([])
+            ) {
                 if searchViewModel.contentState == .results {
                     ForEach(
                         searchViewModel.foods,
                         id: \.searchFoodId
                     ) { food in
                         foodRow(for: food)
-                            .moveDisabled(!isEditing)
+                            .moveDisabled(!searchViewModel.isEditing)
                     }
                     .onMove { indices, newOffset in
                         searchViewModel.foods.move(
@@ -82,7 +88,7 @@ struct SearchView: View {
             }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
-            .disabled(searchViewModel.showRemoveConfirmation)
+            .disabled(searchViewModel.showRemoveDialog)
         }
     }
     
@@ -93,15 +99,15 @@ struct SearchView: View {
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search for food"
             )
-            .disabled(isEditing)
+            .disabled(searchViewModel.isEditing)
     }
     
     @ViewBuilder
     private func foodRow(for food: Food) -> some View {
-        if isEditing {
+        if searchViewModel.isEditing {
             FoodDetailView(
                 food: food,
-                isEditing: isEditing,
+                isEditing: searchViewModel.isEditing,
                 searchViewModel: searchViewModel
             )
         } else {
@@ -119,7 +125,7 @@ struct SearchView: View {
             } label: {
                 FoodDetailView(
                     food: food,
-                    isEditing: isEditing,
+                    isEditing: searchViewModel.isEditing,
                     searchViewModel: searchViewModel
                 )
             }
@@ -179,56 +185,13 @@ struct SearchView: View {
     
     @ToolbarContentBuilder
     private var searchViewToolbar: some ToolbarContent {
-        switch editingState {
+        switch searchViewModel.editingState {
         case .active:
-            ToolbarItem(placement: .bottomBar) {
-                Text("")
-                    .opacity(0)
-            }
-            .sharedBackgroundVisibility(.hidden)
-            
-            ToolbarItem(placement: .status) {
-                Text(selectionStatusText)
-                    .frame(maxWidth: .infinity)
-            }
-            .sharedBackgroundVisibility(.hidden)
-            
-            ToolbarItem(placement: .bottomBar) {
-                Button {
-                    searchViewModel.showRemoveConfirmation = true
-                } label: {
-                    Image(systemName: "bookmark.slash")
-                }
-                .disabled(selectedItems.isEmpty)
-                .confirmationDialog(
-                    removeDialogMessage,
-                    isPresented: $searchViewModel.showRemoveConfirmation,
-                    titleVisibility: .visible
-                ) {
-                    Button(role: .destructive) {
-                        let idsToRemove = selectedItems
-                        searchViewModel.foods.removeAll {
-                            idsToRemove.contains($0.searchFoodId)
-                        }
-                        selectedItems.removeAll()
-                        editingState = .inactive
-                        withAnimation {
-                            editMode?.wrappedValue = .inactive
-                        }
-                        Task {
-                            await searchViewModel
-                                .removeBookmarks(for: idsToRemove)
-                        }
-                    } label: {
-                        Text(removeDialogTitle)
-                    }
-                }
-            }
-            
             ToolbarItem(placement: .topBarLeading) {
-                if selectedItems.count < searchViewModel.foods.count {
+                if searchViewModel.selectedItems.count
+                    < searchViewModel.foods.count {
                     Button {
-                        selectedItems = Set(
+                        searchViewModel.selectedItems = Set(
                             searchViewModel.foods.map { $0.searchFoodId }
                         )
                     } label: {
@@ -237,7 +200,7 @@ struct SearchView: View {
                     }
                 } else {
                     Button {
-                        selectedItems.removeAll()
+                        searchViewModel.selectedItems.removeAll()
                     } label: {
                         Text("Cancel select")
                             .fontWeight(.medium)
@@ -247,13 +210,58 @@ struct SearchView: View {
             
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    editingState = .inactive
+                    searchViewModel.selectedItems.removeAll()
+                    searchViewModel.editingState = .inactive
                     withAnimation {
                         editMode?.wrappedValue = .inactive
                     }
-                    selectedItems.removeAll()
                 } label: {
                     Image(systemName: "xmark")
+                }
+            }
+            
+            ToolbarItem(placement: .bottomBar) {
+                Text("")
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarItem(placement: .status) {
+                Text(searchViewModel.selectionStatusText)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            
+            ToolbarItem(placement: .bottomBar) {
+                Button {
+                    searchViewModel.showRemoveDialog = true
+                } label: {
+                    Image(systemName: "bookmark.slash")
+                }
+                .disabled(searchViewModel.selectedItems.isEmpty)
+                .confirmationDialog(
+                    searchViewModel.removeDialogMessage,
+                    isPresented: $searchViewModel.showRemoveDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button(role: .destructive) {
+                        let idsToRemove = searchViewModel.selectedItems
+                        searchViewModel.foods.removeAll {
+                            idsToRemove.contains($0.searchFoodId)
+                        }
+                        searchViewModel.selectedItems.removeAll()
+                        searchViewModel.editingState = .inactive
+                        withAnimation {
+                            editMode?.wrappedValue = .inactive
+                        }
+                        Task {
+                            await searchViewModel
+                                .removeBookmarks(for: idsToRemove)
+                        }
+                    } label: {
+                        Text(searchViewModel.removeDialogTitle)
+                    }
                 }
             }
             
@@ -269,7 +277,7 @@ struct SearchView: View {
                     
                     if !searchViewModel.foods.isEmpty {
                         Button {
-                            editingState = .active
+                            searchViewModel.editingState = .active
                             withAnimation {
                                 editMode?.wrappedValue = .active
                             }
@@ -283,36 +291,6 @@ struct SearchView: View {
                 }
             }
         }
-    }
-    
-    private var selectionStatusText: String {
-        selectedItems.isEmpty
-        ? "Select bookmarks"
-        : selectedItems.count == 1
-        ? "1 Bookmark Selected"
-        : "\(selectedItems.count) Bookmarks Selected"
-    }
-    
-    private var removeDialogMessage: String {
-        selectedItems.count == 1
-        ? "The selected bookmark will be removed from favorites."
-        : "The selected bookmarks will be removed from favorites."
-    }
-    
-    private var removeDialogTitle: String {
-        let count = selectedItems.count
-        return count == 1
-        ? "Remove bookmark"
-        : "Remove \(count) bookmarks"
-    }
-    
-    private var isEditing: Bool {
-        editingState == .active
-    }
-    
-    enum EditingState {
-        case inactive
-        case active
     }
 }
 

@@ -65,10 +65,6 @@ extension View {
             }
         }
     }
-    
-    func accentForeground(opacity: Double = 1.0) -> some View {
-        self.foregroundStyle(Color.accentColor.opacity(opacity))
-    }
 }
 
 #Preview {

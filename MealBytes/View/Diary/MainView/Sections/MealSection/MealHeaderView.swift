@@ -28,6 +28,7 @@ struct MealHeaderView: View {
                         .loadBookmarksSearchView(for: mealType)
                     destinationSearchView = true
                 }
+                mainViewModel.searchViewModel.resetQuery()
             } label: {
                 HStack {
                     VStack(spacing: 15) {
@@ -63,7 +64,6 @@ struct MealHeaderView: View {
                     
                     Image(systemName: "plus")
                         .fontWeight(.bold)
-                        .accentForeground()
                 }
             }
             .navigationDestination(isPresented: $destinationSearchView) {
