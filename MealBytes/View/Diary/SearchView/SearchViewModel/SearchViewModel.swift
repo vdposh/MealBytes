@@ -12,7 +12,7 @@ protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
-    func resetQuery()
+    func loadingBookmarks()
 }
 
 final class SearchViewModel: ObservableObject {
@@ -35,7 +35,6 @@ final class SearchViewModel: ObservableObject {
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var isLoadingBookmarks: Bool = false
-    @Published var showBottomBar: Bool = false
     @Published var showRemoveDialog: Bool = false
     
     private var maxResultsPerPage: Int = 20
@@ -120,7 +119,7 @@ final class SearchViewModel: ObservableObject {
             if query.isEmpty {
                 isLoading = true
             }
-            isLoadingBookmarks = true
+            
             selectedMealType = mealType
         }
         
@@ -150,7 +149,8 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    func resetQuery() {
+    func loadingBookmarks() {
+        isLoadingBookmarks = true
         query = ""
     }
     

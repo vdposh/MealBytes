@@ -48,6 +48,17 @@ struct MainView: View {
                 }
             }
         }
+        .navigationDestination(
+            item: $mainViewModel.selectedMealType
+        ) { mealType in
+            if let searchViewModel = mainViewModel
+                .searchViewModel as? SearchViewModel {
+                SearchView(
+                    searchViewModel: searchViewModel,
+                    mealType: mealType
+                )
+            }
+        }
     }
     
     private var caloriesSection: some View {
@@ -65,6 +76,7 @@ struct MainView: View {
             )
             
             MealSectionView(
+                selectedMealType: $mainViewModel.selectedMealType,
                 mealType: mealType,
                 mealItems: filteredItems,
                 mainViewModel: mainViewModel
@@ -120,10 +132,8 @@ struct MainView: View {
         
         ToolbarItemGroup(placement: .topBarTrailing) {
             if mainViewModel.isExpandedCalendar {
-                Button {
+                Button(role: .cancel) {
                     mainViewModel.isExpandedCalendar = false
-                } label: {
-                    Image(systemName: "xmark")
                 }
             } else {
                 Button {

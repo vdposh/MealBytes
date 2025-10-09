@@ -29,7 +29,6 @@ struct ActionButtonView: View {
                             : color.opacity(0.3)
                         )
                 )
-            
         }
         .buttonStyle(.borderless)
         .disabled(!isEnabled)

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MealHeaderView: View {
+    @Binding var selectedMealType: MealType?
     let mealType: MealType
     let title: String
     let iconName: String
@@ -17,18 +18,17 @@ struct MealHeaderView: View {
     let protein: Double
     let carbohydrate: Double
     let foodItems: [MealItem]
-    @State private var destinationSearchView = false
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
             Button {
+                selectedMealType = mealType
+                mainViewModel.searchViewModel.loadingBookmarks()
                 Task {
                     await mainViewModel.searchViewModel
                         .loadBookmarksSearchView(for: mealType)
-                    destinationSearchView = true
                 }
-                mainViewModel.searchViewModel.resetQuery()
             } label: {
                 HStack {
                     VStack(spacing: 15) {
@@ -64,15 +64,6 @@ struct MealHeaderView: View {
                     
                     Image(systemName: "plus")
                         .fontWeight(.bold)
-                }
-            }
-            .navigationDestination(isPresented: $destinationSearchView) {
-                if let searchViewModel = mainViewModel
-                    .searchViewModel as? SearchViewModel {
-                    SearchView(
-                        searchViewModel: searchViewModel,
-                        mealType: mealType
-                    )
                 }
             }
             

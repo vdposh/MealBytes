@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct MealSection: View {
+    @Binding var selectedMealType: MealType?
     let mealSectionModel: MealSectionModel
     let mainViewModel: MainViewModel
     
     var body: some View {
         MealHeaderView(
+            selectedMealType: $selectedMealType,
             mealType: mealSectionModel.mealType,
             title: mealSectionModel.title,
             iconName: mealSectionModel.iconName,

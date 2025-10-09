@@ -61,8 +61,8 @@ struct RdiView: View {
             )
         }
         
-        ToolbarItem(placement: .confirmationAction) {
-            Button("Save") {
+        ToolbarItem {
+            Button(role: .confirm) {
                 if rdiViewModel.handleSave() {
                     Task {
                         await rdiViewModel.saveRdiView()

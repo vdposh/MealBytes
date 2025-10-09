@@ -64,8 +64,8 @@ struct DailyIntakeView: View {
             )
         }
         
-        ToolbarItem(placement: .confirmationAction) {
-            Button("Save") {
+        ToolbarItem {
+            Button(role: .confirm) {
                 if dailyIntakeViewModel.handleSave() {
                     Task {
                         await dailyIntakeViewModel.saveDailyIntakeView()

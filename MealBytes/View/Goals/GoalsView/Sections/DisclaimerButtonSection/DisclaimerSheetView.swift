@@ -12,7 +12,7 @@ struct DisclaimerSheetView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 Section {
                     EmptyView()
                 } footer: {
@@ -28,11 +28,9 @@ struct DisclaimerSheetView: View {
             .listStyle(.grouped)
             .scrollContentBackground(.hidden)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(role: .cancel) {
                         dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
                     }
                 }
             }

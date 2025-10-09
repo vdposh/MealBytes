@@ -27,7 +27,7 @@ struct SearchView: View {
             .navigationTitle(mealType.rawValue)
             .navigationSubtitle(
                 searchViewModel.isLoadingBookmarks
-                ? " "
+                ? "Loading..."
                 : searchViewModel.bookmarkCountText
             )
             .toolbarTitleDisplayMode(.large)
@@ -100,8 +100,8 @@ struct SearchView: View {
         return EmptyView()
             .searchable(
                 text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search for food"
+//                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search"
             )
             .disabled(searchViewModel.isEditing)
     }
@@ -192,15 +192,11 @@ struct SearchView: View {
         switch searchViewModel.editingState {
         case .active:
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    searchViewModel.selectedItems.removeAll()
+                Button(role: .cancel) {                    searchViewModel.selectedItems.removeAll()
                     searchViewModel.editingState = .inactive
                     withAnimation {
-                        searchViewModel.showBottomBar = false
                         editMode?.wrappedValue = .inactive
                     }
-                } label: {
-                    Image(systemName: "xmark")
                 }
             }
             
@@ -225,6 +221,49 @@ struct SearchView: View {
                 }
             }
             
+            ToolbarItem(placement: .bottomBar) {
+                Text("")
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarItem(placement: .status) {
+                Text(searchViewModel.selectionStatusText)
+                    .frame(maxWidth: .infinity)
+            }
+            .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarItem(placement: .bottomBar) {
+                Button(role: .destructive) {
+                    searchViewModel.showRemoveDialog = true
+                } label: {
+                    Image(systemName: "bookmark.slash")
+                }
+                .disabled(searchViewModel.selectedItems.isEmpty)
+                .confirmationDialog(
+                    searchViewModel.removeDialogMessage,
+                    isPresented: $searchViewModel.showRemoveDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button(role: .destructive) {
+                        let idRemove = searchViewModel.selectedItems
+                        searchViewModel.foods.removeAll {
+                            idRemove.contains($0.searchFoodId)
+                        }
+                        searchViewModel.selectedItems.removeAll()
+                        searchViewModel.editingState = .inactive
+                        withAnimation {
+                            editMode?.wrappedValue = .inactive
+                        }
+                        Task {
+                            await searchViewModel
+                                .removeBookmarks(for: idRemove)
+                        }
+                    } label: {
+                        Text(searchViewModel.removeDialogTitle)
+                    }
+                }
+            }
+            
         case .inactive:
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -238,7 +277,6 @@ struct SearchView: View {
                     if !searchViewModel.foods.isEmpty {
                         Button {
                             searchViewModel.editingState = .active
-                            searchViewModel.showBottomBar = true
                             withAnimation {
                                 editMode?.wrappedValue = .active
                             }
@@ -251,59 +289,6 @@ struct SearchView: View {
                     Image(systemName: "ellipsis")
                 }
             }
-        }
-        
-        if searchViewModel.showBottomBar {
-            ToolbarItem(placement: .bottomBar) {
-                Text("")
-            }
-            .sharedBackgroundVisibility(.hidden)
-            
-            ToolbarItem(placement: .status) {
-                Text(searchViewModel.selectionStatusText)
-                    .frame(maxWidth: .infinity, alignment: .center)
-            }
-            .sharedBackgroundVisibility(.hidden)
-            
-            ToolbarItem(placement: .bottomBar) {
-                Button {
-                    searchViewModel.showRemoveDialog = true
-                } label: {
-                    Image(systemName: "bookmark.slash")
-                }
-                .disabled(searchViewModel.selectedItems.isEmpty)
-                .confirmationDialog(
-                    searchViewModel.removeDialogMessage,
-                    isPresented: $searchViewModel.showRemoveDialog,
-                    titleVisibility: .visible
-                ) {
-                    Button(role: .destructive) {
-                        let idsToRemove = searchViewModel.selectedItems
-                        searchViewModel.foods.removeAll {
-                            idsToRemove.contains($0.searchFoodId)
-                        }
-                        searchViewModel.selectedItems.removeAll()
-                        searchViewModel.editingState = .inactive
-                        withAnimation {
-                            searchViewModel.showBottomBar = false
-                            editMode?.wrappedValue = .inactive
-                        }
-                        Task {
-                            await searchViewModel
-                                .removeBookmarks(for: idsToRemove)
-                        }
-                    } label: {
-                        Text(searchViewModel.removeDialogTitle)
-                    }
-                }
-            }
-        } else {
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            
-            ToolbarItem(placement: .bottomBar) {
-                Text("")
-            }
-            .sharedBackgroundVisibility(.hidden)
         }
     }
 }

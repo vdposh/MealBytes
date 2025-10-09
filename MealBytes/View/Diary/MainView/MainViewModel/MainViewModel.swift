@@ -39,6 +39,7 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
+    @Published var selectedMealType: MealType?
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var intakeProgress: Double = 0.0
