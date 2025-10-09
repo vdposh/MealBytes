@@ -191,6 +191,19 @@ struct SearchView: View {
     private var searchViewToolbar: some ToolbarContent {
         switch searchViewModel.editingState {
         case .active:
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    searchViewModel.selectedItems.removeAll()
+                    searchViewModel.editingState = .inactive
+                    withAnimation {
+                        searchViewModel.showBottomBar = false
+                        editMode?.wrappedValue = .inactive
+                    }
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            }
+            
             ToolbarItem(placement: .topBarLeading) {
                 if searchViewModel.selectedItems.count
                     < searchViewModel.foods.count {
@@ -212,18 +225,35 @@ struct SearchView: View {
                 }
             }
             
+        case .inactive:
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    searchViewModel.selectedItems.removeAll()
-                    searchViewModel.editingState = .inactive
-                    withAnimation {
-                        editMode?.wrappedValue = .inactive
+                Menu {
+                    Picker("Meal Type", selection: $mealType) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Label(meal.rawValue, systemImage: meal.iconName)
+                                .tag(meal)
+                        }
+                    }
+                    
+                    if !searchViewModel.foods.isEmpty {
+                        Button {
+                            searchViewModel.editingState = .active
+                            searchViewModel.showBottomBar = true
+                            withAnimation {
+                                editMode?.wrappedValue = .active
+                            }
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                            Text("Reorder and clean up")
+                        }
                     }
                 } label: {
-                    Image(systemName: "xmark")
+                    Image(systemName: "ellipsis")
                 }
             }
-            
+        }
+        
+        if searchViewModel.showBottomBar {
             ToolbarItem(placement: .bottomBar) {
                 Text("")
             }
@@ -234,8 +264,6 @@ struct SearchView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             .sharedBackgroundVisibility(.hidden)
-            
-            ToolbarSpacer(.flexible, placement: .bottomBar)
             
             ToolbarItem(placement: .bottomBar) {
                 Button {
@@ -257,6 +285,7 @@ struct SearchView: View {
                         searchViewModel.selectedItems.removeAll()
                         searchViewModel.editingState = .inactive
                         withAnimation {
+                            searchViewModel.showBottomBar = false
                             editMode?.wrappedValue = .inactive
                         }
                         Task {
@@ -268,32 +297,13 @@ struct SearchView: View {
                     }
                 }
             }
+        } else {
+            ToolbarSpacer(.flexible, placement: .bottomBar)
             
-        case .inactive:
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Picker("Meal Type", selection: $mealType) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Label(meal.rawValue, systemImage: meal.iconName)
-                                .tag(meal)
-                        }
-                    }
-                    
-                    if !searchViewModel.foods.isEmpty {
-                        Button {
-                            searchViewModel.editingState = .active
-                            withAnimation {
-                                editMode?.wrappedValue = .active
-                            }
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                            Text("Reorder and clean up")
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
-                }
+            ToolbarItem(placement: .bottomBar) {
+                Text("")
             }
+            .sharedBackgroundVisibility(.hidden)
         }
     }
 }

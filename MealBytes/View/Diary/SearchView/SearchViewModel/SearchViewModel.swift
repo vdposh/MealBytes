@@ -35,6 +35,7 @@ final class SearchViewModel: ObservableObject {
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
     @Published var isLoadingBookmarks: Bool = false
+    @Published var showBottomBar: Bool = false
     @Published var showRemoveDialog: Bool = false
     
     private var maxResultsPerPage: Int = 20
