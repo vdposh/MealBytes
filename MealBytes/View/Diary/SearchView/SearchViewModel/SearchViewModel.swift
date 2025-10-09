@@ -34,6 +34,7 @@ final class SearchViewModel: ObservableObject {
     }
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
+    @Published var isLoadingBookmarks: Bool = false
     @Published var showRemoveDialog: Bool = false
     
     private var maxResultsPerPage: Int = 20
@@ -118,7 +119,7 @@ final class SearchViewModel: ObservableObject {
             if query.isEmpty {
                 isLoading = true
             }
-            
+            isLoadingBookmarks = true
             selectedMealType = mealType
         }
         
@@ -137,11 +138,13 @@ final class SearchViewModel: ObservableObject {
                 }
                 
                 self.isLoading = false
+                self.isLoadingBookmarks = false
                 self.appError = nil
             }
         } catch {
             await MainActor.run {
                 self.isLoading = false
+                self.isLoadingBookmarks = false
             }
         }
     }

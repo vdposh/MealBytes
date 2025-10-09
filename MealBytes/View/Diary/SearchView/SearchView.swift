@@ -25,7 +25,11 @@ struct SearchView: View {
         searchViewContentBody
             .overlay(searchableModifier)
             .navigationTitle(mealType.rawValue)
-            .navigationSubtitle(searchViewModel.bookmarkCountText)
+            .navigationSubtitle(
+                searchViewModel.isLoadingBookmarks
+                ? " "
+                : searchViewModel.bookmarkCountText
+            )
             .toolbarTitleDisplayMode(.large)
             .toolbar {
                 searchViewToolbar
