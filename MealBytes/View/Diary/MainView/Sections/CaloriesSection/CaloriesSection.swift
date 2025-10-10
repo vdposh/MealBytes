@@ -90,6 +90,7 @@ struct CaloriesSection: View {
         HStack {
             ForEach(-3...3, id: \.self) { offset in
                 let date = mainViewModel.dateByAddingOffset(for: offset)
+                
                 Button {
                     mainViewModel.date = date
                 } label: {
@@ -110,7 +111,7 @@ struct CaloriesSection: View {
             }
         }
         .listRowInsets(
-            EdgeInsets(top: 40, leading: 0, bottom: 16, trailing: 0)
+            EdgeInsets(top: 36, leading: 0, bottom: 16, trailing: 0)
         )
     }
 }

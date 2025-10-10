@@ -14,7 +14,6 @@ struct MainView: View {
     var body: some View {
         mainViewContentBody
             .navigationTitle(mainViewModel.navigationTitle)
-            .navigationSubtitle(mainViewModel.navigationSubtitle)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 mainViewToolbar
