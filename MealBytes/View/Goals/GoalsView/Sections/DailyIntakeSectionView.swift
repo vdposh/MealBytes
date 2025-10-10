@@ -31,7 +31,7 @@ struct DailyIntakeSectionView: View {
                         } label: {
                             HStack {
                                 Image(systemName: dailyIntakeState.icon)
-                                    .foregroundStyle(Color.accentColor)
+                                    .foregroundStyle(.accent)
                                 Text("Daily Intake")
                             }
                         }
@@ -44,7 +44,7 @@ struct DailyIntakeSectionView: View {
                 } label: {
                     HStack {
                         Image(systemName: "person")
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.accent)
                         Text("Daily Intake")
                     }
                 }

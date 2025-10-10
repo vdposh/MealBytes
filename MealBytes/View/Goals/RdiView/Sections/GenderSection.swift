@@ -42,7 +42,7 @@ enum Gender: String, CaseIterable {
     var selectedColor: Color {
         switch self {
         case .notSelected: return .customRed
-        case .male, .female: return .accentColor
+        case .male, .female: return .accent
         }
     }
 }

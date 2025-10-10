@@ -154,12 +154,6 @@ final class SearchViewModel: ObservableObject {
         query = ""
     }
     
-    func mealSwitch(to meal: MealType) -> Bool {
-        guard meal != selectedMealType else { return false }
-        isLoading = true
-        return true
-    }
-    
     // MARK: - Save Bookmarks
     func saveBookmarkOrder() async {
         await MainActor.run {

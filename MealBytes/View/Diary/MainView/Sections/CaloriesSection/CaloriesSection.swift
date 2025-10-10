@@ -48,6 +48,7 @@ struct CaloriesSection: View {
                             .scaleEffect(x: 1, y: 2, anchor: .center)
                             .frame(height: 6)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .tint(.accent)
                     }
                 }
                 .padding(.bottom, mainViewModel.canDisplayIntake() ? 12 : 2)

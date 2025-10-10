@@ -58,7 +58,7 @@ enum HeightUnit: String, CaseIterable {
     var selectedColor: Color {
         switch self {
         case .notSelected: return .customRed
-        default: return .accentColor
+        default: return .accent
         }
     }
 }

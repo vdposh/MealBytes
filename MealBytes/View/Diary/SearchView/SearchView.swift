@@ -40,11 +40,10 @@ struct SearchView: View {
             )
             .navigationBarBackButtonHidden(searchViewModel.isEditing)
             .onChange(of: mealType) {
-                if searchViewModel.mealSwitch(to: mealType) {
-                    Task {
-                        await searchViewModel
-                            .loadBookmarksSearchView(for: mealType)
-                    }
+                searchViewModel.isLoadingBookmarks = true
+                Task {
+                    await searchViewModel
+                        .loadBookmarksSearchView(for: mealType)
                 }
             }
     }
@@ -86,6 +85,7 @@ struct SearchView: View {
                             await searchViewModel.saveBookmarkOrder()
                         }
                     }
+                    
                     pageButton(direction: .next)
                     pageButton(direction: .previous)
                 }
@@ -100,7 +100,7 @@ struct SearchView: View {
         return EmptyView()
             .searchable(
                 text: $searchViewModel.query,
-//                placement: .navigationBarDrawer(displayMode: .always),
+                placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search"
             )
             .disabled(searchViewModel.isEditing)
@@ -154,7 +154,7 @@ struct SearchView: View {
                 .tint(
                     searchViewModel.isBookmarkedSearchView(food)
                     ? .red
-                    : .accentColor
+                    : .accent
                 )
             }
         }
@@ -221,16 +221,13 @@ struct SearchView: View {
                 }
             }
             
-            ToolbarItem(placement: .bottomBar) {
-                Text("")
+            ToolbarItem(placement: .status) {
+                Text(searchViewModel.selectionStatusText)
+                    .frame(width: 220)
             }
             .sharedBackgroundVisibility(.hidden)
             
-            ToolbarItem(placement: .status) {
-                Text(searchViewModel.selectionStatusText)
-                    .frame(maxWidth: .infinity)
-            }
-            .sharedBackgroundVisibility(.hidden)
+            ToolbarSpacer(.flexible, placement: .bottomBar)
             
             ToolbarItem(placement: .bottomBar) {
                 Button(role: .destructive) {
