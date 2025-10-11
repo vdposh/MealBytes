@@ -37,7 +37,7 @@ struct DateView: View {
                 )
                 .font(.footnote)
         }
-        .padding(.vertical, 6)
+        .padding(5)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             mainViewModel.color(

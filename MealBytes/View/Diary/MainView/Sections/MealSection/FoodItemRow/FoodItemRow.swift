@@ -31,8 +31,8 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
         ) {
-            VStack(spacing: 10) {
-                HStack {
+            VStack(spacing: 5) {
+                HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(mealItem.foodName)
                         Text(mainViewModel.formattedMealText(for: mealItem))

@@ -59,7 +59,6 @@ struct MealHeaderView: View {
                             mainViewModel: mainViewModel
                         )
                     }
-                    .padding(.vertical, 4)
                     .padding(.trailing, 4)
                     
                     Image(systemName: "plus")

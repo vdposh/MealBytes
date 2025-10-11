@@ -162,7 +162,7 @@ struct FoodView: View {
     
     private var nutrientActionSection: some View {
         Section {
-            HStack {
+            HStack(spacing: 10) {
                 switch showAddButton {
                 case true:
                     ActionButtonView(
@@ -227,9 +227,13 @@ struct FoodView: View {
                     }
                 }
             }
+            .padding(.top, 8)
         }
-        .padding(.vertical, 10)
-        .listRowInsets(EdgeInsets())
+        .padding(.vertical, 8)
+        .listRowInsets(
+            EdgeInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+        )
+        .listSectionMargins(.horizontal, 0)
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
     }

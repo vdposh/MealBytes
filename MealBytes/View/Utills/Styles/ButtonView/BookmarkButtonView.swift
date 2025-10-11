@@ -13,13 +13,23 @@ struct BookmarkButtonView: View {
     
     var body: some View {
         Button(action: action) {
-            Image(systemName: isFilled ? "bookmark.fill" : "bookmark")
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.accent)
-                .frame(width: 30, height: 30)
+            ZStack {
+                Circle()
+                    .fill(
+                        isFilled ? Color.accent : Color.secondary
+                            .opacity(0.2))
+                    .frame(width: 53, height: 53)
+                
+                Image(systemName: isFilled ? "bookmark.slash" : "bookmark")
+                    .resizable()
+                    .scaledToFit()
+                    .fontWeight(isFilled ? .regular : .medium)
+                    .frame(width: 25, height: 25)
+                    .foregroundStyle(isFilled ? .white : .accent)
+            }
         }
-        .padding(.horizontal, 20)
+        .glassEffect(.regular.interactive())
+        .padding(.leading, 8)
         .buttonStyle(.borderless)
     }
 }

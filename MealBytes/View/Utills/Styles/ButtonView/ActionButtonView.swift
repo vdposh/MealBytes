@@ -20,25 +20,21 @@ struct ActionButtonView: View {
             Text(title)
                 .font(.headline)
                 .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, minHeight: 50)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(
-                            isEnabled
-                            ? color
-                            : color.opacity(0.3)
-                        )
-                )
+                .frame(maxWidth: .infinity, minHeight: 53)
         }
-        .buttonStyle(.borderless)
         .disabled(!isEnabled)
+        .glassEffect(
+            .regular.interactive().tint(color),
+            in: .capsule
+        )
+        .buttonStyle(.borderless)
     }
 }
 
 #Preview {
-    PreviewFoodView.foodView
+    PreviewContentView.contentView
 }
 
 #Preview {
-    PreviewContentView.contentView
+    PreviewFoodView.foodView
 }
