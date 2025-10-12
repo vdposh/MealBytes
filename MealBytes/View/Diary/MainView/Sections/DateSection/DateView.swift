@@ -39,15 +39,24 @@ struct DateView: View {
         }
         .padding(5)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(
-            mainViewModel.color(
-                for: .day,
-                date: date,
-                isSelected: isSelected,
-                forBackground: true
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background {
+            if isSelected {
+                Color.clear
+                    .glassEffect(
+                        .clear.interactive().tint(
+                            mainViewModel.color(
+                                for: .day,
+                                date: date,
+                                isSelected: isSelected,
+                                forBackground: true
+                            )
+                        ),
+                        in: .rect(cornerRadius: 16)
+                    )
+            } else {
+                Color.clear
+            }
+        }
     }
 }
 

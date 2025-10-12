@@ -91,7 +91,8 @@ struct FoodView: View {
         Section {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
-                placeholder: "Serving size"
+                placeholder: "Serving size",
+                useLabel: true
             )
             .focused($amountFocused)
             .onChange(of: amountFocused) {
@@ -101,53 +102,28 @@ struct FoodView: View {
                 )
             }
             
-            ServingButtonView(
-                showActionSheet: $foodViewModel.showServingDialog,
-                title: "Serving",
-                description: foodViewModel.servingDescription
-            ) {
-                foodViewModel.showServingDialog.toggle()
-                amountFocused = false
-                foodViewModel.normalizeAmount()
-            }
-            .confirmationDialog(
-                "Select a Serving",
-                isPresented: $foodViewModel.showServingDialog,
-                titleVisibility: .visible
-            ) {
-                if let servings = foodViewModel
-                    .foodDetail?.servings.serving {
-                    ForEach(servings, id: \.self) { serving in
-                        Button(
-                            foodViewModel.servingDescription(for: serving)
-                        ) {
-                            foodViewModel.updateServing(serving)
-                        }
+            if let selected = foodViewModel.selectedServing,
+               let servings = foodViewModel.foodDetail?.servings.serving {
+                ServingButtonView(
+                    description: foodViewModel
+                        .servingDescription(for: selected),
+                    iconName: "fork.knife",
+                    servings: servings,
+                    selectedServing: selected,
+                    selection: { serving in
+                        foodViewModel.updateServing(serving)
+                        amountFocused = false
+                        foodViewModel.normalizeAmount()
                     }
-                }
+                )
             }
             
             if showSaveRemoveButton {
-                ServingButtonView(
-                    showActionSheet: $foodViewModel.showMealTypeDialog,
-                    title: "MealType",
-                    description: foodViewModel.mealType.rawValue
-                ) {
-                    foodViewModel.showMealTypeDialog.toggle()
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
-                }
-                .confirmationDialog(
-                    "MealType",
-                    isPresented: $foodViewModel.showMealTypeDialog,
-                    titleVisibility: .visible
-                ) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Button(meal.rawValue) {
-                            foodViewModel.mealType = meal
-                        }
-                    }
-                }
+                ServingPickerView(
+                    description: foodViewModel.mealType.rawValue,
+                    iconName: foodViewModel.mealType.iconName,
+                    selectedMealType: $foodViewModel.mealType
+                )
             }
         } header: {
             Text(foodViewModel.food.searchFoodName)
@@ -155,7 +131,7 @@ struct FoodView: View {
                 .fontWeight(.bold)
                 .foregroundStyle(Color.primary)
                 .listRowInsets(
-                    EdgeInsets(top: 34, leading: 16, bottom: 16, trailing: 16)
+                    EdgeInsets(top: 20, leading: 16, bottom: 16, trailing: 16)
                 )
         }
     }

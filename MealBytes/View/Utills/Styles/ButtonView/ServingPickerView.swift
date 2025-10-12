@@ -1,19 +1,17 @@
 //
-//  ServingButtonView.swift
+//  ServingPickerView.swift
 //  MealBytes
 //
-//  Created by Vlad Posherstnik on 08/03/2025.
+//  Created by Vlad Posherstnik on 11/10/2025.
 //
 
 import SwiftUI
 
-struct ServingButtonView: View {
+struct ServingPickerView: View {
     let description: String
     let iconName: String
     let iconColor: Color = .accent.opacity(0.8)
-    let servings: [Serving]
-    let selectedServing: Serving
-    let selection: (Serving) -> Void
+    @Binding var selectedMealType: MealType
     
     var body: some View {
         HStack {
@@ -32,17 +30,10 @@ struct ServingButtonView: View {
             
                 .overlay(alignment: .trailing) {
                     Menu {
-                        ForEach(servings, id: \.self) { serving in
-                            Button {
-                                selection(serving)
-                            } label: {
-                                Label {
-                                    Text(serving.measurementDescription)
-                                } icon: {
-                                    if serving == selectedServing {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
+                        Picker("Meal Type", selection: $selectedMealType) {
+                            ForEach(MealType.allCases, id: \.self) { meal in
+                                Label(meal.rawValue, systemImage: meal.iconName)
+                                    .tag(meal)
                             }
                         }
                     } label: {

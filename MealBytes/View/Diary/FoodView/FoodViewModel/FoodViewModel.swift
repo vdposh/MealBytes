@@ -18,8 +18,6 @@ final class FoodViewModel: ObservableObject {
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
-    @Published var showServingDialog: Bool = false
-    @Published var showMealTypeDialog: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil

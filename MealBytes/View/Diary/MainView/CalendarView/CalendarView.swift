@@ -47,7 +47,7 @@ struct CalendarView: View {
                             isPresented: &mainViewModel.isExpandedCalendar
                         )
                     } label: {
-                        VStack(spacing: 3) {
+                        VStack(spacing: 5) {
                             Text("\(mainViewModel.dayComponent(for: date))")
                                 .foregroundStyle(mainViewModel.color(
                                     for: .day,
@@ -64,21 +64,35 @@ struct CalendarView: View {
                             if mainViewModel.hasMealItems(for: date) {
                                 Circle()
                                     .frame(width: 5, height: 5)
+                                    .padding(.bottom, 2)
                             }
                         }
-                        .frame(width: 40, height: 40)
-                        .background(
-                            mainViewModel.color(
-                                for: .day,
-                                date: date,
-                                isSelected: mainViewModel.calendar.isDate(
-                                    mainViewModel.date,
-                                    inSameDayAs: date
-                                ),
-                                forBackground: true
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .frame(width: 45, height: 45)
+                    }
+                    .background {
+                        if mainViewModel.calendar.isDate(
+                            mainViewModel.date,
+                            inSameDayAs: date
+                        ) {
+                            Color.clear
+                                .glassEffect(
+                                    .regular.interactive().tint(
+                                        mainViewModel.color(
+                                            for: .day,
+                                            date: date,
+                                            isSelected: mainViewModel
+                                                .calendar.isDate(
+                                                    mainViewModel.date,
+                                                    inSameDayAs: date
+                                                ),
+                                            forBackground: true
+                                        )
+                                    ),
+                                    in: .rect(cornerRadius: 16)
+                                )
+                        } else {
+                            Color.clear
+                        }
                     }
                     .buttonStyle(.borderless)
                 }

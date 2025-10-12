@@ -12,6 +12,9 @@ struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
     var placeholder: String = "Enter value"
+    var labelIconName: String = "pencil"
+    var labelIconColor: Color = .accent.opacity(0.8)
+    var useLabel: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -19,7 +22,7 @@ struct ServingTextFieldView: View {
     var maxIntegerDigits: Int = 4
     
     var body: some View {
-        TextField(placeholder, text: $text)
+        let field = TextField(placeholder, text: $text)
             .keyboardType(keyboardType)
             .onChange(of: text) {
                 validateInput(&text)
@@ -29,15 +32,30 @@ struct ServingTextFieldView: View {
                     finalizeInput(&text)
                 }
             }
-            .overlay(
-                Button(action: {
-                    $isFocused.wrappedValue = true
-                }) {
-                    Color.clear
+        
+        Group {
+            if useLabel {
+                Label {
+                    field
+                } icon: {
+                    Image(systemName: labelIconName)
+                        .font(.system(size: 14))
+                        .foregroundStyle(labelIconColor)
                 }
-            )
-            .buttonStyle(.borderless)
-            .focused($isFocused)
+                .labelIconToTitleSpacing(10)
+            } else {
+                field
+            }
+        }
+        .overlay(
+            Button(action: {
+                $isFocused.wrappedValue = true
+            }) {
+                Color.clear
+            }
+        )
+        .buttonStyle(.borderless)
+        .focused($isFocused)
     }
     
     private func validateInput(_ input: inout String) {
@@ -119,9 +137,9 @@ enum InputMode {
 }
 
 #Preview {
-    PreviewFoodView.foodView
+    PreviewContentView.contentView
 }
 
 #Preview {
-    PreviewContentView.contentView
+    PreviewFoodView.foodView
 }

@@ -34,7 +34,7 @@ struct MealHeaderView: View {
                     VStack(spacing: 15) {
                         HStack {
                             Image(systemName: iconName)
-                                .frame(width: 22)
+                                .frame(width: 25)
                                 .foregroundStyle(color)
                             Text(title)
                                 .font(.system(size: 18))
@@ -44,6 +44,9 @@ struct MealHeaderView: View {
                                     maxWidth: .infinity,
                                     alignment: .leading
                                 )
+                            .labelIconToTitleSpacing(10)
+                            .frame(maxWidth: .infinity,alignment: .leading
+                            )
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
                                 .font(.callout)
@@ -65,6 +68,7 @@ struct MealHeaderView: View {
                         .fontWeight(.bold)
                 }
             }
+            .animation(nil, value: mainViewModel.date)
             
             if mainViewModel.expandedSections[mealType] == true {
                 let foodItems = mainViewModel.filteredMealItems(

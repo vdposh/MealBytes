@@ -88,6 +88,7 @@ struct MainView: View {
             nutrients: mainViewModel.filteredNutrientValues,
             isExpandable: $mainViewModel.isExpanded
         )
+        .animation(nil, value: mainViewModel.date)
     }
     
     @ToolbarContentBuilder

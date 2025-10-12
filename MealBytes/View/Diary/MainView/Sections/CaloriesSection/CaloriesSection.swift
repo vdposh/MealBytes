@@ -80,6 +80,7 @@ struct CaloriesSection: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .animation(nil, value: mainViewModel.date)
         } header: {
             dateSection
         }
@@ -92,7 +93,9 @@ struct CaloriesSection: View {
                 let date = mainViewModel.dateByAddingOffset(for: offset)
                 
                 Button {
-                    mainViewModel.date = date
+                    withAnimation {
+                        mainViewModel.date = date
+                    }
                 } label: {
                     DateView(
                         date: date,
@@ -111,7 +114,7 @@ struct CaloriesSection: View {
             }
         }
         .listRowInsets(
-            EdgeInsets(top: 36, leading: 0, bottom: 16, trailing: 0)
+            EdgeInsets(top: 20, leading: 0, bottom: 16, trailing: 0)
         )
     }
 }
