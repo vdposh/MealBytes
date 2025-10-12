@@ -68,7 +68,7 @@ struct MealHeaderView: View {
                         .fontWeight(.bold)
                 }
             }
-            .animation(nil, value: mainViewModel.date)
+            .animation(nil, value: UUID())
             
             if mainViewModel.expandedSections[mealType] == true {
                 let foodItems = mainViewModel.filteredMealItems(

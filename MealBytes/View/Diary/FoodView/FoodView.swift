@@ -119,7 +119,7 @@ struct FoodView: View {
             }
             
             if showSaveRemoveButton {
-                ServingPickerView(
+                MealTypePickerView(
                     description: foodViewModel.mealType.rawValue,
                     iconName: foodViewModel.mealType.iconName,
                     selectedMealType: $foodViewModel.mealType

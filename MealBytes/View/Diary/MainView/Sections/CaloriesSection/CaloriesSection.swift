@@ -80,7 +80,7 @@ struct CaloriesSection: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .animation(nil, value: mainViewModel.date)
+            .animation(nil, value: UUID())
         } header: {
             dateSection
         }

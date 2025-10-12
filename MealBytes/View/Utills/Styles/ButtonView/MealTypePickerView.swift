@@ -1,5 +1,5 @@
 //
-//  ServingPickerView.swift
+//  MealTypePickerView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 11/10/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ServingPickerView: View {
+struct MealTypePickerView: View {
     let description: String
     let iconName: String
     let iconColor: Color = .accent.opacity(0.8)
@@ -23,7 +23,7 @@ struct ServingPickerView: View {
                     .foregroundStyle(iconColor)
             }
             .labelIconToTitleSpacing(10)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 27, alignment: .leading)
             
             Text("")
                 .frame(maxWidth: 30, alignment: .trailing)
@@ -32,8 +32,11 @@ struct ServingPickerView: View {
                     Menu {
                         Picker("Meal Type", selection: $selectedMealType) {
                             ForEach(MealType.allCases, id: \.self) { meal in
-                                Label(meal.rawValue, systemImage: meal.iconName)
-                                    .tag(meal)
+                                Label(
+                                    meal.rawValue,
+                                    systemImage: meal.iconName
+                                )
+                                .tag(meal)
                             }
                         }
                     } label: {

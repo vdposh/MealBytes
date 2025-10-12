@@ -41,11 +41,13 @@ struct CalendarView: View {
                     id: \.self
                 ) { date in
                     Button {
-                        mainViewModel.selectDate(
-                            date,
-                            selectedDate: &mainViewModel.date,
-                            isPresented: &mainViewModel.isExpandedCalendar
-                        )
+                        withAnimation {
+                            mainViewModel.selectDate(
+                                date,
+                                selectedDate: &mainViewModel.date,
+                                isPresented: &mainViewModel.isExpandedCalendar
+                            )
+                        }
                     } label: {
                         VStack(spacing: 5) {
                             Text("\(mainViewModel.dayComponent(for: date))")

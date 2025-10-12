@@ -24,29 +24,32 @@ struct MainView: View {
     }
     
     private var mainViewContentBody: some View {
-        ZStack(alignment: .top) {
-            Form {
-                caloriesSection
-                mealSections
-                detailedInformationSection
-            }
-            .scrollIndicators(.hidden)
-            .listSectionSpacing(16)
-            
+        Form {
+            caloriesSection
+            mealSections
+            detailedInformationSection
+        }
+        .scrollIndicators(.hidden)
+        .listSectionSpacing(16)
+        .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
-                ZStack(alignment: .top) {
-                    CalendarView(mainViewModel: mainViewModel)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .zIndex(2)
-                    
-                    CalendarButtonView {
-                        mainViewModel.isExpandedCalendar = false
-                    }
-                    .zIndex(1)
+                CalendarButtonView {
+                    mainViewModel.isExpandedCalendar = false
                 }
             }
         }
+        .overlay(alignment: .top) {
+            if mainViewModel.isExpandedCalendar {
+                CalendarView(mainViewModel: mainViewModel)
+                    .background(Color(.systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .transition(.blurReplace)
+            }
+        }
+        .animation(
+            .bouncy(duration: 0.4),
+            value: mainViewModel.isExpandedCalendar
+        )
         .navigationDestination(
             item: $mainViewModel.selectedMealType
         ) { mealType in
@@ -88,7 +91,7 @@ struct MainView: View {
             nutrients: mainViewModel.filteredNutrientValues,
             isExpandable: $mainViewModel.isExpanded
         )
-        .animation(nil, value: mainViewModel.date)
+        .animation(nil, value: UUID())
     }
     
     @ToolbarContentBuilder
@@ -116,11 +119,13 @@ struct MainView: View {
             
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    mainViewModel.selectDate(
-                        Date(),
-                        selectedDate: &mainViewModel.date,
-                        isPresented: &mainViewModel.isExpandedCalendar
-                    )
+                    withAnimation {
+                        mainViewModel.selectDate(
+                            Date(),
+                            selectedDate: &mainViewModel.date,
+                            isPresented: &mainViewModel.isExpandedCalendar
+                        )
+                    }
                 } label: {
                     Text("Today")
                         .font(.headline)
@@ -133,11 +138,15 @@ struct MainView: View {
         ToolbarItemGroup(placement: .topBarTrailing) {
             if mainViewModel.isExpandedCalendar {
                 Button(role: .cancel) {
-                    mainViewModel.isExpandedCalendar = false
+                    withAnimation {
+                        mainViewModel.isExpandedCalendar = false
+                    }
                 }
             } else {
                 Button {
-                    mainViewModel.isExpandedCalendar = true
+                    withAnimation {
+                        mainViewModel.isExpandedCalendar = true
+                    }
                 } label: {
                     Image(systemName: "calendar")
                 }

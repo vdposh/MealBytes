@@ -90,6 +90,7 @@ struct SearchView: View {
                     pageButton(direction: .previous)
                 }
             }
+            .transaction { $0.animation = nil }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
@@ -193,7 +194,11 @@ struct SearchView: View {
         case .active:
             ToolbarItem(placement: .topBarTrailing) {
                 Button(role: .cancel) {                    searchViewModel.selectedItems.removeAll()
-                    searchViewModel.editingState = .inactive
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        searchViewModel.editingState = .inactive
+                    }
                     withAnimation {
                         editMode?.wrappedValue = .inactive
                     }
@@ -227,40 +232,6 @@ struct SearchView: View {
             }
             .sharedBackgroundVisibility(.hidden)
             
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            
-            ToolbarItem(placement: .bottomBar) {
-                Button(role: .destructive) {
-                    searchViewModel.showRemoveDialog = true
-                } label: {
-                    Image(systemName: "bookmark.slash")
-                }
-                .disabled(searchViewModel.selectedItems.isEmpty)
-                .confirmationDialog(
-                    searchViewModel.removeDialogMessage,
-                    isPresented: $searchViewModel.showRemoveDialog,
-                    titleVisibility: .visible
-                ) {
-                    Button(role: .destructive) {
-                        let idRemove = searchViewModel.selectedItems
-                        searchViewModel.foods.removeAll {
-                            idRemove.contains($0.searchFoodId)
-                        }
-                        searchViewModel.selectedItems.removeAll()
-                        searchViewModel.editingState = .inactive
-                        withAnimation {
-                            editMode?.wrappedValue = .inactive
-                        }
-                        Task {
-                            await searchViewModel
-                                .removeBookmarks(for: idRemove)
-                        }
-                    } label: {
-                        Text(searchViewModel.removeDialogTitle)
-                    }
-                }
-            }
-            
         case .inactive:
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -287,6 +258,51 @@ struct SearchView: View {
                 }
             }
         }
+        
+        ToolbarSpacer(.flexible, placement: .bottomBar)
+        
+        ToolbarItem(placement: .bottomBar) {
+            Button(role: .destructive) {
+                searchViewModel.showRemoveDialog = true
+            } label: {
+                Image(systemName: "bookmark.slash")
+            }
+            .opacity(searchViewModel.isEditing ? 1 : 0)
+            .disabled(
+                !searchViewModel.isEditing
+                || searchViewModel.selectedItems.isEmpty
+            )
+            .confirmationDialog(
+                searchViewModel.removeDialogMessage,
+                isPresented: $searchViewModel.showRemoveDialog,
+                titleVisibility: .visible
+            ) {
+                Button(role: .destructive) {
+                    let idRemove = searchViewModel.selectedItems
+                    searchViewModel.foods.removeAll {
+                        idRemove.contains($0.searchFoodId)
+                    }
+                    searchViewModel.selectedItems.removeAll()
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        searchViewModel.editingState = .inactive
+                    }
+                    withAnimation {
+                        editMode?.wrappedValue = .inactive
+                    }
+                    Task {
+                        await searchViewModel
+                            .removeBookmarks(for: idRemove)
+                    }
+                } label: {
+                    Text(searchViewModel.removeDialogTitle)
+                }
+            }
+        }
+        .sharedBackgroundVisibility(
+            searchViewModel.isEditing ? .visible : .hidden
+        )
     }
 }
 
