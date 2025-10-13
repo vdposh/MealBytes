@@ -21,7 +21,6 @@ struct MealSection: View {
             fat: mealSectionModel.fat,
             protein: mealSectionModel.protein,
             carbohydrate: mealSectionModel.carbohydrate,
-            foodItems: mealSectionModel.foodItems,
             mainViewModel: mainViewModel
         )
     }

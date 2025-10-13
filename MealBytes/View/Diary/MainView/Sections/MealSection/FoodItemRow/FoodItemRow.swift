@@ -13,9 +13,7 @@ struct FoodItemRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        Button {
-            mainViewModel.selectedMealItem = mealItem
-        } label: {
+        NavigationLink(value: mealItem) {
             HStack {
                 VStack(spacing: 5) {
                     HStack(spacing: 10) {
@@ -26,6 +24,7 @@ struct FoodItemRow: View {
                                 mainViewModel.formattedMealText(for: mealItem)
                             )
                             .font(.subheadline)
+                            .foregroundStyle(.accent)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .layoutPriority(0)
@@ -83,11 +82,6 @@ struct FoodItemRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.trailing, 5)
-                
-                Image(systemName: "chevron.right")
-                    .font(.footnote)
-                    .fontWeight(.bold)
-                    .foregroundStyle(Color.secondary.opacity(0.5))
             }
         }
     }

@@ -61,9 +61,7 @@ struct MainView: View {
                 )
             }
         }
-        .navigationDestination(
-            item: $mainViewModel.selectedMealItem
-        ) { item in
+        .navigationDestination(for: MealItem.self) { item in
             FoodView(
                 food: Food(
                     searchFoodId: item.foodId,

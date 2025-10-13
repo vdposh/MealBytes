@@ -16,7 +16,6 @@ struct MealHeaderView: View {
     let fat: Double
     let protein: Double
     let carbohydrate: Double
-    let foodItems: [MealItem]
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -32,19 +31,23 @@ struct MealHeaderView: View {
                 HStack {
                     VStack(spacing: 15) {
                         HStack {
-                            Image(systemName: iconName)
-                                .frame(width: 25)
-                                .foregroundStyle(color)
-                            Text(title)
-                                .font(.system(size: 18))
-                                .fontWeight(.medium)
-                                .foregroundStyle(Color.primary)
-                                .frame(
-                                    maxWidth: .infinity,
-                                    alignment: .leading
-                                )
-                                .labelIconToTitleSpacing(10)
-                                .frame(maxWidth: .infinity,alignment: .leading)
+                            Label {
+                                Text(title)
+                                    .font(.system(size: 18))
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(Color.primary)
+                            } icon: {
+                                Image(systemName: iconName)
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(color)
+                                
+                            }
+                            .frame(
+                                maxWidth: .infinity,
+                                alignment: .leading
+                            )
+                            .labelIconToTitleSpacing(10)
+                            
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
                                 .font(.callout)
@@ -69,13 +72,13 @@ struct MealHeaderView: View {
             .animation(nil, value: UUID())
             
             if mainViewModel.expandedSections[mealType] == true {
-                let foodItems = mainViewModel.filteredMealItems(
+                let filteredItems = mainViewModel.filteredMealItems(
                     for: mealType,
                     on: mainViewModel.date
                 )
                 
-                if !foodItems.isEmpty {
-                    ForEach(foodItems, id: \.id) { item in
+                if !filteredItems.isEmpty {
+                    ForEach(filteredItems, id: \.id) { item in
                         FoodItemRow(
                             mealItem: item,
                             mealType: mealType,
@@ -99,7 +102,12 @@ struct MealHeaderView: View {
                 }
             }
             
-            if !foodItems.isEmpty {
+            let filteredItems = mainViewModel.filteredMealItems(
+                for: mealType,
+                on: mainViewModel.date
+            )
+            
+            if !filteredItems.isEmpty {
                 ShowHideButtonView(isExpanded: Binding(
                     get: { mainViewModel.expandedSections[mealType] ?? false },
                     set: { mainViewModel.expandedSections[mealType] = $0 }
