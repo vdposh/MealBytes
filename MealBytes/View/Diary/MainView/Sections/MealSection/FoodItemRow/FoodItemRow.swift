@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct FoodItemRow: View {
-    @Binding var selectedMealItem: MealItem?
     let mealItem: MealItem
     let mealType: MealType
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Button {
-            selectedMealItem = mealItem
+            mainViewModel.selectedMealItem = mealItem
         } label: {
             HStack {
                 VStack(spacing: 5) {

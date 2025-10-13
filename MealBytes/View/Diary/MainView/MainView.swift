@@ -98,7 +98,6 @@ struct MainView: View {
             )
             
             MealSectionView(
-                selectedMealType: $mainViewModel.selectedMealType,
                 mealType: mealType,
                 mealItems: filteredItems,
                 mainViewModel: mainViewModel

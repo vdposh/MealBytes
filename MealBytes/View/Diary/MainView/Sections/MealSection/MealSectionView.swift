@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MealSectionView: View {
-    @Binding var selectedMealType: MealType?
     let mealType: MealType
     let mealItems: [MealItem]
     let mainViewModel: MainViewModel
@@ -39,7 +38,6 @@ struct MealSectionView: View {
         )
         
         return MealSection(
-            selectedMealType: $selectedMealType,
             mealSectionModel: model,
             mainViewModel: mainViewModel
         )

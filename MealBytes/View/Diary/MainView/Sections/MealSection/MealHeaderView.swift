@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MealHeaderView: View {
-    @Binding var selectedMealType: MealType?
     let mealType: MealType
     let title: String
     let iconName: String
@@ -23,7 +22,7 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             Button {
-                selectedMealType = mealType
+                mainViewModel.selectedMealType = mealType
                 mainViewModel.searchViewModel.loadingBookmarks()
                 Task {
                     await mainViewModel.searchViewModel
@@ -44,9 +43,8 @@ struct MealHeaderView: View {
                                     maxWidth: .infinity,
                                     alignment: .leading
                                 )
-                            .labelIconToTitleSpacing(10)
-                            .frame(maxWidth: .infinity,alignment: .leading
-                            )
+                                .labelIconToTitleSpacing(10)
+                                .frame(maxWidth: .infinity,alignment: .leading)
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
                                 .font(.callout)
@@ -79,7 +77,6 @@ struct MealHeaderView: View {
                 if !foodItems.isEmpty {
                     ForEach(foodItems, id: \.id) { item in
                         FoodItemRow(
-                            selectedMealItem: $mainViewModel.selectedMealItem,
                             mealItem: item,
                             mealType: mealType,
                             mainViewModel: mainViewModel
