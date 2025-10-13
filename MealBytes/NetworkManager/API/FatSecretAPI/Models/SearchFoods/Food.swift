@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Food: Codable, Identifiable {
+struct Food: Codable, Identifiable, Hashable {
     let searchFoodId: Int
     let searchFoodName: String
     let searchFoodDescription: String
@@ -20,9 +20,11 @@ struct Food: Codable, Identifiable {
              searchFoodDescription = "food_description"
     }
     
-    init(searchFoodId: Int,
-         searchFoodName: String,
-         searchFoodDescription: String) {
+    init(
+        searchFoodId: Int,
+        searchFoodName: String,
+        searchFoodDescription: String
+    ) {
         self.searchFoodId = searchFoodId
         self.searchFoodName = searchFoodName
         self.searchFoodDescription = searchFoodDescription

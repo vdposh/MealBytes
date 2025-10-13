@@ -8,29 +8,15 @@
 import SwiftUI
 
 struct FoodItemRow: View {
+    @Binding var selectedMealItem: MealItem?
     let mealItem: MealItem
     let mealType: MealType
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        NavigationLink(
-            destination: FoodView(
-                food: Food(
-                    searchFoodId: mealItem.foodId,
-                    searchFoodName: mealItem.foodName,
-                    searchFoodDescription: ""
-                ),
-                searchViewModel: mainViewModel.searchViewModel,
-                mainViewModel: mainViewModel,
-                mealType: mealType,
-                amount: String(mealItem.amount),
-                measurementDescription: mealItem.measurementDescription,
-                showAddButton: false,
-                showSaveRemoveButton: true,
-                originalCreatedAt: mealItem.createdAt,
-                originalMealItemId: mealItem.id
-            )
-        ) {
+        Button {
+            selectedMealItem = mealItem
+        } label: {
             VStack(spacing: 5) {
                 HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 5) {

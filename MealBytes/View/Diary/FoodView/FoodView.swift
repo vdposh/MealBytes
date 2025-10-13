@@ -53,7 +53,7 @@ struct FoodView: View {
                 foodViewToolbar
             }
             .task {
-                await foodViewModel.fetchFoodDetails()
+                await foodViewModel.loadFoodData()
             }
     }
     

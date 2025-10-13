@@ -18,6 +18,7 @@ final class FoodViewModel: ObservableObject {
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
+    @Published var hasLoadedDetails = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -105,6 +106,14 @@ final class FoodViewModel: ObservableObject {
             isError = true
         }
         isLoading = false
+    }
+    
+    func loadFoodData() async {
+        guard !hasLoadedDetails else { return }
+        await MainActor.run {
+            hasLoadedDetails = true
+        }
+        await fetchFoodDetails()
     }
     
     // MARK: - Add Food Item

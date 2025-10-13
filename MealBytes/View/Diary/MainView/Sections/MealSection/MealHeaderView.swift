@@ -79,6 +79,7 @@ struct MealHeaderView: View {
                 if !foodItems.isEmpty {
                     ForEach(foodItems, id: \.id) { item in
                         FoodItemRow(
+                            selectedMealItem: $mainViewModel.selectedMealItem,
                             mealItem: item,
                             mealType: mealType,
                             mainViewModel: mainViewModel

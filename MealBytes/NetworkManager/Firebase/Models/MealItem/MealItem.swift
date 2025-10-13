@@ -8,7 +8,7 @@
 import SwiftUI
 import FirebaseCore
 
-struct MealItem: Codable, Identifiable {
+struct MealItem: Codable, Identifiable, Hashable {
     let id: UUID
     let foodId: Int
     let foodName: String

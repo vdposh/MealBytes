@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
+    @State private var selectedFood: Food?
     @Environment(\.editMode) private var editMode
     
     @ObservedObject var searchViewModel: SearchViewModel
@@ -95,16 +96,18 @@ struct SearchView: View {
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
         }
-    }
-    
-    private var searchableModifier: some View {
-        return EmptyView()
-            .searchable(
-                text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search"
+        .navigationDestination(item: $selectedFood) { food in
+            FoodView(
+                food: food,
+                searchViewModel: searchViewModel,
+                mainViewModel: searchViewModel.mainViewModel,
+                mealType: mealType,
+                amount: "",
+                measurementDescription: "",
+                showAddButton: true,
+                showSaveRemoveButton: false
             )
-            .disabled(searchViewModel.isEditing)
+        }
     }
     
     @ViewBuilder
@@ -116,17 +119,8 @@ struct SearchView: View {
                 searchViewModel: searchViewModel
             )
         } else {
-            NavigationLink {
-                FoodView(
-                    food: food,
-                    searchViewModel: searchViewModel,
-                    mainViewModel: searchViewModel.mainViewModel,
-                    mealType: mealType,
-                    amount: "",
-                    measurementDescription: "",
-                    showAddButton: true,
-                    showSaveRemoveButton: false
-                )
+            Button {
+                selectedFood = food
             } label: {
                 FoodDetailView(
                     food: food,
@@ -186,6 +180,16 @@ struct SearchView: View {
         } else {
             EmptyView()
         }
+    }
+    
+    private var searchableModifier: some View {
+        return EmptyView()
+            .searchable(
+                text: $searchViewModel.query,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search"
+            )
+            .disabled(searchViewModel.isEditing)
     }
     
     @ToolbarContentBuilder
