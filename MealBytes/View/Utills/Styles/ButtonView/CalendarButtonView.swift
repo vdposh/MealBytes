@@ -12,7 +12,11 @@ struct CalendarButtonView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            withAnimation {
+                action()
+            }
+        } label: {
             if colorScheme == .light {
                 Color.primary
                     .opacity(0.4)

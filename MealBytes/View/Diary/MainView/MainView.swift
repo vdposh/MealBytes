@@ -61,26 +61,26 @@ struct MainView: View {
                 )
             }
         }
-//        .navigationDestination(
-//            item: $mainViewModel.selectedMealItem
-//        ) { item in
-//            FoodView(
-//                food: Food(
-//                    searchFoodId: item.foodId,
-//                    searchFoodName: item.foodName,
-//                    searchFoodDescription: ""
-//                ),
-//                searchViewModel: mainViewModel.searchViewModel,
-//                mainViewModel: mainViewModel,
-//                mealType: mealType,
-//                amount: String(item.amount),
-//                measurementDescription: item.measurementDescription,
-//                showAddButton: false,
-//                showSaveRemoveButton: true,
-//                originalCreatedAt: item.createdAt,
-//                originalMealItemId: item.id
-//            )
-//        }
+        .navigationDestination(
+            item: $mainViewModel.selectedMealItem
+        ) { item in
+            FoodView(
+                food: Food(
+                    searchFoodId: item.foodId,
+                    searchFoodName: item.foodName,
+                    searchFoodDescription: ""
+                ),
+                searchViewModel: mainViewModel.searchViewModel,
+                mainViewModel: mainViewModel,
+                mealType: item.mealType,
+                amount: String(item.amount),
+                measurementDescription: item.measurementDescription,
+                showAddButton: false,
+                showSaveRemoveButton: true,
+                originalCreatedAt: item.createdAt,
+                originalMealItemId: item.id
+            )
+        }
     }
     
     private var caloriesSection: some View {
