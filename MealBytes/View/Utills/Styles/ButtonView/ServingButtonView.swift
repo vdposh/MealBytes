@@ -29,7 +29,6 @@ struct ServingButtonView: View {
             
             Text("")
                 .frame(maxWidth: 30, alignment: .trailing)
-            
                 .overlay(alignment: .trailing) {
                     Menu {
                         ForEach(servings, id: \.self) { serving in

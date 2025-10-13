@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MealTypePickerView: View {
-    let description: String
     let iconName: String
     let iconColor: Color = .accent.opacity(0.8)
     @Binding var selectedMealType: MealType
@@ -16,7 +15,7 @@ struct MealTypePickerView: View {
     var body: some View {
         HStack {
             Label {
-                Text(description)
+                Text(selectedMealType.rawValue)
             } icon: {
                 Image(systemName: iconName)
                     .font(.system(size: 14))
@@ -27,7 +26,6 @@ struct MealTypePickerView: View {
             
             Text("")
                 .frame(maxWidth: 30, alignment: .trailing)
-            
                 .overlay(alignment: .trailing) {
                     Menu {
                         Picker("Meal Type", selection: $selectedMealType) {
