@@ -21,10 +21,10 @@ final class SearchViewModel: ObservableObject {
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var removalBookmarks: Set<Int> = []
     @Published var selectedItems = Set<Food.ID>()
-    @Published var editingState: EditingState = .inactive
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
+    @Published var editingState: EditingState = .inactive
     @Published var query: String = "" {
         didSet {
             if query.isEmpty {
