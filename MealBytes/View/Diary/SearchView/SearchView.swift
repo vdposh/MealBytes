@@ -46,10 +46,6 @@ struct SearchView: View {
                         .loadBookmarksSearchView(for: mealType)
                 }
             }
-            .task {
-                searchViewModel.loadingBookmarks()
-                await searchViewModel.loadBookmarksSearchView(for: mealType)
-            }
     }
     
     @ViewBuilder
