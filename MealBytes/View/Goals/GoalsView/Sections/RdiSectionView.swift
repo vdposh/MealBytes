@@ -15,9 +15,9 @@ struct RdiSectionView: View {
             if goalsViewModel.isDataLoaded {
                 if let rdiViewModel = goalsViewModel
                     .rdiViewModel as? RdiViewModel {
-                    NavigationLink(
-                        destination: RdiView(rdiViewModel: rdiViewModel)
-                    ) {
+                    NavigationLink {
+                        RdiView(rdiViewModel: rdiViewModel)
+                    } label: {
                         let rdiState = goalsViewModel.displayState(
                             for: .rdiView
                         )

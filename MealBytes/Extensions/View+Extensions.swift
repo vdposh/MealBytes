@@ -59,7 +59,7 @@ extension View {
         } actions: {
             switch error {
             case .networkRefresh:
-                Button("Refresh", action: action)
+                Button("Try Again", action: action)
             default:
                 EmptyView()
             }

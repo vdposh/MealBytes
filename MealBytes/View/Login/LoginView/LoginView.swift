@@ -56,7 +56,9 @@ struct LoginView: View {
             HStack(spacing: 4) {
                 Text("Don't have a MealBytes account?")
                     .foregroundStyle(.secondary)
-                NavigationLink(destination: RegisterView()) {
+                NavigationLink {
+                    RegisterView()
+                } label: {
                     Text("Sign up").fontWeight(.semibold)
                 }
             }
@@ -64,7 +66,9 @@ struct LoginView: View {
             HStack(spacing: 4) {
                 Text("Forgot the password?")
                     .foregroundStyle(.secondary)
-                NavigationLink(destination: ResetView()) {
+                NavigationLink {
+                    ResetView()
+                } label: {
                     Text("Reset").fontWeight(.semibold)
                 }
             }

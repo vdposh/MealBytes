@@ -14,6 +14,7 @@ struct MainView: View {
     var body: some View {
         mainViewContentBody
             .navigationTitle(mainViewModel.navigationTitle)
+            .navigationSubtitle(mainViewModel.navigationSubtitle)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 mainViewToolbar
@@ -41,44 +42,12 @@ struct MainView: View {
         .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
                 CalendarView(mainViewModel: mainViewModel)
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .transition(.blurReplace)
             }
         }
         .animation(
             .bouncy(duration: 0.4),
             value: mainViewModel.isExpandedCalendar
         )
-        .navigationDestination(
-            item: $mainViewModel.selectedMealType
-        ) { mealType in
-            if let searchViewModel = mainViewModel
-                .searchViewModel as? SearchViewModel {
-                SearchView(
-                    searchViewModel: searchViewModel,
-                    mealType: mealType
-                )
-            }
-        }
-        .navigationDestination(for: MealItem.self) { item in
-            FoodView(
-                food: Food(
-                    searchFoodId: item.foodId,
-                    searchFoodName: item.foodName,
-                    searchFoodDescription: ""
-                ),
-                searchViewModel: mainViewModel.searchViewModel,
-                mainViewModel: mainViewModel,
-                mealType: item.mealType,
-                amount: String(item.amount),
-                measurementDescription: item.measurementDescription,
-                showAddButton: false,
-                showSaveRemoveButton: true,
-                originalCreatedAt: item.createdAt,
-                originalMealItemId: item.id
-            )
-        }
     }
     
     private var caloriesSection: some View {
@@ -108,7 +77,6 @@ struct MainView: View {
             nutrients: mainViewModel.filteredNutrientValues,
             isExpandable: $mainViewModel.isExpanded
         )
-        .animation(nil, value: UUID())
     }
     
     @ToolbarContentBuilder

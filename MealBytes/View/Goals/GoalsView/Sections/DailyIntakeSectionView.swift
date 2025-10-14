@@ -15,11 +15,11 @@ struct DailyIntakeSectionView: View {
             if goalsViewModel.isDataLoaded {
                 if let dailyIntakeViewModel = goalsViewModel
                     .dailyIntakeViewModel as? DailyIntakeViewModel {
-                    NavigationLink(
-                        destination: DailyIntakeView(
+                    NavigationLink {
+                        DailyIntakeView(
                             dailyIntakeViewModel: dailyIntakeViewModel
                         )
-                    ) {
+                    } label: {
                         let dailyIntakeState = goalsViewModel.displayState(
                             for: .dailyIntakeView
                         )

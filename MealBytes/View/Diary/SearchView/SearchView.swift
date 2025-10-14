@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
-    @State private var selectedFood: Food?
     @Environment(\.editMode) private var editMode
     
     @ObservedObject var searchViewModel: SearchViewModel
@@ -46,6 +45,10 @@ struct SearchView: View {
                     await searchViewModel
                         .loadBookmarksSearchView(for: mealType)
                 }
+            }
+            .task {
+                searchViewModel.loadingBookmarks()
+                await searchViewModel.loadBookmarksSearchView(for: mealType)
             }
     }
     
@@ -96,18 +99,6 @@ struct SearchView: View {
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
         }
-        .navigationDestination(item: $selectedFood) { food in
-            FoodView(
-                food: food,
-                searchViewModel: searchViewModel,
-                mainViewModel: searchViewModel.mainViewModel,
-                mealType: mealType,
-                amount: "",
-                measurementDescription: "",
-                showAddButton: true,
-                showSaveRemoveButton: false
-            )
-        }
     }
     
     @ViewBuilder
@@ -119,8 +110,17 @@ struct SearchView: View {
                 searchViewModel: searchViewModel
             )
         } else {
-            Button {
-                selectedFood = food
+            NavigationLink {
+                FoodView(
+                    food: food,
+                    searchViewModel: searchViewModel,
+                    mainViewModel: searchViewModel.mainViewModel,
+                    mealType: mealType,
+                    amount: "",
+                    measurementDescription: "",
+                    showAddButton: true,
+                    showSaveRemoveButton: false
+                )
             } label: {
                 FoodDetailView(
                     food: food,

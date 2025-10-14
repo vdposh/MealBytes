@@ -22,7 +22,7 @@ struct MealTypePickerView: View {
                     .foregroundStyle(iconColor)
             }
             .labelIconToTitleSpacing(10)
-            .frame(maxWidth: .infinity, minHeight: 27, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Text("")
                 .frame(maxWidth: 30, alignment: .trailing)

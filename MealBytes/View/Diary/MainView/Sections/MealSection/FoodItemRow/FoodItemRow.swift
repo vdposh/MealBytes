@@ -13,7 +13,24 @@ struct FoodItemRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        NavigationLink(value: mealItem) {
+        NavigationLink {
+            FoodView(
+                food: Food(
+                    searchFoodId: mealItem.foodId,
+                    searchFoodName: mealItem.foodName,
+                    searchFoodDescription: ""
+                ),
+                searchViewModel: mainViewModel.searchViewModel,
+                mainViewModel: mainViewModel,
+                mealType: mealItem.mealType,
+                amount: String(mealItem.amount),
+                measurementDescription: mealItem.measurementDescription,
+                showAddButton: false,
+                showSaveRemoveButton: true,
+                originalCreatedAt: mealItem.createdAt,
+                originalMealItemId: mealItem.id
+            )
+        } label: {
             HStack {
                 VStack(spacing: 5) {
                     HStack(spacing: 10) {
@@ -81,7 +98,6 @@ struct FoodItemRow: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.trailing, 5)
             }
         }
     }

@@ -78,7 +78,7 @@ struct CalendarView: View {
                         ) {
                             Color.clear
                                 .glassEffect(
-                                    .regular.interactive().tint(
+                                    .clear.interactive().tint(
                                         mainViewModel.color(
                                             for: .day,
                                             date: date,
@@ -103,6 +103,9 @@ struct CalendarView: View {
         .padding(.horizontal, 12)
         .padding(.bottom)
         .padding(.top, 24)
+        .background(Color(.systemBackground))
+        .clipShape(.rect(cornerRadius: 24))
+        .transition(.blurReplace)
     }
 }
 

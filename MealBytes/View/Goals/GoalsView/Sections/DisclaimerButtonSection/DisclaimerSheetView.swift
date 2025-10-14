@@ -15,7 +15,7 @@ struct DisclaimerSheetView: View {
             List {
                 Section {
                     EmptyView()
-                } footer: {
+                } header: {
                     Text("""
                 \(String("Daily Intake and Recommendations".uppercased()))
                 
@@ -24,6 +24,7 @@ struct DisclaimerSheetView: View {
                 Please consult a qualified healthcare professional or registered dietitian before making significant dietary changes or if you have specific medical conditions or nutritional needs. MealBytes does not replace individualized clinical advice.
                 """)
                 }
+                .font(.footnote)
             }
             .listStyle(.grouped)
             .scrollContentBackground(.hidden)

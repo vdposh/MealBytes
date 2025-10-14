@@ -24,8 +24,7 @@ struct ActionButtonView: View {
         }
         .disabled(!isEnabled)
         .glassEffect(
-            .regular.interactive().tint(color),
-            in: .capsule
+            .regular.interactive().tint(color)
         )
         .buttonStyle(.borderless)
     }
