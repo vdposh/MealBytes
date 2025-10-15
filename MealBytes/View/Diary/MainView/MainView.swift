@@ -114,7 +114,7 @@ struct MainView: View {
             }
             
             ToolbarItem(placement: .topBarLeading) {
-                Button {
+                Button("Today") {
                     withAnimation {
                         mainViewModel.selectDate(
                             Date(),
@@ -122,10 +122,8 @@ struct MainView: View {
                             isPresented: &mainViewModel.isExpandedCalendar
                         )
                     }
-                } label: {
-                    Text("Today")
-                        .font(.headline)
                 }
+                .font(.headline)
             }
         }
         

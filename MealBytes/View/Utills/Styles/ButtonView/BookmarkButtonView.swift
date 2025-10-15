@@ -12,7 +12,9 @@ struct BookmarkButtonView: View {
     var isFilled: Bool
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             ZStack {
                 Circle()
                     .fill(

@@ -12,12 +12,10 @@ struct SignOutButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        Button {
+        Button(title) {
             action()
-        } label: {
-            Text(title)
-                .foregroundStyle(.customRed)
         }
+        .foregroundStyle(.customRed)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 }

@@ -16,10 +16,8 @@ struct PasswordSection: View {
             if profileViewModel.isPasswordChanging {
                 LoadingView(showLabel: true)
             } else {
-                Button {
+                Button("Change Password") {
                     profileViewModel.prepareAlert(for: .changePassword)
-                } label: {
-                    Text("Change Password")
                 }
             }
         } footer: {

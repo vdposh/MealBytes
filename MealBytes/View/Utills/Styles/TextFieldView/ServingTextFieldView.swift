@@ -48,9 +48,9 @@ struct ServingTextFieldView: View {
             }
         }
         .overlay(
-            Button(action: {
+            Button {
                 $isFocused.wrappedValue = true
-            }) {
+            } label: {
                 Color.clear
             }
         )

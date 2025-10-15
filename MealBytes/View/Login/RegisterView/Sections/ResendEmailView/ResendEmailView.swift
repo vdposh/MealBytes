@@ -14,15 +14,13 @@ struct ResendEmailView: View {
         HStack(spacing: 4) {
             Text("Didn't receive the email?")
             
-            Button {
+            Button("Resend") {
                 Task {
                     await registerViewModel.resendEmailVerification()
                 }
-            } label: {
-                Text("Resend")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(registerViewModel.resendButtonColor())
             }
+            .fontWeight(.semibold)
+            .foregroundStyle(registerViewModel.resendButtonColor())
             .disabled(
                 registerViewModel.isRegisterLoading ||
                 !registerViewModel.isResendEnabled

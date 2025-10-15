@@ -204,21 +204,17 @@ struct SearchView: View {
             ToolbarItem(placement: .topBarLeading) {
                 if searchViewModel.selectedItems.count
                     < searchViewModel.foods.count {
-                    Button {
+                    Button("Select all") {
                         searchViewModel.selectedItems = Set(
                             searchViewModel.foods.map { $0.searchFoodId }
                         )
-                    } label: {
-                        Text("Select all")
-                            .fontWeight(.medium)
                     }
+                    .fontWeight(.medium)
                 } else {
-                    Button {
+                    Button("Cancel select") {
                         searchViewModel.selectedItems.removeAll()
-                    } label: {
-                        Text("Cancel select")
-                            .fontWeight(.medium)
                     }
+                    .fontWeight(.medium)
                 }
             }
             
@@ -273,7 +269,7 @@ struct SearchView: View {
                 isPresented: $searchViewModel.showRemoveDialog,
                 titleVisibility: .visible
             ) {
-                Button(role: .destructive) {
+                Button(searchViewModel.removeDialogTitle, role: .destructive) {
                     let idRemove = searchViewModel.selectedItems
                     searchViewModel.foods.removeAll {
                         idRemove.contains($0.searchFoodId)
@@ -291,8 +287,6 @@ struct SearchView: View {
                         await searchViewModel
                             .removeBookmarks(for: idRemove)
                     }
-                } label: {
-                    Text(searchViewModel.removeDialogTitle)
                 }
             }
         }
