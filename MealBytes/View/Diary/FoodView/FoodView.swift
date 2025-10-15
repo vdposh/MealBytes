@@ -114,6 +114,9 @@ struct FoodView: View {
                         foodViewModel.updateServing(serving)
                         amountFocused = false
                         foodViewModel.normalizeAmount()
+                    },
+                    servingDescription: {
+                        foodViewModel.servingDescription(for: $0)
                     }
                 )
             }

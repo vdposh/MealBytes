@@ -14,6 +14,7 @@ struct ServingButtonView: View {
     let servings: [Serving]
     let selectedServing: Serving
     let selection: (Serving) -> Void
+    let servingDescription: (Serving) -> String
     
     var body: some View {
         HStack {
@@ -36,7 +37,7 @@ struct ServingButtonView: View {
                                 selection(serving)
                             } label: {
                                 Label {
-                                    Text(serving.measurementDescription)
+                                    Text(servingDescription(serving))
                                 } icon: {
                                     if serving == selectedServing {
                                         Image(systemName: "checkmark")

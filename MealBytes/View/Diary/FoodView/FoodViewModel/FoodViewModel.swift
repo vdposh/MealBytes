@@ -261,11 +261,6 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Serving Description
     func servingDescription(for serving: Serving) -> String {
         var description = serving.measurementDescription
-        let metricAmountFormatted = formatter.formattedValue(
-            serving.metricServingAmount,
-            unit: .empty
-        )
-        let metricUnit = serving.metricServingUnit
         
         if serving.isMetricMeasurement {
             return description
@@ -279,14 +274,7 @@ final class FoodViewModel: ObservableObject {
             description.replaceSubrange(range, with: "serving")
         }
         
-        return "\(description) (\(metricAmountFormatted)\(metricUnit))"
-    }
-    
-    var servingDescription: String {
-        guard let selectedServing else {
-            return "Select a Serving"
-        }
-        return servingDescription(for: selectedServing)
+        return "\(description)"
     }
     
     // MARK: - Button States
