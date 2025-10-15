@@ -303,10 +303,14 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    var bookmarkCountText: String {
-        bookmarkedFoods.count == 1
-        ? "1 bookmark"
-        : "\(bookmarkedFoods.count) bookmarks"
+    var subtitleText: String {
+        if isLoadingBookmarks {
+            return "Loading..."
+        } else {
+            return bookmarkedFoods.count == 1
+            ? "1 bookmark"
+            : "\(bookmarkedFoods.count) bookmarks"
+        }
     }
     
     var selectionStatusText: String {

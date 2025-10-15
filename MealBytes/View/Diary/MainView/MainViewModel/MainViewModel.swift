@@ -41,6 +41,7 @@ final class MainViewModel: ObservableObject {
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
+    @Published var selectedMealType: MealType?
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""

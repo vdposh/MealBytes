@@ -21,6 +21,7 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             Button {
+                mainViewModel.selectedMealType = mealType
                 mainViewModel.searchViewModel.loadingBookmarks()
                 Task {
                     await mainViewModel.searchViewModel
@@ -66,18 +67,6 @@ struct MealHeaderView: View {
                 }
             }
             .animation(nil, value: UUID())
-            .background {
-                if let searchViewModel = mainViewModel
-                    .searchViewModel as? SearchViewModel {
-                    NavigationLink("") {
-                        SearchView(
-                            searchViewModel: searchViewModel,
-                            mealType: mealType
-                        )
-                    }
-                    .navigationLinkIndicatorVisibility(.hidden)
-                }
-            }
             
             let filteredItems = mainViewModel.filteredMealItems(
                 for: mealType,

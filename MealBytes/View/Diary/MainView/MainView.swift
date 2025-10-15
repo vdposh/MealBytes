@@ -48,6 +48,17 @@ struct MainView: View {
             .bouncy(duration: 0.4),
             value: mainViewModel.isExpandedCalendar
         )
+        .navigationDestination(
+            item: $mainViewModel.selectedMealType
+        ) { mealType in
+            if let searchViewModel = mainViewModel
+                .searchViewModel as? SearchViewModel {
+                SearchView(
+                    searchViewModel: searchViewModel,
+                    mealType: mealType
+                )
+            }
+        }
     }
     
     private var caloriesSection: some View {
