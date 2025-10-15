@@ -118,6 +118,7 @@ final class SearchViewModel: ObservableObject {
         await MainActor.run {
             if query.isEmpty {
                 isLoading = true
+                query = ""
             }
             
             selectedMealType = mealType
@@ -291,7 +292,7 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - UI Helper
     var contentState: SearchContentState {
-        if isLoading {
+        if isLoadingBookmarks || isLoading {
             .loading
         } else if let error = appError {
             .error(error)
