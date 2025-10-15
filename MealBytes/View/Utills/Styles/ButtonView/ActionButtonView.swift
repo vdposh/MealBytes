@@ -14,15 +14,19 @@ struct ActionButtonView: View {
     var isEnabled: Bool = true
     
     var body: some View {
-        Button(title) {
+        Button {
             action()
+        } label: {
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 53)
         }
-        .font(.headline)
-        .foregroundStyle(.white)
-        .frame(maxWidth: .infinity, minHeight: 53)
         .disabled(!isEnabled)
         .glassEffect(
-            .regular.interactive().tint(color)
+            !isEnabled
+            ? .regular.tint(color.opacity(0.5))
+            : .regular.interactive().tint(color)
         )
         .buttonStyle(.borderless)
     }
