@@ -9,8 +9,6 @@ import SwiftUI
 
 struct ServingButtonView: View {
     let description: String
-    let iconName: String
-    let iconColor: Color = .accent.opacity(0.8)
     let servings: [Serving]
     let selectedServing: Serving
     let selection: (Serving) -> Void
@@ -21,9 +19,9 @@ struct ServingButtonView: View {
             Label {
                 Text(description)
             } icon: {
-                Image(systemName: iconName)
+                Image(systemName: "fork.knife")
                     .font(.system(size: 14))
-                    .foregroundStyle(iconColor)
+                    .foregroundStyle(.accent.opacity(0.8))
             }
             .labelIconToTitleSpacing(10)
             .frame(maxWidth: .infinity, alignment: .leading)

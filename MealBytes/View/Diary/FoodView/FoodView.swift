@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct FoodView: View {
+    @State private var mealType: MealType
     @FocusState private var amountFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
@@ -17,10 +18,10 @@ struct FoodView: View {
     @StateObject private var foodViewModel: FoodViewModel
     
     init(
+        mealType: MealType,
         food: Food,
         searchViewModel: SearchViewModelProtocol,
         mainViewModel: MainViewModelProtocol,
-        mealType: MealType,
         amount: String,
         measurementDescription: String,
         showAddButton: Bool,
@@ -28,6 +29,7 @@ struct FoodView: View {
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
+        self._mealType = State(initialValue: mealType)
         self.showAddButton = showAddButton
         self.showSaveRemoveButton = showSaveRemoveButton
         _foodViewModel = StateObject(
@@ -51,6 +53,15 @@ struct FoodView: View {
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 foodViewToolbar
+            }
+            .onChange(of: mealType) {
+                foodViewModel.mealType = mealType
+            }
+            .onChange(of: amountFocused) {
+                foodViewModel.handleFocusChange(
+                    from: !amountFocused,
+                    to: amountFocused
+                )
             }
             .task {
                 await foodViewModel.loadFoodData()
@@ -95,19 +106,12 @@ struct FoodView: View {
                 useLabel: true
             )
             .focused($amountFocused)
-            .onChange(of: amountFocused) {
-                foodViewModel.handleFocusChange(
-                    from: !amountFocused,
-                    to: amountFocused
-                )
-            }
             
             if let selected = foodViewModel.selectedServing,
                let servings = foodViewModel.foodDetail?.servings.serving {
                 ServingButtonView(
                     description: foodViewModel
                         .servingDescription(for: selected),
-                    iconName: "fork.knife",
                     servings: servings,
                     selectedServing: selected,
                     selection: { serving in
@@ -123,7 +127,7 @@ struct FoodView: View {
             
             if showSaveRemoveButton {
                 MealTypePickerView(
-                    selectedMealType: $foodViewModel.mealType
+                    selectedMealType: $mealType
                 )
             }
         } header: {

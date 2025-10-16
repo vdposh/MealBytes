@@ -104,10 +104,10 @@ struct SearchView: View {
         } else {
             NavigationLink {
                 FoodView(
+                    mealType: mealType,
                     food: food,
                     searchViewModel: searchViewModel,
                     mainViewModel: searchViewModel.mainViewModel,
-                    mealType: mealType,
                     amount: "",
                     measurementDescription: "",
                     showAddButton: true,

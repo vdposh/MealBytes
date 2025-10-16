@@ -15,6 +15,7 @@ struct FoodItemRow: View {
     var body: some View {
         NavigationLink {
             FoodView(
+                mealType: mealItem.mealType,
                 food: Food(
                     searchFoodId: mealItem.foodId,
                     searchFoodName: mealItem.foodName,
@@ -22,7 +23,6 @@ struct FoodItemRow: View {
                 ),
                 searchViewModel: mainViewModel.searchViewModel,
                 mainViewModel: mainViewModel,
-                mealType: mealItem.mealType,
                 amount: String(mealItem.amount),
                 measurementDescription: mealItem.measurementDescription,
                 showAddButton: false,

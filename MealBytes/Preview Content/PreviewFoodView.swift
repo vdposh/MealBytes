@@ -19,10 +19,10 @@ struct PreviewFoodView {
         
         return NavigationStack {
             FoodView(
+                mealType: .breakfast,
                 food: food,
                 searchViewModel: searchViewModel,
                 mainViewModel: mainViewModel,
-                mealType: .breakfast,
                 amount: "1",
                 measurementDescription: "Grams",
                 showAddButton: true,
