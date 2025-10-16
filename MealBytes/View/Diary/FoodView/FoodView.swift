@@ -109,26 +109,42 @@ struct FoodView: View {
             
             if let selected = foodViewModel.selectedServing,
                let servings = foodViewModel.foodDetail?.servings.serving {
-                ServingButtonView(
-                    description: foodViewModel
-                        .servingDescription(for: selected),
-                    servings: servings,
-                    selectedServing: selected,
-                    selection: { serving in
-                        foodViewModel.updateServing(serving)
-                        amountFocused = false
-                        foodViewModel.normalizeAmount()
-                    },
-                    servingDescription: {
-                        foodViewModel.servingDescription(for: $0)
+                PickerRowView(
+                    title: foodViewModel.servingDescription(for: selected),
+                    iconName: "fork.knife"
+                ) {
+                    ForEach(servings, id: \.self) { serving in
+                        Button {
+                            foodViewModel.updateServing(serving)
+                            foodViewModel.normalizeAmount()
+                        } label: {
+                            Label {
+                                Text(
+                                    foodViewModel
+                                        .servingDescription(for: serving)
+                                )
+                            } icon: {
+                                if serving == selected {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
                     }
-                )
+                }
             }
             
             if showSaveRemoveButton {
-                MealTypePickerView(
-                    selectedMealType: $mealType
-                )
+                PickerRowView(
+                    title: mealType.rawValue,
+                    iconName: mealType.iconName
+                ) {
+                    Picker("Meal Type", selection: $mealType) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Label(meal.rawValue, systemImage: meal.iconName)
+                                .tag(meal)
+                        }
+                    }
+                }
             }
         } header: {
             Text(foodViewModel.food.searchFoodName)

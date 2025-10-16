@@ -27,7 +27,14 @@ struct CalendarButtonView: View {
                     .ignoresSafeArea()
             }
         }
-        .buttonStyle(InvisibleButtonStyle())
+        .buttonStyle(ButtonStyleInvisible())
+    }
+    
+    private struct ButtonStyleInvisible: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .opacity(1.0)
+        }
     }
 }
 

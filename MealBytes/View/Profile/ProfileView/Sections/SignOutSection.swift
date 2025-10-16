@@ -13,9 +13,11 @@ struct SignOutSection: View {
     
     var body: some View {
         Section {
-            SignOutButtonView(title: "Sign Out") {
+            Button("Sign Out") {
                 profileViewModel.prepareAlert(for: .signOut)
             }
+            .foregroundStyle(.customRed)
+            .frame(maxWidth: .infinity, alignment: .center)
         } footer: {
             if profileViewModel.isDeletingAccount {
                 HStack {
