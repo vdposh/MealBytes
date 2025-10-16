@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct MealTypePickerView: View {
-    let iconName: String
-    let iconColor: Color = .accent.opacity(0.8)
+    private var iconName: String {
+        selectedMealType.iconName
+    }
     @Binding var selectedMealType: MealType
     
     var body: some View {
@@ -19,7 +20,7 @@ struct MealTypePickerView: View {
             } icon: {
                 Image(systemName: iconName)
                     .font(.system(size: 14))
-                    .foregroundStyle(iconColor)
+                    .foregroundStyle(.accent.opacity(0.8))
             }
             .labelIconToTitleSpacing(10)
             .frame(maxWidth: .infinity, alignment: .leading)
