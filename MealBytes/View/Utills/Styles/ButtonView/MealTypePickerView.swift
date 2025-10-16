@@ -24,32 +24,29 @@ struct MealTypePickerView: View {
             .labelIconToTitleSpacing(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             
-            Text("")
-                .frame(maxWidth: 30, alignment: .trailing)
-                .overlay(alignment: .trailing) {
-                    Menu {
-                        Picker("Meal Type", selection: $selectedMealType) {
-                            ForEach(MealType.allCases, id: \.self) { meal in
-                                Label(
-                                    meal.rawValue,
-                                    systemImage: meal.iconName
-                                )
-                                .tag(meal)
-                            }
-                        }
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .fill(Color.accent.opacity(0.2))
-                                .frame(width: 30, height: 30)
-                            Image(systemName: "ellipsis")
-                                .foregroundStyle(.accent)
-                        }
+            Menu {
+                Picker("Meal Type", selection: $selectedMealType) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Label(
+                            meal.rawValue,
+                            systemImage: meal.iconName
+                        )
+                        .tag(meal)
                     }
-                    .glassEffect(.regular.interactive())
-                    .buttonStyle(.borderless)
                 }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.accent.opacity(0.2))
+                        .frame(width: 30, height: 30)
+                    Image(systemName: "ellipsis")
+                        .foregroundStyle(.accent)
+                }
+            }
+            .glassEffect(.regular.interactive())
+            .buttonStyle(.borderless)
         }
+        .frame(height: 20)
     }
 }
 
