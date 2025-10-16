@@ -16,6 +16,7 @@ struct DateView: View {
     var body: some View {
         VStack {
             Text(date.formatted(.dateTime.day()))
+                .font(.body)
                 .foregroundStyle(
                     mainViewModel.color(
                         for: .day,
@@ -38,25 +39,20 @@ struct DateView: View {
                 .font(.footnote)
         }
         .padding(5)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            if isSelected {
-                Color.clear
-                    .glassEffect(
-                        .clear.interactive().tint(
-                            mainViewModel.color(
-                                for: .day,
-                                date: date,
-                                isSelected: isSelected,
-                                forBackground: true
-                            )
-                        ),
-                        in: .rect(cornerRadius: 16)
-                    )
-            } else {
-                Color.clear
-            }
-        }
+        .frame(maxWidth: .infinity)
+        .background(
+            mainViewModel.color(
+                for: .day,
+                date: date,
+                isSelected: isSelected,
+                forBackground: true
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .glassEffect(
+            .identity.interactive(),
+            in: .rect(cornerRadius: 16)
+        )
     }
 }
 

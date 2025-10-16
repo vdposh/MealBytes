@@ -32,7 +32,7 @@ struct BookmarkButtonView: View {
         }
         .glassEffect(.regular.interactive())
         .padding(.leading, 8)
-        .buttonStyle(.borderless)
+        .buttonStyle(ButtonStyleInvisible())
     }
 }
 

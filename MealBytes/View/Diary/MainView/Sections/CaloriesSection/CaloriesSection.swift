@@ -110,7 +110,7 @@ struct CaloriesSection: View {
                         mainViewModel: mainViewModel
                     )
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(ButtonStyleInvisible())
             }
         }
         .listRowInsets(

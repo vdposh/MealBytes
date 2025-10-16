@@ -116,6 +116,7 @@ struct FoodView: View {
                     ForEach(servings, id: \.self) { serving in
                         Button {
                             foodViewModel.updateServing(serving)
+                            amountFocused = false
                             foodViewModel.normalizeAmount()
                         } label: {
                             Label {

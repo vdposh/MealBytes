@@ -34,8 +34,16 @@ struct PickerRowView<MenuContent: View>: View {
                 }
             }
             .glassEffect(.regular.interactive())
-            .buttonStyle(.borderless)
+            .buttonStyle(ButtonStyleInvisible())
         }
         .frame(height: 20)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewFoodView.foodView
 }
