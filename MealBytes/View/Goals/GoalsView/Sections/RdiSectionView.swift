@@ -27,10 +27,11 @@ struct RdiSectionView: View {
                                 .foregroundStyle(rdiState.color)
                                 .fontWeight(rdiState.weight)
                         } label: {
-                            HStack {
+                            Label {
+                                Text("RDI")
+                            } icon: {
                                 Image(systemName: rdiState.icon)
                                     .foregroundStyle(.accent)
-                                Text("RDI")
                             }
                         }
                     }
@@ -40,10 +41,11 @@ struct RdiSectionView: View {
                 LabeledContent {
                     LoadingView(showLabel: true)
                 } label: {
-                    HStack {
+                    Label {
+                        Text("RDI")
+                    } icon: {
                         Image(systemName: "person")
                             .foregroundStyle(.accent)
-                        Text("RDI")
                     }
                 }
             }

@@ -83,6 +83,8 @@ struct MealHeaderView: View {
                         )
                         .swipeActions(allowsFullSwipe: false) {
                             Button(
+                                "Remove",
+                                systemImage: "trash",
                                 role: mainViewModel
                                     .deletionButtonRole(for: mealType)
                             ) {
@@ -90,8 +92,6 @@ struct MealHeaderView: View {
                                     with: item.id,
                                     for: mealType
                                 )
-                            } label: {
-                                Label("Remove", systemImage: "trash")
                             }
                             .tint(.red)
                         }

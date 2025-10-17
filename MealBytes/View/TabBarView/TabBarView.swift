@@ -17,34 +17,32 @@ struct TabBarView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab(value: 1) {
+            Tab("Goals", systemImage: "chart.bar", value: 1) {
                 NavigationStack {
                     GoalsView(goalsViewModel: goalsViewModel)
                 }
-            } label: {
-                Label("Goals", systemImage: "chart.bar")
             }
             
-            Tab(value: 0) {
+            Tab("Diary", systemImage: "fork.knife", value: 0) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
                 }
-            } label: {
-                Label("Diary", systemImage: "fork.knife")
             }
             
-            Tab(value: 2) {
+            Tab("Profile", systemImage: "person.fill", value: 2) {
                 NavigationStack {
                     ProfileView(profileViewModel: profileViewModel)
                 }
-            } label: {
-                Label("Profile", systemImage: "person.fill")
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
-            FoodAlertView(
+            FoodAddedAlertView(
                 isVisible: $mainViewModel.isFoodAddedAlertVisible
+            )
+            .animation(
+                .bouncy(duration: 0.3),
+                value: mainViewModel.isFoodAddedAlertVisible
             )
         }
         .overlay {
