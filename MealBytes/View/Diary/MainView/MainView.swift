@@ -95,19 +95,27 @@ struct MainView: View {
         if mainViewModel.isExpandedCalendar {
             ToolbarItemGroup {
                 Button {
-                    mainViewModel.changeMonth(
-                        by: -1,
-                        selectedDate: &mainViewModel.date
-                    )
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        mainViewModel.changeMonth(
+                            by: -1,
+                            selectedDate: &mainViewModel.date
+                        )
+                    }
                 } label: {
                     Image(systemName: "chevron.left")
                 }
                 
                 Button {
-                    mainViewModel.changeMonth(
-                        by: 1,
-                        selectedDate: &mainViewModel.date
-                    )
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        mainViewModel.changeMonth(
+                            by: 1,
+                            selectedDate: &mainViewModel.date
+                        )
+                    }
                 } label: {
                     Image(systemName: "chevron.right")
                 }
@@ -115,7 +123,9 @@ struct MainView: View {
             
             ToolbarItem(placement: .topBarLeading) {
                 Button("Today") {
-                    withAnimation {
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
                         mainViewModel.selectDate(
                             Date(),
                             selectedDate: &mainViewModel.date,

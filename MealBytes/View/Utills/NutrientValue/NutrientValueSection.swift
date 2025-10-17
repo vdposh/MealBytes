@@ -35,7 +35,7 @@ struct NutrientValueSection: View {
                 ShowHideButtonView(isExpanded: isExpandable)
             }
         }
-        .animation(nil, value: UUID())
+        .transaction { $0.animation = nil }
     }
 }
 

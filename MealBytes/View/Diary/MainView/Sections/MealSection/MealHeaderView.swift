@@ -66,7 +66,7 @@ struct MealHeaderView: View {
                         .foregroundStyle(.accent)
                 }
             }
-            .animation(nil, value: UUID())
+            .transaction { $0.animation = nil }
             
             let filteredItems = mainViewModel.filteredMealItems(
                 for: mealType,

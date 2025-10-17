@@ -41,7 +41,9 @@ struct CalendarView: View {
                     id: \.self
                 ) { date in
                     Button {
-                        withAnimation {
+                        withTransaction(
+                            Transaction(animation: .bouncy)
+                        ) {
                             mainViewModel.selectDate(
                                 date,
                                 selectedDate: &mainViewModel.date,
@@ -93,6 +95,7 @@ struct CalendarView: View {
                 }
             }
         }
+        .transaction { $0.animation = nil }
         .padding(.horizontal, 12)
         .padding(.bottom)
         .padding(.top, 24)
