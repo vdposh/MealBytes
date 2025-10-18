@@ -18,7 +18,7 @@ struct FoodDetailView: View {
                 ZStack {
                     if searchViewModel.isBookmarkedSearchView(food) {
                         Image(systemName: "bookmark.fill")
-                            .font(.system(size: 12))
+                            .imageScale(.small)
                             .foregroundStyle(.accent)
                     }
                 }

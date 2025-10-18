@@ -31,19 +31,20 @@ struct MealHeaderView: View {
                 HStack(spacing: 10) {
                     VStack(spacing: 15) {
                         HStack {
-                            Image(systemName: iconName)
-                                .frame(width: 25)
-                                .foregroundStyle(color)
-                            
-                            Text(title)
-                                .font(.system(size: 18))
-                                .fontWeight(.medium)
-                                .foregroundStyle(Color.primary)
-                                .frame(
-                                    maxWidth: .infinity,
-                                    alignment: .leading
-                                )
-                                .labelIconToTitleSpacing(10)
+                            Label {
+                                Text(title)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(Color.primary)
+                                    .frame(
+                                        maxWidth: .infinity,
+                                        alignment: .leading
+                                    )
+                            } icon: {
+                                Image(systemName: iconName)
+                                    .foregroundStyle(color)
+                                    .imageScale(.medium)
+                            }
+                            .labelIconToTitleSpacing(10)
                             
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
@@ -102,8 +103,9 @@ struct MealHeaderView: View {
             if !filteredItems.isEmpty {
                 ShowHideButtonView(
                     isExpanded: Binding(
-                        get: { mainViewModel
-                            .expandedSections[mealType] ?? false
+                        get: {
+                            mainViewModel
+                                .expandedSections[mealType] ?? false
                         },
                         set: {
                             mainViewModel
@@ -113,6 +115,7 @@ struct MealHeaderView: View {
                 )
             }
         }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 }
 

@@ -16,13 +16,16 @@ struct ShowHideButtonView: View {
                 isExpanded.toggle()
             }
         } label: {
-            HStack {
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+            Label {
                 Text(isExpanded ? "Hide" : "Show")
+                    .font(.footnote)
+            } icon: {
+                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                    .imageScale(.small)
             }
+            .labelIconToTitleSpacing(2)
             .lineLimit(1)
-            .font(.footnote)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
         .listRowSeparator(.hidden)
     }
