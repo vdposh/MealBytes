@@ -177,10 +177,10 @@ final class RegisterViewModel: ObservableObject {
             return .register
         }
     }
-}
-
-enum RegisterState {
-    case loading
-    case resend
-    case register
+    
+    enum RegisterState {
+        case loading
+        case resend
+        case register
+    }
 }

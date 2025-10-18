@@ -337,18 +337,18 @@ final class SearchViewModel: ObservableObject {
     var isEditing: Bool {
         editingState == .active
     }
-}
-
-enum EditingState {
-    case inactive
-    case active
-}
-
-enum SearchContentState: Equatable {
-    case loading
-    case error(AppError)
-    case empty
-    case results
+    
+    enum EditingState {
+        case inactive
+        case active
+    }
+    
+    enum SearchContentState: Equatable {
+        case loading
+        case error(AppError)
+        case empty
+        case results
+    }
 }
 
 extension SearchViewModel: SearchViewModelProtocol {}

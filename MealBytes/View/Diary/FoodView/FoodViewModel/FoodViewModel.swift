@@ -365,19 +365,12 @@ final class FoodViewModel: ObservableObject {
             return .loaded
         }
     }
-}
-
-enum MeasurementUnit: String, CaseIterable, Identifiable {
-    case servings = "Servings"
-    case grams = "Grams"
     
-    var id: String { self.rawValue }
-}
-
-enum FoodViewState {
-    case loading
-    case error(AppError)
-    case loaded
+    enum FoodViewState {
+        case loading
+        case error(AppError)
+        case loaded
+    }
 }
 
 #Preview {

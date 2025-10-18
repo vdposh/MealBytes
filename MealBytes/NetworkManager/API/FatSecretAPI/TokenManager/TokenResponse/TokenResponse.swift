@@ -13,7 +13,7 @@ struct TokenResponse: Decodable {
     let tokenType: String
     let scope: String
     
-    enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case expiresIn = "expires_in"
         case tokenType = "token_type"

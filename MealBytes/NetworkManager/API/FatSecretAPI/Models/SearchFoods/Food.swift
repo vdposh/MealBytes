@@ -14,12 +14,6 @@ struct Food: Codable, Identifiable, Hashable {
     
     var id: Int { searchFoodId }
     
-    enum CodingKeys: String, CodingKey {
-        case searchFoodId = "food_id",
-             searchFoodName = "food_name",
-             searchFoodDescription = "food_description"
-    }
-    
     init(
         searchFoodId: Int,
         searchFoodName: String,
@@ -59,6 +53,12 @@ struct Food: Codable, Identifiable, Hashable {
         return String(
             firstPart.trimmingCharacters(in: .whitespacesAndNewlines)
         )
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case searchFoodId = "food_id",
+             searchFoodName = "food_name",
+             searchFoodDescription = "food_description"
     }
 }
 

@@ -38,24 +38,6 @@ struct Serving: Decodable, Hashable {
         ].contains(measurementDescription)
     }
     
-    enum CodingKeys: String, CodingKey {
-        case fat,
-             saturatedFat = "saturated_fat",
-             monounsaturatedFat = "monounsaturated_fat",
-             polyunsaturatedFat = "polyunsaturated_fat",
-             carbohydrate,
-             sugar,
-             fiber,
-             protein,
-             calories,
-             sodium,
-             cholesterol,
-             potassium,
-             measurementDescription = "measurement_description",
-             metricServingAmount = "metric_serving_amount",
-             metricServingUnit = "metric_serving_unit"
-    }
-    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -86,16 +68,41 @@ struct Serving: Decodable, Hashable {
         metricServingAmount = decodeDouble(forKey: .metricServingAmount)
         metricServingUnit = decodeString(forKey: .metricServingUnit)
     }
-}
-
-enum MeasurementType: String {
-    case grams
-    case milliliters
     
-    var description: String {
-        switch self {
-        case .grams: "g"
-        case .milliliters: "ml"
+    private enum CodingKeys: String, CodingKey {
+        case fat,
+             saturatedFat = "saturated_fat",
+             monounsaturatedFat = "monounsaturated_fat",
+             polyunsaturatedFat = "polyunsaturated_fat",
+             carbohydrate,
+             sugar,
+             fiber,
+             protein,
+             calories,
+             sodium,
+             cholesterol,
+             potassium,
+             measurementDescription = "measurement_description",
+             metricServingAmount = "metric_serving_amount",
+             metricServingUnit = "metric_serving_unit"
+    }
+    
+    private enum MeasurementType: String {
+        case grams
+        case milliliters
+        
+        var description: String {
+            switch self {
+            case .grams: "g"
+            case .milliliters: "ml"
+            }
         }
     }
+}
+
+enum MeasurementUnit: String, CaseIterable, Identifiable {
+    case servings = "Servings"
+    case grams = "Grams"
+    
+    var id: String { self.rawValue }
 }

@@ -101,10 +101,10 @@ final class ResetViewModel: ObservableObject {
             return .ready
         }
     }
-}
-
-enum ResetState {
-    case loading
-    case emailSent
-    case ready
+    
+    enum ResetState {
+        case loading
+        case emailSent
+        case ready
+    }
 }

@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-enum FocusDirection {
-    case up, down
-}
-
 func moveFocus<T: Equatable>(
     direction: FocusDirection,
     current: T?,
@@ -83,4 +79,8 @@ func buildKeyboardToolbar<T: Equatable>(
             normalize()
         }
     )
+}
+
+enum FocusDirection {
+    case up, down
 }

@@ -8,22 +8,6 @@
 import SwiftUI
 
 struct Formatter {
-    enum Unit: String {
-        case empty
-        case kcal
-        case g
-        case mg
-        
-        var description: String {
-            switch self {
-            case .empty: ""
-            case .kcal: "kcal"
-            case .g: "g"
-            case .mg: "mg"
-            }
-        }
-    }
-    
     func formattedValue(
         _ value: Double?,
         unit: Unit,
@@ -59,6 +43,22 @@ struct Formatter {
         case .empty: return String(format: "%.0f", roundedValue)
         default:
             return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
+        }
+    }
+    
+    enum Unit: String {
+        case empty
+        case kcal
+        case g
+        case mg
+        
+        var description: String {
+            switch self {
+            case .empty: ""
+            case .kcal: "kcal"
+            case .g: "g"
+            case .mg: "mg"
+            }
         }
     }
 }

@@ -630,16 +630,16 @@ final class MainViewModel: ObservableObject {
     var navigationSubtitle: String {
         isExpandedCalendar ? "" : formattedDate()
     }
-}
+    
+    enum NutrientSource {
+        case summaries([NutrientType: Double])
+        case details(fat: Double, carbohydrate: Double, protein: Double)
+    }
 
-enum NutrientSource {
-    case summaries([NutrientType: Double])
-    case details(fat: Double, carbohydrate: Double, protein: Double)
-}
-
-enum DisplayElement {
-    case day
-    case weekday
+    enum DisplayElement {
+        case day
+        case weekday
+    }
 }
 
 extension MainViewModel: MainViewModelProtocol {

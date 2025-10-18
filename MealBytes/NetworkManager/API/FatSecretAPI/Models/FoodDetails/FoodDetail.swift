@@ -12,12 +12,6 @@ struct FoodDetail: Decodable {
     let foodName: String
     var servings: Servings
     
-    enum CodingKeys: String, CodingKey {
-        case foodId = "food_id"
-        case foodName = "food_name"
-        case servings
-    }
-    
     init(foodId: Int, foodName: String, servings: Servings) {
         self.foodId = foodId
         self.foodName = foodName
@@ -41,5 +35,11 @@ struct FoodDetail: Decodable {
             Servings.self,
             forKey: .servings
         )
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case foodId = "food_id"
+        case foodName = "food_name"
+        case servings
     }
 }

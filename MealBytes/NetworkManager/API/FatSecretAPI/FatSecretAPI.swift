@@ -8,11 +8,6 @@
 import SwiftUI
 import Moya
 
-enum FatSecretAPI {
-    case searchFoods(query: String, page: Int)
-    case getFoodDetails(foodID: Int)
-}
-
 extension FatSecretAPI: TargetType {
     var baseURL: URL {
         URL(string: "https://platform.fatsecret.com/rest")!
@@ -63,4 +58,9 @@ extension FatSecretAPI: TargetType {
     var format: String {
         "json"
     }
+}
+
+enum FatSecretAPI {
+    case searchFoods(query: String, page: Int)
+    case getFoodDetails(foodID: Int)
 }

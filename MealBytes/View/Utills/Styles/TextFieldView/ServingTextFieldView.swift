@@ -129,11 +129,11 @@ struct ServingTextFieldView: View {
             break
         }
     }
-}
-
-enum InputMode {
-    case decimal
-    case integer
+    
+    enum InputMode {
+        case decimal
+        case integer
+    }
 }
 
 #Preview {

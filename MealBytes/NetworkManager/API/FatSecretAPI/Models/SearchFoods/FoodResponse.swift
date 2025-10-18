@@ -10,14 +10,6 @@ import SwiftUI
 struct FoodResponse: Decodable {
     let foods: [Food]
     
-    private enum ContainerKeys: String, CodingKey {
-        case foods
-    }
-    
-    private enum FoodsKeys: String, CodingKey {
-        case food
-    }
-    
     init(from decoder: Decoder) throws {
         let container = try decoder
             .container(keyedBy: ContainerKeys.self)
@@ -42,5 +34,13 @@ struct FoodResponse: Decodable {
         else {
             self.foods = []
         }
+    }
+    
+    private enum ContainerKeys: String, CodingKey {
+        case foods
+    }
+    
+    private enum FoodsKeys: String, CodingKey {
+        case food
     }
 }

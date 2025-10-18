@@ -42,19 +42,6 @@ struct MealItem: Codable, Identifiable, Hashable {
         self.createdAt = createdAt
     }
     
-    enum CodingKeys: String, CodingKey {
-        case id,
-             foodId,
-             foodName,
-             portionUnit,
-             nutrients,
-             measurementDescription,
-             amount,
-             date,
-             mealType,
-             createdAt
-    }
-    
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -98,5 +85,18 @@ struct MealItem: Codable, Identifiable, Hashable {
                 result[key] = pair.value
             }
         }
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case id,
+             foodId,
+             foodName,
+             portionUnit,
+             nutrients,
+             measurementDescription,
+             amount,
+             date,
+             mealType,
+             createdAt
     }
 }

@@ -94,11 +94,11 @@ final class GoalsViewModel: ObservableObject {
     var currentIntakeSource: IntakeSourceType {
         IntakeSourceType(rawValue: mainViewModel.intakeSource) ?? .rdiView
     }
-}
-
-enum IntakeSourceType: String {
-    case rdiView
-    case dailyIntakeView
+    
+    enum IntakeSourceType: String {
+        case rdiView
+        case dailyIntakeView
+    }
 }
 
 extension GoalsViewModel: GoalsViewModelProtocol {}
