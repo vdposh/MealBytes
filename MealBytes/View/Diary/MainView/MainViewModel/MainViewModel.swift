@@ -47,8 +47,10 @@ final class MainViewModel: ObservableObject {
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isExpandedCalendar: Bool = false
+    @Published var isCalendarInteractive: Bool = true
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
+    
     
     let formatter = Formatter()
     let calendar = Calendar.current

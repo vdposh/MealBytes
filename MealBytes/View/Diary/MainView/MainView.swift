@@ -42,6 +42,7 @@ struct MainView: View {
         .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
                 CalendarView(mainViewModel: mainViewModel)
+                    .allowsHitTesting(mainViewModel.isCalendarInteractive)
             }
         }
         .animation(

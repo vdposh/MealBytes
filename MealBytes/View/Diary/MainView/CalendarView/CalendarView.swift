@@ -41,6 +41,7 @@ struct CalendarView: View {
                     id: \.self
                 ) { date in
                     Button {
+                        mainViewModel.isCalendarInteractive = false
                         withTransaction(
                             Transaction(animation: .bouncy)
                         ) {
@@ -50,6 +51,7 @@ struct CalendarView: View {
                                 isPresented: &mainViewModel.isExpandedCalendar
                             )
                         }
+                        mainViewModel.isCalendarInteractive = true
                     } label: {
                         VStack(spacing: 5) {
                             Text("\(mainViewModel.dayComponent(for: date))")
