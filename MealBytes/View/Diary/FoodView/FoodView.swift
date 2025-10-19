@@ -92,7 +92,7 @@ struct FoodView: View {
                     nutrientActionSection
                     detailedInformationSection
                 }
-                .listSectionSpacing(16)
+                .listSectionSpacing(15)
                 .scrollIndicators(.hidden)
             }
         }
@@ -103,6 +103,7 @@ struct FoodView: View {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
                 placeholder: "Serving size",
+                trailingUnit: foodViewModel.servingUnit,
                 useLabel: true
             )
             .focused($amountFocused)
@@ -110,7 +111,8 @@ struct FoodView: View {
             if let selected = foodViewModel.selectedServing,
                let servings = foodViewModel.foodDetail?.servings.serving {
                 PickerRowView(
-                    title: foodViewModel.servingDescription(for: selected),
+                    title: foodViewModel
+                        .servingDescription(for: selected),
                     iconName: "fork.knife"
                 ) {
                     ForEach(servings, id: \.self) { serving in
@@ -122,7 +124,10 @@ struct FoodView: View {
                             Label {
                                 Text(
                                     foodViewModel
-                                        .servingDescription(for: serving)
+                                        .servingDescription(
+                                            for: serving,
+                                            showUnit: true
+                                        )
                                 )
                             } icon: {
                                 if serving == selected {

@@ -11,11 +11,17 @@ struct CompactNutrientValueRow: View {
     let nutrient: CompactNutrientValue
     
     var body: some View {
-        VStack(spacing: 9) {
-            Text(nutrient.type.alternativeTitle)
-                .font(.footnote)
-                .fontWeight(.medium)
-                .foregroundStyle(.secondary)
+        VStack(spacing: 5) {
+            VStack(spacing: 0) {
+                Text(nutrient.type.alternativeTitle)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                
+                Text(nutrient.unitDescription)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
             
             Text(nutrient.formattedCompactNutrientValue)
                 .fontWeight(.medium)

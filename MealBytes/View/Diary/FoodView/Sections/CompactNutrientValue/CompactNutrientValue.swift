@@ -20,19 +20,19 @@ struct CompactNutrientValue: Identifiable {
         self.value = value
         self.serving = serving
     }
-}
-
-extension CompactNutrientValue {
+    
+    var unitDescription: String {
+        let rawUnit = Formatter.Unit(
+            rawValue: type.unit(for: serving)
+        ) ?? .empty
+        let useFullName = rawUnit != .kcal
+        return rawUnit.description(for: value, full: useFullName)
+    }
+    
     var formattedCompactNutrientValue: String {
         Formatter().formattedValue(
             value,
-            unit: {
-                switch type {
-                case .calories: .empty
-                default:
-                    Formatter.Unit(rawValue: type.unit(for: serving)) ?? .empty
-                }
-            }(),
+            unit: .empty,
             alwaysRoundUp: type == .calories)
     }
 }

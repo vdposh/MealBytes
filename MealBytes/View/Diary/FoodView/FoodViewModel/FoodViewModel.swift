@@ -84,9 +84,11 @@ final class FoodViewModel: ObservableObject {
                 .fetchFoodDetails(foodId: food.searchFoodId)
             self.foodDetail = fetchedFoodDetail
             
-            switch fetchedFoodDetail.servings.serving.first(where: {
-                $0.measurementDescription == initialMeasurementDescription
-            }) {
+            switch fetchedFoodDetail.servings.serving.first(
+                where: {
+                    $0.measurementDescription == initialMeasurementDescription
+                }
+            ) {
             case let matchingServing?:
                 self.selectedServing = matchingServing
             default:
@@ -105,7 +107,9 @@ final class FoodViewModel: ObservableObject {
             }
             isError = true
         }
+        
         isLoading = false
+
     }
     
     func loadFoodData() async {
@@ -259,8 +263,16 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Serving Description
-    func servingDescription(for serving: Serving) -> String {
+    func servingDescription(
+        for serving: Serving,
+        showUnit: Bool = false
+    ) -> String {
         var description = serving.measurementDescription
+        let metricAmountFormatted = formatter.formattedValue(
+            serving.metricServingAmount,
+            unit: .empty
+        )
+        let metricUnit = serving.metricServingUnit
         
         if serving.isMetricMeasurement {
             return description
@@ -274,7 +286,9 @@ final class FoodViewModel: ObservableObject {
             description.replaceSubrange(range, with: "serving")
         }
         
-        return "\(description)"
+        return showUnit
+        ? "\(description) (\(metricAmountFormatted) \(metricUnit))"
+        : "\(description)"
     }
     
     // MARK: - Button States
@@ -309,6 +323,7 @@ final class FoodViewModel: ObservableObject {
     
     var compactNutrientDetails: [CompactNutrientValue] {
         guard let selectedServing else { return [] }
+        
         return CompactNutrientValueProvider()
             .getCompactNutrientDetails(from: selectedServing)
             .map { detail in
@@ -333,6 +348,24 @@ final class FoodViewModel: ObservableObject {
                     unit: value.unit
                 )
             }
+    }
+    
+    var servingUnit: String {
+        guard let serving = selectedServing else { return "" }
+        
+        let scaledAmount = serving.metricServingAmount * calculateSelectedAmountValue()
+        let unit = Formatter
+            .Unit(rawValue: serving.metricServingUnit) ?? .empty
+        
+        if serving.measurementDescription.lowercased() == "g" {
+            return Formatter.Unit.g.description(for: scaledAmount, full: true)
+        }
+        
+        return Formatter().formattedValue(
+            scaledAmount,
+            unit: unit,
+            fullUnitName: true
+        )
     }
     
     // MARK: - Keyboard

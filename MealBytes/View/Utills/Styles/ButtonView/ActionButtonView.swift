@@ -24,9 +24,9 @@ struct ActionButtonView: View {
         }
         .disabled(!isEnabled)
         .glassEffect(
-            !isEnabled
-            ? .regular.tint(color.opacity(0.5))
-            : .regular.interactive().tint(color)
+            .regular.interactive().tint(
+                color.opacity(!isEnabled ? 0.5 : 1)
+            )
         )
         .buttonStyle(.borderless)
     }

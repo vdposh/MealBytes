@@ -11,11 +11,11 @@ struct Formatter {
     func formattedValue(
         _ value: Double?,
         unit: Unit,
-        alwaysRoundUp: Bool = false
+        alwaysRoundUp: Bool = false,
+        fullUnitName: Bool = false
     ) -> String {
         let safeValue = value ?? 0.0
         let baseValue = alwaysRoundUp ? ceil(safeValue) : safeValue
-        
         let rounded = (baseValue * 100).rounded() / 100
         
         let raw = String(format: "%.2f", rounded)
@@ -30,20 +30,17 @@ struct Formatter {
         }
         
         let finalValue = cleaned.preparedForLocaleDecimal
+        let unitText = unit.description(for: rounded, full: fullUnitName)
         
-        switch unit {
-        case .empty: return finalValue
-        default: return "\(finalValue) \(unit.description)"
-        }
+        return unit == .empty ? finalValue : "\(finalValue) \(unitText)"
     }
     
     func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
         let roundedValue = ceil(value)
-        switch unit {
-        case .empty: return String(format: "%.0f", roundedValue)
-        default:
-            return "\(String(format: "%.0f", roundedValue)) \(unit.description)"
-        }
+        let unitText = unit.description(for: roundedValue)
+        return unit == .empty
+        ? String(format: "%.0f", roundedValue)
+        : "\(String(format: "%.0f", roundedValue)) \(unitText)"
     }
     
     enum Unit: String {
@@ -51,13 +48,24 @@ struct Formatter {
         case kcal
         case g
         case mg
+        case ml
+        case oz
         
-        var description: String {
+        func description(for value: Double, full: Bool = false) -> String {
+            let isSingular = abs(value) == 1
             switch self {
-            case .empty: ""
-            case .kcal: "kcal"
-            case .g: "g"
-            case .mg: "mg"
+            case .empty:
+                return ""
+            case .kcal:
+                return full ? "kilocalorie" + (isSingular ? "" : "s") : "kcal"
+            case .g:
+                return full ? "gram" + (isSingular ? "" : "s") : "g"
+            case .mg:
+                return full ? "milligram" + (isSingular ? "" : "s") : "mg"
+            case .ml:
+                return full ? "milliliter" + (isSingular ? "" : "s") : "ml"
+            case .oz:
+                return full ? "ounce" + (isSingular ? "" : "s") : "oz"
             }
         }
     }

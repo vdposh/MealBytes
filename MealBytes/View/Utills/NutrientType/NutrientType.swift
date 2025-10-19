@@ -47,16 +47,24 @@ enum NutrientType: String, Identifiable, CaseIterable {
         }
     }
     
-    var alternativeNutrientsTitle: String {
+    var isSubValue: Bool {
         switch self {
-        case .fat: "F"
-        case .protein: "P"
-        case .carbohydrate: "C"
-        default: title
+        case .saturatedFat,
+                .monounsaturatedFat,
+                .polyunsaturatedFat,
+                .sugar,
+                .fiber,
+                .potassium,
+                .sodium,
+                .cholesterol,
+                .servingSize:
+            true
+        default:
+            false
         }
     }
     
-    private var baseUnit: String {
+    var baseUnit: String {
         switch self {
         case .calories: "kcal"
         case .servingSize: "g"
@@ -84,13 +92,5 @@ enum NutrientType: String, Identifiable, CaseIterable {
             }
         default: return baseUnit
         }
-    }
-    
-    var alternativeUnit: String {
-        baseUnit
-    }
-    
-    var isServingSize: Bool {
-        self == .servingSize
     }
 }

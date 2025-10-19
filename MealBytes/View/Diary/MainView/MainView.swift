@@ -31,7 +31,7 @@ struct MainView: View {
             detailedInformationSection
         }
         .scrollIndicators(.hidden)
-        .listSectionSpacing(16)
+        .listSectionSpacing(15)
         .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
                 CalendarButtonView {
@@ -124,6 +124,9 @@ struct MainView: View {
             
             ToolbarItem(placement: .topBarLeading) {
                 Button("Today") {
+                    withAnimation {
+                        mainViewModel.isCalendarInteractive = false
+                    }
                     withTransaction(
                         Transaction(animation: .bouncy)
                     ) {
@@ -133,6 +136,7 @@ struct MainView: View {
                             isPresented: &mainViewModel.isExpandedCalendar
                         )
                     }
+                    mainViewModel.isCalendarInteractive = true
                 }
                 .font(.headline)
             }

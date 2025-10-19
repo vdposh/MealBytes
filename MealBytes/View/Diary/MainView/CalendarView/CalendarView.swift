@@ -41,7 +41,9 @@ struct CalendarView: View {
                     id: \.self
                 ) { date in
                     Button {
-                        mainViewModel.isCalendarInteractive = false
+                        withAnimation {
+                            mainViewModel.isCalendarInteractive = false
+                        }
                         withTransaction(
                             Transaction(animation: .bouncy)
                         ) {

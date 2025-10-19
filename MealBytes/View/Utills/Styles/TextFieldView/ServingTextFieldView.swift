@@ -13,6 +13,7 @@ struct ServingTextFieldView: View {
     @FocusState private var isFocused: Bool
     var placeholder: String = "Enter value"
     var labelIconName: String = "pencil"
+    var trailingUnit: String? = nil
     var labelIconColor: Color = .accent.opacity(0.8)
     var useLabel: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
@@ -30,6 +31,13 @@ struct ServingTextFieldView: View {
             .onChange(of: isFocused) {
                 if !isFocused {
                     finalizeInput(&text)
+                }
+            }
+            .overlay(alignment: .trailing) {
+                if !text.isEmpty, let trailingUnit {
+                    Text(trailingUnit)
+                        .foregroundStyle(.tertiary)
+                        .padding(.trailing, 8)
                 }
             }
         
@@ -83,9 +91,9 @@ struct ServingTextFieldView: View {
             
         case .integer:
             let separators: [Character] = [",", "."]
-            if let separatorIndex = input.firstIndex(where: {
-                separators.contains($0)
-            }) {
+            if let separatorIndex = input.firstIndex(
+                where: { separators.contains($0) }
+            ) {
                 input = String(input[..<separatorIndex])
             }
             

@@ -44,15 +44,8 @@ struct Food: Codable, Identifiable, Hashable {
     }
     
     var parsedDescription: String? {
-        let components = searchFoodDescription.split(
-            separator: "|",
-            maxSplits: 1,
-            omittingEmptySubsequences: true
-        )
-        guard let firstPart = components.first else { return nil }
-        return String(
-            firstPart.trimmingCharacters(in: .whitespacesAndNewlines)
-        )
+        FoodDescriptionFormatter
+            .normalizedDescription(from: searchFoodDescription)
     }
     
     private enum CodingKeys: String, CodingKey {

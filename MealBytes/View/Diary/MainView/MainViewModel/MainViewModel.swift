@@ -128,10 +128,11 @@ final class MainViewModel: ObservableObject {
     ) {
         guard let items = mealItems[mealType] else { return }
         
-        if let index = items.firstIndex(where: {
-            $0.id == updatedItem.id &&
-            calendar.isDate($0.date, inSameDayAs: date)
-        }) {
+        if let index = items.firstIndex(
+            where: { $0.id == updatedItem.id
+                && calendar.isDate($0.date, inSameDayAs: date)
+            }
+        ) {
             mealItems[mealType]?[index] = updatedItem
             recalculateNutrients(for: date)
         }
@@ -140,7 +141,9 @@ final class MainViewModel: ObservableObject {
     // MARK: - Delete Meal Item
     func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
         var items = mealItems[mealType] ?? []
-        if let itemToDelete = items.first(where: { $0.id == id }) {
+        if let itemToDelete = items.first(
+            where: { $0.id == id }
+        ) {
             items.removeAll { $0.id == id }
             
             let updatedItems = items
@@ -352,10 +355,10 @@ final class MainViewModel: ObservableObject {
             .pluralized(for: mealItem.amount)
         
         if measurement == "g" || measurement == "ml" {
-            return "\(formattedServingSize(for: mealItem))\(mealItem.portionUnit)"
+            return "\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit)"
         }
         
-        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem))\(mealItem.portionUnit))"
+        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit))"
     }
     
     // MARK: - Format Calories
@@ -584,6 +587,7 @@ final class MainViewModel: ObservableObject {
         recalculateNutrients(for: newDate)
         updateProgress()
         collapseAllSections()
+        isExpanded = false
     }
     
     // MARK: - Close sections
