@@ -24,6 +24,11 @@ struct PickerRowView<MenuContent: View>: View {
             .labelIconToTitleSpacing(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             
+            Color.clear
+                .frame(width: 30)
+        }
+        
+        .overlay(alignment: .trailing) {
             Menu(content: menuContent) {
                 ZStack {
                     Circle()
@@ -36,7 +41,6 @@ struct PickerRowView<MenuContent: View>: View {
             .glassEffect(.regular.interactive())
             .buttonStyle(ButtonStyleInvisible())
         }
-        .frame(height: 20)
     }
 }
 
