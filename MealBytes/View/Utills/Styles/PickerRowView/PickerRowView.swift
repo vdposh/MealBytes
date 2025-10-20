@@ -10,18 +10,32 @@ import SwiftUI
 struct PickerRowView<MenuContent: View>: View {
     let title: String
     let iconName: String
+    let mealType: MealType
+    let useRendering: Bool
     @ViewBuilder let menuContent: () -> MenuContent
     
     var body: some View {
         HStack {
             Label {
                 Text(title)
+                    .lineLimit(3)
             } icon: {
-                Image(systemName: iconName)
-                    .font(.system(size: 14))
-                    .foregroundStyle(.accent.opacity(0.8))
+                if useRendering {
+                    Image(systemName: iconName)
+                        .imageScale(.large)
+                        .foregroundStyle(
+                            mealType.foregroundStyle.0,
+                            mealType.foregroundStyle.1
+                        )
+                        .symbolColorRenderingMode(.gradient)
+                        .symbolRenderingMode(mealType.renderingMode)
+                } else {
+                    Image(systemName: iconName)
+                        .imageScale(.medium)
+                        .foregroundStyle(.customGray)
+                        .symbolColorRenderingMode(.gradient)
+                }
             }
-            .labelIconToTitleSpacing(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             
             Color.clear

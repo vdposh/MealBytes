@@ -113,7 +113,9 @@ struct FoodView: View {
                 PickerRowView(
                     title: foodViewModel
                         .servingDescription(for: selected),
-                    iconName: "fork.knife"
+                    iconName: "text.justify",
+                    mealType: mealType,
+                    useRendering: false
                 ) {
                     ForEach(servings, id: \.self) { serving in
                         Button {
@@ -142,7 +144,9 @@ struct FoodView: View {
             if showSaveRemoveButton {
                 PickerRowView(
                     title: mealType.rawValue,
-                    iconName: mealType.iconName
+                    iconName: mealType.iconName,
+                    mealType: mealType,
+                    useRendering: true
                 ) {
                     Picker("Meal Type", selection: $mealType) {
                         ForEach(MealType.allCases, id: \.self) { meal in

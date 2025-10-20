@@ -12,9 +12,8 @@ struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var isFocused: Bool
     var placeholder: String = "Enter value"
-    var labelIconName: String = "pencil"
+    var labelIconName: String = "plus.forwardslash.minus"
     var trailingUnit: String? = nil
-    var labelIconColor: Color = .accent.opacity(0.8)
     var useLabel: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
@@ -47,10 +46,10 @@ struct ServingTextFieldView: View {
                     field
                 } icon: {
                     Image(systemName: labelIconName)
-                        .font(.system(size: 14))
-                        .foregroundStyle(labelIconColor)
+                        .imageScale(.medium)
+                        .foregroundStyle(.customGray)
+                        .symbolColorRenderingMode(.gradient)
                 }
-                .labelIconToTitleSpacing(10)
             } else {
                 field
             }

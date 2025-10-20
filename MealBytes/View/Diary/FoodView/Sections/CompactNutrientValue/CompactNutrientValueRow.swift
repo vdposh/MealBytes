@@ -11,7 +11,7 @@ struct CompactNutrientValueRow: View {
     let nutrient: CompactNutrientValue
     
     var body: some View {
-        VStack(spacing: 5) {
+        VStack {
             VStack(spacing: 0) {
                 Text(nutrient.type.alternativeTitle)
                     .font(.subheadline)
@@ -32,9 +32,9 @@ struct CompactNutrientValueRow: View {
 }
 
 #Preview {
-    PreviewFoodView.foodView
+    PreviewContentView.contentView
 }
 
 #Preview {
-    PreviewContentView.contentView
+    PreviewFoodView.foodView
 }

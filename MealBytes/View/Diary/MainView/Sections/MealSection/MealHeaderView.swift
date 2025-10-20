@@ -11,7 +11,6 @@ struct MealHeaderView: View {
     let mealType: MealType
     let title: String
     let iconName: String
-    let color: Color
     let calories: Double
     let fat: Double
     let protein: Double
@@ -40,11 +39,16 @@ struct MealHeaderView: View {
                                         alignment: .leading
                                     )
                             } icon: {
-                                Image(systemName: iconName)
-                                    .foregroundStyle(color)
-                                    .imageScale(.medium)
+                                Image(systemName: mealType.iconName)
+                                    .foregroundStyle(
+                                        mealType.foregroundStyle.0,
+                                        mealType.foregroundStyle.1
+                                    )
+                                    .symbolRenderingMode(
+                                        mealType.renderingMode
+                                    )
+                                    .symbolColorRenderingMode(.gradient)
                             }
-                            .labelIconToTitleSpacing(10)
                             
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)
@@ -65,6 +69,7 @@ struct MealHeaderView: View {
                     Image(systemName: "plus")
                         .fontWeight(.bold)
                         .foregroundStyle(.accent)
+                        .symbolColorRenderingMode(.gradient)
                 }
             }
             .transaction { $0.animation = nil }

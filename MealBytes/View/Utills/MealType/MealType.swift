@@ -17,15 +17,37 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     
     var iconName: String {
         switch self {
-        case .breakfast: "sunrise.fill"
+        case .breakfast: "sun.horizon.fill"
         case .lunch: "sun.max.fill"
-        case .dinner: "moon.fill"
-        case .snacks: "tray.fill"
+        case .dinner: "sun.haze.fill"
+        case .snacks: "moon.stars.fill"
         }
     }
     
-    var color: Color {
-        .accent.opacity(0.8)
+    var renderingMode: SymbolRenderingMode {
+        switch rendering {
+        case .multicolor: .multicolor
+        case .palette: .palette
+        }
+    }
+    
+    var foregroundStyle: (Color, Color) {
+        switch rendering {
+        case .multicolor: (.primary, .primary)
+        case .palette(let a, let b): (a, b)
+        }
+    }
+    
+    var rendering: Rendering {
+        switch self {
+        case .snacks: .palette(.customMoon, .customStar)
+        default: .multicolor
+        }
+    }
+    
+    enum Rendering {
+        case multicolor
+        case palette(Color, Color)
     }
 }
 

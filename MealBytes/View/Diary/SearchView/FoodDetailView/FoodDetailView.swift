@@ -20,6 +20,7 @@ struct FoodDetailView: View {
                         Image(systemName: "bookmark.fill")
                             .imageScale(.small)
                             .foregroundStyle(.accent)
+                            .symbolColorRenderingMode(.gradient)
                     }
                 }
                 .frame(width: 5)

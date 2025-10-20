@@ -447,12 +447,8 @@ final class MainViewModel: ObservableObject {
         date: Date? = nil,
         isSelected: Bool = false,
         isToday: Bool = false,
-        forBackground: Bool = false,
         forcePrimary: Bool = false
     ) -> Color {
-        if forBackground {
-            return isSelected ? .accent.opacity(0.2) : .clear
-        }
         if isSelected || isToday {
             return .accent.opacity(1)
         }
@@ -467,6 +463,18 @@ final class MainViewModel: ObservableObject {
             return .secondary
         }
         return element == .day ? .primary : .secondary
+    }
+    
+    @ViewBuilder
+    func colorBackground(for date: Date) -> some View {
+        let isSelected = calendar.isDate(self.date, inSameDayAs: date)
+        
+        if isSelected {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.accent.opacity(0.2).gradient)
+        } else {
+            Color.clear
+        }
     }
     
     // MARK: - Date (calendar) Management Methods

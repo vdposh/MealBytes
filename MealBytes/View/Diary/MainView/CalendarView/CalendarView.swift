@@ -79,18 +79,8 @@ struct CalendarView: View {
                         .frame(width: 45, height: 45)
                     }
                     .background {
-                        mainViewModel.color(
-                            for: .day,
-                            date: date,
-                            isSelected: mainViewModel
-                                .calendar.isDate(
-                                    mainViewModel.date,
-                                    inSameDayAs: date
-                                ),
-                            forBackground: true
-                        )
+                        mainViewModel.colorBackground(for: date)
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .glassEffect(
                         .identity.interactive(),
                         in: .rect(cornerRadius: 16)

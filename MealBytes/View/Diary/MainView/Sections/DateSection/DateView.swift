@@ -40,15 +40,9 @@ struct DateView: View {
         }
         .padding(5)
         .frame(maxWidth: .infinity)
-        .background(
-            mainViewModel.color(
-                for: .day,
-                date: date,
-                isSelected: isSelected,
-                forBackground: true
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background {
+            mainViewModel.colorBackground(for: date)
+        }
         .glassEffect(
             .identity.interactive(),
             in: .rect(cornerRadius: 16)

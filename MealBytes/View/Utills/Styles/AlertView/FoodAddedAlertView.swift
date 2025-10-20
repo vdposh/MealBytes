@@ -9,28 +9,39 @@ import SwiftUI
 
 struct FoodAddedAlertView: View {
     @Binding var isVisible: Bool
+    @State private var symbolEffect = true
     
     var body: some View {
-        if isVisible {
-            Label {
-                Text("Added to Diary")
-                    .fontWeight(.medium)
-                    .font(.subheadline)
-            } icon: {
-                Image(systemName: "text.badge.plus")
+        Label {
+            Text("Added to Diary")
+                .fontWeight(.medium)
+                .font(.subheadline)
+        } icon: {
+            Image(systemName: "checkmark")
+                .symbolEffect(.drawOn, isActive: symbolEffect)
+                .symbolColorRenderingMode(.gradient)
+        }
+        .labelIconToTitleSpacing(5)
+        .foregroundStyle(.secondary)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 16)
+        .background(.regularMaterial)
+        .clipShape(Capsule())
+        .containerRelativeFrame(.vertical) { height, _ in
+            height * 0.45
+        }
+        .frame(maxHeight: .infinity, alignment: .bottom)
+        .opacity(isVisible ? 1 : 0)
+        .allowsHitTesting(false)
+        .ignoresSafeArea()
+        .onChange(of: isVisible) {
+            if isVisible {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    symbolEffect = false
+                }
+            } else {
+                symbolEffect = true
             }
-            .labelIconToTitleSpacing(10)
-            .foregroundStyle(.secondary)
-            .padding(.vertical, 14)
-            .padding(.horizontal, 16)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .containerRelativeFrame(.vertical) { height, _ in
-                height * 0.45
-            }
-            .frame(maxHeight: .infinity, alignment: .bottom)
-            .allowsHitTesting(false)
-            .ignoresSafeArea()
         }
     }
 }

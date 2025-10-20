@@ -28,6 +28,7 @@ struct BookmarkButtonView: View {
                     .fontWeight(isFilled ? .regular : .medium)
                     .frame(width: 25, height: 25)
                     .foregroundStyle(isFilled ? .white : .accent)
+                    .symbolColorRenderingMode(.gradient)
             }
         }
         .glassEffect(.regular.interactive())

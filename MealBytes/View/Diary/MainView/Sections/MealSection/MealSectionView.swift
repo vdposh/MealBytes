@@ -17,7 +17,6 @@ struct MealSectionView: View {
             mealType: mealType,
             title: mealType.rawValue,
             iconName: mealType.iconName,
-            color: mealType.color,
             calories: mainViewModel.totalNutrient(
                 .calories,
                 for: mealItems
