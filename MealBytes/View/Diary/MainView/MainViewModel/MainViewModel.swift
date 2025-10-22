@@ -317,6 +317,24 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    var hasMealItems: Bool {
+        mealItems.values.contains {
+            $0.contains {
+                calendar.isDate($0.date, inSameDayAs: date)
+            }
+        }
+    }
+    
+    func hasMealItemsForMealType(
+        for mealType: MealType,
+        on date: Date
+    ) -> Bool {
+        let items = mealItems[mealType] ?? []
+        return items.contains {
+            calendar.isDate($0.date, inSameDayAs: date)
+        }
+    }
+    
     // MARK: - Filtered Nutrients
     var filteredNutrientValues: [NutrientValue] {
         let all = NutrientValueProvider()

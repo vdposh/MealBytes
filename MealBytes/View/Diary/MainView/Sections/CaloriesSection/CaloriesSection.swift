@@ -14,34 +14,34 @@ struct CaloriesSection: View {
     var body: some View {
         Section {
             VStack(spacing: 10) {
-                VStack(spacing: 10) {
-                    HStack {
-                        Text("Calories")
-                            .font(.subheadline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        HStack(spacing: 5) {
-                            Text(
-                                mainViewModel.formatter.formattedValue(
-                                    summaries[.calories],
-                                    unit: .empty,
-                                    alwaysRoundUp: true
-                                )
-                            )
-                            .lineLimit(1)
-                            
-                            if mainViewModel.canDisplayIntake() {
-                                Text("/")
-                                    .foregroundStyle(.secondary)
-                                Text(mainViewModel.intake)
-                                    .lineLimit(1)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .font(.callout)
-                        .fontWeight(.medium)
-                    }
+                HStack {
+                    Text("Calories")
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
+                    HStack(spacing: 5) {
+                        Text(
+                            mainViewModel.formatter.formattedValue(
+                                summaries[.calories],
+                                unit: .empty,
+                                alwaysRoundUp: true
+                            )
+                        )
+                        .lineLimit(1)
+                        
+                        if mainViewModel.canDisplayIntake() {
+                            Text("/")
+                                .foregroundStyle(.secondary)
+                            Text(mainViewModel.intake)
+                                .lineLimit(1)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .font(.callout)
+                    .fontWeight(.medium)
+                }
+                
+                if mainViewModel.hasMealItems {
                     if mainViewModel.canDisplayIntake() {
                         ProgressView(value: mainViewModel.intakeProgress)
                             .progressViewStyle(.linear)
@@ -50,34 +50,32 @@ struct CaloriesSection: View {
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                             .tint(.accent)
                     }
-                }
-                
-                HStack {
-                    let nutrients = mainViewModel.formattedNutrients(
-                        source: .summaries(summaries)
-                    )
-                    ForEach(["Fat", "Carbs", "Protein"],
-                            id: \.self) { key in
-                        NutrientLabel(
-                            label: String(key.prefix(1)),
-                            formattedValue: nutrients[key] ?? ""
-                        )
-                    }
                     
-                    if mainViewModel.canDisplayIntake() {
-                        Text(
-                            mainViewModel
-                                .intakePercentageText(
+                    HStack {
+                        let nutrients = mainViewModel.formattedNutrients(
+                            source: .summaries(summaries)
+                        )
+                        ForEach(["Fat", "Carbs", "Protein"], id: \.self) { key in
+                            NutrientLabel(
+                                label: String(key.prefix(1)),
+                                formattedValue: nutrients[key] ?? ""
+                            )
+                        }
+                        
+                        if mainViewModel.canDisplayIntake() {
+                            Text(
+                                mainViewModel.intakePercentageText(
                                     for: summaries[.calories]
                                 )
-                        )
-                        .lineLimit(1)
-                        .foregroundStyle(.secondary)
-                        .font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                            )
+                            .lineLimit(1)
+                            .foregroundStyle(.secondary)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .transaction { $0.animation = nil }
         } header: {

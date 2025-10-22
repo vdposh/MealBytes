@@ -51,20 +51,32 @@ struct MealHeaderView: View {
                             }
                             .labelIconToTitleSpacing(10)
                             
-                            Text(mainViewModel.formattedCalories(calories))
-                                .lineLimit(1)
-                                .font(.callout)
-                                .fontWeight(.medium)
-                                .foregroundStyle(Color.primary)
+                            if mainViewModel
+                                .hasMealItemsForMealType(
+                                    for: mealType,
+                                    on: mainViewModel.date
+                                ) {
+                                Text(mainViewModel.formattedCalories(calories))
+                                    .lineLimit(1)
+                                    .font(.callout)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(Color.primary)
+                            }
                         }
                         
-                        NutrientSummaryRow(
-                            fat: fat,
-                            carbohydrate: carbohydrate,
-                            protein: protein,
-                            calories: calories,
-                            mainViewModel: mainViewModel
-                        )
+                        if mainViewModel
+                            .hasMealItemsForMealType(
+                                for: mealType,
+                                on: mainViewModel.date
+                            ) {
+                            NutrientSummaryRow(
+                                fat: fat,
+                                carbohydrate: carbohydrate,
+                                protein: protein,
+                                calories: calories,
+                                mainViewModel: mainViewModel
+                            )
+                        }
                     }
                     
                     Image(systemName: "plus")

@@ -55,6 +55,17 @@ struct NutrientValueProvider {
                 )
             }
     }
+    
+    func placeholderMacros() -> [NutrientValue] {
+        [.calories, .fat, .carbohydrate, .protein].map { type in
+            NutrientValue(
+                type: type,
+                value: nil,
+                isSubValue: false,
+                unit: .empty
+            )
+        }
+    }
 }
 
 #Preview {

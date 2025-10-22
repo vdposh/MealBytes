@@ -35,4 +35,8 @@ struct NutrientValue: Identifiable {
             alwaysRoundUp: type == .calories
         )
     }
+    
+    var formattedValueOrDash: String {
+        value == 0 ? "-" : formattedValue
+    }
 }

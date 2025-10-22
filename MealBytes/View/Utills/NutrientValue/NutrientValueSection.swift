@@ -10,6 +10,7 @@ import SwiftUI
 struct NutrientValueSection: View {
     let nutrients: [NutrientValue]
     let isExpandable: Binding<Bool>?
+    var isPlaceholder: Bool = false
     
     var body: some View {
         Section {
@@ -22,16 +23,20 @@ struct NutrientValueSection: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text(nutrient.formattedValue)
-                        .foregroundStyle(
-                            nutrient.isSubValue ? .secondary : .primary
-                        )
-                        .font(.subheadline)
-                        .lineLimit(1)
+                    Text(
+                        isPlaceholder
+                        ? "-"
+                        : nutrient.formattedValue
+                    )
+                    .foregroundStyle(
+                        nutrient.isSubValue ? .secondary : .primary
+                    )
+                    .font(.subheadline)
+                    .lineLimit(1)
                 }
             }
             
-            if let isExpandable {
+            if let isExpandable, !isPlaceholder {
                 ShowHideButtonView(isExpanded: isExpandable)
             }
         }

@@ -30,7 +30,6 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
-        .environment(\.defaultMinListRowHeight, 20)
         .scrollIndicators(.hidden)
         .listSectionSpacing(15)
         .overlay(alignment: .top) {
@@ -86,10 +85,18 @@ struct MainView: View {
     }
     
     private var detailedInformationSection: some View {
-        NutrientValueSection(
-            nutrients: mainViewModel.filteredNutrientValues,
-            isExpandable: $mainViewModel.isExpanded
-        )
+        if mainViewModel.hasMealItems {
+            NutrientValueSection(
+                nutrients: mainViewModel.filteredNutrientValues,
+                isExpandable: $mainViewModel.isExpanded
+            )
+        } else {
+            NutrientValueSection(
+                nutrients: NutrientValueProvider().placeholderMacros(),
+                isExpandable: nil,
+                isPlaceholder: true
+            )
+        }
     }
     
     @ToolbarContentBuilder
