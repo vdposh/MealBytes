@@ -28,7 +28,7 @@ struct MealHeaderView: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    VStack(spacing: 15) {
+                    VStack(spacing: 10) {
                         HStack {
                             Label {
                                 Text(title)
@@ -49,6 +49,7 @@ struct MealHeaderView: View {
                                     )
                                     .symbolColorRenderingMode(.gradient)
                             }
+                            .labelIconToTitleSpacing(10)
                             
                             Text(mainViewModel.formattedCalories(calories))
                                 .lineLimit(1)

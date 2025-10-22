@@ -30,6 +30,7 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
+        .environment(\.defaultMinListRowHeight, 20)
         .scrollIndicators(.hidden)
         .listSectionSpacing(15)
         .overlay(alignment: .top) {

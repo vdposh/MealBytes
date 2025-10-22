@@ -13,8 +13,8 @@ struct CaloriesSection: View {
     
     var body: some View {
         Section {
-            VStack {
-                VStack {
+            VStack(spacing: 10) {
+                VStack(spacing: 10) {
                     HStack {
                         Text("Calories")
                             .font(.subheadline)
@@ -51,7 +51,6 @@ struct CaloriesSection: View {
                             .tint(.accent)
                     }
                 }
-                .padding(.bottom, mainViewModel.canDisplayIntake() ? 12 : 2)
                 
                 HStack {
                     let nutrients = mainViewModel.formattedNutrients(
