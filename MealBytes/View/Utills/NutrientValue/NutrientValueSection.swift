@@ -11,6 +11,7 @@ struct NutrientValueSection: View {
     let nutrients: [NutrientValue]
     let isExpandable: Binding<Bool>?
     var isPlaceholder: Bool = false
+    var macroDistribution: [NutrientType: Int]? = nil
     
     var body: some View {
         Section {
@@ -23,14 +24,29 @@ struct NutrientValueSection: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text(
-                        isPlaceholder
-                        ? "-"
-                        : nutrient.formattedValue
-                    )
-                    .foregroundStyle(
-                        nutrient.isSubValue ? .secondary : .primary
-                    )
+                    HStack(spacing: 5) {
+                        Text(
+                            isPlaceholder
+                            ? "-"
+                            : nutrient.formattedValue
+                        )
+                        .foregroundStyle(
+                            nutrient.isSubValue ? .secondary : .primary
+                        )
+                        
+                        if let macroDistribution,
+                           [.fat, .carbohydrate, .protein].contains(
+                            nutrient.type
+                           ),
+                           let percent = macroDistribution[nutrient.type] {
+                            Text("/")
+                                .fontWeight(.medium)
+                                .foregroundStyle(.secondary)
+                            Text("\(percent)%")
+                                .fontWeight(.medium)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     .font(.subheadline)
                     .lineLimit(1)
                 }

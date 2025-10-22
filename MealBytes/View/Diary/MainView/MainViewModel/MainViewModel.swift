@@ -291,7 +291,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Summary Calories
+    // MARK: - Summary
     func summariesForCaloriesSection() -> [NutrientType: Double] {
         mealItems.values.reduce(
             into: [NutrientType: Double]()) { result, items in
@@ -305,6 +305,35 @@ final class MainViewModel: ObservableObject {
                     }
                 }
             }
+    }
+    
+    func macroDistribution(from summary: [NutrientType: Double]) -> [NutrientType: Int] {
+        let values: [(NutrientType, Double)] = [
+            (.fat, summary[.fat] ?? 0),
+            (.carbohydrate, summary[.carbohydrate] ?? 0),
+            (.protein, summary[.protein] ?? 0)
+        ]
+        
+        let total = values.reduce(0) { $0 + $1.1 }
+        guard total > 0 else { return [:] }
+        
+        let sorted = values.sorted { $0.1 > $1.1 }
+        
+        let first = sorted[0]
+        let second = sorted[1]
+        let third = sorted[2]
+        
+        let firstPercent = Int(round((first.1 / total) * 100))
+        let secondPercent = Int(round((second.1 / total) * 100))
+        let thirdPercent = max(0, 100 - firstPercent - secondPercent)
+        
+        let result: [NutrientType: Int] = [
+            first.0: firstPercent,
+            second.0: secondPercent,
+            third.0: thirdPercent
+        ]
+        
+        return result
     }
     
     // MARK: - Filter Meal Items
