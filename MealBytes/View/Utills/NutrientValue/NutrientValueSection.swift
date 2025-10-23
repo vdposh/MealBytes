@@ -10,8 +10,11 @@ import SwiftUI
 struct NutrientValueSection: View {
     let nutrients: [NutrientValue]
     let isExpandable: Binding<Bool>?
-    var isPlaceholder: Bool = false
+    var emptyMealItems: Bool = false
+    var useServing: Bool = false
     var macroDistribution: [NutrientType: Int]? = nil
+    var intake: String? = nil
+    var intakePercentage: String? = nil
     
     var body: some View {
         Section {
@@ -25,14 +28,41 @@ struct NutrientValueSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
-                        Text(
-                            isPlaceholder
-                            ? "-"
-                            : nutrient.formattedValue
-                        )
-                        .foregroundStyle(
-                            nutrient.isSubValue ? .secondary : .primary
-                        )
+                        if nutrient.type == .calories {
+                            Text(nutrient.formattedValue)
+                                .foregroundStyle(
+                                    nutrient.isSubValue ? .secondary : .primary
+                                )
+                            
+                            if let intake, !emptyMealItems {
+                                Text("/")
+                                    .foregroundStyle(.secondary)
+                                
+                                Text(intake)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            if let intakePercentage {
+                                if useServing {
+                                    Text("/")
+                                        .foregroundStyle(.secondary)
+                                    Text(intakePercentage)
+                                        .foregroundStyle(.secondary)
+                                } else {
+                                    Text("(\(intakePercentage))")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        } else {
+                            Text(
+                                emptyMealItems
+                                ? "-"
+                                : nutrient.formattedValue
+                            )
+                            .foregroundStyle(
+                                nutrient.isSubValue ? .secondary : .primary
+                            )
+                        }
                         
                         if let macroDistribution,
                            [.fat, .carbohydrate, .protein].contains(
@@ -40,19 +70,19 @@ struct NutrientValueSection: View {
                            ),
                            let percent = macroDistribution[nutrient.type] {
                             Text("/")
-                                .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                             Text("\(percent)%")
-                                .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                         }
                     }
                     .font(.subheadline)
                     .lineLimit(1)
+                    .layoutPriority(1)
                 }
             }
+            .frame(height: 24)
             
-            if let isExpandable, !isPlaceholder {
+            if let isExpandable, !emptyMealItems {
                 ShowHideButtonView(isExpanded: isExpandable)
             }
         }

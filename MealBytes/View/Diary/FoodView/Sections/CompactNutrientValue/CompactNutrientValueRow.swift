@@ -9,25 +9,32 @@ import SwiftUI
 
 struct CompactNutrientValueRow: View {
     let nutrient: CompactNutrientValue
+    var intakePercentage: String? = nil
     
     var body: some View {
         VStack {
-            VStack(spacing: 0) {
-                Text(nutrient.type.alternativeTitle)
-                    .font(.subheadline)
+            Text(nutrient.type.alternativeTitle)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.secondary)
+            
+            Text(nutrient.formattedCompactNutrientValue)
+                .fontWeight(.medium)
+            
+            if nutrient.type == .calories,
+               let intakePercentage {
+                Text(intakePercentage)
+                    .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                
+                    .foregroundStyle(.tertiary)
+            } else if nutrient.type != .calories {
                 Text(nutrient.unitDescription)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             }
-            
-            Text(nutrient.formattedCompactNutrientValue)
-                .fontWeight(.medium)
         }
         .lineLimit(1)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 

@@ -22,9 +22,11 @@ protocol MainViewModelProtocol {
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType)
+    func intakePercentage(for calories: Double?) -> String
     func updateIntake(to value: String)
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
+    func canDisplayIntake() -> Bool
     func collapseAllSections()
     func resetDateToToday()
     func resetMainState()
@@ -266,7 +268,7 @@ final class MainViewModel: ObservableObject {
         updateIntakeProgress(calories: calories)
     }
     
-    func intakePercentageText(for calories: Double?) -> String {
+    func intakePercentage(for calories: Double?) -> String {
         return calculateIntakePercentage(from: calories ?? 0.0)
     }
     

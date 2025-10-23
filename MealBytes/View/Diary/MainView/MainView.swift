@@ -30,6 +30,7 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
+        .environment(\.defaultMinListRowHeight, 0)
         .scrollIndicators(.hidden)
         .listSectionSpacing(15)
         .overlay(alignment: .top) {
@@ -90,13 +91,21 @@ struct MainView: View {
                 nutrients: mainViewModel.filteredNutrientValues,
                 isExpandable: $mainViewModel.isExpanded,
                 macroDistribution: mainViewModel
-                    .macroDistribution(from: mainViewModel.nutrientSummaries)
+                    .macroDistribution(from: mainViewModel.nutrientSummaries),
+                intake: mainViewModel
+                    .canDisplayIntake() ? mainViewModel.intake : nil,
+                intakePercentage: mainViewModel.canDisplayIntake()
+                ? mainViewModel
+                    .intakePercentage(
+                        for: mainViewModel.nutrientSummaries[.calories]
+                    )
+                : nil
             )
         } else {
             NutrientValueSection(
                 nutrients: NutrientValueProvider().placeholderMacros(),
                 isExpandable: nil,
-                isPlaceholder: true
+                emptyMealItems: true
             )
         }
     }

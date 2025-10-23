@@ -45,7 +45,9 @@ struct NutrientValueProvider {
             .filter { $0 != .servingSize }
             .map { type in
                 let value = summary[type] ?? 0
-                let unit = Formatter.Unit(rawValue: type.baseUnit) ?? .empty
+                let unit = Formatter.Unit(
+                    rawValue: type.baseUnit
+                ) ?? .empty
                 
                 return NutrientValue(
                     type: type,

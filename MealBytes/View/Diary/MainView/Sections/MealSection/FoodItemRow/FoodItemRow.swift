@@ -86,7 +86,7 @@ struct FoodItemRow: View {
                         if mainViewModel.canDisplayIntake() {
                             Text(
                                 mainViewModel
-                                    .intakePercentageText(
+                                    .intakePercentage(
                                         for: mealItem.nutrients[.calories]
                                     )
                             )

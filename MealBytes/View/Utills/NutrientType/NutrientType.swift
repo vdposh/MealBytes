@@ -5,6 +5,8 @@
 //  Created by Vlad Posherstnik on 08/03/2025.
 //
 
+import SwiftUI
+
 enum NutrientType: String, Identifiable, CaseIterable {
     var id: String { self.rawValue }
     
@@ -66,7 +68,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
     
     var baseUnit: String {
         switch self {
-        case .calories: "kcal"
+        case .calories: ""
         case .servingSize: "g"
         case .fat,
                 .saturatedFat,
@@ -93,4 +95,8 @@ enum NutrientType: String, Identifiable, CaseIterable {
         default: return baseUnit
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

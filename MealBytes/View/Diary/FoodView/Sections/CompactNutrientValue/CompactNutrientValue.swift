@@ -13,9 +13,11 @@ struct CompactNutrientValue: Identifiable {
     let value: Double
     let serving: Serving
     
-    init(type: NutrientType,
-         value: Double,
-         serving: Serving) {
+    init(
+        type: NutrientType,
+        value: Double,
+        serving: Serving
+    ) {
         self.type = type
         self.value = value
         self.serving = serving
@@ -35,4 +37,8 @@ struct CompactNutrientValue: Identifiable {
             unit: .empty,
             alwaysRoundUp: type == .calories)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

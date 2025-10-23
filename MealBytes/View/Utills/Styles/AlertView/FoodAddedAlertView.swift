@@ -17,11 +17,11 @@ struct FoodAddedAlertView: View {
                 .fontWeight(.medium)
                 .font(.subheadline)
         } icon: {
-            Image(systemName: "checkmark")
+            Image(systemName: "text.badge.plus")
                 .symbolEffect(.drawOn, isActive: symbolEffect)
                 .symbolColorRenderingMode(.gradient)
         }
-        .labelIconToTitleSpacing(5)
+        .labelIconToTitleSpacing(10)
         .foregroundStyle(.secondary)
         .padding(.vertical, 14)
         .padding(.horizontal, 16)
@@ -36,7 +36,7 @@ struct FoodAddedAlertView: View {
         .ignoresSafeArea()
         .onChange(of: isVisible) {
             if isVisible {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     symbolEffect = false
                 }
             } else {

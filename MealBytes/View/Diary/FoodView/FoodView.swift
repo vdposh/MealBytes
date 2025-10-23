@@ -225,7 +225,17 @@ struct FoodView: View {
                     Array(foodViewModel.compactNutrientDetails.enumerated()),
                     id: \.element.id
                 ) { index, nutrient in
-                    CompactNutrientValueRow(nutrient: nutrient)
+                    let intakePercentageText = foodViewModel.mainViewModel.canDisplayIntake()
+                    ? foodViewModel.mainViewModel
+                        .intakePercentage(for: nutrient.value)
+                    : nil
+                    
+                    CompactNutrientValueRow(
+                        nutrient: nutrient,
+                        intakePercentage: nutrient.type == .calories
+                        ? intakePercentageText
+                        : nil
+                    )
                     
                     if index < foodViewModel.compactNutrientDetails.count - 1 {
                         Rectangle()
@@ -248,7 +258,14 @@ struct FoodView: View {
     private var detailedInformationSection: some View {
         NutrientValueSection(
             nutrients: foodViewModel.nutrientValues,
-            isExpandable: nil
+            isExpandable: nil,
+            useServing: true,
+            intakePercentage: foodViewModel.mainViewModel.canDisplayIntake()
+                ? foodViewModel.mainViewModel.intakePercentage(
+                    for: foodViewModel.nutrientValues
+                        .first(where: { $0.type == .calories })?.value
+                )
+                : nil
         )
     }
     

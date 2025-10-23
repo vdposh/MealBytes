@@ -30,7 +30,7 @@ struct NutrientSummaryRow: View {
                 )
             }
             if mainViewModel.canDisplayIntake() {
-                Text(mainViewModel.intakePercentageText(for: calories))
+                Text(mainViewModel.intakePercentage(for: calories))
                     .lineLimit(1)
                     .foregroundStyle(Color.secondary)
                     .font(.subheadline)
