@@ -248,7 +248,7 @@ struct FoodView: View {
         }
         .padding(.vertical, 8)
         .listRowInsets(
-            EdgeInsets(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+            EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         )
         .listSectionMargins(.horizontal, 0)
         .listRowBackground(Color.clear)

@@ -153,7 +153,9 @@ final class DailyIntakeViewModel: ObservableObject {
         let protValue = Double(protein.sanitizedForDouble) ?? 0
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         
-        calories = formatter.roundedValue(totalCalories)
+        calories = totalCalories > 0
+        ? formatter.roundedValue(totalCalories)
+        : ""
     }
     
     // MARK: - Input Validation
