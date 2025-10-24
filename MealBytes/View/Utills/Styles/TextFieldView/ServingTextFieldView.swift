@@ -15,6 +15,7 @@ struct ServingTextFieldView: View {
     var labelIconName: String = "plus.forwardslash.minus"
     var trailingUnit: String? = nil
     var useLabel: Bool = false
+    var alwaysShowUnit: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -33,7 +34,7 @@ struct ServingTextFieldView: View {
                 }
             }
             .overlay(alignment: .trailing) {
-                if !text.isEmpty, let trailingUnit {
+                if let trailingUnit, alwaysShowUnit || !text.isEmpty {
                     Text(trailingUnit)
                         .foregroundStyle(.tertiary)
                         .padding(.trailing, 8)

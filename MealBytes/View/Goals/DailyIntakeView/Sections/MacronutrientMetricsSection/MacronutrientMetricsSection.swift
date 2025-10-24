@@ -13,68 +13,34 @@ struct MacronutrientMetricsSection: View {
     
     var body: some View {
         if dailyIntakeViewModel.toggleOn {
-            Section {
-                MacronutrientRow(
-                    textFieldBinding: $dailyIntakeViewModel.fat,
-                    placeholder: "Fat value",
-                    titleColor: dailyIntakeViewModel
-                        .titleColor(for: dailyIntakeViewModel.fat),
-                    dailyIntakeViewModel: dailyIntakeViewModel
-                )
-                .focused($focusedField, equals: .fat)
-            } header: {
-                Text("Fat")
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(
-                        dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.fat
-                        )
-                    )
-            }
+            MacronutrientFieldView(
+                title: "Fat",
+                binding: $dailyIntakeViewModel.fat,
+                color: dailyIntakeViewModel
+                    .titleColor(for: dailyIntakeViewModel.fat),
+                focus: $focusedField,
+                focusCase: .fat
+            )
             
-            Section {
-                MacronutrientRow(
-                    textFieldBinding: $dailyIntakeViewModel.carbohydrate,
-                    placeholder: "Carbohydrate value",
-                    titleColor: dailyIntakeViewModel
-                        .titleColor(for: dailyIntakeViewModel.carbohydrate),
-                    dailyIntakeViewModel: dailyIntakeViewModel
-                )
-                .focused($focusedField, equals: .carbohydrate)
-            } header: {
-                Text("Carbohydrate")
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(
-                        dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.carbohydrate
-                        )
-                    )
-            }
+            MacronutrientFieldView(
+                title: "Carbohydrate",
+                binding: $dailyIntakeViewModel.carbohydrate,
+                color: dailyIntakeViewModel
+                    .titleColor(for: dailyIntakeViewModel.carbohydrate),
+                focus: $focusedField,
+                focusCase: .carbohydrate
+            )
             .listSectionSpacing(5)
             
-            Section {
-                MacronutrientRow(
-                    textFieldBinding: $dailyIntakeViewModel.protein,
-                    placeholder: "Protein value",
-                    titleColor: dailyIntakeViewModel
-                        .titleColor(for: dailyIntakeViewModel.protein),
-                    dailyIntakeViewModel: dailyIntakeViewModel
-                )
-                .focused($focusedField, equals: .protein)
-            } header: {
-                Text("Protein")
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(
-                        dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.protein
-                        )
-                    )
-            } footer: {
-                Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
-            }
+            MacronutrientFieldView(
+                title: "Protein",
+                binding: $dailyIntakeViewModel.protein,
+                color: dailyIntakeViewModel
+                    .titleColor(for: dailyIntakeViewModel.protein),
+                focus: $focusedField,
+                focusCase: .protein,
+                showFooter: true
+            )
         }
     }
 }
