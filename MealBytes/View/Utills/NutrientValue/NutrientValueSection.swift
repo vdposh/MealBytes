@@ -29,15 +29,18 @@ struct NutrientValueSection: View {
                     
                     HStack(spacing: 5) {
                         if nutrient.type == .calories {
-                            Text(nutrient.formattedValue)
-                                .foregroundStyle(
-                                    nutrient.isSubValue ? .secondary : .primary
-                                )
+                            Text(
+                                emptyMealItems
+                                ? "-"
+                                : nutrient.formattedValue
+                            )
+                            .foregroundStyle(
+                                nutrient.isSubValue ? .secondary : .primary
+                            )
                             
                             if let intake, !emptyMealItems {
                                 Text("/")
                                     .foregroundStyle(.secondary)
-                                
                                 Text(intake)
                                     .foregroundStyle(.secondary)
                             }

@@ -26,7 +26,7 @@ struct CompactNutrientValueRow: View {
                 Text(intakePercentage)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
             } else if nutrient.type != .calories {
                 Text(nutrient.unitDescription)
                     .font(.caption)
