@@ -15,7 +15,7 @@ struct AgeSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.age,
-                placeholder: "Age",
+                placeholder: "Years old",
                 keyboardType: .numberPad,
                 inputMode: .integer,
                 maxIntegerDigits: 3

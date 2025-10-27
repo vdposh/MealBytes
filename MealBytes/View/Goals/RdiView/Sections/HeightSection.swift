@@ -15,13 +15,13 @@ struct HeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.height,
-                placeholder: "Height",
+                placeholder: "Value",
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .height)
             
             Picker(
-                "Height Unit",
+                "Unit",
                 selection: $rdiViewModel.selectedHeightUnit
             ) {
                 if rdiViewModel.selectedHeightUnit == .notSelected {

@@ -15,13 +15,13 @@ struct WeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.weight,
-                placeholder: "Weight",
+                placeholder: "Value",
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .weight)
             
             Picker(
-                "Weight Unit",
+                "Unit",
                 selection: $rdiViewModel.selectedWeightUnit
             ) {
                 if rdiViewModel

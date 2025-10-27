@@ -83,7 +83,7 @@ struct NutrientValueSection: View {
                     .layoutPriority(1)
                 }
             }
-            .frame(height: 24)
+            .frame(height: 23)
             
             if let isExpandable, !emptyMealItems {
                 ShowHideButtonView(isExpanded: isExpandable)

@@ -315,7 +315,7 @@ final class RdiViewModel: ObservableObject {
               isInputValidForCalculation,
               selectedWeightUnit != .notSelected,
               selectedHeightUnit != .notSelected else {
-            return .secondary
+            return .secondary.opacity(0.5)
         }
         
         return .primary
@@ -327,8 +327,7 @@ final class RdiViewModel: ObservableObject {
             return field.isValidNumericInput(in: 1...120) ?
                 .secondary : .customRed
         } else {
-            return field.isValidNumericInput() ?
-                .secondary : .customRed
+            return field.isValidNumericInput() ? .secondary : .customRed
         }
     }
     

@@ -11,11 +11,13 @@ struct ServingTextFieldView: View {
     @State private var textWidth: CGFloat = 0
     @Binding var text: String
     @FocusState private var isFocused: Bool
-    var placeholder: String = "Enter value"
+    var placeholder: String = "Amount"
     var labelIconName: String = "plus.forwardslash.minus"
+    var stackText: String = ""
     var trailingUnit: String? = nil
     var useLabel: Bool = false
     var alwaysShowUnit: Bool = false
+    var useStack: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -50,6 +52,18 @@ struct ServingTextFieldView: View {
                         .imageScale(.medium)
                         .foregroundStyle(.customGray)
                         .symbolColorRenderingMode(.gradient)
+                }
+            } else if useStack {
+                HStack {
+                    Text(stackText)
+                        .font(.callout)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    field
+                        .containerRelativeFrame(.horizontal) {
+                            length,
+                            _ in length * 0.5
+                        }
                 }
             } else {
                 field

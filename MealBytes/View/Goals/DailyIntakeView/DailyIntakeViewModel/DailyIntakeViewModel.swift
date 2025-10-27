@@ -250,14 +250,17 @@ final class DailyIntakeViewModel: ObservableObject {
         isCalorie: Bool = false
     ) -> Color {
         let isValid = value.isValidNumericInput()
+        let isValidInput = validateInputs() == nil
         
         if isCalorie && toggleOn {
-            return validateInputs() == nil ? .primary : .secondary
+            return isValidInput ? .primary : .secondary.opacity(0.5)
         }
         
-        return isValid
-        ? (validateInputs() == nil ? .secondary : .secondary)
-        : .customRed
+        return isValid ? .secondary : .customRed
+    }
+    
+    func macronutrientTitleColor() -> Color {
+        validateInputs() == nil ? .secondary : .customRed
     }
     
     // MARK: - Keyboard

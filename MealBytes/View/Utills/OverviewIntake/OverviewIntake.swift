@@ -31,3 +31,7 @@ struct OverviewIntake: View {
         }
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

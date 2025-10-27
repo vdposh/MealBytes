@@ -13,34 +13,37 @@ struct MacronutrientMetricsSection: View {
     
     var body: some View {
         if dailyIntakeViewModel.toggleOn {
-            MacronutrientFieldView(
-                title: "Fat",
-                binding: $dailyIntakeViewModel.fat,
-                color: dailyIntakeViewModel
-                    .titleColor(for: dailyIntakeViewModel.fat),
-                focus: $focusedField,
-                focusCase: .fat
-            )
-            
-            MacronutrientFieldView(
-                title: "Carbohydrate",
-                binding: $dailyIntakeViewModel.carbohydrate,
-                color: dailyIntakeViewModel
-                    .titleColor(for: dailyIntakeViewModel.carbohydrate),
-                focus: $focusedField,
-                focusCase: .carbohydrate
-            )
-            .listSectionSpacing(5)
-            
-            MacronutrientFieldView(
-                title: "Protein",
-                binding: $dailyIntakeViewModel.protein,
-                color: dailyIntakeViewModel
-                    .titleColor(for: dailyIntakeViewModel.protein),
-                focus: $focusedField,
-                focusCase: .protein,
-                showFooter: true
-            )
+            Section {
+                MacronutrientFieldView(
+                    title: "Fat",
+                    binding: $dailyIntakeViewModel.fat,
+                    focus: $focusedField,
+                    focusCase: .fat
+                )
+                
+                MacronutrientFieldView(
+                    title: "Carbohydrate",
+                    binding: $dailyIntakeViewModel.carbohydrate,
+                    focus: $focusedField,
+                    focusCase: .carbohydrate
+                )
+                
+                MacronutrientFieldView(
+                    title: "Protein",
+                    binding: $dailyIntakeViewModel.protein,
+                    focus: $focusedField,
+                    focusCase: .protein
+                )
+            } header: {
+                Text("Macronutrients")
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(
+                        dailyIntakeViewModel.macronutrientTitleColor()
+                    )
+            } footer: {
+                Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
+            }
         }
     }
 }
