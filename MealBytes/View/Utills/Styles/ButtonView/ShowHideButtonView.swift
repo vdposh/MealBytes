@@ -23,8 +23,8 @@ struct ShowHideButtonView: View {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .imageScale(.small)
             }
-            .labelIconToTitleSpacing(2)
             .lineLimit(1)
+            .labelIconToTitleSpacing(2)
             .frame(maxWidth: .infinity, alignment: .center)
         }
         .listRowSeparator(.hidden)

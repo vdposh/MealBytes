@@ -31,12 +31,12 @@ struct NutrientSummaryRow: View {
             }
             if mainViewModel.canDisplayIntake() {
                 Text(mainViewModel.intakePercentage(for: calories))
-                    .lineLimit(1)
                     .foregroundStyle(Color.secondary)
                     .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
+        .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

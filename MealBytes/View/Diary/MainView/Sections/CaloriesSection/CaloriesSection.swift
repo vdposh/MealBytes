@@ -35,7 +35,7 @@ struct CaloriesSection: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .lineLimit(1)
+                    .layoutPriority(1)
                     .font(.callout)
                     .fontWeight(.medium)
                 }
@@ -67,16 +67,15 @@ struct CaloriesSection: View {
                                     for: summaries[.calories]
                                 )
                             )
-                            .lineLimit(1)
                             .foregroundStyle(.secondary)
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .transaction { $0.animation = nil }
+            .lineLimit(1)
         } header: {
             dateSection
         }

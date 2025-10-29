@@ -57,12 +57,13 @@ struct MealHeaderView: View {
                                     on: mainViewModel.date
                                 ) {
                                 Text(mainViewModel.formattedCalories(calories))
-                                    .lineLimit(1)
+                                    .layoutPriority(1)
                                     .font(.callout)
                                     .fontWeight(.medium)
                                     .foregroundStyle(Color.primary)
                             }
                         }
+                        .lineLimit(1)
                         
                         if mainViewModel
                             .hasMealItemsForMealType(

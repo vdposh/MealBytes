@@ -12,13 +12,15 @@ struct MacronutrientFieldView: View {
     let binding: Binding<String>
     let focus: FocusState<MacronutrientsFocus?>.Binding
     let focusCase: MacronutrientsFocus
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
         ServingTextFieldView(
             text: binding,
+            placeholder: "Amount in grams",
             stackText: title,
-            trailingUnit: "grams",
-            alwaysShowUnit: true,
+            trailingUnit: dailyIntakeViewModel
+                .unitDescription(for: binding.wrappedValue),
             useStack: true,
             keyboardType: .numberPad,
             inputMode: .integer,

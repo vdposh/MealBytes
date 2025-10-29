@@ -16,7 +16,6 @@ struct ServingTextFieldView: View {
     var stackText: String = ""
     var trailingUnit: String? = nil
     var useLabel: Bool = false
-    var alwaysShowUnit: Bool = false
     var useStack: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
@@ -36,7 +35,7 @@ struct ServingTextFieldView: View {
                 }
             }
             .overlay(alignment: .trailing) {
-                if let trailingUnit, alwaysShowUnit || !text.isEmpty {
+                if let trailingUnit, !text.isEmpty {
                     Text(trailingUnit)
                         .foregroundStyle(.tertiary)
                 }

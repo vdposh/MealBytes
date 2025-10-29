@@ -44,7 +44,6 @@ struct FoodItemRow: View {
                             .foregroundStyle(.accent)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .layoutPriority(0)
                         
                         Text(mainViewModel.formatter.formattedValue(
                             mealItem.nutrients[.calories],
@@ -52,10 +51,10 @@ struct FoodItemRow: View {
                             alwaysRoundUp: true
                         ))
                         .lineLimit(1)
+                        .layoutPriority(1)
                         .font(.callout)
                         .fontWeight(.medium)
                         .foregroundStyle(Color.secondary)
-                        .layoutPriority(1)
                     }
                     
                     HStack {
@@ -90,13 +89,12 @@ struct FoodItemRow: View {
                                         for: mealItem.nutrients[.calories]
                                     )
                             )
-                            .lineLimit(1)
                             .foregroundStyle(Color.secondary)
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
                 }
             }
         }

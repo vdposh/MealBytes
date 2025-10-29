@@ -18,7 +18,6 @@ struct PickerRowView<MenuContent: View>: View {
         HStack {
             Label {
                 Text(title)
-                    .lineLimit(3)
             } icon: {
                 if useRendering {
                     Image(systemName: iconName)

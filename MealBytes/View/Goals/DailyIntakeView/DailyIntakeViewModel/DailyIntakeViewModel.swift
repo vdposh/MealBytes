@@ -263,6 +263,14 @@ final class DailyIntakeViewModel: ObservableObject {
         validateInputs() == nil ? .secondary : .customRed
     }
     
+    func unitDescription(for value: String) -> String {
+        guard let value = Int(value.sanitizedForDouble),
+              value == 1 else {
+            return "grams"
+        }
+        return "gram"
+    }
+    
     // MARK: - Keyboard
     func normalizeInputs() {
         calories = calories.trimmedLeadingZeros

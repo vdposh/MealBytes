@@ -89,6 +89,7 @@ struct CalendarView: View {
             }
         }
         .transaction { $0.animation = nil }
+        .lineLimit(1)
         .padding(.horizontal, 12)
         .padding(.bottom)
         .padding(.top, 24)

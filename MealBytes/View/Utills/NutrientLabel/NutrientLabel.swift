@@ -16,7 +16,6 @@ struct NutrientLabel: View {
             .foregroundStyle(Color.secondary)
             .font(.subheadline)
         Text(formattedValue)
-            .lineLimit(1)
             .foregroundStyle(Color.secondary)
             .font(.subheadline)
             .padding(.trailing, 5)
