@@ -15,13 +15,13 @@ struct WeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.weight,
-                placeholder: "Value",
+                placeholder: "Weight value",
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .weight)
             
             Picker(
-                "Unit",
+                "Weight unit",
                 selection: $rdiViewModel.selectedWeightUnit
             ) {
                 if rdiViewModel
@@ -37,12 +37,9 @@ struct WeightSection: View {
                     Text(unit.rawValue).tag(unit)
                 }
             }
-            .pickerStyle(.menu)
-            .tint(rdiViewModel.selectedWeightUnit.selectedColor)
+            .foregroundStyle(rdiViewModel.selectedWeightUnit.selectedColor)
         } header: {
             Text("Weight")
-                .font(.callout)
-                .fontWeight(.semibold)
                 .foregroundStyle(
                     rdiViewModel.fieldTitleColor(for: rdiViewModel.weight)
                 )
@@ -59,8 +56,8 @@ enum WeightUnit: String, CaseIterable {
     
     var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        default: return .accent
+        case .notSelected: .customRed
+        default: .primary
         }
     }
 }

@@ -22,7 +22,7 @@ struct OverviewIntake: View {
         if showValue {
             Section {
                 Text(valueText)
-                    .font(.system(size: 18))
+                    .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(color)
             }

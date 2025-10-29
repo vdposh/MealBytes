@@ -36,8 +36,6 @@ struct MacronutrientMetricsSection: View {
                 )
             } header: {
                 Text("Macronutrients")
-                    .font(.callout)
-                    .fontWeight(.semibold)
                     .foregroundStyle(
                         dailyIntakeViewModel.macronutrientTitleColor()
                     )

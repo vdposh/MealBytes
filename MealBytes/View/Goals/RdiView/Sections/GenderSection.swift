@@ -26,8 +26,7 @@ struct GenderSection: View {
                     Text(gender.rawValue).tag(gender)
                 }
             }
-            .pickerStyle(.menu)
-            .tint(rdiViewModel.selectedGender.selectedColor)
+            .foregroundStyle(rdiViewModel.selectedGender.selectedColor)
         } footer: {
             Text("Specify gender to ensure RDI calculations.")
         }
@@ -41,8 +40,8 @@ enum Gender: String, CaseIterable {
     
     var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        case .male, .female: return .accent
+        case .notSelected: .customRed
+        case .male, .female: .primary
         }
     }
 }

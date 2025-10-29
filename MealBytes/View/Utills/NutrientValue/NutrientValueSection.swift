@@ -46,15 +46,8 @@ struct NutrientValueSection: View {
                             }
                             
                             if let intakePercentage {
-                                if useServing {
-                                    Text("/")
-                                        .foregroundStyle(.secondary)
-                                    Text(intakePercentage)
-                                        .foregroundStyle(.secondary)
-                                } else {
-                                    Text("(\(intakePercentage))")
-                                        .foregroundStyle(.secondary)
-                                }
+                                Text("(\(intakePercentage))")
+                                    .foregroundStyle(.secondary)
                             }
                         } else {
                             Text(

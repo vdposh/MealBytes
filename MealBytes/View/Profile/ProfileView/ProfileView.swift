@@ -44,7 +44,6 @@ struct ProfileView: View {
                 "Current Password",
                 text: $profileViewModel.password
             )
-            .font(.callout)
             .textContentType(.password)
             
             Button(profileViewModel.destructiveTitle, role: .destructive) {
@@ -70,21 +69,18 @@ struct ProfileView: View {
                     "Current Password",
                     text: $profileViewModel.password
                 )
-                .font(.callout)
                 .textContentType(.password)
                 
                 SecureField(
                     "New Password",
                     text: $profileViewModel.newPassword
                 )
-                .font(.callout)
                 .textContentType(.newPassword)
                 
                 SecureField(
                     "Confirm New Password",
                     text: $profileViewModel.confirmPassword
                 )
-                .font(.callout)
                 .textContentType(.newPassword)
                 
                 Button("Cancel", role: .cancel) {

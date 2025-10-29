@@ -17,6 +17,7 @@ struct CalorieMetricsSection: View {
                 HStack {
                     ServingTextFieldView(
                         text: $dailyIntakeViewModel.calories,
+                        placeholder: "Calories amount",
                         keyboardType: .numberPad,
                         inputMode: .integer,
                         maxIntegerDigits: 5
@@ -25,8 +26,6 @@ struct CalorieMetricsSection: View {
                 }
             } header: {
                 Text("Calories")
-                    .font(.callout)
-                    .fontWeight(.semibold)
                     .foregroundStyle(
                         dailyIntakeViewModel
                             .titleColor(for: dailyIntakeViewModel.calories))

@@ -20,15 +20,11 @@ struct SignOutSection: View {
             .frame(maxWidth: .infinity, alignment: .center)
         } footer: {
             if profileViewModel.isDeletingAccount {
-                HStack {
-                    ProgressView()
-                    Text("Deleting account...")
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .padding(.bottom)
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
             } else {
-                HStack(spacing: 4) {
+                HStack(spacing: 5) {
                     Text("Do you want to")
                     
                     Button("delete") {
@@ -40,8 +36,7 @@ struct SignOutSection: View {
                     
                     Text("the account?")
                 }
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .center)
                 .frame(height: 50)
             }
         }

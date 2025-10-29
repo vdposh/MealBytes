@@ -23,8 +23,6 @@ struct AgeSection: View {
             .focused($focusedField, equals: .age)
         } header: {
             Text("Age")
-                .font(.callout)
-                .fontWeight(.semibold)
                 .foregroundStyle(
                     rdiViewModel.fieldTitleColor(for: rdiViewModel.age)
                 )

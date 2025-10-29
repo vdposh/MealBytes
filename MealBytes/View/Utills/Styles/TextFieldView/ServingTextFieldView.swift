@@ -11,7 +11,7 @@ struct ServingTextFieldView: View {
     @State private var textWidth: CGFloat = 0
     @Binding var text: String
     @FocusState private var isFocused: Bool
-    var placeholder: String = "Amount"
+    var placeholder: String = "amount"
     var labelIconName: String = "plus.forwardslash.minus"
     var stackText: String = ""
     var trailingUnit: String? = nil
@@ -39,7 +39,6 @@ struct ServingTextFieldView: View {
                 if let trailingUnit, alwaysShowUnit || !text.isEmpty {
                     Text(trailingUnit)
                         .foregroundStyle(.tertiary)
-                        .padding(.trailing, 8)
                 }
             }
         
@@ -56,8 +55,6 @@ struct ServingTextFieldView: View {
             } else if useStack {
                 HStack {
                     Text(stackText)
-                        .font(.callout)
-                        .foregroundStyle(.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     field
                         .containerRelativeFrame(.horizontal) {

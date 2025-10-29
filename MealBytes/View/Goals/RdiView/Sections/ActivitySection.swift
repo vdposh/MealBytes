@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ActivitySection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
-
+    
     var body: some View {
         Section {
             Picker(
@@ -26,8 +26,7 @@ struct ActivitySection: View {
                     Text(level.rawValue).tag(level)
                 }
             }
-            .pickerStyle(.menu)
-            .tint(rdiViewModel.selectedActivity.selectedColor)
+            .foregroundStyle(rdiViewModel.selectedActivity.selectedColor)
         } footer: {
             Text("Select the necessary indicator based on daily activity level.")
         }
@@ -44,8 +43,8 @@ enum Activity: String, CaseIterable {
     
     var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        default: return .accent
+        case .notSelected: .customRed
+        default: .primary
         }
     }
 }

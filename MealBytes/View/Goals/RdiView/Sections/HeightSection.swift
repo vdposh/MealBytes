@@ -15,13 +15,13 @@ struct HeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.height,
-                placeholder: "Value",
+                placeholder: "Height value",
                 maxIntegerDigits: 3
             )
             .focused($focusedField, equals: .height)
             
             Picker(
-                "Unit",
+                "Height unit",
                 selection: $rdiViewModel.selectedHeightUnit
             ) {
                 if rdiViewModel.selectedHeightUnit == .notSelected {
@@ -35,12 +35,9 @@ struct HeightSection: View {
                     Text(unit.rawValue).tag(unit)
                 }
             }
-            .pickerStyle(.menu)
-            .tint(rdiViewModel.selectedHeightUnit.selectedColor)
+            .foregroundStyle(rdiViewModel.selectedHeightUnit.selectedColor)
         } header: {
             Text("Height")
-                .font(.callout)
-                .fontWeight(.semibold)
                 .foregroundStyle(
                     rdiViewModel.fieldTitleColor(for: rdiViewModel.height)
                 )
@@ -57,8 +54,8 @@ enum HeightUnit: String, CaseIterable {
     
     var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        default: return .accent
+        case .notSelected: .customRed
+        default: .primary
         }
     }
 }
