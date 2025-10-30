@@ -13,6 +13,10 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
+    func loadBookmarkMetadata(
+        for foodId: Int,
+        mealType: MealType
+    ) async throws -> BookmarkMetadata?
     func loadLoginDataFirestore() async throws -> (
         email: String,
         isLoggedIn: Bool
@@ -24,6 +28,10 @@ protocol FirebaseFirestoreProtocol {
     func addMealItemFirestore(_ mealItem: MealItem) async throws
     func addBookmarkFirestore(
         _ foods: [Food],
+        for mealType: MealType
+    ) async throws
+    func saveBookmarkMetadata(
+        _ metadata: BookmarkMetadata,
         for mealType: MealType
     ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
@@ -148,6 +156,47 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             ["items": encodedFoods],
             merge: true
         )
+    }
+    
+    // MARK: - Load loadBookmarksMetadata
+    func loadBookmarkMetadata(
+        for foodId: Int,
+        mealType: MealType
+    ) async throws -> BookmarkMetadata? {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let snapshot = try await firestore
+            .collection("Users")
+            .document(uid)
+            .collection("SearchView")
+            .document(mealType.rawValue.lowercased())
+            .collection("metadata")
+            .document(String(foodId))
+            .getDocument()
+        
+        return try snapshot.data(as: BookmarkMetadata.self)
+    }
+    
+    // MARK: - Load loadBookmarksMetadata
+    func saveBookmarkMetadata(
+        _ metadata: BookmarkMetadata,
+        for mealType: MealType
+    ) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let path = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("SearchView")
+            .document(mealType.rawValue.lowercased())
+            .collection("metadata")
+            .document(String(metadata.foodId))
+        
+        try path.setData(from: metadata, merge: true)
     }
     
     // MARK: - Load DailyIntake

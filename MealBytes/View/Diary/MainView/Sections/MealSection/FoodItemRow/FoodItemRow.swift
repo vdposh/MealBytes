@@ -98,6 +98,7 @@ struct FoodItemRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            .transaction { $0.animation = nil }
         }
     }
 }

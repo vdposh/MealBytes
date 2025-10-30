@@ -98,6 +98,23 @@ final class FoodViewModel: ObservableObject {
             if !showSaveRemoveButton {
                 setAmount(for: selectedServing)
             }
+            
+            if isBookmarkFilled, !showSaveRemoveButton {
+                if let metadata = try await firestore.loadBookmarkMetadata(
+                    for: food.searchFoodId,
+                    mealType: mealType
+                ) {
+                    amount = metadata.lastAmount
+                    if let serving = fetchedFoodDetail.servings.serving.first(
+                        where: {
+                            $0.measurementDescription == metadata
+                                .lastServingDescription
+                        }
+                    ) {
+                        selectedServing = serving
+                    }
+                }
+            }
         } catch {
             switch error {
             case let appError as AppError:
@@ -145,6 +162,19 @@ final class FoodViewModel: ObservableObject {
         
         do {
             try await firestore.addMealItemFirestore(newItem)
+            
+            if isBookmarkFilled {
+                let metadata = BookmarkMetadata(
+                    foodId: food.searchFoodId,
+                    mealType: mealType,
+                    lastAmount: amount,
+                    lastServingDescription: selectedServing?.measurementDescription ?? ""
+                )
+                try await firestore.saveBookmarkMetadata(
+                    metadata,
+                    for: mealType
+                )
+            }
         } catch {
             await MainActor.run {
                 appError = .network
