@@ -155,7 +155,9 @@ struct MainView: View {
                             isPresented: &mainViewModel.isExpandedCalendar
                         )
                     }
-                    mainViewModel.isCalendarInteractive = true
+                    withAnimation {
+                        mainViewModel.isCalendarInteractive = true
+                    }
                 }
                 .font(.headline)
             }

@@ -51,7 +51,9 @@ struct CalendarView: View {
                                     isPresented: &mainViewModel.isExpandedCalendar
                                 )
                             }
-                            mainViewModel.isCalendarInteractive = true
+                            withAnimation {
+                                mainViewModel.isCalendarInteractive = true
+                            }
                         } label: {
                             VStack(spacing: 5) {
                                 Text("\(mainViewModel.dayComponent(for: date))")

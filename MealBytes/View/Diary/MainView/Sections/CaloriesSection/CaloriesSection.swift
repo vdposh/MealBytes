@@ -72,6 +72,7 @@ struct CaloriesSection: View {
                             .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .transaction { $0.animation = nil }

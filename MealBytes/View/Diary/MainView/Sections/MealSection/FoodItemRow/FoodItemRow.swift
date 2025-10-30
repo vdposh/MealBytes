@@ -95,6 +95,7 @@ struct FoodItemRow: View {
                         }
                     }
                     .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
