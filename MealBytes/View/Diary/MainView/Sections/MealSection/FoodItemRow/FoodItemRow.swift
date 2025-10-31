@@ -25,8 +25,7 @@ struct FoodItemRow: View {
                 mainViewModel: mainViewModel,
                 amount: String(mealItem.amount),
                 measurementDescription: mealItem.measurementDescription,
-                showAddButton: false,
-                showSaveRemoveButton: true,
+                isEditingMealItem: true,
                 originalCreatedAt: mealItem.createdAt,
                 originalMealItemId: mealItem.id
             )

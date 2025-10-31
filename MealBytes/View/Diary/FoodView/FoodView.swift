@@ -12,8 +12,7 @@ struct FoodView: View {
     @FocusState private var amountFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
-    private let showAddButton: Bool
-    private let showSaveRemoveButton: Bool
+    private let isEditingMealItem: Bool
     
     @StateObject private var foodViewModel: FoodViewModel
     
@@ -24,14 +23,12 @@ struct FoodView: View {
         mainViewModel: MainViewModelProtocol,
         amount: String,
         measurementDescription: String,
-        showAddButton: Bool,
-        showSaveRemoveButton: Bool,
+        isEditingMealItem: Bool,
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
         self._mealType = State(initialValue: mealType)
-        self.showAddButton = showAddButton
-        self.showSaveRemoveButton = showSaveRemoveButton
+        self.isEditingMealItem = isEditingMealItem
         _foodViewModel = StateObject(
             wrappedValue: FoodViewModel(
                 food: food,
@@ -40,7 +37,7 @@ struct FoodView: View {
                 mainViewModel: mainViewModel,
                 initialAmount: amount,
                 initialMeasurementDescription: measurementDescription,
-                showSaveRemoveButton: showSaveRemoveButton,
+                isEditingMealItem: isEditingMealItem,
                 originalCreatedAt: originalCreatedAt,
                 originalMealItemId: originalMealItemId
             )
@@ -141,7 +138,7 @@ struct FoodView: View {
                 }
             }
             
-            if showSaveRemoveButton {
+            if isEditingMealItem {
                 PickerRowView(
                     title: mealType.rawValue,
                     iconName: mealType.iconName,
@@ -170,31 +167,7 @@ struct FoodView: View {
     private var nutrientActionSection: some View {
         Section {
             HStack(spacing: 10) {
-                switch showAddButton {
-                case true:
-                    ActionButtonView(
-                        title: "Add",
-                        action: {
-                            Task {
-                                await foodViewModel.addMealItemFoodView(
-                                    in: foodViewModel.mealType,
-                                    for: foodViewModel.mainViewModel.date
-                                )
-                                dismiss()
-                            }
-                        },
-                        isEnabled: foodViewModel.canAddFood
-                    )
-                    
-                    BookmarkButtonView(
-                        action: {
-                            Task {
-                                await foodViewModel.toggleBookmarkFoodView()
-                            }
-                        },
-                        isFilled: foodViewModel.isBookmarkFilled
-                    )
-                case false:
+                if isEditingMealItem {
                     ActionButtonView(
                         title: "Remove",
                         action: {
@@ -216,6 +189,29 @@ struct FoodView: View {
                             }
                         },
                         isEnabled: foodViewModel.canAddFood
+                    )
+                } else {
+                    ActionButtonView(
+                        title: "Add",
+                        action: {
+                            Task {
+                                await foodViewModel.addMealItemFoodView(
+                                    in: foodViewModel.mealType,
+                                    for: foodViewModel.mainViewModel.date
+                                )
+                                dismiss()
+                            }
+                        },
+                        isEnabled: foodViewModel.canAddFood
+                    )
+                    
+                    BookmarkButtonView(
+                        action: {
+                            Task {
+                                await foodViewModel.toggleBookmarkFoodView()
+                            }
+                        },
+                        isFilled: foodViewModel.isBookmarkFilled
                     )
                 }
             }
@@ -270,7 +266,7 @@ struct FoodView: View {
     }
     
     private var navigationTitleText: String {
-        showSaveRemoveButton
+        isEditingMealItem
         ? "Edit in Diary"
         : "Add to \(foodViewModel.mealType.rawValue)"
     }

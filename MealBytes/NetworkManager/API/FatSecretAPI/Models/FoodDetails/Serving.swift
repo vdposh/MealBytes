@@ -25,9 +25,10 @@ struct Serving: Decodable, Hashable {
     let metricServingUnit: String
     
     var measurementUnit: MeasurementUnit {
-        switch isMetricMeasurement {
-        case true: .grams
-        case false: .servings
+        if isMetricMeasurement {
+            return .grams
+        } else {
+            return .servings
         }
     }
     

@@ -177,6 +177,9 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Remove Bookmarks
     func removeBookmarks(for ids: Set<Food.ID>) async {
+        let foodsToRemove = favoriteFoods.filter {
+            ids.contains($0.searchFoodId)
+        }
         let updatedFavorites = favoriteFoods.filter {
             !ids.contains($0.searchFoodId)
         }
@@ -197,6 +200,14 @@ final class SearchViewModel: ObservableObject {
                 updatedFavorites,
                 for: selectedMealType
             )
+            
+            for food in foodsToRemove {
+                try await firestore.deleteBookmarkMetadata(
+                    for: food.searchFoodId,
+                    foodName: food.searchFoodName,
+                    mealType: selectedMealType
+                )
+            }
         } catch {
             await MainActor.run {
                 self.appError = .network
@@ -243,6 +254,14 @@ final class SearchViewModel: ObservableObject {
                 updatedFavorites,
                 for: selectedMealType
             )
+            
+            if !isAdding {
+                try await firestore.deleteBookmarkMetadata(
+                    for: food.searchFoodId,
+                    foodName: food.searchFoodName,
+                    mealType: selectedMealType
+                )
+            }
         } catch {
             await MainActor.run {
                 self.appError = .network
@@ -334,7 +353,7 @@ final class SearchViewModel: ObservableObject {
         : "Remove \(count) bookmarks"
     }
     
-    var isEditing: Bool {
+    var isEditModeActive: Bool {
         editingState == .active
     }
     

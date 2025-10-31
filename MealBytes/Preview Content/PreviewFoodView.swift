@@ -25,8 +25,7 @@ struct PreviewFoodView {
                 mainViewModel: mainViewModel,
                 amount: "1",
                 measurementDescription: "Grams",
-                showAddButton: true,
-                showSaveRemoveButton: true,
+                isEditingMealItem: false,
                 originalMealItemId: UUID()
             )
         }

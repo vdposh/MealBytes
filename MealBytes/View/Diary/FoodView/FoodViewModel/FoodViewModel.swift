@@ -30,7 +30,7 @@ final class FoodViewModel: ObservableObject {
     private let originalCreatedAt: Date
     private let originalMealItemId: UUID
     private let initialMeasurementDescription: String
-    private let showSaveRemoveButton: Bool
+    private let isEditingMealItem: Bool
     private var didChangeMealType: Bool {
         mealType != originalMealType
     }
@@ -50,7 +50,7 @@ final class FoodViewModel: ObservableObject {
         mainViewModel: MainViewModelProtocol,
         initialAmount: String = "",
         initialMeasurementDescription: String = "",
-        showSaveRemoveButton: Bool = false,
+        isEditingMealItem: Bool = false,
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
@@ -66,7 +66,7 @@ final class FoodViewModel: ObservableObject {
         self.mainViewModel = mainViewModel
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
-        self.showSaveRemoveButton = showSaveRemoveButton
+        self.isEditingMealItem = isEditingMealItem
         self.originalCreatedAt = originalCreatedAt
         self.originalMealItemId = originalMealItemId ?? UUID()
     }
@@ -95,13 +95,14 @@ final class FoodViewModel: ObservableObject {
                 self.selectedServing = fetchedFoodDetail.servings.serving.first
             }
             
-            if !showSaveRemoveButton {
+            if !isEditingMealItem {
                 setAmount(for: selectedServing)
             }
             
-            if isBookmarkFilled, !showSaveRemoveButton {
+            if isBookmarkFilled, !isEditingMealItem {
                 if let metadata = try await firestore.loadBookmarkMetadata(
                     for: food.searchFoodId,
+                    foodName: food.searchFoodName,
                     mealType: mealType
                 ) {
                     amount = metadata.lastAmount
@@ -122,15 +123,16 @@ final class FoodViewModel: ObservableObject {
             default:
                 self.appError = .networkRefresh
             }
+            
             isError = true
         }
         
         isLoading = false
-
     }
     
     func loadFoodData() async {
         guard !hasLoadedDetails else { return }
+        
         await MainActor.run {
             hasLoadedDetails = true
         }
@@ -166,10 +168,12 @@ final class FoodViewModel: ObservableObject {
             if isBookmarkFilled {
                 let metadata = BookmarkMetadata(
                     foodId: food.searchFoodId,
+                    foodName: food.searchFoodName,
                     mealType: mealType,
                     lastAmount: amount,
                     lastServingDescription: selectedServing?.measurementDescription ?? ""
                 )
+                
                 try await firestore.saveBookmarkMetadata(
                     metadata,
                     for: mealType
@@ -189,7 +193,6 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing else { return }
         
         let createdAt = didChangeMealType ? Date() : originalCreatedAt
-        
         let updatedMealItem = MealItem(
             id: originalMealItemId,
             foodId: food.searchFoodId,
@@ -286,9 +289,10 @@ final class FoodViewModel: ObservableObject {
             return
         }
         
-        switch serving.isMetricMeasurement {
-        case true: self.amount = "100"
-        case false: self.amount = "1"
+        if serving.isMetricMeasurement {
+            self.amount = "100"
+        } else {
+            self.amount = "1"
         }
     }
     
@@ -297,12 +301,12 @@ final class FoodViewModel: ObservableObject {
         for serving: Serving,
         showUnit: Bool = false
     ) -> String {
-        var description = serving.measurementDescription
+        let metricUnit = serving.metricServingUnit
         let metricAmountFormatted = formatter.formattedValue(
             serving.metricServingAmount,
             unit: .empty
         )
-        let metricUnit = serving.metricServingUnit
+        var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
             return description
@@ -331,6 +335,7 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing, canAddFood else { return 0 }
         
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
+        
         return calculateBaseAmountValue(
             amountValue,
             serving: selectedServing
@@ -345,9 +350,10 @@ final class FoodViewModel: ObservableObject {
             return 0
         }
         
-        switch serving.isMetricMeasurement {
-        case true: return amount * 0.01
-        case false: return amount
+        if serving.isMetricMeasurement {
+            return amount * 0.01
+        } else {
+            return amount
         }
     }
     

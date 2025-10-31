@@ -15,6 +15,7 @@ protocol FirebaseFirestoreProtocol {
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
     func loadBookmarkMetadata(
         for foodId: Int,
+        foodName: String,
         mealType: MealType
     ) async throws -> BookmarkMetadata?
     func loadLoginDataFirestore() async throws -> (
@@ -42,6 +43,11 @@ protocol FirebaseFirestoreProtocol {
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteLoginDataFirestore() async throws
+    func deleteBookmarkMetadata(
+        for foodId: Int,
+        foodName: String,
+        mealType: MealType
+    ) async throws
 }
 
 final class FirebaseFirestore: FirebaseFirestoreProtocol {
@@ -52,13 +58,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let snapshot = try await firestore
             .collection("Users")
             .document(uid)
             .collection("MainView")
             .order(by: "createdAt")
             .getDocuments()
-        
         let mealItems = try snapshot.documents.compactMap { document in
             try document.data(as: MealItem.self)
         }
@@ -71,11 +77,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("MainView")
             .document(mealItem.id.uuidString)
+        
         try documentReference.setData(from: mealItem)
     }
     
@@ -84,11 +92,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("MainView")
             .document(mealItem.id.uuidString)
+        
         try documentReference.setData(from: mealItem, merge: true)
     }
     
@@ -97,11 +107,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("MainView")
             .document(mealItem.id.uuidString)
+        
         try await documentReference.delete()
     }
     
@@ -145,7 +157,6 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         }
         
         let encodedFoods = try foods.map { try Firestore.Encoder().encode($0) }
-        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
@@ -161,6 +172,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     // MARK: - Load loadBookmarksMetadata
     func loadBookmarkMetadata(
         for foodId: Int,
+        foodName: String,
         mealType: MealType
     ) async throws -> BookmarkMetadata? {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -173,8 +185,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
             .collection("metadata")
-            .document(String(foodId))
+            .document(foodName)
             .getDocument()
+        
+        guard snapshot.exists else { return nil }
         
         return try snapshot.data(as: BookmarkMetadata.self)
     }
@@ -194,9 +208,30 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
             .collection("metadata")
-            .document(String(metadata.foodId))
+            .document(metadata.foodName)
         
         try path.setData(from: metadata, merge: true)
+    }
+    
+    // MARK: - Delete loadBookmarksMetadata
+    func deleteBookmarkMetadata(
+        for foodId: Int,
+        foodName: String,
+        mealType: MealType
+    ) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let path = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("SearchView")
+            .document(mealType.rawValue.lowercased())
+            .collection("metadata")
+            .document(foodName)
+        
+        try await path.delete()
     }
     
     // MARK: - Load DailyIntake
@@ -204,11 +239,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("DailyIntakeView")
+        
         return try await documentReference.getDocument(as: DailyIntake.self)
     }
     
@@ -217,11 +254,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("DailyIntakeView")
+        
         try documentReference.setData(from: DailyIntakeData)
     }
     
@@ -230,11 +269,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("RdiView")
+        
         return try await documentReference.getDocument(as: RdiData.self)
     }
     
@@ -243,11 +284,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("RdiView")
+        
         try documentReference.setData(from: rdiData)
     }
     
@@ -256,12 +299,14 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("CurrentIntake")
         let snapshot = try await documentReference.getDocument()
+        
         return try snapshot.data(as: CurrentIntake.self)
     }
     
@@ -270,11 +315,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
             .document("CurrentIntake")
+        
         try documentReference.setData(from: data)
     }
     
@@ -283,16 +330,19 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("DisplayIntake")
         let snapshot = try await documentReference.getDocument()
+        
         guard let data = snapshot.data(),
               let displayIntake = data["displayIntake"] as? Bool else {
             throw AppError.decoding
         }
+        
         return displayIntake
     }
     
@@ -301,11 +351,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let documentReference = firestore
             .collection("Users")
             .document(uid)
             .collection("ProfileView")
             .document("DisplayIntake")
+        
         try await documentReference.setData(
             ["displayIntake": displayIntake]
         )
@@ -343,10 +395,12 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
+        
         let data: [String: Any] = [
             "email": email,
             "isLoggedIn": isLoggedIn
         ]
+        
         try await firestore
             .collection("Users")
             .document(uid)
@@ -365,6 +419,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(uid)
             .collection("ProfileView")
             .document("LoginInfo")
+        
         try await documentReference.delete()
     }
 }

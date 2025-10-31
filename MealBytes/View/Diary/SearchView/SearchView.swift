@@ -31,10 +31,10 @@ struct SearchView: View {
                 searchViewToolbar
             }
             .toolbarVisibility(
-                searchViewModel.isEditing ? .hidden : .visible,
+                searchViewModel.isEditModeActive ? .hidden : .visible,
                 for: .tabBar
             )
-            .navigationBarBackButtonHidden(searchViewModel.isEditing)
+            .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
                 searchViewModel.isLoadingBookmarks = true
                 Task {
@@ -60,7 +60,7 @@ struct SearchView: View {
             }
             
             List(
-                selection: searchViewModel.isEditing
+                selection: searchViewModel.isEditModeActive
                 ? $searchViewModel.selectedItems
                 : .constant([])
             ) {
@@ -70,7 +70,7 @@ struct SearchView: View {
                         id: \.searchFoodId
                     ) { food in
                         foodRow(for: food)
-                            .moveDisabled(!searchViewModel.isEditing)
+                            .moveDisabled(!searchViewModel.isEditModeActive)
                     }
                     .onMove { indices, newOffset in
                         searchViewModel.foods.move(
@@ -95,10 +95,10 @@ struct SearchView: View {
     
     @ViewBuilder
     private func foodRow(for food: Food) -> some View {
-        if searchViewModel.isEditing {
+        if searchViewModel.isEditModeActive {
             FoodDetailView(
                 food: food,
-                isEditing: searchViewModel.isEditing,
+                isEditing: searchViewModel.isEditModeActive,
                 searchViewModel: searchViewModel
             )
         } else {
@@ -110,13 +110,12 @@ struct SearchView: View {
                     mainViewModel: searchViewModel.mainViewModel,
                     amount: "",
                     measurementDescription: "",
-                    showAddButton: true,
-                    showSaveRemoveButton: false
+                    isEditingMealItem: false
                 )
             } label: {
                 FoodDetailView(
                     food: food,
-                    isEditing: searchViewModel.isEditing,
+                    isEditing: searchViewModel.isEditModeActive,
                     searchViewModel: searchViewModel
                 )
             }
@@ -181,7 +180,7 @@ struct SearchView: View {
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search"
             )
-            .disabled(searchViewModel.isEditing)
+            .disabled(searchViewModel.isEditModeActive)
     }
     
     @ToolbarContentBuilder
@@ -259,9 +258,9 @@ struct SearchView: View {
             } label: {
                 Image(systemName: "bookmark.slash")
             }
-            .opacity(searchViewModel.isEditing ? 1 : 0)
+            .opacity(searchViewModel.isEditModeActive ? 1 : 0)
             .disabled(
-                !searchViewModel.isEditing
+                !searchViewModel.isEditModeActive
                 || searchViewModel.selectedItems.isEmpty
             )
             .confirmationDialog(
@@ -291,7 +290,7 @@ struct SearchView: View {
             }
         }
         .sharedBackgroundVisibility(
-            searchViewModel.isEditing ? .visible : .hidden
+            searchViewModel.isEditModeActive ? .visible : .hidden
         )
     }
 }
