@@ -36,7 +36,12 @@ struct MainView: View {
         .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
                 CalendarButtonView {
+                    withAnimation {
+                        mainViewModel.isCalendarInteractive = false
+                    }
+                    
                     mainViewModel.isExpandedCalendar = false
+                    mainViewModel.isCalendarInteractive = true
                 }
             }
         }
@@ -146,6 +151,7 @@ struct MainView: View {
                     withAnimation {
                         mainViewModel.isCalendarInteractive = false
                     }
+                    
                     withTransaction(
                         Transaction(animation: .bouncy)
                     ) {
@@ -155,6 +161,7 @@ struct MainView: View {
                             isPresented: &mainViewModel.isExpandedCalendar
                         )
                     }
+                    
                     withAnimation {
                         mainViewModel.isCalendarInteractive = true
                     }
@@ -168,9 +175,13 @@ struct MainView: View {
         ToolbarItemGroup(placement: .topBarTrailing) {
             if mainViewModel.isExpandedCalendar {
                 Button(role: .cancel) {
+                    mainViewModel.isCalendarInteractive = false
+                    
                     withAnimation {
                         mainViewModel.isExpandedCalendar = false
                     }
+                    
+                    mainViewModel.isCalendarInteractive = true
                 }
             } else {
                 Button {

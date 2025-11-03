@@ -13,9 +13,7 @@ struct CalendarButtonView: View {
     
     var body: some View {
         Button {
-            withAnimation {
-                action()
-            }
+            action()
         } label: {
             if colorScheme == .light {
                 Color.primary

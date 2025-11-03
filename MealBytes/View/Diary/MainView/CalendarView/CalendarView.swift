@@ -42,6 +42,7 @@ struct CalendarView: View {
                             withAnimation {
                                 mainViewModel.isCalendarInteractive = false
                             }
+                            
                             withTransaction(
                                 Transaction(animation: .bouncy)
                             ) {
@@ -52,6 +53,7 @@ struct CalendarView: View {
                                         .isExpandedCalendar
                                 )
                             }
+                            
                             withAnimation {
                                 mainViewModel.isCalendarInteractive = true
                             }
