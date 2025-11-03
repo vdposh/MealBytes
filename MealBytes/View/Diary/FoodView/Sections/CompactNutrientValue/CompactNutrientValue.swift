@@ -28,6 +28,7 @@ struct CompactNutrientValue: Identifiable {
             rawValue: type.unit(for: serving)
         ) ?? .empty
         let useFullName = rawUnit != .kcal
+        
         return rawUnit.description(for: value, full: useFullName)
     }
     

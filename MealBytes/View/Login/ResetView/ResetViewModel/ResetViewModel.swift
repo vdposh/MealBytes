@@ -28,6 +28,7 @@ final class ResetViewModel: ObservableObject {
         
         do {
             try await firebaseAuth.resetPasswordAuth(email: email)
+            
             await MainActor.run {
                 isEmailSent = true
                 sentEmail = email
@@ -49,6 +50,7 @@ final class ResetViewModel: ObservableObject {
         await MainActor.run {
             self.success = success
             self.error = error
+            
             updateAlertState()
         }
     }
@@ -88,6 +90,7 @@ final class ResetViewModel: ObservableObject {
             default: return .unknownError
             }
         }
+        
         return .unknownError
     }
     
@@ -106,5 +109,11 @@ final class ResetViewModel: ObservableObject {
         case loading
         case emailSent
         case ready
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ResetView()
     }
 }

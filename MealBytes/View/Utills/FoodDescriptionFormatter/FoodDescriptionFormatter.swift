@@ -14,16 +14,15 @@ struct FoodDescriptionFormatter {
             maxSplits: 1,
             omittingEmptySubsequences: true
         )
+        
         guard let firstPart = components.first else { return raw }
         
         let trimmed = firstPart.trimmingCharacters(in: .whitespacesAndNewlines)
-        
         let spaced = trimmed.replacingOccurrences(
             of: #"(?<=\d)(?=[a-zA-Z])"#,
             with: " ",
             options: .regularExpression
         )
-        
         let gramRegex = try? NSRegularExpression(
             pattern: #"(\d+(?:\.\d+)?)\s*g"#,
             options: .caseInsensitive
@@ -65,6 +64,7 @@ struct FoodDescriptionFormatter {
         
         let normalizedKcal = Int((kcal / grams * 100).rounded())
         let kcalLabel = normalizedKcal == 1 ? "calorie" : "calories"
+        
         return "Per 100 grams - \(normalizedKcal) \(kcalLabel)"
     }
 }

@@ -19,6 +19,7 @@ struct ActivitySection: View {
                 if rdiViewModel.selectedActivity == .notSelected {
                     Text("Not Selected").tag(Activity.notSelected)
                 }
+                
                 ForEach(
                     Activity.allCases.filter { $0 != .notSelected },
                     id: \.self

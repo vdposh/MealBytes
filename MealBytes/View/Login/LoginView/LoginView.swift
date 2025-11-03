@@ -34,18 +34,15 @@ struct LoginView: View {
                 text: $loginViewModel.password
             )
             
-            if loginViewModel.isSignIn {
-                LoadingView(showFrame: true)
-            } else {
-                ActionButtonView(
-                    title: "Login",
-                    action: {
-                        Task { await loginViewModel.signIn() }
-                    },
-                    isEnabled: loginViewModel.isLoginEnabled()
-                )
-                .frame(height: 50)
-            }
+            ActionButtonView(
+                title: "Login",
+                action: {
+                    Task {
+                        await loginViewModel.signIn()
+                    }
+                },
+                isEnabled: loginViewModel.isLoginEnabled()
+            )
         }
         .padding(.horizontal, 30)
         .padding(.vertical, 15)
@@ -53,18 +50,20 @@ struct LoginView: View {
     
     private var loginViewFooter: some View {
         VStack(spacing: 10) {
-            HStack(spacing: 4) {
+            HStack(spacing: 5) {
                 Text("Don't have a MealBytes account?")
                     .foregroundStyle(.secondary)
+                
                 NavigationLink("Sign up") {
                     RegisterView()
                 }
                 .fontWeight(.semibold)
             }
             
-            HStack(spacing: 4) {
+            HStack(spacing: 5) {
                 Text("Forgot the password?")
                     .foregroundStyle(.secondary)
+                
                 NavigationLink("Reset") {
                     ResetView()
                 }

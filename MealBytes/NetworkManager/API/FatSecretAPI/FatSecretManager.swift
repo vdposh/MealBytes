@@ -14,7 +14,6 @@ protocol FatSecretManagerProtocol {
 }
 
 final class FatSecretManager: FatSecretManagerProtocol {
-    
     private lazy var provider = MoyaProvider<FatSecretAPI>()
     
     private func performRequest<T: Decodable>(
@@ -72,6 +71,7 @@ final class FatSecretManager: FatSecretManagerProtocol {
             .getFoodDetails(foodID: foodId),
             responseType: FoodDetailResponse.self
         )
+        
         return response.food
     }
 }

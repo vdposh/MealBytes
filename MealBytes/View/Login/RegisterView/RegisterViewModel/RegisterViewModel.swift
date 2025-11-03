@@ -35,20 +35,29 @@ final class RegisterViewModel: ObservableObject {
             self.isRegisterLoading = true
         }
         
+        guard password == confirmPassword else {
+            await handleSignUpResult(success: false, error: .passwordMismatch)
+            await MainActor.run {
+                self.isRegisterLoading = false
+            }
+            
+            return
+        }
+        
         do {
             try await firebaseAuth.signUpAuth(
                 email: email,
                 password: password
             )
-            await handleSignUpResult(success: true)
             
+            await handleSignUpResult(success: true)
             await MainActor.run {
                 self.showResendOptions = true
             }
-            
             await startResendTimer()
         } catch {
             let authError = handleError(error as NSError)
+            
             await handleSignUpResult(success: false, error: authError)
         }
         
@@ -67,9 +76,11 @@ final class RegisterViewModel: ObservableObject {
         
         do {
             try await firebaseAuth.resendVerificationAuth()
+            
             await startResendTimer()
         } catch {
             let authError = handleError(error as NSError)
+            
             await MainActor.run {
                 self.error = authError
             }
@@ -112,6 +123,7 @@ final class RegisterViewModel: ObservableObject {
     private func updateTimerText() {
         let minutes = remainingSeconds / 60
         let seconds = remainingSeconds % 60
+        
         timerText = String(format: "%02d:%02d", minutes, seconds)
     }
     
@@ -130,7 +142,7 @@ final class RegisterViewModel: ObservableObject {
         } else {
             return Alert(
                 title: Text("Done"),
-                message: Text("A confirmation email has been sent to the email address."),
+                message: Text("A confirmation email has been sent to \(email)"),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -150,7 +162,7 @@ final class RegisterViewModel: ObservableObject {
     func isRegisterEnabled() -> Bool {
         return !email.isEmpty &&
         !password.isEmpty &&
-        password == confirmPassword
+        !confirmPassword.isEmpty
     }
     
     // MARK: - Error
@@ -164,6 +176,7 @@ final class RegisterViewModel: ObservableObject {
             default: return .unknownError
             }
         }
+        
         return .unknownError
     }
     
@@ -182,5 +195,11 @@ final class RegisterViewModel: ObservableObject {
         case loading
         case resend
         case register
+    }
+}
+
+#Preview {
+    NavigationStack {
+        RegisterView()
     }
 }

@@ -20,13 +20,11 @@ struct FoodDetail: Decodable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
         let foodIdString = try container.decode(
             String.self,
             forKey: .foodId
         )
         self.foodId = Int(foodIdString) ?? 0
-        
         self.foodName = try container.decode(
             String.self,
             forKey: .foodName

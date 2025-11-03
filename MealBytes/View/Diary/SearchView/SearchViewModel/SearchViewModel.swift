@@ -49,6 +49,7 @@ final class SearchViewModel: ObservableObject {
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        
         setupBindingsSearchView()
     }
     
@@ -86,6 +87,7 @@ final class SearchViewModel: ObservableObject {
                     query: query,
                     page: currentPage
                 )
+                
                 await MainActor.run {
                     self.foods = foods
                     self.appError = nil
@@ -98,6 +100,7 @@ final class SearchViewModel: ObservableObject {
                         self.appError = appError
                     default: self.appError = .networkRefresh
                     }
+                    
                     self.isLoading = false
                 }
             }
@@ -189,6 +192,7 @@ final class SearchViewModel: ObservableObject {
             withAnimation {
                 self.favoriteFoods = updatedFavorites
                 self.bookmarkedFoods = updatedBookmarkedFoods
+                
                 if query.isEmpty {
                     self.foods = updatedFavorites
                 }
@@ -218,8 +222,8 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
-        
         let updatedBookmarkedFoods: Set<Int>
+        
         if isAdding {
             updatedBookmarkedFoods = bookmarkedFoods
                 .union([food.searchFoodId])
@@ -229,6 +233,7 @@ final class SearchViewModel: ObservableObject {
         }
         
         let updatedFavorites: [Food]
+        
         if isAdding {
             if !favoriteFoods.contains(food) {
                 updatedFavorites = favoriteFoods + [food]
@@ -242,6 +247,7 @@ final class SearchViewModel: ObservableObject {
         await MainActor.run {
             self.favoriteFoods = updatedFavorites
             self.bookmarkedFoods = updatedBookmarkedFoods
+            
             if query.isEmpty {
                 self.foods = updatedFavorites
             } else {
@@ -299,6 +305,7 @@ final class SearchViewModel: ObservableObject {
     
     func loadPage(direction: PageDirection) {
         isLoading = true
+        
         switch direction {
         case .next: currentPage += 1
         case .previous:
@@ -348,6 +355,7 @@ final class SearchViewModel: ObservableObject {
     
     var removeDialogTitle: String {
         let count = selectedItems.count
+        
         return count == 1
         ? "Remove bookmark"
         : "Remove \(count) bookmarks"

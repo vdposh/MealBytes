@@ -17,10 +17,9 @@ struct Formatter {
         let safeValue = value ?? 0.0
         let baseValue = alwaysRoundUp ? ceil(safeValue) : safeValue
         let rounded = (baseValue * 100).rounded() / 100
-        
         let raw = String(format: "%.2f", rounded)
-        
         let cleaned: String
+        
         if raw.hasSuffix("00") {
             cleaned = "\(Int(rounded))"
         } else if raw.hasSuffix("0") {
@@ -38,6 +37,7 @@ struct Formatter {
     func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
         let roundedValue = ceil(value)
         let unitText = unit.description(for: roundedValue)
+        
         return unit == .empty
         ? String(format: "%.0f", roundedValue)
         : "\(String(format: "%.0f", roundedValue)) \(unitText)"

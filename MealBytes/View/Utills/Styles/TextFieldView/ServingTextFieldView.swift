@@ -79,8 +79,10 @@ struct ServingTextFieldView: View {
     private func validateInput(_ input: inout String) {
         switch inputMode {
         case .decimal:
-            input = input.preparedForLocaleDecimal
             let components = input.split(separator: ",")
+            let sanitized = input.sanitizedForDouble
+            
+            input = input.preparedForLocaleDecimal
             
             if let intPart = components.first,
                intPart.count > maxIntegerDigits {
@@ -93,7 +95,6 @@ struct ServingTextFieldView: View {
                 input = "\(components.first!),\(fracPart.prefix(maxFractionalDigits))"
             }
             
-            let sanitized = input.sanitizedForDouble
             if let doubleVal = Double(sanitized),
                doubleVal > Double(maxInteger) {
                 input = "\(maxInteger)".preparedForLocaleDecimal
@@ -101,20 +102,20 @@ struct ServingTextFieldView: View {
             
         case .integer:
             let separators: [Character] = [",", "."]
+            
+            input = input.filter { $0.isNumber }
+            
             if let separatorIndex = input.firstIndex(
                 where: { separators.contains($0) }
             ) {
                 input = String(input[..<separatorIndex])
             }
             
-            input = input.filter { $0.isNumber }
-            
             if input.count > maxIntegerDigits {
                 input = String(input.prefix(maxIntegerDigits))
             }
             
-            if let intVal = Int(input),
-               intVal > maxInteger {
+            if let intVal = Int(input), intVal > maxInteger {
                 input = "\(maxInteger)"
             }
         }
@@ -123,12 +124,13 @@ struct ServingTextFieldView: View {
     private func finalizeInput(_ input: inout String) {
         switch inputMode {
         case .decimal:
+            let suffixesToTrim = [",00", ".00", ",0", ".0"]
+            
             if input.hasSuffix(",") || input.hasSuffix(".") {
                 input.removeLast()
                 return
             }
             
-            let suffixesToTrim = [",00", ".00", ",0", ".0"]
             for suffix in suffixesToTrim {
                 if input.hasSuffix(suffix) {
                     input.removeLast(suffix.count)
@@ -138,6 +140,7 @@ struct ServingTextFieldView: View {
             
             if let commaIndex = input.firstIndex(of: ",") {
                 let fractional = input[commaIndex...]
+                
                 if fractional.hasSuffix("0") && fractional.count == 3 {
                     input.removeLast()
                 }

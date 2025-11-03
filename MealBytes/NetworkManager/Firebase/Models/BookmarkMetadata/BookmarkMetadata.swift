@@ -11,6 +11,6 @@ struct BookmarkMetadata: Codable {
     let foodId: Int
     let foodName: String
     let mealType: MealType
-    let lastAmount: String
-    let lastServingDescription: String
+    let amount: String
+    let servingDescription: String
 }

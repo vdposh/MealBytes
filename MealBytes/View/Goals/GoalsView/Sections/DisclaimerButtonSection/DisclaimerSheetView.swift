@@ -29,7 +29,7 @@ struct DisclaimerSheetView: View {
             .listStyle(.grouped)
             .scrollContentBackground(.hidden)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem {
                     Button(role: .cancel) {
                         dismiss()
                     }

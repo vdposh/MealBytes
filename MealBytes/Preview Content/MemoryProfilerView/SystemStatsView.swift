@@ -13,7 +13,9 @@ struct SystemStatsView: View {
     var body: some View {
         VStack(spacing: 12) {
             Text("💾 RAM: \(String(format: "%.1f", systemStatsViewModel.usedMemoryMB)) MB")
+            
             Text("⚙️ CPU: \(String(format: "%.1f", systemStatsViewModel.cpuUsage)) %")
+            
             Text("🧵 Thread: \(systemStatsViewModel.threadCount)")
         }
         .font(.system(.caption, design: .monospaced))

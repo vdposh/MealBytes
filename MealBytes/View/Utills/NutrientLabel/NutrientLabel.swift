@@ -15,6 +15,7 @@ struct NutrientLabel: View {
         Text(label)
             .foregroundStyle(Color.secondary)
             .font(.subheadline)
+        
         Text(formattedValue)
             .foregroundStyle(Color.secondary)
             .font(.subheadline)

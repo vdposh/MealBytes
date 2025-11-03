@@ -40,6 +40,7 @@ final class ProfileViewModel: ObservableObject {
             await MainActor.run {
                 email = nil
             }
+            
             return
         }
         
@@ -131,6 +132,7 @@ final class ProfileViewModel: ObservableObject {
                     ProfileMessage.emailMissing.text,
                     for: .deleteAccount
                 )
+                
                 return
             }
             
@@ -141,7 +143,6 @@ final class ProfileViewModel: ObservableObject {
                 )
                 
                 await deleteAccount(email: email, password: password)
-                
                 await MainActor.run {
                     isDeletingAccount = false
                 }
@@ -160,6 +161,7 @@ final class ProfileViewModel: ObservableObject {
                     validationError.message,
                     for: .changePassword
                 )
+                
                 return
             }
             
@@ -168,6 +170,7 @@ final class ProfileViewModel: ObservableObject {
                     currentPassword: password,
                     newPassword: newPassword
                 )
+                
                 await showOverrideMessage(
                     ProfileMessage.passwordUpdateSuccess.text,
                     for: .changePassword,
@@ -186,9 +189,11 @@ final class ProfileViewModel: ObservableObject {
         if newPassword.count < 6 {
             return .tooShort
         }
+        
         if newPassword != confirmPassword {
             return .mismatch
         }
+        
         return nil
     }
     
@@ -214,9 +219,11 @@ final class ProfileViewModel: ObservableObject {
         password = ""
         newPassword = ""
         confirmPassword = ""
+        
         alertContent = nil
-        showAlert = false
         appError = nil
+        
+        showAlert = false
         isPasswordChanging = false
         isDeletingAccount = false
         

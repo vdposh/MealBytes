@@ -26,9 +26,10 @@ final class SystemStatsViewModel: ObservableObject {
             withTimeInterval: 2.0,
             repeats: true
         ) { _ in
+            let currentCPU = self.reportCPUUsage()
+            
             self.usedMemoryMB = self.reportMemoryUsage()
             self.threadCount = self.reportThreadCount()
-            let currentCPU = self.reportCPUUsage()
             self.cpuUsage = currentCPU
             
             if currentCPU > self.cpuPeakThreshold {
@@ -45,9 +46,9 @@ final class SystemStatsViewModel: ObservableObject {
     
     private func reportMemoryUsage() -> Double {
         var info = task_vm_info_data_t()
-        var count = mach_msg_type_number_t(MemoryLayout.size(ofValue: info) /
-                                           MemoryLayout<Int32>.size)
-        
+        var count = mach_msg_type_number_t(
+            MemoryLayout.size(ofValue: info) / MemoryLayout<Int32>.size
+        )
         let result: kern_return_t = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
                 task_info(
@@ -60,14 +61,15 @@ final class SystemStatsViewModel: ObservableObject {
         }
         
         guard result == KERN_SUCCESS else { return -1 }
+        
         return Double(info.phys_footprint) / 1048576.0
     }
     
     private func reportThreadCount() -> Int {
         var count: mach_msg_type_number_t = 0
         var threadList: thread_act_array_t?
-        
         let kr = task_threads(mach_task_self_, &threadList, &count)
+        
         guard kr == KERN_SUCCESS else { return -1 }
         
         return Int(count)
@@ -76,8 +78,8 @@ final class SystemStatsViewModel: ObservableObject {
     private func reportCPUUsage() -> Double {
         var threads: thread_act_array_t?
         var threadCount = mach_msg_type_number_t()
-        
         let kr = task_threads(mach_task_self_, &threads, &threadCount)
+        
         guard kr == KERN_SUCCESS else { return -1 }
         
         var totalCPU: Double = 0

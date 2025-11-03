@@ -67,6 +67,7 @@ final class GoalsViewModel: ObservableObject {
     func displayState(for source: IntakeSourceType) -> IntakeDisplayState {
         let isActive = self.isActive(source)
         let text: String
+        
         switch source {
         case .rdiView: text = rdiViewModel.rdiText()
         case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText()

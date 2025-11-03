@@ -15,8 +15,11 @@ struct IntakeToggleSection: View {
             Toggle(
                 "Daily Intake",
                 isOn: Binding(
-                    get: { profileViewModel.mainViewModel.displayIntake },
-                    set: { newValue in profileViewModel.mainViewModel
+                    get: {
+                        profileViewModel.mainViewModel.displayIntake
+                    },
+                    set: {
+                        newValue in profileViewModel.mainViewModel
                             .setDisplayIntake(newValue)
                         Task {
                             await profileViewModel.mainViewModel

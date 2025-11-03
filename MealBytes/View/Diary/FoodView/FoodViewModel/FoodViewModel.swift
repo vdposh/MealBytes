@@ -77,11 +77,13 @@ final class FoodViewModel: ObservableObject {
         isLoading = true
         
         await searchViewModel.loadBookmarksSearchView(for: mealType)
+        
         self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
         
         do {
             let fetchedFoodDetail = try await fatSecretManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
+            
             self.foodDetail = fetchedFoodDetail
             
             switch fetchedFoodDetail.servings.serving.first(
@@ -105,11 +107,12 @@ final class FoodViewModel: ObservableObject {
                     foodName: food.searchFoodName,
                     mealType: mealType
                 ) {
-                    amount = metadata.lastAmount
+                    amount = metadata.amount
+                    
                     if let serving = fetchedFoodDetail.servings.serving.first(
                         where: {
                             $0.measurementDescription == metadata
-                                .lastServingDescription
+                                .servingDescription
                         }
                     ) {
                         selectedServing = serving
@@ -170,8 +173,9 @@ final class FoodViewModel: ObservableObject {
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType,
-                    lastAmount: amount,
-                    lastServingDescription: selectedServing?.measurementDescription ?? ""
+                    amount: amount,
+                    servingDescription: selectedServing?
+                        .measurementDescription ?? ""
                 )
                 
                 try await firestore.saveBookmarkMetadata(
@@ -273,14 +277,35 @@ final class FoodViewModel: ObservableObject {
         await MainActor.run {
             isBookmarkFilled.toggle()
         }
+        
         await searchViewModel.toggleBookmarkSearchView(for: food)
+        
+        guard isBookmarkFilled,
+              let selectedServing else { return }
+        
+        let metadata = BookmarkMetadata(
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            mealType: mealType,
+            amount: amount,
+            servingDescription: selectedServing.measurementDescription
+        )
+        
+        do {
+            try await firestore.saveBookmarkMetadata(metadata, for: mealType)
+        } catch {
+            await MainActor.run {
+                appError = .network
+            }
+        }
     }
     
     // MARK: - Serving Selection and Amount Setting
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
-        setAmount(for: serving)
         self.unit = serving.measurementUnit
+        
+        setAmount(for: serving)
     }
     
     private func setAmount(for serving: Serving?) {

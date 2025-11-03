@@ -65,14 +65,17 @@ final class MainViewModel: ObservableObject {
     
     init() {
         var items = [MealType: [MealItem]]()
-        MealType.allCases.forEach { items[$0] = [] }
-        self.mealItems = items
         var summaries = [NutrientType: Double]()
-        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
-        self.nutrientSummaries = summaries
         var sections = [MealType: Bool]()
+        
+        MealType.allCases.forEach { items[$0] = [] }
+        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         MealType.allCases.forEach { sections[$0] = false }
+        
+        self.mealItems = items
+        self.nutrientSummaries = summaries
         self.expandedSections = sections
+        
         setupBindingsMainView()
     }
     
@@ -97,6 +100,7 @@ final class MainViewModel: ObservableObject {
     private func loadMealItemsMainView() async {
         do {
             let mealItems = try await firestore.loadMealItemsFirestore()
+            
             await MainActor.run {
                 self.mealItems = Dictionary(
                     grouping: mealItems,
@@ -143,6 +147,7 @@ final class MainViewModel: ObservableObject {
     // MARK: - Delete Meal Item
     func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
         var items = mealItems[mealType] ?? []
+        
         if let itemToDelete = items.first(
             where: { $0.id == id }
         ) {
@@ -180,6 +185,7 @@ final class MainViewModel: ObservableObject {
     private func loadCurrentIntakeMainView() async {
         do {
             let fetchedData = try await firestore.loadCurrentIntakeFirestore()
+            
             await MainActor.run {
                 self.intake = fetchedData.intake
                 self.intakeSource = fetchedData.source
@@ -195,6 +201,7 @@ final class MainViewModel: ObservableObject {
     func saveCurrentIntakeMainView(source: String) async {
         do {
             let intakeData = CurrentIntake(intake: intake, source: source)
+            
             try await firestore.saveCurrentIntakeFirestore(intakeData)
             
             await MainActor.run {
@@ -211,6 +218,7 @@ final class MainViewModel: ObservableObject {
     private func loadDisplayIntakeMainView() async {
         do {
             let value = try await firestore.loadDisplayIntakeFirestore()
+            
             await MainActor.run {
                 displayIntake = value
             }
@@ -250,8 +258,10 @@ final class MainViewModel: ObservableObject {
     private func calculateIntakePercentage(from calories: Double?) -> String {
         guard let intakeValue = Double(intake),
               intakeValue > 0 else { return "0%" }
+        
         let safeCalories = calories ?? 0.0
         let percentage = round((safeCalories / intakeValue) * 100)
+        
         return "\(Int(percentage))%"
     }
     
@@ -260,6 +270,7 @@ final class MainViewModel: ObservableObject {
             intakeProgress = 0.0
             return
         }
+        
         intakeProgress = min(max(calories / intakeValue, 0), 1)
     }
     
@@ -315,20 +326,17 @@ final class MainViewModel: ObservableObject {
             (.carbohydrate, summary[.carbohydrate] ?? 0),
             (.protein, summary[.protein] ?? 0)
         ]
-        
         let total = values.reduce(0) { $0 + $1.1 }
+        
         guard total > 0 else { return [:] }
         
         let sorted = values.sorted { $0.1 > $1.1 }
-        
         let first = sorted[0]
         let second = sorted[1]
         let third = sorted[2]
-        
         let firstPercent = Int(round((first.1 / total) * 100))
         let secondPercent = Int(round((second.1 / total) * 100))
         let thirdPercent = max(0, 100 - firstPercent - secondPercent)
-        
         let result: [NutrientType: Int] = [
             first.0: firstPercent,
             second.0: secondPercent,
@@ -361,6 +369,7 @@ final class MainViewModel: ObservableObject {
         on date: Date
     ) -> Bool {
         let items = mealItems[mealType] ?? []
+        
         return items.contains {
             calendar.isDate($0.date, inSameDayAs: date)
         }
@@ -399,7 +408,6 @@ final class MainViewModel: ObservableObject {
             mealItem.amount,
             unit: .empty
         )
-        
         let measurement = formattedMeasurement(for: mealItem)
             .pluralized(for: mealItem.amount)
         
@@ -501,9 +509,11 @@ final class MainViewModel: ObservableObject {
         if isSelected || isToday {
             return .accent.opacity(1)
         }
+        
         if forcePrimary {
             return .primary
         }
+        
         if let date, !calendar.isDate(
             date,
             equalTo: self.date,
@@ -511,6 +521,7 @@ final class MainViewModel: ObservableObject {
         ) {
             return .secondary
         }
+        
         return element == .day ? .primary : .secondary
     }
     
@@ -560,11 +571,13 @@ final class MainViewModel: ObservableObject {
             }
         } else {
             if let range = calendar.range(of: .day, in: .month, for: newMonth),
-               let lastDay = calendar.date(from: DateComponents(
-                year: components.year,
-                month: components.month,
-                day: range.count
-               )) {
+               let lastDay = calendar.date(
+                from: DateComponents(
+                    year: components.year,
+                    month: components.month,
+                    day: range.count
+                )
+               ) {
                 selectedDate = lastDay
             }
         }
@@ -598,22 +611,19 @@ final class MainViewModel: ObservableObject {
         let days = range.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
         }
-        
         let firstWeekday = calendar.component(.weekday, from: startOfMonth) - 1
         let adjustedWeekday = firstWeekday == 0 ? 6 : (firstWeekday - 1)
-        
         let prevDays = prevMonthRange.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)
         }.suffix(adjustedWeekday)
-        
         let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
-        
         let nextDays: [Date] = (
             fillerCount > 0
             ? Array(1...fillerCount)
             : []
         ).compactMap {
             guard let last = days.last else { return nil }
+            
             let candidate = calendar.date(byAdding: .day, value: $0, to: last)
             
             guard let date = candidate else { return nil }
@@ -633,6 +643,7 @@ final class MainViewModel: ObservableObject {
         calendar.firstWeekday = 2
         let symbols = calendar.shortWeekdaySymbols
         let firstWeekdayIndex = calendar.firstWeekday - 1
+        
         return Array(
             symbols[firstWeekdayIndex...] + symbols[..<firstWeekdayIndex]
         )
@@ -696,7 +707,7 @@ final class MainViewModel: ObservableObject {
         case summaries([NutrientType: Double])
         case details(fat: Double, carbohydrate: Double, protein: Double)
     }
-
+    
     enum DisplayElement {
         case day
         case weekday

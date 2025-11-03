@@ -49,9 +49,8 @@ extension FatSecretAPI: TargetType {
     }
     
     var headers: [String: String]? {
-        let currentToken = TokenManager.shared.accessToken ?? ""
         return [
-            "Authorization": "Bearer \(currentToken)"
+            "Authorization": "Bearer \(TokenManager.shared.accessToken ?? "")"
         ]
     }
     

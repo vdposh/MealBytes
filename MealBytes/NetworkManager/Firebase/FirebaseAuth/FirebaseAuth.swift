@@ -32,6 +32,7 @@ final class FirebaseAuth: FirebaseAuthProtocol {
             withEmail: email,
             password: password
         )
+        
         return result.user
     }
     
@@ -41,6 +42,7 @@ final class FirebaseAuth: FirebaseAuthProtocol {
             withEmail: email,
             password: password
         )
+        
         try await result.user.sendEmailVerification()
     }
     
@@ -49,6 +51,7 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
+        
         try await user.sendEmailVerification()
     }
     
@@ -67,6 +70,7 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
+        
         try await user.delete()
     }
     
@@ -77,10 +81,12 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
+        
         let credential = EmailAuthProvider.credential(
             withEmail: email,
             password: password
         )
+        
         try await user.reauthenticate(with: credential)
     }
     
@@ -93,10 +99,12 @@ final class FirebaseAuth: FirebaseAuthProtocol {
               let email = user.email else {
             throw AuthError.userNotFound
         }
+        
         let credential = EmailAuthProvider.credential(
             withEmail: email,
             password: currentPassword
         )
+        
         try await user.reauthenticate(with: credential)
         try await user.updatePassword(to: newPassword)
     }
@@ -106,6 +114,7 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         guard let user = Auth.auth().currentUser else {
             return false
         }
+        
         return user.isEmailVerified
     }
     

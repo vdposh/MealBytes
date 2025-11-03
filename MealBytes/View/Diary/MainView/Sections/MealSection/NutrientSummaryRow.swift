@@ -23,12 +23,14 @@ struct NutrientSummaryRow: View {
                     protein: protein
                 )
             )
+            
             ForEach(["F", "C", "P"], id: \.self) { label in
                 NutrientLabel(
                     label: label,
                     formattedValue: nutrients[label] ?? ""
                 )
             }
+            
             if mainViewModel.canDisplayIntake() {
                 Text(mainViewModel.intakePercentage(for: calories))
                     .foregroundStyle(Color.secondary)

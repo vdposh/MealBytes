@@ -28,6 +28,7 @@ struct HeightSection: View {
                     Text("Not Selected")
                         .tag(HeightUnit.notSelected)
                 }
+                
                 ForEach(
                     HeightUnit.allCases.filter { $0 != .notSelected },
                     id: \.self

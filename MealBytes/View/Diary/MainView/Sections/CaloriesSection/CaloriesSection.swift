@@ -54,7 +54,11 @@ struct CaloriesSection: View {
                         let nutrients = mainViewModel.formattedNutrients(
                             source: .summaries(summaries)
                         )
-                        ForEach(["Fat", "Carbs", "Protein"], id: \.self) { key in
+                        
+                        ForEach(
+                            ["Fat", "Carbs", "Protein"],
+                            id: \.self
+                        ) { key in
                             NutrientLabel(
                                 label: String(key.prefix(1)),
                                 formattedValue: nutrients[key] ?? ""

@@ -40,6 +40,7 @@ final class DailyIntakeViewModel: ObservableObject {
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        
         setupBindingsDailyIntakeView()
     }
     
@@ -89,7 +90,6 @@ final class DailyIntakeViewModel: ObservableObject {
     // MARK: - Save DailyIntake Data
     func saveDailyIntakeView() async {
         let trimmedCalories = calories.trimmedLeadingZeros
-        
         let dailyIntakeData = DailyIntake(
             calories: trimmedCalories,
             fat: fat.trimmedLeadingZeros,
@@ -170,9 +170,11 @@ final class DailyIntakeViewModel: ObservableObject {
             if !fat.isValidNumericInput() {
                 invalidFields.append("Fat")
             }
+            
             if !carbohydrate.isValidNumericInput() {
                 invalidFields.append("Carbohydrate")
             }
+            
             if !protein.isValidNumericInput() {
                 invalidFields.append("Protein")
             }
@@ -181,6 +183,7 @@ final class DailyIntakeViewModel: ObservableObject {
         guard !invalidFields.isEmpty else { return nil }
         
         let fieldList = formatList(invalidFields)
+        
         return "Enter a valid \(fieldList) value."
     }
     
@@ -191,6 +194,7 @@ final class DailyIntakeViewModel: ObservableObject {
         case 2: return items.joined(separator: " and ")
         default:
             let allExceptLast = items.dropLast().joined(separator: ", ")
+            
             return "\(allExceptLast) and \(items.last ?? "")"
         }
     }
@@ -201,6 +205,7 @@ final class DailyIntakeViewModel: ObservableObject {
             showAlert = true
             return false
         }
+        
         return true
     }
     
@@ -221,6 +226,7 @@ final class DailyIntakeViewModel: ObservableObject {
     // MARK: - Text
     func text(for calculatedIntake: String) -> String {
         let sanitized = calculatedIntake.sanitizedForDouble
+        
         guard let intakeValue = Double(sanitized), intakeValue > 0 else {
             return "Fill in the data"
         }
@@ -268,6 +274,7 @@ final class DailyIntakeViewModel: ObservableObject {
               value == 1 else {
             return "grams"
         }
+        
         return "gram"
     }
     

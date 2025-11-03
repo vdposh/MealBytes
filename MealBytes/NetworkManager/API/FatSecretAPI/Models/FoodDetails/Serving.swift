@@ -43,10 +43,11 @@ struct Serving: Decodable, Hashable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         func decodeDouble(forKey key: CodingKeys) -> Double {
-            (try? Double(container.decodeIfPresent(
-                String.self,
-                forKey: key
-            ) ?? "")) ?? 0
+            (
+                try? Double(
+                    container.decodeIfPresent(String.self, forKey: key) ?? ""
+                )
+            ) ?? 0
         }
         
         func decodeString(forKey key: CodingKeys) -> String {

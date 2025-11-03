@@ -69,6 +69,7 @@ struct RdiView: View {
                     }
                     dismiss()
                 }
+                
                 focusedField = nil
                 rdiViewModel.normalizeInputs()
             }

@@ -14,7 +14,7 @@ struct PreviewFoodView {
         let food = Food(
             searchFoodId: 3092,
             searchFoodName: "Egg",
-            searchFoodDescription: "1 cup"
+            searchFoodDescription: "large"
         )
         
         return NavigationStack {

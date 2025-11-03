@@ -20,16 +20,18 @@ struct MealItem: Codable, Identifiable, Hashable {
     let mealType: MealType
     let createdAt: Date
     
-    init(id: UUID = UUID(),
-         foodId: Int,
-         foodName: String,
-         portionUnit: String,
-         nutrients: [NutrientType: Double],
-         measurementDescription: String,
-         amount: Double,
-         date: Date = Date(),
-         mealType: MealType,
-         createdAt: Date = Date()) {
+    init(
+        id: UUID = UUID(),
+        foodId: Int,
+        foodName: String,
+        portionUnit: String,
+        nutrients: [NutrientType: Double],
+        measurementDescription: String,
+        amount: Double,
+        date: Date = Date(),
+        mealType: MealType,
+        createdAt: Date = Date()
+    ) {
         self.id = id
         self.foodId = foodId
         self.foodName = foodName
@@ -62,6 +64,11 @@ struct MealItem: Codable, Identifiable, Hashable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let stringNutrients = try container.decode(
+            [String: Double].self,
+            forKey: .nutrients
+        )
+        
         id = try container.decode(UUID.self, forKey: .id)
         foodId = try container.decode(Int.self, forKey: .foodId)
         foodName = try container.decode(String.self, forKey: .foodName)
@@ -74,11 +81,6 @@ struct MealItem: Codable, Identifiable, Hashable {
         date = try container.decode(Date.self, forKey: .date)
         mealType = try container.decode(MealType.self, forKey: .mealType)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
-        
-        let stringNutrients = try container.decode(
-            [String: Double].self,
-            forKey: .nutrients
-        )
         nutrients = stringNutrients.reduce(into: [NutrientType: Double]()) {
             result, pair in
             if let key = NutrientType(rawValue: pair.key) {

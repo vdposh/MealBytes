@@ -32,7 +32,6 @@ struct PreviewContentView {
         )
         let searchViewModel = SearchViewModel(
             mainViewModel: mainViewModel)
-        
         let themeManager = ThemeManager()
         
         return ContentView(

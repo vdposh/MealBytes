@@ -48,7 +48,8 @@ struct CalendarView: View {
                                 mainViewModel.selectDate(
                                     date,
                                     selectedDate: &mainViewModel.date,
-                                    isPresented: &mainViewModel.isExpandedCalendar
+                                    isPresented: &mainViewModel
+                                        .isExpandedCalendar
                                 )
                             }
                             withAnimation {
@@ -56,18 +57,24 @@ struct CalendarView: View {
                             }
                         } label: {
                             VStack(spacing: 5) {
-                                Text("\(mainViewModel.dayComponent(for: date))")
-                                    .foregroundStyle(mainViewModel.color(
-                                        for: .day,
-                                        date: date,
-                                        isSelected: mainViewModel.calendar.isDate(
-                                            mainViewModel.date,
-                                            inSameDayAs: date
-                                        ),
-                                        isToday: mainViewModel
-                                            .calendar.isDateInToday(date)
-                                    ))
-                                    .font(.callout)
+                                Text(
+                                    "\(mainViewModel.dayComponent(for: date))"
+                                )
+                                .foregroundStyle(
+                                    mainViewModel
+                                        .color(
+                                            for: .day,
+                                            date: date,
+                                            isSelected: mainViewModel.calendar
+                                                .isDate(
+                                                    mainViewModel.date,
+                                                    inSameDayAs: date
+                                                ),
+                                            isToday: mainViewModel.calendar
+                                                .isDateInToday(date)
+                                        )
+                                )
+                                .font(.callout)
                                 
                                 if mainViewModel.hasMealItems(for: date) {
                                     Circle()

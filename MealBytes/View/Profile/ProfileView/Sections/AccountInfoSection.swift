@@ -17,6 +17,7 @@ struct AccountInfoSection: View {
                 VStack {
                     Text("This account is signed in:")
                         .font(.subheadline)
+                    
                     Text(email)
                         .font(.headline)
                         .foregroundStyle(Color.primary)

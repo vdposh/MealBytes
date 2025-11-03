@@ -29,6 +29,7 @@ struct WeightSection: View {
                     Text("Not Selected")
                         .tag(WeightUnit.notSelected)
                 }
+                
                 ForEach(
                     WeightUnit.allCases.filter {
                         $0 != .notSelected },

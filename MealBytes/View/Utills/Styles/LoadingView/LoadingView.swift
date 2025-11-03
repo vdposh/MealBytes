@@ -24,7 +24,7 @@ struct LoadingView: View {
         if showFrame {
             progressView
                 .frame(height: 50)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .center)
         } else {
             progressView
         }

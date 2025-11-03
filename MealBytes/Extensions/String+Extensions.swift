@@ -57,7 +57,6 @@ extension String {
         let parts = self.components(separatedBy: " (")
         let mainDescription = parts[0]
         let suffix = parts.count > 1 ? " (\(parts[1])" : ""
-        
         var words = mainDescription.split(separator: " ").map(String.init)
         
         for (index, word) in words.enumerated() {
@@ -71,8 +70,7 @@ extension String {
             }
         }
         
-        let result = words.joined(separator: " ") + suffix
-        return result
+        return words.joined(separator: " ") + suffix
     }
     
     private enum Pluralizer {

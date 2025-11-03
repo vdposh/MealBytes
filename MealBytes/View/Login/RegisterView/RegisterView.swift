@@ -66,6 +66,7 @@ struct RegisterView: View {
                 },
                 isEnabled: registerViewModel.isRegisterEnabled()
             )
+            .frame(height: 50)
         }
     }
     

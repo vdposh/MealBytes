@@ -44,11 +44,14 @@ struct FoodItemRow: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Text(mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.calories],
-                            unit: .empty,
-                            alwaysRoundUp: true
-                        ))
+                        Text(
+                            mainViewModel.formatter
+                                .formattedValue(
+                                    mealItem.nutrients[.calories],
+                                    unit: .empty,
+                                    alwaysRoundUp: true
+                                )
+                        )
                         .lineLimit(1)
                         .layoutPriority(1)
                         .font(.callout)
@@ -65,6 +68,7 @@ struct FoodItemRow: View {
                                     unit: .empty
                                 )
                         )
+                        
                         NutrientLabel(
                             label: "C",
                             formattedValue: mainViewModel
@@ -73,6 +77,7 @@ struct FoodItemRow: View {
                                     unit: .empty
                                 )
                         )
+                        
                         NutrientLabel(
                             label: "P",
                             formattedValue: mainViewModel
@@ -81,6 +86,7 @@ struct FoodItemRow: View {
                                     unit: .empty
                                 )
                         )
+                        
                         if mainViewModel.canDisplayIntake() {
                             Text(
                                 mainViewModel

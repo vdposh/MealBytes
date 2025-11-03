@@ -19,6 +19,7 @@ struct GenderSection: View {
                 if rdiViewModel.selectedGender == .notSelected {
                     Text("Not Selected").tag(Gender.notSelected)
                 }
+                
                 ForEach(
                     Gender.allCases.filter { $0 != .notSelected },
                     id: \.self

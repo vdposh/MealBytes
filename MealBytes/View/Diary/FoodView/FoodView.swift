@@ -29,6 +29,7 @@ struct FoodView: View {
     ) {
         self._mealType = State(initialValue: mealType)
         self.isEditingMealItem = isEditingMealItem
+        
         _foodViewModel = StateObject(
             wrappedValue: FoodViewModel(
                 food: food,

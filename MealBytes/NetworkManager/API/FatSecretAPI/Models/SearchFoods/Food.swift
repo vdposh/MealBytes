@@ -26,13 +26,12 @@ struct Food: Codable, Identifiable, Hashable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
         let searchFoodIdString = try container.decode(
             String.self,
             forKey: .searchFoodId
         )
-        self.searchFoodId = Int(searchFoodIdString) ?? 0
         
+        self.searchFoodId = Int(searchFoodIdString) ?? 0
         self.searchFoodName = try container.decode(
             String.self,
             forKey: .searchFoodName

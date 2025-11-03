@@ -11,7 +11,7 @@ struct ResendEmailView: View {
     @ObservedObject var registerViewModel: RegisterViewModel
     
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             Text("Didn't receive the email?")
             
             Button("Resend") {
@@ -36,5 +36,11 @@ struct ResendEmailView: View {
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
         .frame(height: 50)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        RegisterView()
     }
 }

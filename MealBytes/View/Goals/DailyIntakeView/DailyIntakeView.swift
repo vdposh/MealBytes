@@ -72,6 +72,7 @@ struct DailyIntakeView: View {
                     }
                     dismiss()
                 }
+                
                 caloriesFocused = false
                 focusMacronutrients = nil
                 dailyIntakeViewModel.normalizeInputs()
@@ -91,6 +92,7 @@ struct DailyIntakeView: View {
     
     private func handleFocusLoss(_ focus: MacronutrientsFocus?) {
         guard let focus else { return }
+        
         dailyIntakeViewModel.handleMacronutrientFocusChange(
             focus: focus,
             didGainFocus: false

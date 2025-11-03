@@ -17,7 +17,6 @@ struct DisclaimerButtonSection: View {
             }
             .font(.subheadline)
             .buttonStyle(.borderless)
-            
             .sheet(isPresented: $showDisclaimer) {
                 DisclaimerSheetView()
             }

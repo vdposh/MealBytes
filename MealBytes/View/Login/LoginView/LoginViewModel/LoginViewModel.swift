@@ -90,13 +90,14 @@ final class LoginViewModel: ObservableObject {
                 password: password
             )
             
-            
             if !user.isEmailVerified {
                 await MainActor.run {
                     self.error = .userNotVerified
                     self.isSignIn = false
+                    
                     updateAlertState()
                 }
+                
                 return
             }
             
@@ -109,8 +110,10 @@ final class LoginViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = .networkError
                     self.isSignIn = false
+                    
                     updateAlertState()
                 }
+                
                 return
             }
             
@@ -119,14 +122,17 @@ final class LoginViewModel: ObservableObject {
             await MainActor.run {
                 self.error = nil
                 self.isSignIn = false
-                updateAlertState()
+                
                 isLoggedIn = true
                 showErrorAlert = false
+                
+                updateAlertState()
             }
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
                 self.isSignIn = false
+                
                 updateAlertState()
             }
         }
@@ -145,11 +151,13 @@ final class LoginViewModel: ObservableObject {
     func resetLoginState() {
         email = ""
         password = ""
+        
+        error = nil
+        
         showAlert = false
         showErrorAlert = false
         isLoggedIn = false
         isSignIn = false
-        error = nil
         
         mainViewModel.resetMainState()
         goalsViewModel.clearGoalsView()
@@ -234,6 +242,7 @@ final class LoginViewModel: ObservableObject {
             default: return .incorrectCredentials
             }
         }
+        
         return .unknownError
     }
 }

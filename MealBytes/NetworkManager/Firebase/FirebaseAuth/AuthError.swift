@@ -18,6 +18,7 @@ enum AuthError: Error, Identifiable, LocalizedError {
     case userNotFound
     case userNotVerified
     case weakPassword
+    case passwordMismatch
     case networkError
     case sessionExpired
     case offlineMode
@@ -26,9 +27,9 @@ enum AuthError: Error, Identifiable, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidEmail:
-            "The entered email address is invalid. Check and try again."
+            "The email address is invalid."
         case .incorrectCredentials:
-            "Incorrect email or password. Check and try again."
+            "Incorrect email or password."
         case .emailAlreadyInUse:
             "The email address is already in use."
         case .userNotFound:
@@ -40,6 +41,8 @@ enum AuthError: Error, Identifiable, LocalizedError {
             """
         case .weakPassword:
             "The password must be at least 6 characters long."
+        case .passwordMismatch:
+            "The passwords do not match."
         case .networkError:
             """
             A network error occurred.

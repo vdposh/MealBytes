@@ -25,10 +25,8 @@ final class TokenManager {
             "application/x-www-form-urlencoded",
             forHTTPHeaderField: "Content-Type"
         )
-        
         let body = "grant_type=client_credentials&client_id=\(clientID)&client_secret=\(clientSecret)"
         request.httpBody = body.data(using: .utf8)
-        
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -43,6 +41,7 @@ final class TokenManager {
             TokenResponse.self,
             from: data
         )
+        
         self.accessToken = decodedResponse.accessToken
     }
 }

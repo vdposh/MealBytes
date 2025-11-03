@@ -67,6 +67,7 @@ struct NutrientValueSection: View {
                            let percent = macroDistribution[nutrient.type] {
                             Text("/")
                                 .foregroundStyle(.secondary)
+                            
                             Text("\(percent)%")
                                 .foregroundStyle(.secondary)
                         }

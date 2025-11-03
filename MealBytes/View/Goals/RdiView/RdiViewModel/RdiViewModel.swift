@@ -39,6 +39,7 @@ final class RdiViewModel: ObservableObject {
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        
         setupBindingsRdiView()
     }
     
@@ -182,15 +183,15 @@ final class RdiViewModel: ObservableObject {
         let ageValue = Double(age.sanitizedForDouble) ?? 0
         let weightValue = Double(weight.sanitizedForDouble) ?? 0
         let heightValue = Double(height.sanitizedForDouble) ?? 0
-        
         let weightInKg = weightUnit == .lbs
         ? weightValue * 0.453592
         : weightValue
         let heightInCm = heightUnit == .inches
         ? heightValue * 2.54
         : heightValue
-        
         let bmr: Double
+        let activityFactor: Double
+        
         switch gender {
         case .male:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue + 5
@@ -199,7 +200,6 @@ final class RdiViewModel: ObservableObject {
         case .notSelected: return
         }
         
-        let activityFactor: Double
         switch activity {
         case .sedentary: activityFactor = 1.2
         case .lightlyActive: activityFactor = 1.375
@@ -223,9 +223,11 @@ final class RdiViewModel: ObservableObject {
         if !age.isValidNumericInput(in: 1...120) {
             invalidFields.append("Age")
         }
+        
         if !weight.isValidNumericInput() {
             invalidFields.append("Weight")
         }
+        
         if !height.isValidNumericInput() {
             invalidFields.append("Height")
         }
@@ -233,6 +235,7 @@ final class RdiViewModel: ObservableObject {
         if selectedGender == .notSelected {
             missingSelections.append("Gender")
         }
+        
         if selectedActivity == .notSelected {
             missingSelections.append("Activity Level")
         }
@@ -240,6 +243,7 @@ final class RdiViewModel: ObservableObject {
         if selectedWeightUnit == .notSelected {
             missingUnits.append("Weight")
         }
+        
         if selectedHeightUnit == .notSelected {
             missingUnits.append("Height")
         }
@@ -272,6 +276,7 @@ final class RdiViewModel: ObservableObject {
         case 2: return items.joined(separator: " and ")
         default:
             let allExceptLast = items.dropLast().joined(separator: ", ")
+            
             return "\(allExceptLast) and \(items.last ?? "")"
         }
     }
@@ -282,6 +287,7 @@ final class RdiViewModel: ObservableObject {
             showAlert = true
             return false
         }
+        
         return true
     }
     
@@ -323,6 +329,7 @@ final class RdiViewModel: ObservableObject {
     
     func fieldTitleColor(for field: String) -> Color {
         let isAge = field == age
+        
         if isAge {
             return field.isValidNumericInput(in: 1...120) ?
                 .secondary : .customRed
