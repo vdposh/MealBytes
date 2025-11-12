@@ -167,8 +167,8 @@ struct FoodView: View {
     
     private var nutrientActionSection: some View {
         Section {
-            HStack(spacing: 10) {
-                if isEditingMealItem {
+            if isEditingMealItem {
+                HStack(spacing: 10) {
                     ActionButtonView(
                         title: "Remove",
                         action: {
@@ -191,7 +191,9 @@ struct FoodView: View {
                         },
                         isEnabled: foodViewModel.canAddFood
                     )
-                } else {
+                }
+            } else {
+                HStack(spacing: 15) {
                     ActionButtonView(
                         title: "Add",
                         action: {
@@ -258,11 +260,11 @@ struct FoodView: View {
             isExpandable: nil,
             useServing: true,
             intakePercentage: foodViewModel.mainViewModel.canDisplayIntake()
-                ? foodViewModel.mainViewModel.intakePercentage(
-                    for: foodViewModel.nutrientValues
-                        .first(where: { $0.type == .calories })?.value
-                )
-                : nil
+            ? foodViewModel.mainViewModel.intakePercentage(
+                for: foodViewModel.nutrientValues
+                    .first(where: { $0.type == .calories })?.value
+            )
+            : nil
         )
     }
     

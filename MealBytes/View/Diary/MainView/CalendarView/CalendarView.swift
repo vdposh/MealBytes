@@ -90,11 +90,7 @@ struct CalendarView: View {
                         .background {
                             mainViewModel.colorBackground(for: date)
                         }
-                        .glassEffect(
-                            .identity.interactive(),
-                            in: .rect(cornerRadius: 16)
-                        )
-                        .buttonStyle(ButtonStyleInvisible())
+                        .buttonStyle(.plain)
                     }
                 }
             }

@@ -36,12 +36,12 @@ struct MainView: View {
         .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
                 CalendarButtonView {
-                    withAnimation {
-                        mainViewModel.isCalendarInteractive = false
-                    }
+                    mainViewModel.isCalendarInteractive = false
                     
-                    mainViewModel.isExpandedCalendar = false
-                    mainViewModel.isCalendarInteractive = true
+                    withAnimation {
+                        mainViewModel.isExpandedCalendar = false
+                        mainViewModel.isCalendarInteractive = true
+                    }
                 }
             }
         }
@@ -179,9 +179,8 @@ struct MainView: View {
                     
                     withAnimation {
                         mainViewModel.isExpandedCalendar = false
+                        mainViewModel.isCalendarInteractive = true
                     }
-                    
-                    mainViewModel.isCalendarInteractive = true
                 }
             } else {
                 Button {

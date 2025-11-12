@@ -20,15 +20,16 @@ struct ActionButtonView: View {
             Text(title)
                 .font(.headline)
                 .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, minHeight: 53)
+                .frame(maxWidth: .infinity, minHeight: 50)
+                .contentShape(.rect)
         }
         .disabled(!isEnabled)
         .glassEffect(
-            .regular.interactive(isEnabled).tint(
-                color.opacity(!isEnabled ? 0.5 : 1)
-            )
+            .regular
+                .interactive(isEnabled)
+                .tint(color.opacity(!isEnabled ? 0.5 : 1))
         )
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
     }
 }
 

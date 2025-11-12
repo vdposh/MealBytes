@@ -43,10 +43,6 @@ struct DateView: View {
         .background {
             mainViewModel.colorBackground(for: date)
         }
-        .glassEffect(
-            .identity.interactive(),
-            in: .rect(cornerRadius: 16)
-        )
     }
 }
 

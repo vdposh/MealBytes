@@ -18,9 +18,8 @@ struct BookmarkButtonView: View {
             ZStack {
                 Circle()
                     .fill(
-                        isFilled ? Color.accent : Color.secondary
-                            .opacity(0.2))
-                    .frame(width: 53, height: 53)
+                        isFilled ? Color.accent : Color.secondary.opacity(0.2))
+                    .frame(width: 50, height: 50)
                 
                 Image(systemName: isFilled ? "bookmark.slash" : "bookmark")
                     .resizable()
@@ -32,8 +31,7 @@ struct BookmarkButtonView: View {
             }
         }
         .glassEffect(.regular.interactive())
-        .padding(.leading, 8)
-        .buttonStyle(ButtonStyleInvisible())
+        .buttonStyle(.plain)
     }
 }
 

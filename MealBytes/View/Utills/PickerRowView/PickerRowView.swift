@@ -40,19 +40,18 @@ struct PickerRowView<MenuContent: View>: View {
             Color.clear
                 .frame(width: 30)
         }
-        
         .overlay(alignment: .trailing) {
             Menu(content: menuContent) {
                 ZStack {
                     Circle()
-                        .fill(Color.accent.opacity(0.2))
+                        .fill(Color.accent.opacity(0.2).gradient)
                         .frame(width: 30, height: 30)
                     Image(systemName: "ellipsis")
                         .foregroundStyle(.accent)
+                        .symbolColorRenderingMode(.gradient)
                 }
             }
-            .glassEffect(.regular.interactive())
-            .buttonStyle(ButtonStyleInvisible())
+            .buttonStyle(.plain)
         }
     }
 }

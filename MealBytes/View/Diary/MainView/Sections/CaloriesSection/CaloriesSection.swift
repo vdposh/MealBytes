@@ -110,9 +110,10 @@ struct CaloriesSection: View {
                         mainViewModel: mainViewModel
                     )
                 }
-                .buttonStyle(ButtonStyleInvisible())
+                .buttonStyle(.plain)
             }
         }
+        .transaction { $0.animation = nil }
         .listRowInsets(
             EdgeInsets(top: 20, leading: 0, bottom: 16, trailing: 0)
         )
