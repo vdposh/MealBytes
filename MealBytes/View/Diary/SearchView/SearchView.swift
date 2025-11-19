@@ -194,9 +194,7 @@ struct SearchView: View {
                     ) {
                         searchViewModel.editingState = .inactive
                     }
-                    withAnimation {
-                        editMode?.wrappedValue = .inactive
-                    }
+                    editMode?.wrappedValue = .inactive
                 }
             }
             
@@ -222,6 +220,46 @@ struct SearchView: View {
                     .frame(width: 220)
             }
             .sharedBackgroundVisibility(.hidden)
+            
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            
+            ToolbarItem(placement: .bottomBar) {
+                Button(role: .destructive) {
+                    searchViewModel.showRemoveDialog = true
+                } label: {
+                    Image(systemName: "bookmark.slash")
+                }
+                .disabled(
+                    !searchViewModel.isEditModeActive
+                    || searchViewModel.selectedItems.isEmpty
+                )
+                .confirmationDialog(
+                    searchViewModel.removeDialogMessage,
+                    isPresented: $searchViewModel.showRemoveDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button(
+                        searchViewModel.removeDialogTitle,
+                        role: .destructive
+                    ) {
+                        let idRemove = searchViewModel.selectedItems
+                        searchViewModel.foods.removeAll {
+                            idRemove.contains($0.searchFoodId)
+                        }
+                        searchViewModel.selectedItems.removeAll()
+                        withTransaction(
+                            Transaction(animation: .bouncy)
+                        ) {
+                            searchViewModel.editingState = .inactive
+                        }
+                        editMode?.wrappedValue = .inactive
+                        Task {
+                            await searchViewModel
+                                .removeBookmarks(for: idRemove)
+                        }
+                    }
+                }
+            }
             
         case .inactive:
             ToolbarItem(placement: .topBarTrailing) {
@@ -249,49 +287,6 @@ struct SearchView: View {
                 }
             }
         }
-        
-        ToolbarSpacer(.flexible, placement: .bottomBar)
-        
-        ToolbarItem(placement: .bottomBar) {
-            Button(role: .destructive) {
-                searchViewModel.showRemoveDialog = true
-            } label: {
-                Image(systemName: "bookmark.slash")
-            }
-            .opacity(searchViewModel.isEditModeActive ? 1 : 0)
-            .disabled(
-                !searchViewModel.isEditModeActive
-                || searchViewModel.selectedItems.isEmpty
-            )
-            .confirmationDialog(
-                searchViewModel.removeDialogMessage,
-                isPresented: $searchViewModel.showRemoveDialog,
-                titleVisibility: .visible
-            ) {
-                Button(searchViewModel.removeDialogTitle, role: .destructive) {
-                    let idRemove = searchViewModel.selectedItems
-                    searchViewModel.foods.removeAll {
-                        idRemove.contains($0.searchFoodId)
-                    }
-                    searchViewModel.selectedItems.removeAll()
-                    withTransaction(
-                        Transaction(animation: .bouncy)
-                    ) {
-                        searchViewModel.editingState = .inactive
-                    }
-                    withAnimation {
-                        editMode?.wrappedValue = .inactive
-                    }
-                    Task {
-                        await searchViewModel
-                            .removeBookmarks(for: idRemove)
-                    }
-                }
-            }
-        }
-        .sharedBackgroundVisibility(
-            searchViewModel.isEditModeActive ? .visible : .hidden
-        )
     }
 }
 
