@@ -42,6 +42,11 @@ struct SearchView: View {
                         .loadBookmarksSearchView(for: mealType)
                 }
             }
+            .onChange(of: searchViewModel.selectedItems) {
+                withAnimation {
+                    searchViewModel.uniqueId = UUID()
+                }
+            }
     }
     
     @ViewBuilder
@@ -188,7 +193,10 @@ struct SearchView: View {
         switch searchViewModel.editingState {
         case .active:
             ToolbarItem(placement: .topBarTrailing) {
-                Button(role: .cancel) {                    searchViewModel.selectedItems.removeAll()
+                Button(role: .cancel) {
+                    withAnimation {
+                        searchViewModel.selectedItems.removeAll()
+                    }
                     withTransaction(
                         Transaction(animation: .bouncy)
                     ) {
@@ -202,14 +210,18 @@ struct SearchView: View {
                 if searchViewModel.selectedItems.count
                     < searchViewModel.foods.count {
                     Button("Select all") {
-                        searchViewModel.selectedItems = Set(
-                            searchViewModel.foods.map { $0.searchFoodId }
-                        )
+                        withAnimation {
+                            searchViewModel.selectedItems = Set(
+                                searchViewModel.foods.map { $0.searchFoodId }
+                            )
+                        }
                     }
                     .fontWeight(.medium)
                 } else {
                     Button("Cancel select") {
-                        searchViewModel.selectedItems.removeAll()
+                        withAnimation {
+                            searchViewModel.selectedItems.removeAll()
+                        }
                     }
                     .fontWeight(.medium)
                 }
