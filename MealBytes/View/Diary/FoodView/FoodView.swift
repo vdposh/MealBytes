@@ -153,6 +153,10 @@ struct FoodView: View {
                         }
                     }
                 }
+                .onChange(of: mealType) {
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                }
             }
         } header: {
             Text(foodViewModel.food.searchFoodName)
