@@ -217,6 +217,10 @@ struct FoodView: View {
                             Task {
                                 await foodViewModel.toggleBookmarkFoodView()
                             }
+                            if !foodViewModel.isBookmarkFilled {
+                                amountFocused = false
+                                foodViewModel.normalizeAmount()
+                            }
                         },
                         isFilled: foodViewModel.isBookmarkFilled
                     )
