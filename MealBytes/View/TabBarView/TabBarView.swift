@@ -34,6 +34,15 @@ struct TabBarView: View {
                     ProfileView(profileViewModel: profileViewModel)
                 }
             }
+            
+            Tab(value: 3, role: .search) {
+                NavigationStack {
+                    SearchView(
+                        searchViewModel: searchViewModel,
+                        mealType: .breakfast
+                    )
+                }
+            }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
@@ -55,6 +64,16 @@ struct TabBarView: View {
         }
         .onChange(of: selectedTab) {
             mainViewModel.handleTabChange(to: selectedTab)
+            
+            if selectedTab == 3 {
+                searchViewModel.loadingBookmarks()
+                Task {
+                    await searchViewModel
+                        .loadBookmarksSearchView(
+                            for: searchViewModel.selectedMealType
+                        )
+                }
+            }
         }
     }
     
