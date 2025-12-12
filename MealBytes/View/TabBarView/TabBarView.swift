@@ -66,7 +66,6 @@ struct TabBarView: View {
             mainViewModel.handleTabChange(to: selectedTab)
             
             if selectedTab == 3 {
-                searchViewModel.loadingBookmarks()
                 Task {
                     await searchViewModel
                         .loadBookmarksSearchView(

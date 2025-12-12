@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var mealType: MealType
-    @Environment(\.editMode) private var editMode
+    @State private var editModeState: EditMode = .inactive
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -34,6 +34,7 @@ struct SearchView: View {
                 searchViewModel.isEditModeActive ? .hidden : .visible,
                 for: .tabBar
             )
+            .environment(\.editMode, $editModeState)
             .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
                 searchViewModel.isLoadingBookmarks = true
@@ -91,7 +92,6 @@ struct SearchView: View {
                     pageButton(direction: .previous)
                 }
             }
-            .transaction { $0.animation = nil }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
@@ -194,15 +194,11 @@ struct SearchView: View {
         case .active:
             ToolbarItem(placement: .topBarTrailing) {
                 Button(role: .cancel) {
+                    searchViewModel.editingState = .inactive
                     withAnimation {
                         searchViewModel.selectedItems.removeAll()
+                        editModeState = .inactive
                     }
-                    withTransaction(
-                        Transaction(animation: .bouncy)
-                    ) {
-                        searchViewModel.editingState = .inactive
-                    }
-                    editMode?.wrappedValue = .inactive
                 }
             }
             
@@ -260,13 +256,11 @@ struct SearchView: View {
                         searchViewModel.foods.removeAll {
                             idRemove.contains($0.searchFoodId)
                         }
-                        searchViewModel.selectedItems.removeAll()
-                        withTransaction(
-                            Transaction(animation: .bouncy)
-                        ) {
-                            searchViewModel.editingState = .inactive
+                        searchViewModel.editingState = .inactive
+                        withAnimation {
+                            searchViewModel.selectedItems.removeAll()
+                            editModeState = .inactive
                         }
-                        editMode?.wrappedValue = .inactive
                         Task {
                             await searchViewModel
                                 .removeBookmarks(for: idRemove)
@@ -289,7 +283,7 @@ struct SearchView: View {
                         Button {
                             searchViewModel.editingState = .active
                             withAnimation {
-                                editMode?.wrappedValue = .active
+                                editModeState = .active
                             }
                         } label: {
                             Label("Edit", systemImage: "pencil")
