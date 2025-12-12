@@ -26,6 +26,12 @@ struct TabBarView: View {
             Tab("Diary", systemImage: "fork.knife", value: 0) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
+                        .task {
+                            await searchViewModel
+                                .loadBookmarksSearchView(
+                                    for: searchViewModel.selectedMealType
+                                )
+                        }
                 }
             }
             
@@ -65,13 +71,11 @@ struct TabBarView: View {
         .onChange(of: selectedTab) {
             mainViewModel.handleTabChange(to: selectedTab)
             
-            if selectedTab == 3 {
-                Task {
-                    await searchViewModel
-                        .loadBookmarksSearchView(
-                            for: searchViewModel.selectedMealType
-                        )
-                }
+            Task {
+                await searchViewModel
+                    .loadBookmarksSearchView(
+                        for: searchViewModel.selectedMealType
+                    )
             }
         }
     }
