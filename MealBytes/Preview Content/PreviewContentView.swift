@@ -30,16 +30,13 @@ struct PreviewContentView {
             loginViewModel: loginViewModel,
             mainViewModel: mainViewModel
         )
-        let searchViewModel = SearchViewModel(
-            mainViewModel: mainViewModel)
         let themeManager = ThemeManager()
         
         return ContentView(
             loginViewModel: loginViewModel,
             mainViewModel: mainViewModel,
             goalsViewModel: goalsViewModel,
-            profileViewModel: profileViewModel,
-            searchViewModel: searchViewModel
+            profileViewModel: profileViewModel
         )
         .environmentObject(themeManager)
     }

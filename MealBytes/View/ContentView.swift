@@ -13,7 +13,6 @@ struct ContentView: View {
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
-    @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -27,8 +26,7 @@ struct ContentView: View {
                     loginViewModel: loginViewModel,
                     mainViewModel: mainViewModel,
                     goalsViewModel: goalsViewModel,
-                    profileViewModel: profileViewModel,
-                    searchViewModel: searchViewModel
+                    profileViewModel: profileViewModel
                 )
             case .notLoggedIn:
                 LoginView(loginViewModel: loginViewModel)

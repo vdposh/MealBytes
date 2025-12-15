@@ -13,7 +13,6 @@ struct TabBarView: View {
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
-    @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -26,12 +25,6 @@ struct TabBarView: View {
             Tab("Diary", systemImage: "fork.knife", value: 0) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
-                        .task {
-                            await searchViewModel
-                                .loadBookmarksSearchView(
-                                    for: searchViewModel.selectedMealType
-                                )
-                        }
                 }
             }
             
@@ -43,10 +36,13 @@ struct TabBarView: View {
             
             Tab(value: 3, role: .search) {
                 NavigationStack {
-                    SearchView(
-                        searchViewModel: searchViewModel,
-                        mealType: .breakfast
-                    )
+                    if let searchViewModel = mainViewModel
+                        .searchViewModel as? SearchViewModel {
+                        SearchView(
+                            searchViewModel: searchViewModel,
+                            mealType: .breakfast
+                        )
+                    }
                 }
             }
         }
@@ -70,13 +66,6 @@ struct TabBarView: View {
         }
         .onChange(of: selectedTab) {
             mainViewModel.handleTabChange(to: selectedTab)
-            
-            Task {
-                await searchViewModel
-                    .loadBookmarksSearchView(
-                        for: searchViewModel.selectedMealType
-                    )
-            }
         }
     }
     

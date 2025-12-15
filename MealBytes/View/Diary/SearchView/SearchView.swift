@@ -48,6 +48,10 @@ struct SearchView: View {
                     searchViewModel.uniqueId = UUID()
                 }
             }
+            .task {
+                searchViewModel.isLoadingBookmarks = true
+                await searchViewModel.loadBookmarksSearchView(for: mealType)
+            }
     }
     
     @ViewBuilder
