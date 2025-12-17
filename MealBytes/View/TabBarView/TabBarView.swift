@@ -33,18 +33,6 @@ struct TabBarView: View {
                     ProfileView(profileViewModel: profileViewModel)
                 }
             }
-            
-            Tab(value: 3, role: .search) {
-                NavigationStack {
-                    if let searchViewModel = mainViewModel
-                        .searchViewModel as? SearchViewModel {
-                        SearchView(
-                            searchViewModel: searchViewModel,
-                            mealType: .breakfast
-                        )
-                    }
-                }
-            }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
