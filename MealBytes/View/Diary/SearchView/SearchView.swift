@@ -49,7 +49,6 @@ struct SearchView: View {
                 }
             }
             .task {
-                searchViewModel.isLoadingBookmarks = true
                 await searchViewModel.loadBookmarksSearchView(for: mealType)
             }
     }
