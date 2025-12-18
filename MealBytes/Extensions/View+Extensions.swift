@@ -24,6 +24,7 @@ extension View {
                     Image(systemName: "wifi.slash")
                 }
                 .symbolEffect(.pulse)
+                
             case .decoding:
                 Label {
                     Text("Data processing issue")
@@ -31,14 +32,17 @@ extension View {
                     Image(systemName: "exclamationmark.triangle")
                 }
                 .symbolEffect(.rotate, options: .nonRepeating)
+                
             case .results:
                 ContentUnavailableView.search(text: query)
+                
             case .noBookmarks:
                 Label {
                     Text("No \(mealType.rawValue) bookmarks yet")
                 } icon: {
                     Image(systemName: "bookmark")
                 }
+                
             case .disconnected:
                 Label {
                     Text("Disconnected")

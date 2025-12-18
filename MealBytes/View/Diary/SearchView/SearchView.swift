@@ -171,6 +171,7 @@ struct SearchView: View {
                         Image(systemName: "chevron.right")
                         Text("Next Page")
                     }
+                    
                 case .previous:
                     HStack {
                         Image(systemName: "chevron.left")

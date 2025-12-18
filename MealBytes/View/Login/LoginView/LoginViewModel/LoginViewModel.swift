@@ -177,12 +177,14 @@ final class LoginViewModel: ObservableObject {
                     message: Text(error.errorDescription ?? ""),
                     dismissButton: .default(Text("OK"))
                 )
+                
             case .networkError:
                 return Alert(
                     title: Text("Network Error"),
                     message: Text(error.errorDescription ?? ""),
                     dismissButton: .default(Text("OK"))
                 )
+                
             default:
                 return Alert(
                     title: Text("Error"),

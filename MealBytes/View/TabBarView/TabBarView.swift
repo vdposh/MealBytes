@@ -63,8 +63,10 @@ struct TabBarView: View {
             return loginViewModel.getSessionAlert {
                 profileViewModel.signOut()
             }
+            
         case .offlineMode:
             return loginViewModel.getOfflineAlert()
+            
         case .generic:
             return loginViewModel.commonErrorAlert()
         }

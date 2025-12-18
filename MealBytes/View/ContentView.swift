@@ -19,8 +19,10 @@ struct ContentView: View {
             switch loginViewModel.loginState {
             case .signingIn:
                 LoginLoadingView()
+                
             case .loadingLogo:
                 LoginLogoView()
+                
             case .loggedIn:
                 TabBarView(
                     loginViewModel: loginViewModel,
@@ -28,6 +30,7 @@ struct ContentView: View {
                     goalsViewModel: goalsViewModel,
                     profileViewModel: profileViewModel
                 )
+                
             case .notLoggedIn:
                 LoginView(loginViewModel: loginViewModel)
             }

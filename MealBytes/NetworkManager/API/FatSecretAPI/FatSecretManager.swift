@@ -40,6 +40,7 @@ final class FatSecretManager: FatSecretManagerProtocol {
                             continuation.resume(throwing: AppError.decoding)
                         }
                     }
+                    
                 case .failure:
                     continuation.resume(throwing: AppError.networkRefresh)
                 }
