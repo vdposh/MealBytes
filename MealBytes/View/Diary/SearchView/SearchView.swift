@@ -38,6 +38,7 @@ struct SearchView: View {
             .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
                 searchViewModel.isLoadingBookmarks = true
+                
                 Task {
                     await searchViewModel
                         .loadBookmarksSearchView(for: mealType)
@@ -134,6 +135,7 @@ struct SearchView: View {
                         await searchViewModel
                             .toggleBookmarkSearchView(for: food)
                     }
+                    
                     searchViewModel.uniqueId = UUID()
                 } label: {
                     Label(
@@ -201,6 +203,7 @@ struct SearchView: View {
                     withAnimation {
                         searchViewModel.editingState = .inactive
                     }
+                    
                     searchViewModel.selectedItems.removeAll()
                     editModeState = .inactive
                 }
@@ -261,8 +264,10 @@ struct SearchView: View {
                         withAnimation {
                             searchViewModel.editingState = .inactive
                         }
+                        
                         searchViewModel.selectedItems.removeAll()
                         editModeState = .inactive
+                        
                         Task {
                             await searchViewModel
                                 .removeBookmarks(for: idRemove)
@@ -284,6 +289,7 @@ struct SearchView: View {
                     if !searchViewModel.foods.isEmpty {
                         Button {
                             searchViewModel.editingState = .active
+                            
                             withAnimation {
                                 editModeState = .active
                             }

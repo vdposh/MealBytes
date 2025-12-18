@@ -70,6 +70,7 @@ struct DailyIntakeView: View {
                     Task {
                         await dailyIntakeViewModel.saveDailyIntakeView()
                     }
+                    
                     dismiss()
                 }
                 

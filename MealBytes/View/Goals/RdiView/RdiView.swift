@@ -67,6 +67,7 @@ struct RdiView: View {
                     Task {
                         await rdiViewModel.saveRdiView()
                     }
+                    
                     dismiss()
                 }
                 

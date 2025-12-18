@@ -22,6 +22,7 @@ struct MealHeaderView: View {
             Button {
                 mainViewModel.selectedMealType = mealType
                 mainViewModel.searchViewModel.loadingBookmarks()
+                
                 Task {
                     await mainViewModel.searchViewModel
                         .loadBookmarksSearchView(for: mealType)
