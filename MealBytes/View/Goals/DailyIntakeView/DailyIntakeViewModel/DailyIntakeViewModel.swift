@@ -40,6 +40,7 @@ final class DailyIntakeViewModel: ObservableObject {
     
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        
         setupBindingsDailyIntakeView()
     }
     
@@ -89,7 +90,6 @@ final class DailyIntakeViewModel: ObservableObject {
     // MARK: - Save DailyIntake Data
     func saveDailyIntakeView() async {
         let trimmedCalories = calories.trimmedLeadingZeros
-        
         let dailyIntakeData = DailyIntake(
             calories: trimmedCalories,
             fat: fat.trimmedLeadingZeros,
@@ -153,7 +153,9 @@ final class DailyIntakeViewModel: ObservableObject {
         let protValue = Double(protein.sanitizedForDouble) ?? 0
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         
-        calories = formatter.roundedValue(totalCalories)
+        calories = totalCalories > 0
+        ? formatter.roundedValue(totalCalories)
+        : ""
     }
     
     // MARK: - Input Validation
@@ -168,9 +170,11 @@ final class DailyIntakeViewModel: ObservableObject {
             if !fat.isValidNumericInput() {
                 invalidFields.append("Fat")
             }
+            
             if !carbohydrate.isValidNumericInput() {
                 invalidFields.append("Carbohydrate")
             }
+            
             if !protein.isValidNumericInput() {
                 invalidFields.append("Protein")
             }
@@ -179,6 +183,7 @@ final class DailyIntakeViewModel: ObservableObject {
         guard !invalidFields.isEmpty else { return nil }
         
         let fieldList = formatList(invalidFields)
+        
         return "Enter a valid \(fieldList) value."
     }
     
@@ -189,6 +194,7 @@ final class DailyIntakeViewModel: ObservableObject {
         case 2: return items.joined(separator: " and ")
         default:
             let allExceptLast = items.dropLast().joined(separator: ", ")
+            
             return "\(allExceptLast) and \(items.last ?? "")"
         }
     }
@@ -199,6 +205,7 @@ final class DailyIntakeViewModel: ObservableObject {
             showAlert = true
             return false
         }
+        
         return true
     }
     
@@ -219,6 +226,7 @@ final class DailyIntakeViewModel: ObservableObject {
     // MARK: - Text
     func text(for calculatedIntake: String) -> String {
         let sanitized = calculatedIntake.sanitizedForDouble
+        
         guard let intakeValue = Double(sanitized), intakeValue > 0 else {
             return "Fill in the data"
         }
@@ -227,6 +235,10 @@ final class DailyIntakeViewModel: ObservableObject {
             guard calories.isValidNumericInput() else {
                 return "Fill in the data"
             }
+        }
+        
+        if validateInputs() != nil {
+            return "Fill in the data"
         }
         
         return intakeValue == 1
@@ -243,28 +255,27 @@ final class DailyIntakeViewModel: ObservableObject {
         for value: String,
         isCalorie: Bool = false
     ) -> Color {
+        let isValid = value.isValidNumericInput()
+        let isValidInput = validateInputs() == nil
+        
         if isCalorie && toggleOn {
-            return .secondary
+            return isValidInput ? .primary : .secondary.opacity(0.5)
         }
         
-        return value.isValidNumericInput() ? .secondary : .customRed
+        return isValid ? .secondary : .customRed
     }
     
-    var caloriesTextColor: Color {
-        switch toggleOn {
-        case true: .secondary
-        case false: .primary
+    func macronutrientTitleColor() -> Color {
+        validateInputs() == nil ? .secondary : .customRed
+    }
+    
+    func unitDescription(for value: String) -> String {
+        guard let value = Int(value.sanitizedForDouble),
+              value == 1 else {
+            return "grams"
         }
-    }
-    
-    var showStar: Bool {
-        !toggleOn
-    }
-    
-    var footerText: String {
-        toggleOn
-        ? "Calories will be calculated automatically based on the entered macronutrients."
-        : "Necessary calorie amount can be entered directly."
+        
+        return "gram"
     }
     
     // MARK: - Keyboard
@@ -311,12 +322,5 @@ extension DailyIntakeViewModel: DailyIntakeViewModelProtocol {}
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    return NavigationStack {
-        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
-    }
+    PreviewDailyIntakeView.dailyIntakeView
 }

@@ -23,20 +23,26 @@ struct NutrientSummaryRow: View {
                     protein: protein
                 )
             )
+            
             ForEach(["F", "C", "P"], id: \.self) { label in
                 NutrientLabel(
                     label: label,
                     formattedValue: nutrients[label] ?? ""
                 )
             }
+            
             if mainViewModel.canDisplayIntake() {
-                Text(mainViewModel.intakePercentageText(for: calories))
-                    .lineLimit(1)
-                    .foregroundColor(.secondary)
+                Text(mainViewModel.intakePercentage(for: calories))
+                    .foregroundStyle(Color.secondary)
                     .font(.subheadline)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
+        .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

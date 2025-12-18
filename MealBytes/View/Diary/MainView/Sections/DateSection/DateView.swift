@@ -16,7 +16,8 @@ struct DateView: View {
     var body: some View {
         VStack {
             Text(date.formatted(.dateTime.day()))
-                .foregroundColor(
+                .font(.body)
+                .foregroundStyle(
                     mainViewModel.color(
                         for: .day,
                         date: date,
@@ -27,7 +28,7 @@ struct DateView: View {
                 )
             
             Text(date.formatted(.dateTime.weekday(.short)))
-                .foregroundColor(
+                .foregroundStyle(
                     mainViewModel.color(
                         for: .weekday,
                         date: date,
@@ -37,16 +38,14 @@ struct DateView: View {
                 )
                 .font(.footnote)
         }
-        .frame(maxWidth: .infinity)
         .padding(5)
-        .background(
-            mainViewModel.color(
-                for: .day,
-                date: date,
-                isSelected: isSelected,
-                forBackground: true
-            )
-        )
-        .cornerRadius(12)
+        .frame(maxWidth: .infinity)
+        .background {
+            mainViewModel.colorBackground(for: date)
+        }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

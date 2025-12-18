@@ -67,6 +67,7 @@ final class GoalsViewModel: ObservableObject {
     func displayState(for source: IntakeSourceType) -> IntakeDisplayState {
         let isActive = self.isActive(source)
         let text: String
+        
         switch source {
         case .rdiView: text = rdiViewModel.rdiText()
         case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText()
@@ -74,7 +75,7 @@ final class GoalsViewModel: ObservableObject {
         
         return IntakeDisplayState(
             text: text,
-            color: isActive ? .customGreen : .secondary,
+            color: isActive ? .accent : .secondary,
             weight: isActive ? .medium : .regular,
             icon: isActive ? "person.fill" : "person"
         )
@@ -94,11 +95,11 @@ final class GoalsViewModel: ObservableObject {
     var currentIntakeSource: IntakeSourceType {
         IntakeSourceType(rawValue: mainViewModel.intakeSource) ?? .rdiView
     }
-}
-
-enum IntakeSourceType: String {
-    case rdiView
-    case dailyIntakeView
+    
+    enum IntakeSourceType: String {
+        case rdiView
+        case dailyIntakeView
+    }
 }
 
 extension GoalsViewModel: GoalsViewModelProtocol {}

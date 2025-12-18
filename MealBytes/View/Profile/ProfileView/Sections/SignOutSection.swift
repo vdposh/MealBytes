@@ -13,19 +13,18 @@ struct SignOutSection: View {
     
     var body: some View {
         Section {
-            SignOutButtonView(title: "Sign Out") {
+            Button("Sign Out") {
                 profileViewModel.prepareAlert(for: .signOut)
             }
+            .foregroundStyle(.customRed)
+            .frame(maxWidth: .infinity, alignment: .center)
         } footer: {
             if profileViewModel.isDeletingAccount {
-                HStack {
-                    ProgressView()
-                    Text("Deleting account...")
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
             } else {
-                HStack(spacing: 4) {
+                HStack(spacing: 5) {
                     Text("Do you want to")
                     
                     Button("delete") {
@@ -33,15 +32,17 @@ struct SignOutSection: View {
                     }
                     .font(.footnote)
                     .fontWeight(.semibold)
-                    .foregroundColor(.customRed)
-                    .buttonStyle(.borderless)
+                    .foregroundStyle(.customRed)
                     
                     Text("the account?")
                 }
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .center)
                 .frame(height: 50)
             }
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

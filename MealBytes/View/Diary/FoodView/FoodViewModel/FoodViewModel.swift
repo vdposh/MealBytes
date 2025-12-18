@@ -18,8 +18,7 @@ final class FoodViewModel: ObservableObject {
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
-    @Published var showServingDialog: Bool = false
-    @Published var showMealTypeDialog: Bool = false
+    @Published var hasLoadedDetails = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -31,7 +30,7 @@ final class FoodViewModel: ObservableObject {
     private let originalCreatedAt: Date
     private let originalMealItemId: UUID
     private let initialMeasurementDescription: String
-    private let showSaveRemoveButton: Bool
+    private let isEditingMealItem: Bool
     private var didChangeMealType: Bool {
         mealType != originalMealType
     }
@@ -39,7 +38,7 @@ final class FoodViewModel: ObservableObject {
     let food: Food
     var mealType: MealType
     
-    private let networkManager: NetworkManagerProtocol = NetworkManager()
+    private let fatSecretManager: FatSecretManagerProtocol = FatSecretManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let searchViewModel: SearchViewModelProtocol
     let mainViewModel: MainViewModelProtocol
@@ -51,7 +50,7 @@ final class FoodViewModel: ObservableObject {
         mainViewModel: MainViewModelProtocol,
         initialAmount: String = "",
         initialMeasurementDescription: String = "",
-        showSaveRemoveButton: Bool = false,
+        isEditingMealItem: Bool = false,
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
@@ -60,16 +59,14 @@ final class FoodViewModel: ObservableObject {
             unit: .empty,
             alwaysRoundUp: false
         )
-        
         self.food = food
         self.mealType = mealType
         self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
-        self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
         self.amount = roundedAmount
         self.initialMeasurementDescription = initialMeasurementDescription
-        self.showSaveRemoveButton = showSaveRemoveButton
+        self.isEditingMealItem = isEditingMealItem
         self.originalCreatedAt = originalCreatedAt
         self.originalMealItemId = originalMealItemId ?? UUID()
     }
@@ -79,22 +76,48 @@ final class FoodViewModel: ObservableObject {
     func fetchFoodDetails() async {
         isLoading = true
         
+        await searchViewModel.loadBookmarksSearchView(for: mealType)
+        
+        self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
+        
         do {
-            let fetchedFoodDetail = try await networkManager
+            let fetchedFoodDetail = try await fatSecretManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
+            
             self.foodDetail = fetchedFoodDetail
             
-            switch fetchedFoodDetail.servings.serving.first(where: {
-                $0.measurementDescription == initialMeasurementDescription
-            }) {
+            switch fetchedFoodDetail.servings.serving.first(
+                where: {
+                    $0.measurementDescription == initialMeasurementDescription
+                }
+            ) {
             case let matchingServing?:
                 self.selectedServing = matchingServing
             default:
                 self.selectedServing = fetchedFoodDetail.servings.serving.first
             }
             
-            if !showSaveRemoveButton {
+            if !isEditingMealItem {
                 setAmount(for: selectedServing)
+            }
+            
+            if isBookmarkFilled, !isEditingMealItem {
+                if let metadata = try await firestore.loadBookmarkMetadata(
+                    for: food.searchFoodId,
+                    foodName: food.searchFoodName,
+                    mealType: mealType
+                ) {
+                    amount = metadata.amount
+                    
+                    if let serving = fetchedFoodDetail.servings.serving.first(
+                        where: {
+                            $0.measurementDescription == metadata
+                                .servingDescription
+                        }
+                    ) {
+                        selectedServing = serving
+                    }
+                }
             }
         } catch {
             switch error {
@@ -103,14 +126,25 @@ final class FoodViewModel: ObservableObject {
             default:
                 self.appError = .networkRefresh
             }
+            
             isError = true
         }
+        
         isLoading = false
+    }
+    
+    func loadFoodData() async {
+        guard !hasLoadedDetails else { return }
+        
+        await MainActor.run {
+            hasLoadedDetails = true
+        }
+        await fetchFoodDetails()
     }
     
     // MARK: - Add Food Item
     func addMealItemFoodView(in section: MealType, for date: Date) async {
-        let nutrients = nutrientDetails.reduce(
+        let nutrients = nutrientValues.reduce(
             into: [NutrientType: Double]()
         ) {
             result, detail in
@@ -119,9 +153,7 @@ final class FoodViewModel: ObservableObject {
         let newItem = MealItem(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
-            portionUnit: nutrientDetails.first(where: {
-                $0.type == .servingSize
-            })?.serving.metricServingUnit ?? "",
+            portionUnit: selectedServing?.metricServingUnit ?? "",
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
@@ -135,11 +167,29 @@ final class FoodViewModel: ObservableObject {
         
         do {
             try await firestore.addMealItemFirestore(newItem)
+            
+            if isBookmarkFilled {
+                let metadata = BookmarkMetadata(
+                    foodId: food.searchFoodId,
+                    foodName: food.searchFoodName,
+                    mealType: mealType,
+                    amount: amount,
+                    servingDescription: selectedServing?
+                        .measurementDescription ?? ""
+                )
+                
+                try await firestore.saveBookmarkMetadata(
+                    metadata,
+                    for: mealType
+                )
+            }
         } catch {
             await MainActor.run {
                 appError = .network
             }
         }
+        
+        mainViewModel.triggerFoodAlert()
     }
     
     // MARK: - Update Food Item
@@ -147,13 +197,12 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing else { return }
         
         let createdAt = didChangeMealType ? Date() : originalCreatedAt
-        
         let updatedMealItem = MealItem(
             id: originalMealItemId,
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             portionUnit: selectedServing.metricServingUnit,
-            nutrients: nutrientDetails.reduce(into: [NutrientType: Double]()) {
+            nutrients: nutrientValues.reduce(into: [NutrientType: Double]()) {
                 result, detail in result[detail.type] = detail.value
             },
             measurementDescription: selectedServing.measurementDescription,
@@ -228,14 +277,35 @@ final class FoodViewModel: ObservableObject {
         await MainActor.run {
             isBookmarkFilled.toggle()
         }
+        
         await searchViewModel.toggleBookmarkSearchView(for: food)
+        
+        guard isBookmarkFilled,
+              let selectedServing else { return }
+        
+        let metadata = BookmarkMetadata(
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            mealType: mealType,
+            amount: amount,
+            servingDescription: selectedServing.measurementDescription
+        )
+        
+        do {
+            try await firestore.saveBookmarkMetadata(metadata, for: mealType)
+        } catch {
+            await MainActor.run {
+                appError = .network
+            }
+        }
     }
     
     // MARK: - Serving Selection and Amount Setting
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
-        setAmount(for: serving)
         self.unit = serving.measurementUnit
+        
+        setAmount(for: serving)
     }
     
     private func setAmount(for serving: Serving?) {
@@ -244,20 +314,24 @@ final class FoodViewModel: ObservableObject {
             return
         }
         
-        switch serving.isMetricMeasurement {
-        case true: self.amount = "100"
-        case false: self.amount = "1"
+        if serving.isMetricMeasurement {
+            self.amount = "100"
+        } else {
+            self.amount = "1"
         }
     }
     
     // MARK: - Serving Description
-    func servingDescription(for serving: Serving) -> String {
-        var description = serving.measurementDescription
+    func servingDescription(
+        for serving: Serving,
+        showUnit: Bool = false
+    ) -> String {
+        let metricUnit = serving.metricServingUnit
         let metricAmountFormatted = formatter.formattedValue(
             serving.metricServingAmount,
             unit: .empty
         )
-        let metricUnit = serving.metricServingUnit
+        var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
             return description
@@ -271,14 +345,9 @@ final class FoodViewModel: ObservableObject {
             description.replaceSubrange(range, with: "serving")
         }
         
-        return "\(description) (\(metricAmountFormatted)\(metricUnit))"
-    }
-    
-    var servingDescription: String {
-        guard let selectedServing else {
-            return "Select a Serving"
-        }
-        return servingDescription(for: selectedServing)
+        return showUnit
+        ? "\(description) (\(metricAmountFormatted) \(metricUnit))"
+        : "\(description)"
     }
     
     // MARK: - Button States
@@ -291,6 +360,7 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing, canAddFood else { return 0 }
         
         let amountValue = Double(amount.sanitizedForDouble) ?? 0
+        
         return calculateBaseAmountValue(
             amountValue,
             serving: selectedServing
@@ -305,18 +375,20 @@ final class FoodViewModel: ObservableObject {
             return 0
         }
         
-        switch serving.isMetricMeasurement {
-        case true: return amount * 0.01
-        case false: return amount
+        if serving.isMetricMeasurement {
+            return amount * 0.01
+        } else {
+            return amount
         }
     }
     
-    var compactNutrientDetails: [CompactNutrientDetail] {
+    var compactNutrientDetails: [CompactNutrientValue] {
         guard let selectedServing else { return [] }
-        return CompactNutrientDetailProvider()
+        
+        return CompactNutrientValueProvider()
             .getCompactNutrientDetails(from: selectedServing)
             .map { detail in
-                CompactNutrientDetail(
+                CompactNutrientValue(
                     type: detail.type,
                     value: detail.value * calculateSelectedAmountValue(),
                     serving: detail.serving
@@ -324,34 +396,37 @@ final class FoodViewModel: ObservableObject {
             }
     }
     
-    var nutrientDetails: [NutrientDetail] {
+    var nutrientValues: [NutrientValue] {
         guard let selectedServing else { return [] }
-        return NutrientDetailProvider()
-            .getNutrientDetails(from: selectedServing)
-            .map { detail in
-                NutrientDetail(
-                    type: detail.type,
-                    value: detail.value * calculateSelectedAmountValue(),
-                    serving: selectedServing,
-                    isSubValue: detail.isSubValue
+        
+        return NutrientValueProvider()
+            .fromServing(selectedServing)
+            .map { value in
+                NutrientValue(
+                    type: value.type,
+                    value: value.value * calculateSelectedAmountValue(),
+                    isSubValue: value.isSubValue,
+                    unit: value.unit
                 )
             }
     }
     
-    // MARK: - UI Helper
-    var viewState: FoodViewState {
-        if let error = appError {
-            return .error(error)
-        } else if isLoading {
-            return .loading
-        } else {
-            return .loaded
+    var servingUnit: String {
+        guard let serving = selectedServing else { return "" }
+        
+        let scaledAmount = serving.metricServingAmount * calculateSelectedAmountValue()
+        let unit = Formatter
+            .Unit(rawValue: serving.metricServingUnit) ?? .empty
+        
+        if serving.measurementDescription.lowercased() == "g" {
+            return Formatter.Unit.g.description(for: scaledAmount, full: true)
         }
-    }
-    
-    // MARK: - Text
-    func titleColor(for value: String) -> Color {
-        value.isValidNumericInput() ? .secondary : .customRed
+        
+        return Formatter().formattedValue(
+            scaledAmount,
+            unit: unit,
+            fullUnitName: true
+        )
     }
     
     // MARK: - Keyboard
@@ -373,19 +448,23 @@ final class FoodViewModel: ObservableObject {
             }
         }
     }
-}
-
-enum MeasurementUnit: String, CaseIterable, Identifiable {
-    case servings = "Servings"
-    case grams = "Grams"
     
-    var id: String { self.rawValue }
-}
-
-enum FoodViewState {
-    case loading
-    case error(AppError)
-    case loaded
+    // MARK: - UI Helper
+    var viewState: FoodViewState {
+        if let error = appError {
+            return .error(error)
+        } else if isLoading {
+            return .loading
+        } else {
+            return .loaded
+        }
+    }
+    
+    enum FoodViewState {
+        case loading
+        case error(AppError)
+        case loaded
+    }
 }
 
 #Preview {
@@ -393,23 +472,5 @@ enum FoodViewState {
 }
 
 #Preview {
-    NavigationStack {
-        FoodView(
-            navigationTitle: "Add to Diary",
-            food: Food(
-                searchFoodId: 3092,
-                searchFoodName: "Egg",
-                searchFoodDescription: "1 cup"
-            ),
-            searchViewModel: SearchViewModel(mainViewModel: MainViewModel()),
-            mainViewModel: MainViewModel(),
-            mealType: .breakfast,
-            amount: "1",
-            measurementDescription: "Grams",
-            showAddButton: false,
-            showSaveRemoveButton: true,
-            showMealTypeButton: true,
-            originalMealItemId: UUID()
-        )
-    }
+    PreviewFoodView.foodView
 }

@@ -18,12 +18,15 @@ protocol MainViewModelProtocol {
     func saveCurrentIntakeMainView(source: String) async
     func saveDisplayIntakeMainView(_ newValue: Bool) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
+    func triggerFoodAlert()
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType)
+    func intakePercentage(for calories: Double?) -> String
     func updateIntake(to value: String)
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
+    func canDisplayIntake() -> Bool
     func collapseAllSections()
     func resetDateToToday()
     func resetMainState()
@@ -39,13 +42,17 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var appError: AppError?
-    @Published var uniqueId = UUID()
+    @Published var uniqueId: UUID?
+    @Published var selectedMealType: MealType?
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
+    @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isExpandedCalendar: Bool = false
+    @Published var isCalendarInteractive: Bool = true
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
+    
     
     let formatter = Formatter()
     let calendar = Calendar.current
@@ -58,14 +65,17 @@ final class MainViewModel: ObservableObject {
     
     init() {
         var items = [MealType: [MealItem]]()
-        MealType.allCases.forEach { items[$0] = [] }
-        self.mealItems = items
         var summaries = [NutrientType: Double]()
-        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
-        self.nutrientSummaries = summaries
         var sections = [MealType: Bool]()
+        
+        MealType.allCases.forEach { items[$0] = [] }
+        NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         MealType.allCases.forEach { sections[$0] = false }
+        
+        self.mealItems = items
+        self.nutrientSummaries = summaries
         self.expandedSections = sections
+        
         setupBindingsMainView()
     }
     
@@ -90,6 +100,7 @@ final class MainViewModel: ObservableObject {
     private func loadMealItemsMainView() async {
         do {
             let mealItems = try await firestore.loadMealItemsFirestore()
+            
             await MainActor.run {
                 self.mealItems = Dictionary(
                     grouping: mealItems,
@@ -123,10 +134,11 @@ final class MainViewModel: ObservableObject {
     ) {
         guard let items = mealItems[mealType] else { return }
         
-        if let index = items.firstIndex(where: {
-            $0.id == updatedItem.id &&
-            calendar.isDate($0.date, inSameDayAs: date)
-        }) {
+        if let index = items.firstIndex(
+            where: { $0.id == updatedItem.id
+                && calendar.isDate($0.date, inSameDayAs: date)
+            }
+        ) {
             mealItems[mealType]?[index] = updatedItem
             recalculateNutrients(for: date)
         }
@@ -135,7 +147,10 @@ final class MainViewModel: ObservableObject {
     // MARK: - Delete Meal Item
     func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
         var items = mealItems[mealType] ?? []
-        if let itemToDelete = items.first(where: { $0.id == id }) {
+        
+        if let itemToDelete = items.first(
+            where: { $0.id == id }
+        ) {
             items.removeAll { $0.id == id }
             
             let updatedItems = items
@@ -155,6 +170,8 @@ final class MainViewModel: ObservableObject {
                 }
             }
         }
+        
+        uniqueId = UUID()
     }
     
     func deletionButtonRole(for mealType: MealType) -> ButtonRole? {
@@ -168,6 +185,7 @@ final class MainViewModel: ObservableObject {
     private func loadCurrentIntakeMainView() async {
         do {
             let fetchedData = try await firestore.loadCurrentIntakeFirestore()
+            
             await MainActor.run {
                 self.intake = fetchedData.intake
                 self.intakeSource = fetchedData.source
@@ -183,6 +201,7 @@ final class MainViewModel: ObservableObject {
     func saveCurrentIntakeMainView(source: String) async {
         do {
             let intakeData = CurrentIntake(intake: intake, source: source)
+            
             try await firestore.saveCurrentIntakeFirestore(intakeData)
             
             await MainActor.run {
@@ -199,6 +218,7 @@ final class MainViewModel: ObservableObject {
     private func loadDisplayIntakeMainView() async {
         do {
             let value = try await firestore.loadDisplayIntakeFirestore()
+            
             await MainActor.run {
                 displayIntake = value
             }
@@ -238,8 +258,10 @@ final class MainViewModel: ObservableObject {
     private func calculateIntakePercentage(from calories: Double?) -> String {
         guard let intakeValue = Double(intake),
               intakeValue > 0 else { return "0%" }
+        
         let safeCalories = calories ?? 0.0
         let percentage = round((safeCalories / intakeValue) * 100)
+        
         return "\(Int(percentage))%"
     }
     
@@ -248,6 +270,7 @@ final class MainViewModel: ObservableObject {
             intakeProgress = 0.0
             return
         }
+        
         intakeProgress = min(max(calories / intakeValue, 0), 1)
     }
     
@@ -256,7 +279,7 @@ final class MainViewModel: ObservableObject {
         updateIntakeProgress(calories: calories)
     }
     
-    func intakePercentageText(for calories: Double?) -> String {
+    func intakePercentage(for calories: Double?) -> String {
         return calculateIntakePercentage(from: calories ?? 0.0)
     }
     
@@ -281,7 +304,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Summary Calories
+    // MARK: - Summary
     func summariesForCaloriesSection() -> [NutrientType: Double] {
         mealItems.values.reduce(
             into: [NutrientType: Double]()) { result, items in
@@ -297,6 +320,32 @@ final class MainViewModel: ObservableObject {
             }
     }
     
+    func macroDistribution(from summary: [NutrientType: Double]) -> [NutrientType: Int] {
+        let values: [(NutrientType, Double)] = [
+            (.fat, summary[.fat] ?? 0),
+            (.carbohydrate, summary[.carbohydrate] ?? 0),
+            (.protein, summary[.protein] ?? 0)
+        ]
+        let total = values.reduce(0) { $0 + $1.1 }
+        
+        guard total > 0 else { return [:] }
+        
+        let sorted = values.sorted { $0.1 > $1.1 }
+        let first = sorted[0]
+        let second = sorted[1]
+        let third = sorted[2]
+        let firstPercent = Int(round((first.1 / total) * 100))
+        let secondPercent = Int(round((second.1 / total) * 100))
+        let thirdPercent = max(0, 100 - firstPercent - secondPercent)
+        let result: [NutrientType: Int] = [
+            first.0: firstPercent,
+            second.0: secondPercent,
+            third.0: thirdPercent
+        ]
+        
+        return result
+    }
+    
     // MARK: - Filter Meal Items
     func filteredMealItems(
         for mealType: MealType,
@@ -307,17 +356,34 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Filtered Nutrients
-    var filteredNutrients: [DetailedNutrient] {
-        let allNutrients = DetailedNutrientProvider()
-            .getDetailedNutrients(from: nutrientSummaries)
-        
-        switch isExpanded {
-        case true: return allNutrients
-        case false:
-            return allNutrients.filter {
-                [.calories, .fat, .protein, .carbohydrate].contains($0.type)
+    var hasMealItems: Bool {
+        mealItems.values.contains {
+            $0.contains {
+                calendar.isDate($0.date, inSameDayAs: date)
             }
+        }
+    }
+    
+    func hasMealItemsForMealType(
+        for mealType: MealType,
+        on date: Date
+    ) -> Bool {
+        let items = mealItems[mealType] ?? []
+        
+        return items.contains {
+            calendar.isDate($0.date, inSameDayAs: date)
+        }
+    }
+    
+    // MARK: - Filtered Nutrients
+    var filteredNutrientValues: [NutrientValue] {
+        let all = NutrientValueProvider()
+            .fromSummary(nutrientSummaries)
+        
+        return isExpanded
+        ? all
+        : all.filter {
+            [.calories, .fat, .protein, .carbohydrate].contains($0.type)
         }
     }
     
@@ -342,15 +408,14 @@ final class MainViewModel: ObservableObject {
             mealItem.amount,
             unit: .empty
         )
-        
         let measurement = formattedMeasurement(for: mealItem)
             .pluralized(for: mealItem.amount)
         
         if measurement == "g" || measurement == "ml" {
-            return "\(formattedServingSize(for: mealItem))\(mealItem.portionUnit)"
+            return "\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit)"
         }
         
-        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem))\(mealItem.portionUnit))"
+        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit))"
     }
     
     // MARK: - Format Calories
@@ -416,7 +481,6 @@ final class MainViewModel: ObservableObject {
         ) ?? Date()
     }
     
-    
     func dayComponent(for date: Date) -> Int {
         calendar.component(.day, from: date)
     }
@@ -440,18 +504,16 @@ final class MainViewModel: ObservableObject {
         date: Date? = nil,
         isSelected: Bool = false,
         isToday: Bool = false,
-        forBackground: Bool = false,
         forcePrimary: Bool = false
     ) -> Color {
-        if forBackground {
-            return isSelected ? .customGreen.opacity(0.2) : .clear
-        }
         if isSelected || isToday {
-            return .customGreen
+            return .accent.opacity(1)
         }
+        
         if forcePrimary {
             return .primary
         }
+        
         if let date, !calendar.isDate(
             date,
             equalTo: self.date,
@@ -459,7 +521,20 @@ final class MainViewModel: ObservableObject {
         ) {
             return .secondary
         }
+        
         return element == .day ? .primary : .secondary
+    }
+    
+    @ViewBuilder
+    func colorBackground(for date: Date) -> some View {
+        let isSelected = calendar.isDate(self.date, inSameDayAs: date)
+        
+        if isSelected {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.accent.opacity(0.2).gradient)
+        } else {
+            Color.clear
+        }
     }
     
     // MARK: - Date (calendar) Management Methods
@@ -479,12 +554,32 @@ final class MainViewModel: ObservableObject {
     }
     
     func changeMonth(by value: Int, selectedDate: inout Date) {
-        if let newDate = calendar.date(
+        guard let newMonth = calendar.date(
             byAdding: .month,
             value: value,
             to: selectedDate
-        ) {
-            selectedDate = newDate
+        ) else { return }
+        
+        let components = calendar.dateComponents(
+            [.year, .month],
+            from: newMonth
+        )
+        
+        if value > 0 {
+            if let firstDay = calendar.date(from: components) {
+                selectedDate = firstDay
+            }
+        } else {
+            if let range = calendar.range(of: .day, in: .month, for: newMonth),
+               let lastDay = calendar.date(
+                from: DateComponents(
+                    year: components.year,
+                    month: components.month,
+                    day: range.count
+                )
+               ) {
+                selectedDate = lastDay
+            }
         }
     }
     
@@ -516,22 +611,19 @@ final class MainViewModel: ObservableObject {
         let days = range.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
         }
-        
         let firstWeekday = calendar.component(.weekday, from: startOfMonth) - 1
         let adjustedWeekday = firstWeekday == 0 ? 6 : (firstWeekday - 1)
-        
         let prevDays = prevMonthRange.compactMap {
             calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)
         }.suffix(adjustedWeekday)
-        
         let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
-        
         let nextDays: [Date] = (
             fillerCount > 0
             ? Array(1...fillerCount)
             : []
         ).compactMap {
             guard let last = days.last else { return nil }
+            
             let candidate = calendar.date(byAdding: .day, value: $0, to: last)
             
             guard let date = candidate else { return nil }
@@ -546,12 +638,24 @@ final class MainViewModel: ObservableObject {
         return Array(prevDays) + days + nextDays
     }
     
+    func weekdaySymbols() -> [String] {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2
+        let symbols = calendar.shortWeekdaySymbols
+        let firstWeekdayIndex = calendar.firstWeekday - 1
+        
+        return Array(
+            symbols[firstWeekdayIndex...] + symbols[..<firstWeekdayIndex]
+        )
+    }
+    
     private func handleDateChange(from oldDate: Date, to newDate: Date) {
         guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
         
         recalculateNutrients(for: newDate)
         updateProgress()
         collapseAllSections()
+        isExpanded = false
     }
     
     // MARK: - Close sections
@@ -561,23 +665,55 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func handleTabChange(to tab: Int) {
+        if tab != 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if self.isExpandedCalendar {
+                    self.isExpandedCalendar = false
+                }
+            }
+        }
+    }
+    
     // MARK: - Reset State
     func resetMainState() {
+        selectedMealType = nil
+        
         updateIntake(to: "")
         collapseAllSections()
         resetDateToToday()
         setDisplayIntake(true)
     }
-}
-
-enum NutrientSource {
-    case summaries([NutrientType: Double])
-    case details(fat: Double, carbohydrate: Double, protein: Double)
-}
-
-enum DisplayElement {
-    case day
-    case weekday
+    
+    // MARK: - Alert
+    func triggerFoodAlert() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.isFoodAddedAlertVisible = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+                self.isFoodAddedAlertVisible = false
+            }
+        }
+    }
+    
+    // MARK: - UI Helper
+    var navigationTitle: String {
+        isExpandedCalendar ? "" : "Diary"
+    }
+    
+    var navigationSubtitle: String {
+        isExpandedCalendar ? "" : formattedDate()
+    }
+    
+    enum NutrientSource {
+        case summaries([NutrientType: Double])
+        case details(fat: Double, carbohydrate: Double, protein: Double)
+    }
+    
+    enum DisplayElement {
+        case day
+        case weekday
+    }
 }
 
 extension MainViewModel: MainViewModelProtocol {

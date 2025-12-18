@@ -15,8 +15,11 @@ struct IntakeToggleSection: View {
             Toggle(
                 "Daily Intake",
                 isOn: Binding(
-                    get: { profileViewModel.mainViewModel.displayIntake },
-                    set: { newValue in profileViewModel.mainViewModel
+                    get: {
+                        profileViewModel.mainViewModel.displayIntake
+                    },
+                    set: {
+                        newValue in profileViewModel.mainViewModel
                             .setDisplayIntake(newValue)
                         Task {
                             await profileViewModel.mainViewModel
@@ -25,9 +28,13 @@ struct IntakeToggleSection: View {
                     }
                 )
             )
-            .toggleStyle(SwitchToggleStyle(tint: .customGreen))
+            .toggleStyle(SwitchToggleStyle(tint: .accent))
         } footer: {
             Text("Enable this option to display daily intake progress directly in the Diary.")
         }
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

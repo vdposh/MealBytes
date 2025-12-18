@@ -12,58 +12,43 @@ struct MacronutrientMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        SectionStyleContainer(
-            mainContent: {
-                VStack(spacing: 15) {
-                    MacronutrientRow(
-                        textFieldBinding: $dailyIntakeViewModel.fat,
-                        focusedField: $focusedField,
-                        title: "Fat",
-                        titleColor: dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.fat
-                        ),
-                        dailyIntakeViewModel: dailyIntakeViewModel
+        if dailyIntakeViewModel.toggleOn {
+            Section {
+                MacronutrientFieldView(
+                    title: "Fat",
+                    binding: $dailyIntakeViewModel.fat,
+                    focus: $focusedField,
+                    focusCase: .fat,
+                    dailyIntakeViewModel: dailyIntakeViewModel
+                )
+                
+                MacronutrientFieldView(
+                    title: "Carbohydrate",
+                    binding: $dailyIntakeViewModel.carbohydrate,
+                    focus: $focusedField,
+                    focusCase: .carbohydrate,
+                    dailyIntakeViewModel: dailyIntakeViewModel
+                )
+                
+                MacronutrientFieldView(
+                    title: "Protein",
+                    binding: $dailyIntakeViewModel.protein,
+                    focus: $focusedField,
+                    focusCase: .protein,
+                    dailyIntakeViewModel: dailyIntakeViewModel
+                )
+            } header: {
+                Text("Macronutrients")
+                    .foregroundStyle(
+                        dailyIntakeViewModel.macronutrientTitleColor()
                     )
-                    .focused($focusedField, equals: .fat)
-
-                    MacronutrientRow(
-                        textFieldBinding: $dailyIntakeViewModel.carbohydrate,
-                        focusedField: $focusedField,
-                        title: "Carbohydrate",
-                        titleColor: dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.carbohydrate
-                        ),
-                        dailyIntakeViewModel: dailyIntakeViewModel
-                    )
-                    .focused($focusedField, equals: .carbohydrate)
-
-                    MacronutrientRow(
-                        textFieldBinding: $dailyIntakeViewModel.protein,
-                        focusedField: $focusedField,
-                        title: "Protein",
-                        titleColor: dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.protein
-                        ),
-                        dailyIntakeViewModel: dailyIntakeViewModel
-                    )
-                    .focused($focusedField, equals: .protein)
-                }
-                .id("macronutrientsField")
-            },
-            layout: .textStyle,
-            description: "Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake."
-        )
+            } footer: {
+                Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
+            }
+        }
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    return NavigationStack {
-        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
-    }
+    PreviewDailyIntakeView.dailyIntakeView
 }
-

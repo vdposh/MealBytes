@@ -12,90 +12,72 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Sign in")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                LoginTextFieldView(
-                    text: $loginViewModel.email,
-                    titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.email
-                    )
-                )
-                
-                SecureFieldView(
-                    text: $loginViewModel.password,
-                    title: "Password",
-                    placeholder: "Enter password",
-                    titleColor: loginViewModel.titleColor(
-                        for: loginViewModel.password
-                    )
-                )
-                
-                ActionButtonView(
-                    title: "Login",
-                    action: {
-                        Task {
-                            await loginViewModel.signIn()
-                        }
-                    },
-                    backgroundColor: .customGreen,
-                    isEnabled: loginViewModel.isLoginEnabled()
-                )
-                .frame(height: 50)
-            }
-            .padding(.horizontal, 30)
-            .padding(.vertical, 15)
+            loginViewContentBody
+            loginViewFooter
+        }
+        .alert(isPresented: $loginViewModel.showAlert) {
+            loginViewModel.getLoginErrorAlert()
+        }
+    }
+    
+    private var loginViewContentBody: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Sign in")
+                .font(.title)
+                .fontWeight(.bold)
             
-            VStack(spacing: 10) {
-                HStack(spacing: 4) {
-                    Text("Don't have a MealBytes account?")
-                        .foregroundColor(.secondary)
-                    
-                    NavigationLink(destination: RegisterView()) {
-                        Text("Sign up")
-                            .fontWeight(.semibold)
+            LoginTextFieldView(
+                text: $loginViewModel.email
+            )
+            
+            SecureFieldView(
+                text: $loginViewModel.password
+            )
+            
+            ActionButtonView(
+                title: "Login",
+                action: {
+                    Task {
+                        await loginViewModel.signIn()
                     }
-                }
+                },
+                isEnabled: loginViewModel.isLoginEnabled()
+            )
+        }
+        .padding(.horizontal, 30)
+        .padding(.vertical, 15)
+    }
+    
+    private var loginViewFooter: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 5) {
+                Text("Don't have a MealBytes account?")
+                    .foregroundStyle(.secondary)
                 
-                HStack(spacing: 4) {
-                    Text("Forgot the password?")
-                        .foregroundColor(.secondary)
-                    
-                    NavigationLink(destination: ResetView()) {
-                        Text("Reset")
-                            .fontWeight(.semibold)
-                    }
+                NavigationLink("Sign up") {
+                    RegisterView()
                 }
+                .fontWeight(.semibold)
             }
-            .font(.footnote)
-            .alert(isPresented: $loginViewModel.showAlert) {
-                loginViewModel.getLoginErrorAlert()
+            
+            HStack(spacing: 5) {
+                Text("Forgot the password?")
+                    .foregroundStyle(.secondary)
+                
+                NavigationLink("Reset") {
+                    ResetView()
+                }
+                .fontWeight(.semibold)
             }
         }
+        .font(.footnote)
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    let rdiViewModel = RdiViewModel(
-        mainViewModel: mainViewModel
-    )
-    let goalsViewModel = GoalsViewModel(
-        mainViewModel: mainViewModel,
-        dailyIntakeViewModel: dailyIntakeViewModel,
-        rdiViewModel: rdiViewModel
-    )
-    let loginViewModel = LoginViewModel(
-        mainViewModel: mainViewModel,
-        goalsViewModel: goalsViewModel
-    )
-    
-    NavigationStack {
-        LoginView(loginViewModel: loginViewModel)
-    }
+    PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }

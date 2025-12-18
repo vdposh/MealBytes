@@ -9,40 +9,30 @@ import SwiftUI
 
 struct ActivitySection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
-
+    
     var body: some View {
-        SectionStyleContainer(
-            mainContent: {
-                HStack {
-                    Text("Activity")
-
-                    Picker(
-                        "Activity",
-                        selection: $rdiViewModel.selectedActivity
-                    ) {
-                        if rdiViewModel.selectedActivity == .notSelected {
-                            Text("Not Selected").tag(Activity.notSelected)
-                        }
-                        ForEach(
-                            Activity.allCases.filter { $0 != .notSelected },
-                            id: \.self
-                        ) { level in
-                            Text(level.rawValue).tag(level)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .accentColor(rdiViewModel.selectedActivity.accentColor)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+        Section {
+            Picker(
+                "Activity",
+                selection: $rdiViewModel.selectedActivity
+            ) {
+                if rdiViewModel.selectedActivity == .notSelected {
+                    Text("Not Selected").tag(Activity.notSelected)
                 }
-            },
-            layout: .pickerStyle,
-            description: "Select the necessary indicator based on daily activity level.",
-            useCompactVerticalPadding: true
-        )
-        .id("ageField")
+                
+                ForEach(
+                    Activity.allCases.filter { $0 != .notSelected },
+                    id: \.self
+                ) { level in
+                    Text(level.rawValue).tag(level)
+                }
+            }
+            .foregroundStyle(rdiViewModel.selectedActivity.selectedColor)
+        } footer: {
+            Text("Select the necessary indicator based on daily activity level.")
+        }
     }
 }
-
 
 enum Activity: String, CaseIterable {
     case notSelected = "Not selected"
@@ -52,19 +42,14 @@ enum Activity: String, CaseIterable {
     case veryActive = "Very Active"
     case extraActive = "Extra Active"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        default: return .customGreen
+        case .notSelected: .customRed
+        default: .primary
         }
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-    
-    return NavigationStack {
-        RdiView(rdiViewModel: rdiViewModel)
-    }
+    PreviewRdiView.rdiView
 }

@@ -15,41 +15,41 @@ struct RdiSectionView: View {
             if goalsViewModel.isDataLoaded {
                 if let rdiViewModel = goalsViewModel
                     .rdiViewModel as? RdiViewModel {
-                    NavigationLink(
-                        destination: RdiView(rdiViewModel: rdiViewModel)
-                    ) {
+                    NavigationLink {
+                        RdiView(rdiViewModel: rdiViewModel)
+                    } label: {
                         let rdiState = goalsViewModel.displayState(
                             for: .rdiView
                         )
                         
                         LabeledContent {
                             Text(rdiState.text)
-                                .foregroundColor(rdiState.color)
+                                .foregroundStyle(rdiState.color)
                                 .fontWeight(rdiState.weight)
                         } label: {
-                            HStack {
-                                Image(systemName: rdiState.icon)
-                                    .foregroundStyle(.customGreen)
+                            Label {
                                 Text("RDI")
+                            } icon: {
+                                Image(systemName: rdiState.icon)
+                                    .foregroundStyle(.accent)
                             }
                         }
+                        .labelIconToTitleSpacing(10)
                     }
                     .disabled(!goalsViewModel.isDataLoaded)
                 }
             } else {
                 LabeledContent {
-                    HStack {
-                        LoadingView()
-                        Text("Loading...")
-                            .foregroundColor(.secondary)
-                    }
+                    LoadingView(showLabel: true)
                 } label: {
-                    HStack {
-                        Image(systemName: "person")
-                            .foregroundStyle(.customGreen)
+                    Label {
                         Text("RDI")
+                    } icon: {
+                        Image(systemName: "person")
+                            .foregroundStyle(.accent)
                     }
                 }
+                .labelIconToTitleSpacing(10)
             }
         } footer: {
             Text("MealBytes calculates the Recommended Daily Intake (RDI) to provide a daily calorie target tailored to help achieve the desired weight.")

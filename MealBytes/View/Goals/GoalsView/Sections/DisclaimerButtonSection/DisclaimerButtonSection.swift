@@ -17,7 +17,6 @@ struct DisclaimerButtonSection: View {
             }
             .font(.subheadline)
             .buttonStyle(.borderless)
-            
             .sheet(isPresented: $showDisclaimer) {
                 DisclaimerSheetView()
             }
@@ -29,19 +28,5 @@ struct DisclaimerButtonSection: View {
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    let rdiViewModel = RdiViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    GoalsView(
-        goalsViewModel: GoalsViewModel(
-            mainViewModel: mainViewModel,
-            dailyIntakeViewModel: dailyIntakeViewModel,
-            rdiViewModel: rdiViewModel
-        )
-    )
+    PreviewGoalsView.goalsView
 }

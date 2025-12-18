@@ -12,85 +12,60 @@ struct MainView: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        ZStack(alignment: .top) {
+        mainViewContentBody
+            .navigationTitle(mainViewModel.navigationTitle)
+            .navigationSubtitle(mainViewModel.navigationSubtitle)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                mainViewToolbar
+            }
+            .task {
+                await mainViewModel.loadMainData()
+            }
+    }
+    
+    private var mainViewContentBody: some View {
+        Form {
+            caloriesSection
+            mealSections
+            detailedInformationSection
+        }
+        .environment(\.defaultMinListRowHeight, 0)
+        .scrollIndicators(.hidden)
+        .listSectionSpacing(15)
+        .overlay(alignment: .top) {
             if mainViewModel.isExpandedCalendar {
-                VStack {
-                    datePickerView
-                }
-                .zIndex(2)
-                
                 CalendarButtonView {
-                    mainViewModel.isExpandedCalendar = false
-                }
-                .zIndex(1)
-            }
-            
-            List {
-                dateSection
-                caloriesSection
-                mealSections
-                detailedInformationSection
-            }
-            .scrollIndicators(.hidden)
-            .listSectionSpacing(15)
-        }
-        .navigationBarTitle("Diary", displayMode: .inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Button {
-                    mainViewModel.isExpandedCalendar.toggle()
-                } label: {
-                    Text(mainViewModel.formattedDate())
-                        .font(.headline)
-                }
-            }
-        }
-        .task {
-            await mainViewModel.loadMainData()
-        }
-    }
-    
-    private var datePickerView: some View {
-        VStack {
-            CalendarView(
-                selectedDate: $mainViewModel.date,
-                isPresented: $mainViewModel.isExpandedCalendar,
-                mainViewModel: mainViewModel
-            )
-        }
-        .background(Color(.systemBackground))
-    }
-    
-    private var dateSection: some View {
-        Section {
-            HStack {
-                ForEach(-3...3, id: \.self) { offset in
-                    Button {
-                        mainViewModel.date = mainViewModel
-                            .dateByAddingOffset(for: offset)
-                    } label: {
-                        dateView(
-                            for: mainViewModel.dateByAddingOffset(for: offset)
-                        )
+                    mainViewModel.isCalendarInteractive = false
+                    
+                    withAnimation {
+                        mainViewModel.isExpandedCalendar = false
+                        mainViewModel.isCalendarInteractive = true
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }
-        .listRowInsets(EdgeInsets())
-        .listRowBackground(Color.clear)
-    }
-    
-    private func dateView(for date: Date) -> some View {
-        DateView(
-            date: date,
-            isToday: Calendar.current.isDate(date, inSameDayAs: Date()),
-            isSelected: Calendar.current.isDate(
-                date,
-                inSameDayAs: mainViewModel.date
-            ),
-            mainViewModel: mainViewModel
+        .overlay(alignment: .top) {
+            if mainViewModel.isExpandedCalendar {
+                CalendarView(mainViewModel: mainViewModel)
+                    .allowsHitTesting(mainViewModel.isCalendarInteractive)
+            }
+        }
+        .animation(
+            .bouncy(duration: 0.4),
+            value: mainViewModel.isExpandedCalendar
         )
+        .navigationDestination(
+            item: $mainViewModel.selectedMealType
+        ) { mealType in
+            if let searchViewModel = mainViewModel
+                .searchViewModel as? SearchViewModel {
+                SearchView(
+                    searchViewModel: searchViewModel,
+                    mealType: mealType
+                )
+            }
+        }
     }
     
     private var caloriesSection: some View {
@@ -116,19 +91,110 @@ struct MainView: View {
     }
     
     private var detailedInformationSection: some View {
-        DetailedInformationSection(
-            isExpanded: $mainViewModel.isExpanded,
-            nutrients: mainViewModel.filteredNutrients
-        )
+        if mainViewModel.hasMealItems {
+            NutrientValueSection(
+                nutrients: mainViewModel.filteredNutrientValues,
+                isExpandable: $mainViewModel.isExpanded,
+                macroDistribution: mainViewModel
+                    .macroDistribution(from: mainViewModel.nutrientSummaries),
+                intake: mainViewModel
+                    .canDisplayIntake() ? mainViewModel.intake : nil,
+                intakePercentage: mainViewModel.canDisplayIntake()
+                ? mainViewModel
+                    .intakePercentage(
+                        for: mainViewModel.nutrientSummaries[.calories]
+                    )
+                : nil
+            )
+        } else {
+            NutrientValueSection(
+                nutrients: NutrientValueProvider().placeholderMacros(),
+                isExpandable: nil,
+                emptyMealItems: true
+            )
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var mainViewToolbar: some ToolbarContent {
+        if mainViewModel.isExpandedCalendar {
+            ToolbarItemGroup {
+                Button {
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        mainViewModel.changeMonth(
+                            by: -1,
+                            selectedDate: &mainViewModel.date
+                        )
+                    }
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                
+                Button {
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        mainViewModel.changeMonth(
+                            by: 1,
+                            selectedDate: &mainViewModel.date
+                        )
+                    }
+                } label: {
+                    Image(systemName: "chevron.right")
+                }
+            }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Today") {
+                    withAnimation {
+                        mainViewModel.isCalendarInteractive = false
+                    }
+                    
+                    withTransaction(
+                        Transaction(animation: .bouncy)
+                    ) {
+                        mainViewModel.selectDate(
+                            Date(),
+                            selectedDate: &mainViewModel.date,
+                            isPresented: &mainViewModel.isExpandedCalendar
+                        )
+                    }
+                    
+                    withAnimation {
+                        mainViewModel.isCalendarInteractive = true
+                    }
+                }
+                .font(.headline)
+            }
+        }
+        
+        ToolbarSpacer(.fixed)
+        
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if mainViewModel.isExpandedCalendar {
+                Button(role: .cancel) {
+                    mainViewModel.isCalendarInteractive = false
+                    
+                    withAnimation {
+                        mainViewModel.isExpandedCalendar = false
+                        mainViewModel.isCalendarInteractive = true
+                    }
+                }
+            } else {
+                Button {
+                    withAnimation {
+                        mainViewModel.isExpandedCalendar = true
+                    }
+                } label: {
+                    Image(systemName: "calendar")
+                }
+            }
+        }
     }
 }
 
 #Preview {
     PreviewContentView.contentView
-}
-
-#Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
 }

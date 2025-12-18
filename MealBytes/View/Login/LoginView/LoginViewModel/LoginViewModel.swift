@@ -90,13 +90,14 @@ final class LoginViewModel: ObservableObject {
                 password: password
             )
             
-            
             if !user.isEmailVerified {
                 await MainActor.run {
                     self.error = .userNotVerified
                     self.isSignIn = false
+                    
                     updateAlertState()
                 }
+                
                 return
             }
             
@@ -109,8 +110,10 @@ final class LoginViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = .networkError
                     self.isSignIn = false
+                    
                     updateAlertState()
                 }
+                
                 return
             }
             
@@ -119,14 +122,17 @@ final class LoginViewModel: ObservableObject {
             await MainActor.run {
                 self.error = nil
                 self.isSignIn = false
-                updateAlertState()
+                
                 isLoggedIn = true
                 showErrorAlert = false
+                
+                updateAlertState()
             }
         } catch {
             await MainActor.run {
                 self.error = handleError(error as NSError)
                 self.isSignIn = false
+                
                 updateAlertState()
             }
         }
@@ -145,11 +151,13 @@ final class LoginViewModel: ObservableObject {
     func resetLoginState() {
         email = ""
         password = ""
+        
+        error = nil
+        
         showAlert = false
         showErrorAlert = false
         isLoggedIn = false
         isSignIn = false
-        error = nil
         
         mainViewModel.resetMainState()
         goalsViewModel.clearGoalsView()
@@ -169,12 +177,14 @@ final class LoginViewModel: ObservableObject {
                     message: Text(error.errorDescription ?? ""),
                     dismissButton: .default(Text("OK"))
                 )
+                
             case .networkError:
                 return Alert(
                     title: Text("Network Error"),
                     message: Text(error.errorDescription ?? ""),
                     dismissButton: .default(Text("OK"))
                 )
+                
             default:
                 return Alert(
                     title: Text("Error"),
@@ -224,11 +234,6 @@ final class LoginViewModel: ObservableObject {
         return !email.isEmpty && !password.isEmpty
     }
     
-    // MARK: - Color
-    func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .secondary
-    }
-    
     // MARK: - Error
     private func handleError(_ error: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: error.code) {
@@ -239,6 +244,7 @@ final class LoginViewModel: ObservableObject {
             default: return .incorrectCredentials
             }
         }
+        
         return .unknownError
     }
 }
@@ -258,4 +264,8 @@ enum AlertTypeLoginView {
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }

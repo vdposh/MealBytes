@@ -11,42 +11,66 @@ struct MealHeaderView: View {
     let mealType: MealType
     let title: String
     let iconName: String
-    let color: Color
     let calories: Double
     let fat: Double
     let protein: Double
     let carbohydrate: Double
-    let foodItems: [MealItem]
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
-            ZStack {
-                Button {
-                    Task {
-                        await mainViewModel.searchViewModel
-                            .loadBookmarksData(for: mealType)
-                    }
-                } label: {
-                    HStack {
-                        VStack(spacing: 15) {
-                            HStack {
-                                Image(systemName: iconName)
-                                    .frame(width: 22)
-                                    .foregroundColor(color)
+            Button {
+                mainViewModel.selectedMealType = mealType
+                mainViewModel.searchViewModel.loadingBookmarks()
+                
+                Task {
+                    await mainViewModel.searchViewModel
+                        .loadBookmarksSearchView(for: mealType)
+                }
+            } label: {
+                HStack(spacing: 10) {
+                    VStack(spacing: 15) {
+                        HStack {
+                            Label {
                                 Text(title)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                                    .foregroundStyle(Color.primary)
                                     .frame(
                                         maxWidth: .infinity,
                                         alignment: .leading
                                     )
+                            } icon: {
+                                Image(systemName: mealType.iconName)
+                                    .foregroundStyle(
+                                        mealType.foregroundStyle.0,
+                                        mealType.foregroundStyle.1
+                                    )
+                                    .symbolRenderingMode(
+                                        mealType.renderingMode
+                                    )
+                                    .symbolColorRenderingMode(.gradient)
+                            }
+                            .labelIconToTitleSpacing(10)
+                            
+                            if mainViewModel
+                                .hasMealItemsForMealType(
+                                    for: mealType,
+                                    on: mainViewModel.date
+                                ) {
                                 Text(mainViewModel.formattedCalories(calories))
-                                    .lineLimit(1)
+                                    .layoutPriority(1)
                                     .font(.callout)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.primary)
+                                    .foregroundStyle(Color.primary)
                             }
+                        }
+                        .lineLimit(1)
+                        
+                        if mainViewModel
+                            .hasMealItemsForMealType(
+                                for: mealType,
+                                on: mainViewModel.date
+                            ) {
                             NutrientSummaryRow(
                                 fat: fat,
                                 carbohydrate: carbohydrate,
@@ -55,55 +79,40 @@ struct MealHeaderView: View {
                                 mainViewModel: mainViewModel
                             )
                         }
-                        .padding(.vertical, 5)
-                        .padding(.trailing, 5)
-                        
-                        Image(systemName: "plus")
-                            .fontWeight(.bold)
                     }
-                }
-                .background {
-                    if let searchModel = mainViewModel
-                        .searchViewModel as? SearchViewModel {
-                        NavigationLink(
-                            destination: SearchView(
-                                searchViewModel: searchModel,
-                                mealType: mealType
-                            )
-                        ) {
-                            EmptyView()
-                        }
-                        .opacity(0)
-                    } else {
-                        EmptyView()
-                    }
+                    
+                    Image(systemName: "plus")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.accent)
+                        .symbolColorRenderingMode(.gradient)
                 }
             }
+            .transaction { $0.animation = nil }
+            
+            let filteredItems = mainViewModel.filteredMealItems(
+                for: mealType,
+                on: mainViewModel.date
+            )
             
             if mainViewModel.expandedSections[mealType] == true {
-                let foodItems = mainViewModel.filteredMealItems(
-                    for: mealType,
-                    on: mainViewModel.date
-                )
-                
-                if !foodItems.isEmpty {
-                    ForEach(foodItems, id: \.id) { item in
+                if !filteredItems.isEmpty {
+                    ForEach(filteredItems, id: \.id) { item in
                         FoodItemRow(
                             mealItem: item,
                             mealType: mealType,
                             mainViewModel: mainViewModel
                         )
                         .swipeActions(allowsFullSwipe: false) {
-                            Button(role: mainViewModel.deletionButtonRole(
-                                for: mealType
-                            )) {
+                            Button(
+                                "Delete",
+                                systemImage: "trash",
+                                role: mainViewModel
+                                    .deletionButtonRole(for: mealType)
+                            ) {
                                 mainViewModel.deleteMealItemMainView(
                                     with: item.id,
                                     for: mealType
                                 )
-                                mainViewModel.uniqueId = UUID()
-                            } label: {
-                                Image(systemName: "trash")
                             }
                             .tint(.red)
                         }
@@ -111,13 +120,22 @@ struct MealHeaderView: View {
                 }
             }
             
-            if !foodItems.isEmpty {
-                ShowHideButtonView(isExpanded: Binding(
-                    get: { mainViewModel.expandedSections[mealType] ?? false },
-                    set: { mainViewModel.expandedSections[mealType] = $0 }
-                ))
+            if !filteredItems.isEmpty {
+                ShowHideButtonView(
+                    isExpanded: Binding(
+                        get: {
+                            mainViewModel
+                                .expandedSections[mealType] ?? false
+                        },
+                        set: {
+                            mainViewModel
+                                .expandedSections[mealType] = $0
+                        }
+                    )
+                )
             }
         }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 }
 

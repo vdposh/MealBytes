@@ -10,6 +10,7 @@ import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
+    @Published var uniqueId = UUID()
     @Published var password: String = ""
     @Published var newPassword: String = ""
     @Published var confirmPassword: String = ""
@@ -39,6 +40,7 @@ final class ProfileViewModel: ObservableObject {
             await MainActor.run {
                 email = nil
             }
+            
             return
         }
         
@@ -68,6 +70,8 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Delete Account
     private func deleteAccount(email: String, password: String) async {
+        uniqueId = UUID()
+        
         do {
             try await firebaseAuth.reauthenticateAuth(
                 email: email,
@@ -96,6 +100,8 @@ final class ProfileViewModel: ObservableObject {
         currentPassword: String,
         newPassword: String
     ) async throws {
+        uniqueId = UUID()
+        
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,
             newPassword: newPassword
@@ -119,15 +125,14 @@ final class ProfileViewModel: ObservableObject {
             signOut()
             
         case .deleteAccount:
-            await MainActor.run {
-                isDeletingAccount = true
-            }
+            isDeletingAccount = true
             
             guard let email = email, !email.isEmpty else {
                 await showOverrideMessage(
                     ProfileMessage.emailMissing.text,
                     for: .deleteAccount
                 )
+                
                 return
             }
             
@@ -138,7 +143,6 @@ final class ProfileViewModel: ObservableObject {
                 )
                 
                 await deleteAccount(email: email, password: password)
-                
                 await MainActor.run {
                     isDeletingAccount = false
                 }
@@ -150,15 +154,14 @@ final class ProfileViewModel: ObservableObject {
             }
             
         case .changePassword:
-            await MainActor.run {
-                isPasswordChanging = true
-            }
+            isPasswordChanging = true
             
             if let validationError = validatePassword() {
                 await showOverrideMessage(
                     validationError.message,
                     for: .changePassword
                 )
+                
                 return
             }
             
@@ -167,6 +170,7 @@ final class ProfileViewModel: ObservableObject {
                     currentPassword: password,
                     newPassword: newPassword
                 )
+                
                 await showOverrideMessage(
                     ProfileMessage.passwordUpdateSuccess.text,
                     for: .changePassword,
@@ -185,9 +189,11 @@ final class ProfileViewModel: ObservableObject {
         if newPassword.count < 6 {
             return .tooShort
         }
+        
         if newPassword != confirmPassword {
             return .mismatch
         }
+        
         return nil
     }
     
@@ -213,9 +219,11 @@ final class ProfileViewModel: ObservableObject {
         password = ""
         newPassword = ""
         confirmPassword = ""
+        
         alertContent = nil
-        showAlert = false
         appError = nil
+        
+        showAlert = false
         isPasswordChanging = false
         isDeletingAccount = false
         
@@ -223,10 +231,6 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-    var isLoading: Bool {
-        isDeletingAccount || isPasswordChanging
-    }
-    
     var alertTitle: String {
         alertContent?.title ?? "Alert"
     }
@@ -237,6 +241,10 @@ final class ProfileViewModel: ObservableObject {
     
     var destructiveTitle: String {
         alertContent?.destructiveTitle ?? "Confirm"
+    }
+    
+    var isLoading: Bool {
+        isPasswordChanging || isDeletingAccount
     }
 }
 

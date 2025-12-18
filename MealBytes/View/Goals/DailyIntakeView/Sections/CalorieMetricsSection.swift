@@ -12,43 +12,30 @@ struct CalorieMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        SectionStyleContainer(
-            mainContent: {
-                HStack(alignment: .bottom) {
+        if !dailyIntakeViewModel.toggleOn {
+            Section {
+                HStack {
                     ServingTextFieldView(
                         text: $dailyIntakeViewModel.calories,
-                        title: "Calories",
-                        showStar: dailyIntakeViewModel.showStar,
+                        placeholder: "Calories amount",
                         keyboardType: .numberPad,
                         inputMode: .integer,
-                        titleColor: dailyIntakeViewModel.titleColor(
-                            for: dailyIntakeViewModel.calories,
-                            isCalorie: true
-                        ),
-                        textColor: dailyIntakeViewModel.caloriesTextColor,
                         maxIntegerDigits: 5
                     )
                     .focused(isFocused)
-                    .padding(.trailing, 5)
-                    
-                    Text("kcal")
-                        .foregroundColor(dailyIntakeViewModel.caloriesTextColor)
                 }
-                .id("macronutrientsField")
-            },
-            layout: .textStyle,
-            description: (dailyIntakeViewModel.footerText)
-        )
+            } header: {
+                Text("Calories")
+                    .foregroundStyle(
+                        dailyIntakeViewModel
+                            .titleColor(for: dailyIntakeViewModel.calories))
+            } footer: {
+                Text("Necessary calorie amount can be entered directly.")
+            }
+        }
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    return NavigationStack {
-        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
-    }
+    PreviewDailyIntakeView.dailyIntakeView
 }

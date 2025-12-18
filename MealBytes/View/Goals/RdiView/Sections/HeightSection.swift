@@ -12,52 +12,39 @@ struct HeightSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleContainer(
-            mainContent: {
-                ServingTextFieldView(
-                    text: $rdiViewModel.height,
-                    title: "Height",
-                    titleColor: rdiViewModel.fieldTitleColor(
-                        for: rdiViewModel.height
-                    ),
-                    maxIntegerDigits: 3
+        Section {
+            ServingTextFieldView(
+                text: $rdiViewModel.height,
+                placeholder: "Height value",
+                maxIntegerDigits: 3
+            )
+            .focused($focusedField, equals: .height)
+            
+            Picker(
+                "Height unit",
+                selection: $rdiViewModel.selectedHeightUnit
+            ) {
+                if rdiViewModel.selectedHeightUnit == .notSelected {
+                    Text("Not Selected")
+                        .tag(HeightUnit.notSelected)
+                }
+                
+                ForEach(
+                    HeightUnit.allCases.filter { $0 != .notSelected },
+                    id: \.self
+                ) { unit in
+                    Text(unit.rawValue).tag(unit)
+                }
+            }
+            .foregroundStyle(rdiViewModel.selectedHeightUnit.selectedColor)
+        } header: {
+            Text("Height")
+                .foregroundStyle(
+                    rdiViewModel.fieldTitleColor(for: rdiViewModel.height)
                 )
-                .focused($focusedField, equals: .height)
-            },
-            secondaryContent: {
-                AnyView(
-                    HStack {
-                        Text("Height Unit")
-                        
-                        Picker(
-                            "Height Unit",
-                            selection: $rdiViewModel.selectedHeightUnit
-                        ) {
-                            if rdiViewModel
-                                .selectedHeightUnit == .notSelected {
-                                Text("Not Selected")
-                                    .tag(HeightUnit.notSelected)
-                            }
-                            ForEach(
-                                HeightUnit.allCases.filter {
-                                    $0 != .notSelected },
-                                id: \.self
-                            ) { unit in
-                                Text(unit.rawValue).tag(unit)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .accentColor(
-                            rdiViewModel.selectedHeightUnit.accentColor
-                        )
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                )
-            },
-            layout: .pickerUnitStyle,
-            description: "Enter height and, if necessary, adjust the unit (centimeters or inches)."
-        )
-        .id("heightField")
+        } footer: {
+            Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
+        }
     }
 }
 
@@ -66,19 +53,14 @@ enum HeightUnit: String, CaseIterable {
     case cm = "cm"
     case inches = "inches"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        default: return .customGreen
+        case .notSelected: .customRed
+        default: .primary
         }
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-    
-    return NavigationStack {
-        RdiView(rdiViewModel: rdiViewModel)
-    }
+    PreviewRdiView.rdiView
 }

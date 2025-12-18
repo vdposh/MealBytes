@@ -1,0 +1,65 @@
+//
+//  FatSecretAPI.swift
+//  MealBytes
+//
+//  Created by Vlad Posherstnik on 04/03/2025.
+//
+
+import SwiftUI
+import Moya
+
+extension FatSecretAPI: TargetType {
+    var baseURL: URL {
+        URL(string: "https://platform.fatsecret.com/rest")!
+    }
+    
+    var path: String {
+        switch self {
+        case .searchFoods: "/foods/search/v1"
+        case .getFoodDetails: "/food/v4"
+        }
+    }
+    
+    var method: Moya.Method {
+        .get
+    }
+    
+    var task: Task {
+        let parameters: [String: Any]
+        
+        switch self {
+        case .searchFoods(let query, let page):
+            parameters = [
+                "format": format,
+                "search_expression": query,
+                "page_number": page
+            ]
+            
+        case .getFoodDetails(let foodID):
+            parameters = [
+                "format": format,
+                "food_id": foodID
+            ]
+        }
+        
+        return .requestParameters(
+            parameters: parameters,
+            encoding: URLEncoding.queryString
+        )
+    }
+    
+    var headers: [String: String]? {
+        return [
+            "Authorization": "Bearer \(TokenManager.shared.accessToken ?? "")"
+        ]
+    }
+    
+    var format: String {
+        "json"
+    }
+}
+
+enum FatSecretAPI {
+    case searchFoods(query: String, page: Int)
+    case getFoodDetails(foodID: Int)
+}

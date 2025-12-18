@@ -8,24 +8,21 @@
 import SwiftUI
 
 struct OverviewDailyIntakeSection: View {
+    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        SectionStyleContainer(
-            mainContent: {
-                EmptyView()
-            },
-            title: "Set daily intake by entering calories directly or calculate it based on macronutrient distribution."
+        OverviewIntake(
+            valueText: dailyIntakeViewModel.text(for: dailyIntakeViewModel.calories),
+            color: dailyIntakeViewModel.titleColor(
+                for: dailyIntakeViewModel.calories,
+                isCalorie: true
+            ),
+            footerText: "Set daily intake by entering calories directly or calculate it based on macronutrient distribution.",
+            showValue: dailyIntakeViewModel.toggleOn
         )
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let dailyIntakeViewModel = DailyIntakeViewModel(
-        mainViewModel: mainViewModel
-    )
-    
-    return NavigationStack {
-        DailyIntakeView(dailyIntakeViewModel: dailyIntakeViewModel)
-    }
+    PreviewDailyIntakeView.dailyIntakeView
 }

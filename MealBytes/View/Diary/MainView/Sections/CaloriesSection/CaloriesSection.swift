@@ -13,62 +13,65 @@ struct CaloriesSection: View {
     
     var body: some View {
         Section {
-            VStack(spacing: 20) {
-                VStack(spacing: 8) {
-                    HStack {
-                        Text("Calories")
-                            .font(.subheadline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        HStack(spacing: 5) {
-                            Text(
-                                mainViewModel.formatter.formattedValue(
-                                    summaries[.calories],
-                                    unit: .empty,
-                                    alwaysRoundUp: true
-                                )
-                            )
-                            .lineLimit(1)
-                            
-                            if mainViewModel.canDisplayIntake() {
-                                Text("/")
-                                    .foregroundStyle(.secondary)
-                                Text(mainViewModel.intake)
-                                    .lineLimit(1)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .font(.callout)
-                        .fontWeight(.medium)
-                    }
+            VStack(spacing: 10) {
+                HStack {
+                    Text("Calories")
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
+                    HStack(spacing: 5) {
+                        Text(
+                            mainViewModel.formatter.formattedValue(
+                                summaries[.calories],
+                                unit: .empty,
+                                alwaysRoundUp: true
+                            )
+                        )
+                        
+                        if mainViewModel.canDisplayIntake() {
+                            Text("/")
+                                .foregroundStyle(.secondary)
+                            Text(mainViewModel.intake)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .layoutPriority(1)
+                    .font(.callout)
+                    .fontWeight(.medium)
+                }
+                
+                if mainViewModel.hasMealItems {
                     if mainViewModel.canDisplayIntake() {
                         ProgressView(value: mainViewModel.intakeProgress)
                             .progressViewStyle(.linear)
-                            .tint(.customGreen)
-                            .background(Color.customGreen.opacity(0.2))
                             .scaleEffect(x: 1, y: 2, anchor: .center)
                             .frame(height: 6)
-                            .cornerRadius(4)
-                            .padding(.bottom, 10)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .tint(.accent)
                     }
+                    
                     HStack {
                         let nutrients = mainViewModel.formattedNutrients(
                             source: .summaries(summaries)
                         )
-                        ForEach(["Fat", "Carbs", "Protein"],
-                                id: \.self) { key in
+                        
+                        ForEach(
+                            ["Fat", "Carbs", "Protein"],
+                            id: \.self
+                        ) { key in
                             NutrientLabel(
                                 label: String(key.prefix(1)),
                                 formattedValue: nutrients[key] ?? ""
                             )
                         }
+                        
                         if mainViewModel.canDisplayIntake() {
-                            Text(mainViewModel.intakePercentageText(
-                                for: summaries[.calories])
+                            Text(
+                                mainViewModel.intakePercentage(
+                                    for: summaries[.calories]
+                                )
                             )
-                            .lineLimit(1)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                         }
@@ -76,8 +79,47 @@ struct CaloriesSection: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            .padding(.vertical, 5)
+            .transaction { $0.animation = nil }
+            .lineLimit(1)
+        } header: {
+            dateSection
         }
         .id(mainViewModel.displayIntake)
     }
+    
+    private var dateSection: some View {
+        HStack {
+            ForEach(-3...3, id: \.self) { offset in
+                let date = mainViewModel.dateByAddingOffset(for: offset)
+                
+                Button {
+                    withAnimation {
+                        mainViewModel.date = date
+                    }
+                } label: {
+                    DateView(
+                        date: date,
+                        isToday: Calendar.current.isDate(
+                            date,
+                            inSameDayAs: Date()
+                        ),
+                        isSelected: Calendar.current.isDate(
+                            date,
+                            inSameDayAs: mainViewModel.date
+                        ),
+                        mainViewModel: mainViewModel
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .transaction { $0.animation = nil }
+        .listRowInsets(
+            EdgeInsets(top: 20, leading: 0, bottom: 16, trailing: 0)
+        )
+    }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

@@ -13,9 +13,9 @@ struct FoodItemRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        NavigationLink(
-            destination: FoodView(
-                navigationTitle: "Edit Food Entry",
+        NavigationLink {
+            FoodView(
+                mealType: mealItem.mealType,
                 food: Food(
                     searchFoodId: mealItem.foodId,
                     searchFoodName: mealItem.foodName,
@@ -23,74 +23,87 @@ struct FoodItemRow: View {
                 ),
                 searchViewModel: mainViewModel.searchViewModel,
                 mainViewModel: mainViewModel,
-                mealType: mealType,
                 amount: String(mealItem.amount),
                 measurementDescription: mealItem.measurementDescription,
-                showAddButton: false,
-                showSaveRemoveButton: true,
-                showMealTypeButton: true,
+                isEditingMealItem: true,
                 originalCreatedAt: mealItem.createdAt,
                 originalMealItemId: mealItem.id
             )
-        ) {
-            VStack(spacing: 8) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(mealItem.foodName)
-                        Text(mainViewModel.formattedMealText(for: mealItem))
+        } label: {
+            HStack {
+                VStack(spacing: 5) {
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(mealItem.foodName)
+                                .foregroundStyle(Color.primary)
+                            Text(
+                                mainViewModel.formattedMealText(for: mealItem)
+                            )
                             .font(.subheadline)
-                            .foregroundColor(.customGreen)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .layoutPriority(0)
-                    
-                    Text(mainViewModel.formatter.formattedValue(
-                        mealItem.nutrients[.calories],
-                        unit: .empty,
-                        alwaysRoundUp: true
-                    ))
-                    .lineLimit(1)
-                    .font(.callout)
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                    .layoutPriority(1)
-                }
-                
-                HStack {
-                    NutrientLabel(
-                        label: "F",
-                        formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.fat],
-                            unit: .empty
-                        )
-                    )
-                    NutrientLabel(
-                        label: "C",
-                        formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.carbohydrate],
-                            unit: .empty
-                        )
-                    )
-                    NutrientLabel(
-                        label: "P",
-                        formattedValue: mainViewModel.formatter.formattedValue(
-                            mealItem.nutrients[.protein],
-                            unit: .empty
-                        )
-                    )
-                    if mainViewModel.canDisplayIntake() {
-                        Text(mainViewModel.intakePercentageText(
-                            for: mealItem.nutrients[.calories])
+                            .foregroundStyle(.accent)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Text(
+                            mainViewModel.formatter
+                                .formattedValue(
+                                    mealItem.nutrients[.calories],
+                                    unit: .empty,
+                                    alwaysRoundUp: true
+                                )
                         )
                         .lineLimit(1)
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .layoutPriority(1)
+                        .font(.callout)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.secondary)
                     }
+                    
+                    HStack {
+                        NutrientLabel(
+                            label: "F",
+                            formattedValue: mainViewModel
+                                .formatter.formattedValue(
+                                    mealItem.nutrients[.fat],
+                                    unit: .empty
+                                )
+                        )
+                        
+                        NutrientLabel(
+                            label: "C",
+                            formattedValue: mainViewModel
+                                .formatter.formattedValue(
+                                    mealItem.nutrients[.carbohydrate],
+                                    unit: .empty
+                                )
+                        )
+                        
+                        NutrientLabel(
+                            label: "P",
+                            formattedValue: mainViewModel
+                                .formatter.formattedValue(
+                                    mealItem.nutrients[.protein],
+                                    unit: .empty
+                                )
+                        )
+                        
+                        if mainViewModel.canDisplayIntake() {
+                            Text(
+                                mainViewModel
+                                    .intakePercentage(
+                                        for: mealItem.nutrients[.calories]
+                                    )
+                            )
+                            .foregroundStyle(Color.secondary)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                    }
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.trailing, 5)
+            .transaction { $0.animation = nil }
         }
     }
 }

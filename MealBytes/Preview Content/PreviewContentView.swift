@@ -9,12 +9,39 @@ import SwiftUI
 
 struct PreviewContentView {
     static var contentView: some View {
-        ContentView(
-            loginViewModel: PreviewFactory.loginViewModel,
-            mainViewModel: PreviewFactory.mainViewModel,
-            goalsViewModel: PreviewFactory.goalsViewModel,
-            profileViewModel: PreviewFactory.profileViewModel
+        let mainViewModel = MainViewModel()
+        let dailyIntakeViewModel:
+        DailyIntakeViewModelProtocol = DailyIntakeViewModel(
+            mainViewModel: mainViewModel
         )
-        .environmentObject(PreviewFactory.themeManager)
+        let rdiViewModel: RdiViewModelProtocol = RdiViewModel(
+            mainViewModel: mainViewModel
+        )
+        let goalsViewModel = GoalsViewModel(
+            mainViewModel: mainViewModel,
+            dailyIntakeViewModel: dailyIntakeViewModel,
+            rdiViewModel: rdiViewModel
+        )
+        let loginViewModel = LoginViewModel(
+            mainViewModel: mainViewModel,
+            goalsViewModel: goalsViewModel
+        )
+        let profileViewModel = ProfileViewModel(
+            loginViewModel: loginViewModel,
+            mainViewModel: mainViewModel
+        )
+        let themeManager = ThemeManager()
+        
+        return ContentView(
+            loginViewModel: loginViewModel,
+            mainViewModel: mainViewModel,
+            goalsViewModel: goalsViewModel,
+            profileViewModel: profileViewModel
+        )
+        .environmentObject(themeManager)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

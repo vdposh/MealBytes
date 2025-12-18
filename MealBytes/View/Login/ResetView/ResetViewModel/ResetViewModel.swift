@@ -28,6 +28,7 @@ final class ResetViewModel: ObservableObject {
         
         do {
             try await firebaseAuth.resetPasswordAuth(email: email)
+            
             await MainActor.run {
                 isEmailSent = true
                 sentEmail = email
@@ -49,6 +50,7 @@ final class ResetViewModel: ObservableObject {
         await MainActor.run {
             self.success = success
             self.error = error
+            
             updateAlertState()
         }
     }
@@ -79,11 +81,6 @@ final class ResetViewModel: ObservableObject {
         return !email.isEmpty
     }
     
-    // MARK: - Color
-    func titleColor(for text: String) -> Color {
-        return text.isEmpty ? .customRed : .secondary
-    }
-    
     // MARK: - Error
     private func handleError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
@@ -93,6 +90,30 @@ final class ResetViewModel: ObservableObject {
             default: return .unknownError
             }
         }
+        
         return .unknownError
+    }
+    
+    // MARK: - UI Helper
+    var resetState: ResetState {
+        if isLoading {
+            return .loading
+        } else if isEmailSent {
+            return .emailSent
+        } else {
+            return .ready
+        }
+    }
+    
+    enum ResetState {
+        case loading
+        case emailSent
+        case ready
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ResetView()
     }
 }

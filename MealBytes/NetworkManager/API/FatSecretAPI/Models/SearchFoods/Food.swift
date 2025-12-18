@@ -1,0 +1,61 @@
+//
+//  Food.swift
+//  MealBytes
+//
+//  Created by Vlad Posherstnik on 04/03/2025.
+//
+
+import SwiftUI
+
+struct Food: Codable, Identifiable, Hashable {
+    let searchFoodId: Int
+    let searchFoodName: String
+    let searchFoodDescription: String
+    
+    var id: Int { searchFoodId }
+    
+    init(
+        searchFoodId: Int,
+        searchFoodName: String,
+        searchFoodDescription: String
+    ) {
+        self.searchFoodId = searchFoodId
+        self.searchFoodName = searchFoodName
+        self.searchFoodDescription = searchFoodDescription
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let searchFoodIdString = try container.decode(
+            String.self,
+            forKey: .searchFoodId
+        )
+        
+        self.searchFoodId = Int(searchFoodIdString) ?? 0
+        self.searchFoodName = try container.decode(
+            String.self,
+            forKey: .searchFoodName
+        )
+        self.searchFoodDescription = try container.decode(
+            String.self,
+            forKey: .searchFoodDescription
+        )
+    }
+    
+    var parsedDescription: String? {
+        FoodDescriptionFormatter
+            .normalizedDescription(from: searchFoodDescription)
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case searchFoodId = "food_id",
+             searchFoodName = "food_name",
+             searchFoodDescription = "food_description"
+    }
+}
+
+extension Food: Equatable {
+    static func == (lhs: Food, rhs: Food) -> Bool {
+        return lhs.searchFoodId == rhs.searchFoodId
+    }
+}

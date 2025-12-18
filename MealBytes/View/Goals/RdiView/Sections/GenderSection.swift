@@ -11,34 +11,26 @@ struct GenderSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        SectionStyleContainer(
-            mainContent: {
-                HStack {
-                    Text("Gender")
-                    
-                    Picker(
-                        "Gender",
-                        selection: $rdiViewModel.selectedGender
-                    ) {
-                        if rdiViewModel.selectedGender == .notSelected {
-                            Text("Not Selected").tag(Gender.notSelected)
-                        }
-                        ForEach(
-                            Gender.allCases.filter { $0 != .notSelected },
-                            id: \.self
-                        ) { gender in
-                            Text(gender.rawValue).tag(gender)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .accentColor(rdiViewModel.selectedGender.accentColor)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+        Section {
+            Picker(
+                "Gender",
+                selection: $rdiViewModel.selectedGender
+            ) {
+                if rdiViewModel.selectedGender == .notSelected {
+                    Text("Not Selected").tag(Gender.notSelected)
                 }
-            },
-            layout: .pickerStyle,
-            description: "Specify gender to ensure RDI calculations.",
-            useCompactVerticalPadding: true
-        )
+                
+                ForEach(
+                    Gender.allCases.filter { $0 != .notSelected },
+                    id: \.self
+                ) { gender in
+                    Text(gender.rawValue).tag(gender)
+                }
+            }
+            .foregroundStyle(rdiViewModel.selectedGender.selectedColor)
+        } footer: {
+            Text("Specify gender to ensure RDI calculations.")
+        }
     }
 }
 
@@ -47,19 +39,14 @@ enum Gender: String, CaseIterable {
     case male = "Male"
     case female = "Female"
     
-    var accentColor: Color {
+    var selectedColor: Color {
         switch self {
-        case .notSelected: return .customRed
-        case .male, .female: return .customGreen
+        case .notSelected: .customRed
+        case .male, .female: .primary
         }
     }
 }
 
 #Preview {
-    let mainViewModel = MainViewModel()
-    let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
-    
-    return NavigationStack {
-        RdiView(rdiViewModel: rdiViewModel)
-    }
+    PreviewRdiView.rdiView
 }

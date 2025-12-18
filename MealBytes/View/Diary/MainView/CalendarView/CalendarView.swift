@@ -8,106 +8,104 @@
 import SwiftUI
 
 struct CalendarView: View {
-    @Binding var selectedDate: Date
-    @Binding var isPresented: Bool
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        VStack {
-            HStack {
-                Button("Today") {
-                    mainViewModel.selectDate(
-                        Date(),
-                        selectedDate: &selectedDate,
-                        isPresented: &isPresented
-                    )
-                }
-                
-                HStack {
-                    Button {
-                        mainViewModel.changeMonth(
-                            by: -1,
-                            selectedDate: &selectedDate
-                        )
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .padding(.trailing)
+        VStack(spacing: 30) {
+            Text(mainViewModel.formattedDate())
+                .font(.headline)
+            
+            VStack(spacing: 10) {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible()), count: 7)
+                ) {
+                    ForEach(
+                        mainViewModel.weekdaySymbols(),
+                        id: \.self
+                    ) { symbol in
+                        Text(symbol)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .trailing)
                 
-                Button {
-                    mainViewModel.changeMonth(
-                        by: 1,
-                        selectedDate: &selectedDate
-                    )
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
-            }
-            .font(.headline)
-            .padding(.bottom)
-            .padding(.horizontal)
-            
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.flexible()), count: 7)
-            ) {
-                ForEach(
-                    mainViewModel.daysForCurrentMonth(
-                        selectedDate: selectedDate
-                    ),
-                    id: \.self
-                ) { date in
-                    Button {
-                        mainViewModel.selectDate(
-                            date,
-                            selectedDate: &selectedDate,
-                            isPresented: &isPresented
-                        )
-                    } label: {
-                        VStack(spacing: 3) {
-                            Text("\(mainViewModel.dayComponent(for: date))")
-                                .foregroundColor(mainViewModel.color(
-                                    for: .day,
-                                    date: date,
-                                    isSelected: mainViewModel.calendar.isDate(
-                                        selectedDate,
-                                        inSameDayAs: date
-                                    ),
-                                    isToday: mainViewModel
-                                        .calendar.isDateInToday(date)
-                                ))
-                                .font(.callout)
-                            
-                            if mainViewModel.hasMealItems(for: date) {
-                                Circle()
-                                    .frame(width: 5, height: 5)
-                                    .foregroundColor(.customGreen)
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible()), count: 7)
+                ) {
+                    ForEach(
+                        mainViewModel.daysForCurrentMonth(
+                            selectedDate: mainViewModel.date
+                        ),
+                        id: \.self
+                    ) { date in
+                        Button {
+                            withAnimation {
+                                mainViewModel.isCalendarInteractive = false
                             }
+                            
+                            withTransaction(
+                                Transaction(animation: .bouncy)
+                            ) {
+                                mainViewModel.selectDate(
+                                    date,
+                                    selectedDate: &mainViewModel.date,
+                                    isPresented: &mainViewModel
+                                        .isExpandedCalendar
+                                )
+                            }
+                            
+                            withAnimation {
+                                mainViewModel.isCalendarInteractive = true
+                            }
+                        } label: {
+                            VStack(spacing: 5) {
+                                Text(
+                                    "\(mainViewModel.dayComponent(for: date))"
+                                )
+                                .foregroundStyle(
+                                    mainViewModel
+                                        .color(
+                                            for: .day,
+                                            date: date,
+                                            isSelected: mainViewModel.calendar
+                                                .isDate(
+                                                    mainViewModel.date,
+                                                    inSameDayAs: date
+                                                ),
+                                            isToday: mainViewModel.calendar
+                                                .isDateInToday(date)
+                                        )
+                                )
+                                .font(.callout)
+                                
+                                if mainViewModel.hasMealItems(for: date) {
+                                    Circle()
+                                        .frame(width: 5, height: 5)
+                                        .padding(.bottom, 2)
+                                        .foregroundStyle(.accent)
+                                }
+                            }
+                            .frame(width: 45, height: 45)
                         }
-                        .frame(width: 40, height: 40)
-                        .background(
-                            mainViewModel.color(
-                                for: .day,
-                                date: date,
-                                isSelected: mainViewModel.calendar.isDate(
-                                    selectedDate,
-                                    inSameDayAs: date
-                                ),
-                                forBackground: true
-                            )
-                        )
-                        .cornerRadius(12)
+                        .background {
+                            mainViewModel.colorBackground(for: date)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
         }
-        .padding()
+        .transaction { $0.animation = nil }
+        .lineLimit(1)
+        .padding(.horizontal, 12)
+        .padding(.bottom)
+        .padding(.top, 24)
+        .background(Color(.systemBackground))
+        .clipShape(.rect(cornerRadius: 24))
+        .transition(.blurReplace)
     }
 }
 
 #Preview {
-    NavigationStack {
-        MainView(mainViewModel: MainViewModel())
-    }
+    PreviewContentView.contentView
 }

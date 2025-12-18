@@ -11,7 +11,6 @@ struct MealSectionModel {
     let mealType: MealType
     let title: String
     let iconName: String
-    let color: Color
     let calories: Double
     let fat: Double
     let protein: Double

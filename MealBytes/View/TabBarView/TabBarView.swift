@@ -16,61 +16,59 @@ struct TabBarView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack {
-                GoalsView(goalsViewModel: goalsViewModel)
+            Tab("Goals", systemImage: "chart.bar", value: 1) {
+                NavigationStack {
+                    GoalsView(goalsViewModel: goalsViewModel)
+                }
             }
-            .tabItem {
-                Image(systemName: "chart.bar")
-                Text("Goals")
-            }
-            .tag(1)
             
-            NavigationStack {
-                MainView(mainViewModel: mainViewModel)
+            Tab("Diary", systemImage: "fork.knife", value: 0) {
+                NavigationStack {
+                    MainView(mainViewModel: mainViewModel)
+                }
             }
-            .tabItem {
-                Image(systemName: "fork.knife")
-                Text("Diary")
-            }
-            .tag(0)
             
-            NavigationStack {
-                ProfileView(profileViewModel: profileViewModel)
-            }
-            .tabItem {
-                Image(systemName: "person.fill")
-                Text("Profile")
-            }
-            .tag(2)
-        }
-        .onChange(of: selectedTab) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if mainViewModel.isExpandedCalendar {
-                    mainViewModel.isExpandedCalendar = false
+            Tab("Profile", systemImage: "person.fill", value: 2) {
+                NavigationStack {
+                    ProfileView(profileViewModel: profileViewModel)
                 }
             }
         }
-        .alert(isPresented: $loginViewModel.showErrorAlert) {
-            switch loginViewModel.alertType {
-            case .sessionExpired:
-                return loginViewModel.getSessionAlert {
-                    profileViewModel.signOut()
-                }
-            case .offlineMode:
-                return loginViewModel.getOfflineAlert()
-            case .generic:
-                return loginViewModel.commonErrorAlert()
-            }
-        }
-        .task {
-            selectedTab = 0
+        .tabBarMinimizeBehavior(.onScrollDown)
+        .overlay {
+            FoodAddedAlertView(
+                isVisible: $mainViewModel.isFoodAddedAlertVisible
+            )
+            .animation(
+                .bouncy(duration: 0.3),
+                value: mainViewModel.isFoodAddedAlertVisible
+            )
         }
         .overlay {
             if profileViewModel.isLoading {
-                LoadingProfileView(
-                    isLoading: $profileViewModel.isPasswordChanging
-                )
+                LoadingProfileView()
             }
+        }
+        .alert(isPresented: $loginViewModel.showErrorAlert) {
+            loginErrorAlert
+        }
+        .onChange(of: selectedTab) {
+            mainViewModel.handleTabChange(to: selectedTab)
+        }
+    }
+    
+    private var loginErrorAlert: Alert {
+        switch loginViewModel.alertType {
+        case .sessionExpired:
+            return loginViewModel.getSessionAlert {
+                profileViewModel.signOut()
+            }
+            
+        case .offlineMode:
+            return loginViewModel.getOfflineAlert()
+            
+        case .generic:
+            return loginViewModel.commonErrorAlert()
         }
     }
 }

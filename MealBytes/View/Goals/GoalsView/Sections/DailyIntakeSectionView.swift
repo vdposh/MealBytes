@@ -15,43 +15,43 @@ struct DailyIntakeSectionView: View {
             if goalsViewModel.isDataLoaded {
                 if let dailyIntakeViewModel = goalsViewModel
                     .dailyIntakeViewModel as? DailyIntakeViewModel {
-                    NavigationLink(
-                        destination: DailyIntakeView(
+                    NavigationLink {
+                        DailyIntakeView(
                             dailyIntakeViewModel: dailyIntakeViewModel
                         )
-                    ) {
+                    } label: {
                         let dailyIntakeState = goalsViewModel.displayState(
                             for: .dailyIntakeView
                         )
                         
                         LabeledContent {
                             Text(dailyIntakeState.text)
-                                .foregroundColor(dailyIntakeState.color)
+                                .foregroundStyle(dailyIntakeState.color)
                                 .fontWeight(dailyIntakeState.weight)
                         } label: {
-                            HStack {
-                                Image(systemName: dailyIntakeState.icon)
-                                    .foregroundStyle(.customGreen)
+                            Label {
                                 Text("Daily Intake")
+                            } icon: {
+                                Image(systemName: dailyIntakeState.icon)
+                                    .foregroundStyle(.accent)
                             }
                         }
+                        .labelIconToTitleSpacing(10)
                     }
                     .disabled(!goalsViewModel.isDataLoaded)
                 }
             } else {
                 LabeledContent {
-                    HStack {
-                        LoadingView()
-                        Text("Loading...")
-                            .foregroundColor(.secondary)
-                    }
+                    LoadingView(showLabel: true)
                 } label: {
-                    HStack {
-                        Image(systemName: "person")
-                            .foregroundStyle(.customGreen)
+                    Label {
                         Text("Daily Intake")
+                    } icon: {
+                        Image(systemName: "person")
+                            .foregroundStyle(.accent)
                     }
                 }
+                .labelIconToTitleSpacing(10)
             }
         } footer: {
             Text("Daily intake can be set by entering the required number of calories or calculated using macronutrient values such as fats, carbohydrates, and proteins.")
