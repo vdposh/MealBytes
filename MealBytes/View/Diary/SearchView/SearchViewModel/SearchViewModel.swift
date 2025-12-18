@@ -89,6 +89,8 @@ final class SearchViewModel: ObservableObject {
                 )
                 
                 await MainActor.run {
+                    guard !self.query.isEmpty else { return }
+                    
                     self.foods = foods
                     self.appError = nil
                     self.isLoading = false

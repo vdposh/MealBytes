@@ -95,6 +95,7 @@ struct SearchView: View {
                     pageButton(direction: .previous)
                 }
             }
+            .transaction { $0.animation = nil }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
@@ -197,11 +198,11 @@ struct SearchView: View {
         case .active:
             ToolbarItem(placement: .topBarTrailing) {
                 Button(role: .cancel) {
-                    searchViewModel.editingState = .inactive
                     withAnimation {
-                        searchViewModel.selectedItems.removeAll()
-                        editModeState = .inactive
+                        searchViewModel.editingState = .inactive
                     }
+                    searchViewModel.selectedItems.removeAll()
+                    editModeState = .inactive
                 }
             }
             
@@ -229,7 +230,6 @@ struct SearchView: View {
             ToolbarItem(placement: .status) {
                 Text(searchViewModel.selectionStatusText)
                     .frame(width: 220)
-                    .transaction { $0.animation = nil }
             }
             .sharedBackgroundVisibility(.hidden)
             
@@ -241,7 +241,6 @@ struct SearchView: View {
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }
-                .transaction { $0.animation = nil }
                 .disabled(
                     !searchViewModel.isEditModeActive
                     || searchViewModel.selectedItems.isEmpty
@@ -259,11 +258,11 @@ struct SearchView: View {
                         searchViewModel.foods.removeAll {
                             idRemove.contains($0.searchFoodId)
                         }
-                        searchViewModel.editingState = .inactive
                         withAnimation {
-                            searchViewModel.selectedItems.removeAll()
-                            editModeState = .inactive
+                            searchViewModel.editingState = .inactive
                         }
+                        searchViewModel.selectedItems.removeAll()
+                        editModeState = .inactive
                         Task {
                             await searchViewModel
                                 .removeBookmarks(for: idRemove)
