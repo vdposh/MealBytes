@@ -20,10 +20,7 @@ struct LoginLogoView: View {
     }
     
     private var gradientColors: [Color] {
-        [
-            Color(red: 100/255, green: 200/255, blue: 70/255),
-            Color(red: 0/255, green: 130/255, blue: 40/255)
-        ]
+        [Color("customGreenLight"), Color("customGreenDark")]
     }
     
     private func gradientMaskedImage(width: CGFloat) -> some View {
