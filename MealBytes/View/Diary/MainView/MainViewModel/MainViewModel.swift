@@ -677,6 +677,8 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Reset State
     func resetMainState() {
+        selectedMealType = nil
+        
         updateIntake(to: "")
         collapseAllSections()
         resetDateToToday()
