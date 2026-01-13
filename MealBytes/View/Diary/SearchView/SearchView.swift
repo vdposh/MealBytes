@@ -25,7 +25,7 @@ struct SearchView: View {
         searchViewContentBody
             .overlay(searchableModifier)
             .navigationTitle(mealType.rawValue)
-            .navigationSubtitle(searchViewModel.subtitleText)
+            .navigationSubtitle(searchViewModel.mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.large)
             .toolbar {
                 searchViewToolbar
@@ -189,8 +189,7 @@ struct SearchView: View {
         return EmptyView()
             .searchable(
                 text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search"
+                placement: .navigationBarDrawer(displayMode: .always)
             )
             .disabled(searchViewModel.isEditModeActive)
     }

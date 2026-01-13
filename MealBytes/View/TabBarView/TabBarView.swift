@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Tabs = .diary
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
@@ -16,19 +16,19 @@ struct TabBarView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Goals", systemImage: "chart.bar", value: 1) {
+            Tab("Goals", systemImage: "chart.bar", value: .goals) {
                 NavigationStack {
                     GoalsView(goalsViewModel: goalsViewModel)
                 }
             }
             
-            Tab("Diary", systemImage: "fork.knife", value: 0) {
+            Tab("Diary", systemImage: "fork.knife", value: .diary) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
                 }
             }
             
-            Tab("Profile", systemImage: "person.fill", value: 2) {
+            Tab("Profile", systemImage: "person.fill", value: .profile) {
                 NavigationStack {
                     ProfileView(profileViewModel: profileViewModel)
                 }
@@ -71,6 +71,10 @@ struct TabBarView: View {
             return loginViewModel.commonErrorAlert()
         }
     }
+}
+
+enum Tabs {
+    case diary, goals, profile
 }
 
 #Preview {

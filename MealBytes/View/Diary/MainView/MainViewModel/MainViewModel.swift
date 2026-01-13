@@ -27,6 +27,7 @@ protocol MainViewModelProtocol {
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
     func canDisplayIntake() -> Bool
+    func formattedDate() -> String
     func collapseAllSections()
     func resetDateToToday()
     func resetMainState()
@@ -52,7 +53,6 @@ final class MainViewModel: ObservableObject {
     @Published var isCalendarInteractive: Bool = true
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
-    
     
     let formatter = Formatter()
     let calendar = Calendar.current
@@ -665,8 +665,8 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    func handleMainTabChange(to tab: Int) {
-        if tab != 0 {
+    func handleMainTabChange(to tab: Tabs) {
+        if tab != .diary {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if self.isExpandedCalendar {
                     self.isExpandedCalendar = false
