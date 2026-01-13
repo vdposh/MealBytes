@@ -56,7 +56,7 @@ struct FoodView: View {
                 foodViewModel.mealType = mealType
             }
             .onChange(of: amountFocused) {
-                foodViewModel.handleFocusChange(
+                foodViewModel.handleAmountFocusChange(
                     from: !amountFocused,
                     to: amountFocused
                 )

@@ -435,7 +435,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleFocusChange(from oldValue: Bool, to newValue: Bool) {
+    func handleAmountFocusChange(from oldValue: Bool, to newValue: Bool) {
         if newValue {
             originalAmount = amount
             amount = ""

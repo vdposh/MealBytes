@@ -665,7 +665,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    func handleTabChange(to tab: Int) {
+    func handleMainTabChange(to tab: Int) {
         if tab != 0 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if self.isExpandedCalendar {

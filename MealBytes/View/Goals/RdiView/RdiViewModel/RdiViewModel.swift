@@ -281,7 +281,7 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    func handleSave() -> Bool {
+    func handleRdiSave() -> Bool {
         if let errors = validateInputs() {
             alertMessage = errors
             showAlert = true
@@ -346,7 +346,7 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleFocusChange(from previous: RdiFocus?) {
+    func handleRdiFocusChange(from previous: RdiFocus?) {
         normalizeInputs()
         
         if let old = previous {

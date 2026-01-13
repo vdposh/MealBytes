@@ -48,14 +48,14 @@ struct ProfileView: View {
             
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
-                    await profileViewModel.handleAlertAction()
+                    await profileViewModel.handleProfileAlertAction()
                 }
             }
             
         case .signOut:
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
-                    await profileViewModel.handleAlertAction()
+                    await profileViewModel.handleProfileAlertAction()
                 }
             }
             
@@ -89,7 +89,7 @@ struct ProfileView: View {
                 
                 Button(profileViewModel.destructiveTitle) {
                     Task {
-                        await profileViewModel.handleAlertAction()
+                        await profileViewModel.handleProfileAlertAction()
                     }
                 }
             }

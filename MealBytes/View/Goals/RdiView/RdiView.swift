@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RdiView: View {
-    @FocusState private var focusedField: RdiFocus?
+    @FocusState private var rdiFocused: RdiFocus?
     @Environment(\.dismiss) private var dismiss
     
     private let rdiOrder: [RdiFocus] = [.age, .weight, .height]
@@ -25,8 +25,8 @@ struct RdiView: View {
             .alert(isPresented: $rdiViewModel.showAlert) {
                 rdiViewAlert
             }
-            .onChange(of: focusedField) {
-                rdiViewModel.handleFocusChange(from: focusedField)
+            .onChange(of: rdiFocused) {
+                rdiViewModel.handleRdiFocusChange(from: rdiFocused)
             }
     }
     
@@ -36,15 +36,15 @@ struct RdiView: View {
             GenderSection(rdiViewModel: rdiViewModel)
             ActivitySection(rdiViewModel: rdiViewModel)
             AgeSection(
-                focusedField: _focusedField,
+                focus: _rdiFocused,
                 rdiViewModel: rdiViewModel
             )
             WeightSection(
-                focusedField: _focusedField,
+                focus: _rdiFocused,
                 rdiViewModel: rdiViewModel
             )
             HeightSection(
-                focusedField: _focusedField,
+                focus: _rdiFocused,
                 rdiViewModel: rdiViewModel
             )
         }
@@ -54,16 +54,16 @@ struct RdiView: View {
     private var rdiViewToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .keyboard) {
             buildKeyboardToolbar(
-                current: focusedField,
+                current: rdiFocused,
                 ordered: rdiOrder,
-                set: { focusedField = $0 },
+                set: { rdiFocused = $0 },
                 normalize: rdiViewModel.normalizeInputs
             )
         }
         
         ToolbarItem {
             Button(role: .confirm) {
-                if rdiViewModel.handleSave() {
+                if rdiViewModel.handleRdiSave() {
                     Task {
                         await rdiViewModel.saveRdiView()
                     }
@@ -71,7 +71,7 @@ struct RdiView: View {
                     dismiss()
                 }
                 
-                focusedField = nil
+                rdiFocused = nil
                 rdiViewModel.normalizeInputs()
             }
         }

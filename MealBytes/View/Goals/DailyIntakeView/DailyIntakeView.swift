@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DailyIntakeView: View {
-    @FocusState private var focusMacronutrients: MacronutrientsFocus?
+    @FocusState private var macronutrientsFocused: MacronutrientsFocus?
     @FocusState private var caloriesFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
@@ -30,8 +30,8 @@ struct DailyIntakeView: View {
             .alert(isPresented: $dailyIntakeViewModel.showAlert) {
                 dailyIntakeViewAlert
             }
-            .onChange(of: focusMacronutrients) {
-                handleFocusLoss(focusMacronutrients)
+            .onChange(of: macronutrientsFocused) {
+                handleFocusLoss(macronutrientsFocused)
             }
     }
     
@@ -41,11 +41,11 @@ struct DailyIntakeView: View {
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
             CalorieMetricsSection(
-                isFocused: $caloriesFocused,
+                focus: $caloriesFocused,
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
             MacronutrientMetricsSection(
-                focusedField: _focusMacronutrients,
+                focus: _macronutrientsFocused,
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
             NutrientsToggleSection(toggleOn: $dailyIntakeViewModel.toggleOn)
@@ -56,9 +56,9 @@ struct DailyIntakeView: View {
     private var dailyIntakeViewToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .keyboard) {
             buildKeyboardToolbar(
-                current: focusMacronutrients,
+                current: macronutrientsFocused,
                 ordered: macroOrder,
-                set: { focusMacronutrients = $0 },
+                set: { macronutrientsFocused = $0 },
                 normalize: dailyIntakeViewModel.normalizeInputs,
                 extraDone: { caloriesFocused = false }
             )
@@ -66,7 +66,7 @@ struct DailyIntakeView: View {
         
         ToolbarItem {
             Button(role: .confirm) {
-                if dailyIntakeViewModel.handleSave() {
+                if dailyIntakeViewModel.handleDailyIntakeSave() {
                     Task {
                         await dailyIntakeViewModel.saveDailyIntakeView()
                     }
@@ -75,7 +75,7 @@ struct DailyIntakeView: View {
                 }
                 
                 caloriesFocused = false
-                focusMacronutrients = nil
+                macronutrientsFocused = nil
                 dailyIntakeViewModel.normalizeInputs()
             }
         }
@@ -94,7 +94,7 @@ struct DailyIntakeView: View {
     private func handleFocusLoss(_ focus: MacronutrientsFocus?) {
         guard let focus else { return }
         
-        dailyIntakeViewModel.handleMacronutrientFocusChange(
+        dailyIntakeViewModel.handleMacronutrientsFocusChange(
             focus: focus,
             didGainFocus: false
         )

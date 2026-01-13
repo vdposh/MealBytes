@@ -10,7 +10,7 @@ import SwiftUI
 struct ServingTextFieldView: View {
     @State private var textWidth: CGFloat = 0
     @Binding var text: String
-    @FocusState private var isFocused: Bool
+    @FocusState private var focus: Bool
     var placeholder: String = "amount"
     var labelIconName: String = "plus.forwardslash.minus"
     var stackText: String = ""
@@ -29,8 +29,8 @@ struct ServingTextFieldView: View {
             .onChange(of: text) {
                 validateInput(&text)
             }
-            .onChange(of: isFocused) {
-                if !isFocused {
+            .onChange(of: focus) {
+                if !focus {
                     finalizeInput(&text)
                 }
             }
@@ -67,13 +67,13 @@ struct ServingTextFieldView: View {
         }
         .overlay(
             Button {
-                $isFocused.wrappedValue = true
+                $focus.wrappedValue = true
             } label: {
                 Color.clear
             }
         )
         .buttonStyle(.borderless)
-        .focused($isFocused)
+        .focused($focus)
     }
     
     private func validateInput(_ input: inout String) {

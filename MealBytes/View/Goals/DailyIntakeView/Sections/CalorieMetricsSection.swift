@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalorieMetricsSection: View {
-    var isFocused: FocusState<Bool>.Binding
+    var focus: FocusState<Bool>.Binding
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
@@ -22,7 +22,7 @@ struct CalorieMetricsSection: View {
                         inputMode: .integer,
                         maxIntegerDigits: 5
                     )
-                    .focused(isFocused)
+                    .focused(focus)
                 }
             } header: {
                 Text("Calories")

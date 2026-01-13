@@ -53,7 +53,7 @@ struct TabBarView: View {
             loginErrorAlert
         }
         .onChange(of: selectedTab) {
-            mainViewModel.handleTabChange(to: selectedTab)
+            mainViewModel.handleMainTabChange(to: selectedTab)
         }
     }
     

@@ -117,7 +117,7 @@ final class ProfileViewModel: ObservableObject {
         showAlert = true
     }
     
-    func handleAlertAction() async {
+    func handleProfileAlertAction() async {
         guard let alertType = alertContent?.type else { return }
         
         switch alertType {
