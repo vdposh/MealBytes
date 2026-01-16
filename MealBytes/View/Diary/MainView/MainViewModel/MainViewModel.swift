@@ -49,6 +49,7 @@ final class MainViewModel: ObservableObject {
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
+    @Published var isAlertInProgress: Bool = false
     @Published var isExpandedCalendar: Bool = false
     @Published var isCalendarInteractive: Bool = true
     @Published var isExpanded: Bool = false
@@ -687,11 +688,24 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Alert
     func triggerFoodAlert() {
+        guard !isAlertInProgress else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.triggerFoodAlert()
+            }
+            return
+        }
+        
+        isAlertInProgress = true
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.isFoodAddedAlertVisible = true
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.isFoodAddedAlertVisible = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.isAlertInProgress = false
+                }
             }
         }
     }
