@@ -28,6 +28,7 @@ struct MealBytesApp: App {
     @Environment(\.colorScheme) private var systemColorScheme
     
     @StateObject private var mainViewModel: MainViewModel
+    @StateObject private var searchViewModel: SearchViewModel
     @StateObject private var goalsViewModel: GoalsViewModel
     @StateObject private var loginViewModel: LoginViewModel
     @StateObject private var profileViewModel: ProfileViewModel
@@ -35,6 +36,7 @@ struct MealBytesApp: App {
     
     init() {
         let mainViewModel = MainViewModel()
+        let searchViewModel = SearchViewModel(mainViewModel: mainViewModel)
         let dailyIntakeViewModel = DailyIntakeViewModel(
             mainViewModel: mainViewModel
         )
@@ -57,6 +59,7 @@ struct MealBytesApp: App {
         let themeManager = ThemeManager()
         
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _searchViewModel = StateObject(wrappedValue: searchViewModel)
         _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
         _loginViewModel = StateObject(wrappedValue: loginViewModel)
         _profileViewModel = StateObject(wrappedValue: profileViewModel)
@@ -68,6 +71,7 @@ struct MealBytesApp: App {
             ContentView(
                 loginViewModel: loginViewModel,
                 mainViewModel: mainViewModel,
+                searchViewModel: searchViewModel,
                 goalsViewModel: goalsViewModel,
                 profileViewModel: profileViewModel
             )

@@ -37,7 +37,7 @@ struct SearchView: View {
             .environment(\.editMode, $editModeState)
             .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
-                searchViewModel.isLoadingBookmarks = true
+                searchViewModel.loadingBookmarks()
                 
                 Task {
                     await searchViewModel

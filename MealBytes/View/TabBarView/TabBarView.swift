@@ -11,6 +11,7 @@ struct TabBarView: View {
     @State private var selectedTab: Tabs = .diary
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
     
@@ -31,6 +32,15 @@ struct TabBarView: View {
             Tab("Profile", systemImage: "person.fill", value: .profile) {
                 NavigationStack {
                     ProfileView(profileViewModel: profileViewModel)
+                }
+            }
+            
+            Tab(value: .search, role: .search) {
+                NavigationStack {
+                    SearchView(
+                        searchViewModel: searchViewModel,
+                        mealType: searchViewModel.selectedMealType
+                    )
                 }
             }
         }
@@ -54,6 +64,12 @@ struct TabBarView: View {
         }
         .onChange(of: selectedTab) {
             mainViewModel.handleMainTabChange(to: selectedTab)
+            
+            if selectedTab == .search {
+                if searchViewModel.query.isEmpty {
+                    searchViewModel.loadingBookmarks()
+                }
+            }
         }
     }
     
@@ -74,7 +90,7 @@ struct TabBarView: View {
 }
 
 enum Tabs {
-    case diary, goals, profile
+    case diary, goals, profile, search
 }
 
 #Preview {
