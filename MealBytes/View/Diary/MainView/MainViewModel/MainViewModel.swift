@@ -27,6 +27,7 @@ protocol MainViewModelProtocol {
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
     func canDisplayIntake() -> Bool
+    func formattedDate() -> String
     func collapseAllSections()
     func resetDateToToday()
     func resetMainState()
@@ -48,11 +49,11 @@ final class MainViewModel: ObservableObject {
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
+    @Published var isAlertInProgress: Bool = false
     @Published var isExpandedCalendar: Bool = false
     @Published var isCalendarInteractive: Bool = true
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
-    
     
     let formatter = Formatter()
     let calendar = Calendar.current
@@ -665,8 +666,8 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    func handleTabChange(to tab: Int) {
-        if tab != 0 {
+    func handleMainTabChange(to tab: Tabs) {
+        if tab != .diary {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if self.isExpandedCalendar {
                     self.isExpandedCalendar = false
@@ -687,11 +688,24 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Alert
     func triggerFoodAlert() {
+        guard !isAlertInProgress else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.triggerFoodAlert()
+            }
+            return
+        }
+        
+        isAlertInProgress = true
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.isFoodAddedAlertVisible = true
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 self.isFoodAddedAlertVisible = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.isAlertInProgress = false
+                }
             }
         }
     }

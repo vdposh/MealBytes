@@ -33,11 +33,11 @@ final class ResetViewModel: ObservableObject {
                 isEmailSent = true
                 sentEmail = email
             }
-            await handleResult(success: true, error: nil)
+            await handleResetResult(success: true, error: nil)
         } catch {
-            await handleResult(
+            await handleResetResult(
                 success: false,
-                error: handleError(error as NSError)
+                error: handleResetError(error as NSError)
             )
         }
         
@@ -46,7 +46,7 @@ final class ResetViewModel: ObservableObject {
         }
     }
     
-    private func handleResult(success: Bool, error: AuthError?) async {
+    private func handleResetResult(success: Bool, error: AuthError?) async {
         await MainActor.run {
             self.success = success
             self.error = error
@@ -82,7 +82,7 @@ final class ResetViewModel: ObservableObject {
     }
     
     // MARK: - Error
-    private func handleError(_ nsError: NSError) -> AuthError {
+    private func handleResetError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
             case .invalidEmail: return .invalidEmail

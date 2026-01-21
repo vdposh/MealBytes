@@ -28,7 +28,7 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var didLoadNonEmptyIntake: Bool = false
     @Published var toggleOn: Bool = false {
         didSet {
-            handleToggleOnChange()
+            handleToggleChange()
         }
     }
     
@@ -199,7 +199,7 @@ final class DailyIntakeViewModel: ObservableObject {
         }
     }
     
-    func handleSave() -> Bool {
+    func handleDailyIntakeSave() -> Bool {
         if let errors = validateInputs() {
             alertMessage = errors
             showAlert = true
@@ -209,7 +209,7 @@ final class DailyIntakeViewModel: ObservableObject {
         return true
     }
     
-    private func handleToggleOnChange() {
+    private func handleToggleChange() {
         normalizeInputs()
         
         if toggleOn {
@@ -287,7 +287,7 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleMacronutrientFocusChange(
+    func handleMacronutrientsFocusChange(
         focus: MacronutrientsFocus,
         didGainFocus: Bool
     ) {

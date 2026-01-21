@@ -8,29 +8,39 @@
 import SwiftUI
 
 struct TabBarView: View {
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Tabs = .diary
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Goals", systemImage: "chart.bar", value: 1) {
+            Tab("Goals", systemImage: "chart.bar", value: .goals) {
                 NavigationStack {
                     GoalsView(goalsViewModel: goalsViewModel)
                 }
             }
             
-            Tab("Diary", systemImage: "fork.knife", value: 0) {
+            Tab("Diary", systemImage: "fork.knife", value: .diary) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
                 }
             }
             
-            Tab("Profile", systemImage: "person.fill", value: 2) {
+            Tab("Profile", systemImage: "person.fill", value: .profile) {
                 NavigationStack {
                     ProfileView(profileViewModel: profileViewModel)
+                }
+            }
+            
+            Tab(value: .search, role: .search) {
+                NavigationStack {
+                    SearchView(
+                        searchViewModel: searchViewModel,
+                        mealType: searchViewModel.selectedMealType
+                    )
                 }
             }
         }
@@ -53,7 +63,13 @@ struct TabBarView: View {
             loginErrorAlert
         }
         .onChange(of: selectedTab) {
-            mainViewModel.handleTabChange(to: selectedTab)
+            mainViewModel.handleMainTabChange(to: selectedTab)
+            
+            if selectedTab == .search {
+                if searchViewModel.query.isEmpty {
+                    searchViewModel.loadingBookmarks()
+                }
+            }
         }
     }
     
@@ -71,6 +87,10 @@ struct TabBarView: View {
             return loginViewModel.commonErrorAlert()
         }
     }
+}
+
+enum Tabs {
+    case diary, goals, profile, search
 }
 
 #Preview {

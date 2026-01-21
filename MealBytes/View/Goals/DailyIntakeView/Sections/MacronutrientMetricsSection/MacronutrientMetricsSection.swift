@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MacronutrientMetricsSection: View {
-    @FocusState var focusedField: MacronutrientsFocus?
+    @FocusState var focus: MacronutrientsFocus?
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
@@ -17,7 +17,7 @@ struct MacronutrientMetricsSection: View {
                 MacronutrientFieldView(
                     title: "Fat",
                     binding: $dailyIntakeViewModel.fat,
-                    focus: $focusedField,
+                    focus: $focus,
                     focusCase: .fat,
                     dailyIntakeViewModel: dailyIntakeViewModel
                 )
@@ -25,7 +25,7 @@ struct MacronutrientMetricsSection: View {
                 MacronutrientFieldView(
                     title: "Carbohydrate",
                     binding: $dailyIntakeViewModel.carbohydrate,
-                    focus: $focusedField,
+                    focus: $focus,
                     focusCase: .carbohydrate,
                     dailyIntakeViewModel: dailyIntakeViewModel
                 )
@@ -33,7 +33,7 @@ struct MacronutrientMetricsSection: View {
                 MacronutrientFieldView(
                     title: "Protein",
                     binding: $dailyIntakeViewModel.protein,
-                    focus: $focusedField,
+                    focus: $focus,
                     focusCase: .protein,
                     dailyIntakeViewModel: dailyIntakeViewModel
                 )

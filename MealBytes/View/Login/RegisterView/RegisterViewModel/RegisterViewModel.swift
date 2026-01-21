@@ -56,7 +56,7 @@ final class RegisterViewModel: ObservableObject {
             }
             await startResendTimer()
         } catch {
-            let authError = handleError(error as NSError)
+            let authError = handleRegisterError(error as NSError)
             
             await handleSignUpResult(success: false, error: authError)
         }
@@ -79,7 +79,7 @@ final class RegisterViewModel: ObservableObject {
             
             await startResendTimer()
         } catch {
-            let authError = handleError(error as NSError)
+            let authError = handleRegisterError(error as NSError)
             
             await MainActor.run {
                 self.error = authError
@@ -166,7 +166,7 @@ final class RegisterViewModel: ObservableObject {
     }
     
     // MARK: - Error
-    private func handleError(_ nsError: NSError) -> AuthError {
+    private func handleRegisterError(_ nsError: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
             case .invalidEmail: return .invalidEmail

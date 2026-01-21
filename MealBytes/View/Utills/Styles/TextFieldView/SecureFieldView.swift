@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SecureFieldView: View {
     @Binding var text: String
-    @FocusState private var isFocused: Bool
+    @FocusState private var focus: Bool
     var placeholder: String = "Password"
     
     var body: some View {
@@ -21,13 +21,13 @@ struct SecureFieldView: View {
             }
             .overlay(
                 Button {
-                    $isFocused.wrappedValue = true
+                    $focus.wrappedValue = true
                 } label: {
                     Color.clear
                 }
             )
             .buttonStyle(.borderless)
-            .focused($isFocused)
+            .focused($focus)
     }
 }
 

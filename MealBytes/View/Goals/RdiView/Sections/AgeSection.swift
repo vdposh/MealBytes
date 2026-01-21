@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AgeSection: View {
-    @FocusState var focusedField: RdiFocus?
+    @FocusState var focus: RdiFocus?
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
@@ -20,7 +20,7 @@ struct AgeSection: View {
                 inputMode: .integer,
                 maxIntegerDigits: 3
             )
-            .focused($focusedField, equals: .age)
+            .focused($focus, equals: .age)
         } header: {
             Text("Age")
                 .foregroundStyle(

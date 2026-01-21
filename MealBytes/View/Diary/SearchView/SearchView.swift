@@ -25,7 +25,7 @@ struct SearchView: View {
         searchViewContentBody
             .overlay(searchableModifier)
             .navigationTitle(mealType.rawValue)
-            .navigationSubtitle(searchViewModel.subtitleText)
+            .navigationSubtitle(searchViewModel.mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.large)
             .toolbar {
                 searchViewToolbar
@@ -37,7 +37,7 @@ struct SearchView: View {
             .environment(\.editMode, $editModeState)
             .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
-                searchViewModel.isLoadingBookmarks = true
+                searchViewModel.loadingBookmarks()
                 
                 Task {
                     await searchViewModel
@@ -189,8 +189,7 @@ struct SearchView: View {
         return EmptyView()
             .searchable(
                 text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search"
+                placement: .navigationBarDrawer(displayMode: .always)
             )
             .disabled(searchViewModel.isEditModeActive)
     }
@@ -234,6 +233,7 @@ struct SearchView: View {
             ToolbarItem(placement: .status) {
                 Text(searchViewModel.selectionStatusText)
                     .frame(width: 220)
+                    .transaction { $0.animation = nil }
             }
             .sharedBackgroundVisibility(.hidden)
             
@@ -245,6 +245,7 @@ struct SearchView: View {
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }
+                .transaction { $0.animation = nil }
                 .disabled(
                     !searchViewModel.isEditModeActive
                     || searchViewModel.selectedItems.isEmpty

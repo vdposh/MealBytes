@@ -130,7 +130,7 @@ final class LoginViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.error = handleError(error as NSError)
+                self.error = handleLoginError(error as NSError)
                 self.isSignIn = false
                 
                 updateAlertState()
@@ -235,7 +235,7 @@ final class LoginViewModel: ObservableObject {
     }
     
     // MARK: - Error
-    private func handleError(_ error: NSError) -> AuthError {
+    private func handleLoginError(_ error: NSError) -> AuthError {
         if let authErrorCode = AuthErrorCode(rawValue: error.code) {
             switch authErrorCode {
             case .invalidEmail: return .invalidEmail
