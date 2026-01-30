@@ -43,8 +43,8 @@ Built using **MVVM** pattern for clean separation of concerns.
 
 3) In the file **TokenManager.swift** change **clientID** and **clientSecret** to yours:
     ```swift
-    private let clientID = "_Your_clientID_"
-    private let clientSecret = "_Your_clientSecret_"
+    private let clientID = "Your_clientID"
+    private let clientSecret = "Your_clientSecret"
     ```
 
 4) https://platform.fatsecret.com/my-account/ip-restrictions Add your IP address to the whitelist (note that this may take some time, usually 20-30 minutes, but the website states it can take up to 24 hours).

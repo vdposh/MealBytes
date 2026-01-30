@@ -52,7 +52,7 @@ struct MainView: View {
             }
         }
         .animation(
-            .bouncy(duration: 0.4),
+            .bouncy(duration: 0.3),
             value: mainViewModel.isExpandedCalendar
         )
         .navigationDestination(

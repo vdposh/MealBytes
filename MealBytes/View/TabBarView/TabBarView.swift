@@ -44,6 +44,7 @@ struct TabBarView: View {
                 }
             }
         }
+        .disabled(profileViewModel.isLoading)
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
             FoodAddedAlertView(
@@ -53,11 +54,6 @@ struct TabBarView: View {
                 .bouncy(duration: 0.3),
                 value: mainViewModel.isFoodAddedAlertVisible
             )
-        }
-        .overlay {
-            if profileViewModel.isLoading {
-                LoadingProfileView()
-            }
         }
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             loginErrorAlert
