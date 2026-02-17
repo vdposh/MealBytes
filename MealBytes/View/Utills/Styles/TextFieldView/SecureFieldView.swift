@@ -13,11 +13,21 @@ struct SecureFieldView: View {
     var placeholder: String = "Password"
     
     var body: some View {
-        SecureField(placeholder, text: $text)
+        SecureField("", text: $text)
             .autocapitalization(.none)
             .frame(height: 35)
             .overlay(alignment: .bottom) {
                 Divider()
+            }
+            .overlay(alignment: .leading) {
+                if text.isEmpty {
+                    HStack(spacing: 10) {
+                        Image(systemName: "key")
+                            .frame(width: 15)
+                        Text(placeholder)
+                    }
+                    .foregroundStyle(.tertiary)
+                }
             }
             .overlay(
                 Button {
@@ -33,4 +43,8 @@ struct SecureFieldView: View {
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }
