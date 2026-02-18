@@ -13,7 +13,8 @@ struct RegisterView: View {
     var body: some View {
         NavigationStack {
             registerViewContentBody
-            registerViewFooter
+                .navigationTitle("Create account")
+                .navigationBarTitleDisplayMode(.inline)
         }
         .alert(isPresented: $registerViewModel.showAlert) {
             registerViewModel.getAlert()
@@ -21,28 +22,31 @@ struct RegisterView: View {
     }
     
     private var registerViewContentBody: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Create account")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            LoginTextFieldView(
-                text: $registerViewModel.email
-            )
-            .textContentType(.emailAddress)
-            
-            SecureFieldView(
-                text: $registerViewModel.password
-            )
-            
-            SecureFieldView(
-                text: $registerViewModel.confirmPassword,
-                placeholder: "Re-enter Password"
-            )
-            
-            registerStateContent
+        Form {
+            Section {
+                LoginTextFieldView(
+                    text: $registerViewModel.email
+                )
+                .textContentType(.emailAddress)
+                
+                SecureFieldView(
+                    text: $registerViewModel.password
+                )
+                
+                SecureFieldView(
+                    text: $registerViewModel.confirmPassword,
+                    placeholder: "Re-enter Password"
+                )
+            } footer: {
+                VStack(spacing: 20) {
+                    registerStateContent
+                    
+                    Text("To register, provide a valid email address and create a password that is at least 6 characters long. Once done, you'll receive a verification email.")
+                }
+                .padding(.vertical)
+            }
         }
-        .padding(.horizontal, 30)
+        .scrollIndicators(.hidden)
     }
     
     @ViewBuilder
@@ -66,21 +70,18 @@ struct RegisterView: View {
                 },
                 isEnabled: registerViewModel.isRegisterEnabled()
             )
-            .frame(height: 50)
         }
-    }
-    
-    private var registerViewFooter: some View {
-        Text("To register, provide a valid email address and create a password that is at least 6 characters long. Once done, you'll receive a verification email.")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 30)
-            .padding(.top, 15)
     }
 }
 
 #Preview {
-    NavigationStack {
-        RegisterView()
-    }
+    PreviewContentView.contentView
+}
+
+#Preview {
+    RegisterView()
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }

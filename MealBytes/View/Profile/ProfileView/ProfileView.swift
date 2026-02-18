@@ -12,7 +12,7 @@ struct ProfileView: View {
     
     var body: some View {
         profileViewContentBody
-            .navigationBarTitle("Profile")
+            .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .alert(
                 profileViewModel.alertTitle,

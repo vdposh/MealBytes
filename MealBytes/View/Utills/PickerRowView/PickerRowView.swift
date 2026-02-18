@@ -21,7 +21,6 @@ struct PickerRowView<MenuContent: View>: View {
             } icon: {
                 if useRendering {
                     Image(systemName: iconName)
-                        .imageScale(.large)
                         .foregroundStyle(
                             mealType.foregroundStyle.0,
                             mealType.foregroundStyle.1
@@ -30,7 +29,6 @@ struct PickerRowView<MenuContent: View>: View {
                         .symbolRenderingMode(mealType.renderingMode)
                 } else {
                     Image(systemName: iconName)
-                        .imageScale(.medium)
                         .foregroundStyle(.customGray)
                         .symbolColorRenderingMode(.gradient)
                 }

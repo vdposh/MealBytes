@@ -31,8 +31,6 @@ struct ResendEmailView: View {
                     .frame(width: 50, alignment: .leading)
             }
         }
-        .font(.footnote)
-        .foregroundStyle(.secondary)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
         .frame(height: 50)

@@ -17,7 +17,7 @@ struct RdiView: View {
     
     var body: some View {
         rdiViewContentBody
-            .navigationBarTitle("RDI")
+            .navigationTitle("RDI")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 rdiViewToolbar

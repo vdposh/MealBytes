@@ -22,7 +22,7 @@ struct DailyIntakeView: View {
     
     var body: some View {
         dailyIntakeViewContentBody
-            .navigationBarTitle("Daily Intake")
+            .navigationTitle("Daily Intake")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 dailyIntakeViewToolbar

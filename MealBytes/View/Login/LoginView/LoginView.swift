@@ -14,7 +14,8 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             loginViewContentBody
-            loginViewFooter
+                .navigationTitle("Sign in")
+                .navigationBarTitleDisplayMode(.inline)
         }
         .alert(isPresented: $loginViewModel.showAlert) {
             loginViewModel.getLoginErrorAlert()
@@ -22,66 +23,62 @@ struct LoginView: View {
     }
     
     private var loginViewContentBody: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Sign in")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            LoginTextFieldView(
-                text: $loginViewModel.email
-            )
-            .focused($focus, equals: .email)
-            
-            SecureFieldView(
-                text: $loginViewModel.password
-            )
-            .focused($focus, equals: .password)
-            
-            ActionButtonView(
-                title: "Login",
-                action: {
-                    focus = nil
+        Form {
+            Section {
+                LoginTextFieldView(
+                    text: $loginViewModel.email
+                )
+                .focused($focus, equals: .email)
+                
+                SecureFieldView(
+                    text: $loginViewModel.password
+                )
+                .focused($focus, equals: .password)
+            } footer: {
+                VStack(spacing: 20) {
+                    ActionButtonView(
+                        title: "Login",
+                        action: {
+                            focus = nil
+                            
+                            Task {
+                                await loginViewModel.signIn()
+                            }
+                        },
+                        isEnabled: loginViewModel.isLoginEnabled()
+                    )
                     
-                    Task {
-                        await loginViewModel.signIn()
+                    VStack(spacing: 15) {
+                        HStack(spacing: 5) {
+                            Text("Don't have a MealBytes account?")
+                            
+                            NavigationLink("Sign up") {
+                                RegisterView()
+                            }
+                            .task {
+                                focus = nil
+                            }
+                            .fontWeight(.semibold)
+                        }
+                        
+                        HStack(spacing: 5) {
+                            Text("Forgot the password?")
+                            
+                            NavigationLink("Reset") {
+                                ResetView()
+                            }
+                            .task {
+                                focus = nil
+                            }
+                            .fontWeight(.semibold)
+                        }
                     }
-                },
-                isEnabled: loginViewModel.isLoginEnabled()
-            )
-        }
-        .padding(.horizontal, 30)
-        .padding(.vertical, 15)
-    }
-    
-    private var loginViewFooter: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 5) {
-                Text("Don't have a MealBytes account?")
-                    .foregroundStyle(.secondary)
-                
-                NavigationLink("Sign up") {
-                    RegisterView()
+                    .font(.footnote)
                 }
-                .task {
-                    focus = nil
-                }
-                .fontWeight(.semibold)
-            }
-            
-            HStack(spacing: 5) {
-                Text("Forgot the password?")
-                    .foregroundStyle(.secondary)
-                
-                NavigationLink("Reset") {
-                    ResetView()
-                }
-                .task {
-                    focus = nil
-                }
-                .fontWeight(.semibold)
+                .padding(.vertical)
             }
         }
-        .font(.footnote)
+        .scrollIndicators(.hidden)
     }
     
     enum LoginFocus {
