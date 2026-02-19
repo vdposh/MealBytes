@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct LoginView: View {
-    @FocusState private var focus: LoginFocus?
     @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
@@ -28,19 +27,15 @@ struct LoginView: View {
                 LoginTextFieldView(
                     text: $loginViewModel.email
                 )
-                .focused($focus, equals: .email)
                 
                 SecureFieldView(
                     text: $loginViewModel.password
                 )
-                .focused($focus, equals: .password)
             } footer: {
                 VStack(spacing: 20) {
                     ActionButtonView(
                         title: "Login",
                         action: {
-                            focus = nil
-                            
                             Task {
                                 await loginViewModel.signIn()
                             }
@@ -48,15 +43,12 @@ struct LoginView: View {
                         isEnabled: loginViewModel.isLoginEnabled()
                     )
                     
-                    VStack(spacing: 15) {
+                    VStack(spacing: 10) {
                         HStack(spacing: 5) {
                             Text("Don't have a MealBytes account?")
                             
                             NavigationLink("Sign up") {
                                 RegisterView()
-                            }
-                            .task {
-                                focus = nil
                             }
                             .fontWeight(.semibold)
                         }
@@ -67,9 +59,6 @@ struct LoginView: View {
                             NavigationLink("Reset") {
                                 ResetView()
                             }
-                            .task {
-                                focus = nil
-                            }
                             .fontWeight(.semibold)
                         }
                     }
@@ -79,10 +68,6 @@ struct LoginView: View {
             }
         }
         .scrollIndicators(.hidden)
-    }
-    
-    enum LoginFocus {
-        case email, password
     }
 }
 

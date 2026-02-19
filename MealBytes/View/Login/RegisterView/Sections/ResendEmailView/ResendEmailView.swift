@@ -19,6 +19,7 @@ struct ResendEmailView: View {
                     await registerViewModel.resendEmailVerification()
                 }
             }
+            .font(.footnote)
             .fontWeight(.semibold)
             .foregroundStyle(registerViewModel.resendButtonColor())
             .disabled(

@@ -11,14 +11,12 @@ struct ResetView: View {
     @StateObject private var resetViewModel = ResetViewModel()
     
     var body: some View {
-        NavigationStack {
-            resetViewContentBody
-                .navigationTitle("Reset Password")
-                .navigationBarTitleDisplayMode(.inline)
-        }
-        .alert(isPresented: $resetViewModel.showAlert) {
-            resetViewModel.getAlert()
-        }
+        resetViewContentBody
+            .navigationTitle("Reset Password")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert(isPresented: $resetViewModel.showAlert) {
+                resetViewModel.getAlert()
+            }
     }
     
     private var resetViewContentBody: some View {

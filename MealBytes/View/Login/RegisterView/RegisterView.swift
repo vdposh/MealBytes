@@ -11,14 +11,12 @@ struct RegisterView: View {
     @StateObject private var registerViewModel = RegisterViewModel()
     
     var body: some View {
-        NavigationStack {
-            registerViewContentBody
-                .navigationTitle("Create account")
-                .navigationBarTitleDisplayMode(.inline)
-        }
-        .alert(isPresented: $registerViewModel.showAlert) {
-            registerViewModel.getAlert()
-        }
+        registerViewContentBody
+            .navigationTitle("Create account")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert(isPresented: $registerViewModel.showAlert) {
+                registerViewModel.getAlert()
+            }
     }
     
     private var registerViewContentBody: some View {
@@ -35,7 +33,7 @@ struct RegisterView: View {
                 
                 SecureFieldView(
                     text: $registerViewModel.confirmPassword,
-                    placeholder: "Re-enter Password"
+                    placeholder: "Confirm Password"
                 )
             } footer: {
                 VStack(spacing: 20) {
