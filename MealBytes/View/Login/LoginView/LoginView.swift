@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
-        NavigationStack {
-            loginViewContentBody
-                .navigationTitle("Sign in")
-                .navigationBarTitleDisplayMode(.inline)
-        }
-        .alert(isPresented: $loginViewModel.showAlert) {
-            loginViewModel.getLoginErrorAlert()
-        }
+        loginViewContentBody
+            .navigationTitle("Sign in")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                loginViewToolbar
+            }
+            .alert(isPresented: $loginViewModel.showAlert) {
+                loginViewModel.getLoginErrorAlert()
+            }
     }
     
     private var loginViewContentBody: some View {
@@ -68,6 +70,27 @@ struct LoginView: View {
             }
         }
         .scrollIndicators(.hidden)
+    }
+    
+    @ToolbarContentBuilder
+    private var loginViewToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Picker("App Theme", selection: $themeManager.selectedTheme) {
+                    ForEach(ThemeMode.allCases, id: \.self) { theme in
+                        Label(
+                            theme.rawValue.capitalized,
+                            systemImage: theme.iconName
+                        )
+                        .tag(theme)
+                    }
+                }
+                
+                Text("Automatic setting follows system")
+            } label: {
+                Image(systemName: themeManager.selectedTheme.iconName)
+            }
+        }
     }
 }
 

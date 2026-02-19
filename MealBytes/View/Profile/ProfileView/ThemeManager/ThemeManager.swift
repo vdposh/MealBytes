@@ -19,8 +19,16 @@ final class ThemeManager: ObservableObject {
     }
 }
 
-enum ThemeMode: String {
+enum ThemeMode: String, CaseIterable {
     case automatic
     case dark
     case light
+    
+    var iconName: String {
+        switch self {
+        case .automatic: return "circle.lefthalf.filled"
+        case .dark: return "moon.fill"
+        case .light: return "sun.max.fill"
+        }
+    }
 }
