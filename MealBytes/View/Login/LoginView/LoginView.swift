@@ -79,14 +79,13 @@ struct LoginView: View {
                 Picker("App Theme", selection: $themeManager.selectedTheme) {
                     ForEach(ThemeMode.allCases, id: \.self) { theme in
                         Label(
-                            theme.rawValue.capitalized,
+                            theme.themeName,
                             systemImage: theme.iconName
                         )
                         .tag(theme)
                     }
                 }
-                
-                Text("Automatic setting follows system")
+                Text("The automatic mode follows system settings")
             } label: {
                 Image(systemName: themeManager.selectedTheme.iconName)
             }
