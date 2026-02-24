@@ -23,6 +23,7 @@ struct ShowHideButtonView: View {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .imageScale(.small)
             }
+            .transaction { $0.animation = nil }
             .lineLimit(1)
             .labelIconToTitleSpacing(2)
             .frame(maxWidth: .infinity, alignment: .center)

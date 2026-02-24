@@ -13,9 +13,10 @@ struct ThemePickerSection: View {
     var body: some View {
         Section {
             Picker("App Theme", selection: $themeManager.selectedTheme) {
-                Text(ThemeMode.light.themeName).tag(ThemeMode.light)
-                Text(ThemeMode.dark.themeName).tag(ThemeMode.dark)
-                Text(ThemeMode.automatic.themeName).tag(ThemeMode.automatic)
+                ForEach(ThemeMode.allCases, id: \.self) { theme in
+                    Text(theme.themeName)
+                        .tag(theme)
+                }
             }
             .pickerStyle(.navigationLink)
         } footer: {
