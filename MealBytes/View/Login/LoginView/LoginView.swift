@@ -8,69 +8,88 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
-        NavigationStack {
-            loginViewContentBody
-            loginViewFooter
-        }
-        .alert(isPresented: $loginViewModel.showAlert) {
-            loginViewModel.getLoginErrorAlert()
-        }
+        loginViewContentBody
+            .navigationTitle("Sign in")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                loginViewToolbar
+            }
+            .alert(isPresented: $loginViewModel.showAlert) {
+                loginViewModel.getLoginErrorAlert()
+            }
     }
     
     private var loginViewContentBody: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Sign in")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            LoginTextFieldView(
-                text: $loginViewModel.email
-            )
-            
-            SecureFieldView(
-                text: $loginViewModel.password
-            )
-            
-            ActionButtonView(
-                title: "Login",
-                action: {
-                    Task {
-                        await loginViewModel.signIn()
+        Form {
+            Section {
+                LoginTextFieldView(
+                    text: $loginViewModel.email
+                )
+                
+                SecureFieldView(
+                    text: $loginViewModel.password
+                )
+            } footer: {
+                VStack(spacing: 20) {
+                    ActionButtonView(
+                        title: "Login",
+                        action: {
+                            Task {
+                                await loginViewModel.signIn()
+                            }
+                        },
+                        isEnabled: loginViewModel.isLoginEnabled()
+                    )
+                    
+                    VStack(spacing: 10) {
+                        HStack(spacing: 5) {
+                            Text("Don't have a MealBytes account?")
+                            
+                            NavigationLink("Sign up") {
+                                RegisterView()
+                            }
+                            .fontWeight(.semibold)
+                        }
+                        
+                        HStack(spacing: 5) {
+                            Text("Forgot the password?")
+                            
+                            NavigationLink("Reset") {
+                                ResetView()
+                            }
+                            .fontWeight(.semibold)
+                        }
                     }
-                },
-                isEnabled: loginViewModel.isLoginEnabled()
-            )
+                    .font(.footnote)
+                }
+                .padding(.vertical)
+            }
         }
-        .padding(.horizontal, 30)
-        .padding(.vertical, 15)
+        .scrollIndicators(.hidden)
     }
     
-    private var loginViewFooter: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 5) {
-                Text("Don't have a MealBytes account?")
-                    .foregroundStyle(.secondary)
-                
-                NavigationLink("Sign up") {
-                    RegisterView()
+    @ToolbarContentBuilder
+    private var loginViewToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Picker("App Theme", selection: $themeManager.selectedTheme) {
+                    ForEach(ThemeMode.allCases, id: \.self) { theme in
+                        Label(
+                            theme.themeName,
+                            systemImage: theme.iconName
+                        )
+                        .tag(theme)
+                    }
                 }
-                .fontWeight(.semibold)
-            }
-            
-            HStack(spacing: 5) {
-                Text("Forgot the password?")
-                    .foregroundStyle(.secondary)
-                
-                NavigationLink("Reset") {
-                    ResetView()
-                }
-                .fontWeight(.semibold)
+                Text("The automatic mode follows system settings")
+            } label: {
+                Image(systemName: themeManager.selectedTheme.iconName)
             }
         }
-        .font(.footnote)
     }
 }
 

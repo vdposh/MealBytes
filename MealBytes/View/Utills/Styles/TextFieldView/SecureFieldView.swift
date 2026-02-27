@@ -13,24 +13,30 @@ struct SecureFieldView: View {
     var placeholder: String = "Password"
     
     var body: some View {
-        SecureField(placeholder, text: $text)
-            .autocapitalization(.none)
-            .frame(height: 35)
-            .overlay(alignment: .bottom) {
-                Divider()
+        Label {
+            SecureField(placeholder, text: $text)
+                .autocapitalization(.none)
+        } icon: {
+            Image(systemName: "key.fill")
+                .foregroundStyle(text.isEmpty ? .customGray : .accent)
+                .symbolColorRenderingMode(.gradient)
+        }
+        .overlay(
+            Button {
+                $focus.wrappedValue = true
+            } label: {
+                Color.clear
             }
-            .overlay(
-                Button {
-                    $focus.wrappedValue = true
-                } label: {
-                    Color.clear
-                }
-            )
-            .buttonStyle(.borderless)
-            .focused($focus)
+        )
+        .buttonStyle(.borderless)
+        .focused($focus)
     }
 }
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }

@@ -34,7 +34,9 @@ struct ContentView: View {
                 )
                 
             case .notLoggedIn:
-                LoginView(loginViewModel: loginViewModel)
+                NavigationStack {
+                    LoginView(loginViewModel: loginViewModel)
+                }
             }
         }
         .task {

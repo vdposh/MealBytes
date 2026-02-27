@@ -13,26 +13,32 @@ struct LoginTextFieldView: View {
     var placeholder: String = "Email"
     
     var body: some View {
-        TextField(placeholder, text: $text)
-            .keyboardType(.emailAddress)
-            .autocapitalization(.none)
-            .disableAutocorrection(true)
-            .frame(height: 35)
-            .overlay(alignment: .bottom) {
-                Divider()
+        Label {
+            TextField(placeholder, text: $text)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
+        } icon: {
+            Image(systemName: "person.fill")
+                .foregroundStyle(text.isEmpty ? .customGray : .accent)
+                .symbolColorRenderingMode(.gradient)
+        }
+        .overlay(
+            Button {
+                $focus.wrappedValue = true
+            } label: {
+                Color.clear
             }
-            .overlay(
-                Button {
-                    $focus.wrappedValue = true
-                } label: {
-                    Color.clear
-                }
-            )
-            .buttonStyle(.borderless)
-            .focused($focus)
+        )
+        .buttonStyle(.borderless)
+        .focused($focus)
     }
 }
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }

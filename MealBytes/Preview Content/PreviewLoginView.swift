@@ -23,9 +23,11 @@ struct PreviewLoginView {
             mainViewModel: mainViewModel,
             goalsViewModel: goalsViewModel
         )
+        let themeManager = ThemeManager()
         
         return NavigationStack {
             LoginView(loginViewModel: loginViewModel)
+                .environmentObject(themeManager)
         }
     }
 }

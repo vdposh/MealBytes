@@ -17,7 +17,8 @@ struct GoalsView: View {
             DisclaimerButtonSection()
         }
         .id(goalsViewModel.uniqueId)
-        .navigationBarTitle("Goals", displayMode: .inline)
+        .navigationTitle("Goals")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             await goalsViewModel.loadGoalsData()
         }

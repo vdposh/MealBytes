@@ -11,7 +11,7 @@ struct SystemStatsView: View {
     @StateObject private var systemStatsViewModel = SystemStatsViewModel()
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 10) {
             Text("💾 RAM: \(String(format: "%.1f", systemStatsViewModel.usedMemoryMB)) MB")
             
             Text("⚙️ CPU: \(String(format: "%.1f", systemStatsViewModel.cpuUsage)) %")

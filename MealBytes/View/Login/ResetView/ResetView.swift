@@ -9,29 +9,32 @@ import SwiftUI
 
 struct ResetView: View {
     @StateObject private var resetViewModel = ResetViewModel()
+    
     var body: some View {
-        NavigationStack {
-            resetViewContentBody
-            resetViewFooter
-        }
-        .alert(isPresented: $resetViewModel.showAlert) {
-            resetViewModel.getAlert()
-        }
+        resetViewContentBody
+            .navigationTitle("Reset Password")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert(isPresented: $resetViewModel.showAlert) {
+                resetViewModel.getAlert()
+            }
     }
     
     private var resetViewContentBody: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Reset Password")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            LoginTextFieldView(
-                text: $resetViewModel.email
-            )
-            
-            resetStateContent
+        Form {
+            Section {
+                LoginTextFieldView(
+                    text: $resetViewModel.email
+                )
+            } footer: {
+                VStack(spacing: 20) {
+                    resetStateContent
+                    
+                    Text("Enter the email used during registration. A reset link will be sent to this email with instructions on how to create a new password and regain access to your account.")
+                }
+                .padding(.vertical)
+            }
         }
-        .padding(.horizontal, 30)
+        .scrollIndicators(.hidden)
     }
     
     @ViewBuilder
@@ -41,9 +44,7 @@ struct ResetView: View {
             LoadingView(showFrame: true)
             
         case .emailSent:
-            Text("A reset link has been sent to the email \"\(resetViewModel.sentEmail)\".")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            Text("A reset link has been sent to the email \(Text(resetViewModel.sentEmail).fontWeight(.semibold))")
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
@@ -58,21 +59,18 @@ struct ResetView: View {
                 },
                 isEnabled: resetViewModel.isResetEnabled()
             )
-            .frame(height: 50)
         }
-    }
-    
-    private var resetViewFooter: some View {
-        Text("Enter the email used during registration. A reset link will be sent to this email with instructions on how to create a new password and regain access to your account.")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 30)
-            .padding(.top, 15)
     }
 }
 
 #Preview {
-    NavigationStack {
-        ResetView()
-    }
+    PreviewContentView.contentView
+}
+
+#Preview {
+    ResetView()
+}
+
+#Preview {
+    PreviewLoginView.loginView
 }
