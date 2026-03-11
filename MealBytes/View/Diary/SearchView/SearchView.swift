@@ -263,6 +263,7 @@ struct SearchView: View {
                         searchViewModel.foods.removeAll {
                             idRemove.contains($0.searchFoodId)
                         }
+                        
                         withAnimation {
                             searchViewModel.editingState = .inactive
                         }

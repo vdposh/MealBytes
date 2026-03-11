@@ -49,6 +49,7 @@ struct FoodView: View {
         foodViewContentBody
             .navigationTitle(navigationTitleText)
             .toolbarTitleDisplayMode(.inline)
+            .navigationSubtitle(foodViewModel.mainViewModel.formattedDate())
             .toolbar {
                 foodViewToolbar
             }
