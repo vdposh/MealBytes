@@ -13,6 +13,7 @@ protocol MainViewModelProtocol {
     var date: Date { get set }
     var intakeSource: String { get }
     var displayIntake: Bool { get }
+    var intake: String { get }
     
     func loadMainData() async
     func saveCurrentIntakeMainView(source: String) async

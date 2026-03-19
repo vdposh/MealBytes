@@ -251,18 +251,18 @@ final class RdiViewModel: ObservableObject {
         var messages: [String] = []
         
         if !invalidFields.isEmpty {
-            messages.append("Enter a valid \(formatList(invalidFields))")
+            messages.append("Enter a valid \(formatList(invalidFields)).")
         }
         
         if !missingSelections.isEmpty {
-            messages.append("Select \(formatList(missingSelections))")
+            messages.append("Select \(formatList(missingSelections)).")
         }
         
         if !missingUnits.isEmpty {
             let isPlural = missingUnits.count != 1
             let unitMessage = isPlural
-            ? "Specify units for \(formatList(missingUnits))"
-            : "Specify unit for \(formatList(missingUnits))"
+            ? "Specify units for \(formatList(missingUnits))."
+            : "Specify unit for \(formatList(missingUnits))."
             messages.append(unitMessage)
         }
         

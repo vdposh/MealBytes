@@ -11,26 +11,28 @@ struct IntakeToggleSection: View {
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
-        Section {
-            Toggle(
-                "Daily Intake",
-                isOn: Binding(
-                    get: {
-                        profileViewModel.mainViewModel.displayIntake
-                    },
-                    set: {
-                        newValue in profileViewModel.mainViewModel
-                            .setDisplayIntake(newValue)
-                        Task {
-                            await profileViewModel.mainViewModel
-                                .saveDisplayIntakeMainView(newValue)
+        if !profileViewModel.mainViewModel.intake.isEmpty {
+            Section {
+                Toggle(
+                    "Daily Intake",
+                    isOn: Binding(
+                        get: {
+                            profileViewModel.mainViewModel.displayIntake
+                        },
+                        set: {
+                            newValue in profileViewModel.mainViewModel
+                                .setDisplayIntake(newValue)
+                            Task {
+                                await profileViewModel.mainViewModel
+                                    .saveDisplayIntakeMainView(newValue)
+                            }
                         }
-                    }
+                    )
                 )
-            )
-            .toggleStyle(SwitchToggleStyle(tint: .accent))
-        } footer: {
-            Text("Enable this option to display daily intake progress directly in the Diary.")
+                .toggleStyle(SwitchToggleStyle(tint: .accent))
+            } footer: {
+                Text("Enable this option to display daily intake progress directly in the Diary.")
+            }
         }
     }
 }
