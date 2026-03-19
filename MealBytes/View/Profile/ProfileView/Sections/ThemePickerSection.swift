@@ -18,7 +18,6 @@ struct ThemePickerSection: View {
                         .tag(theme)
                 }
             }
-            .pickerStyle(.navigationLink)
         } footer: {
             Text("Choose a theme to customize the app's appearance. The automatic mode follows system settings.")
         }
