@@ -39,12 +39,12 @@ Built using **MVVM** pattern for clean separation of concerns.
 
 1) https://platform.fatsecret.com Registration
 
-2) https://platform.fatsecret.com/my-account/api-key Select REST **API OAuth 2.0 Credentials**, copy **Client ID** and **Client Secret**
+2) https://platform.fatsecret.com/my-account/api-key Generate your API key and copy **Client ID** and **Client Secret**. The toggle **REST API OAuth 2.0 Credentials** must be enabled.
 
-3) In the file **TokenManager.swift** change **clientID** and **clientSecret** to yours:
+3) In project **MealBytes** find file **TokenManager.swift** and change **clientID** and **clientSecret** to yours:
     ```swift
     private let clientID = "Your_clientID"
     private let clientSecret = "Your_clientSecret"
     ```
 
-4) https://platform.fatsecret.com/my-account/ip-restrictions Add your IP address to the whitelist (note that this may take some time, usually 20-30 minutes, but the website states it can take up to 24 hours).
+4) https://platform.fatsecret.com/my-account/ip-restrictions Add your IP address to the whitelist and push button **Save Updates** (note that this may take some time, usually 20-30 minutes, but the website states it can take up to 24 hours).
