@@ -36,6 +36,7 @@ struct KeyboardToolbarView: View {
             action: done
         )
         .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.trailing, showArrows ? 0 : 8)
     }
 }
 
