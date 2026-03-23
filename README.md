@@ -39,7 +39,7 @@ Built using **MVVM** pattern for clean separation of concerns.
 
 1) https://platform.fatsecret.com Registration
 
-2) https://platform.fatsecret.com/my-account/api-key Generate your API key and copy **Client ID** and **Client Secret**. The toggle **REST API OAuth 2.0 Credentials** must be enabled.
+2) https://platform.fatsecret.com/my-account/api-key Generate your API key. Copy **Client ID** and **Client Secret**. The toggle **REST API OAuth 2.0 Credentials** must be enabled.
 
 3) In project **MealBytes** find file **TokenManager.swift** and change **clientID** and **clientSecret** to yours:
     ```swift
