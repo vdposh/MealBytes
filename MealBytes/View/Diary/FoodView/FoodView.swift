@@ -293,7 +293,6 @@ struct FoodView: View {
                     foodViewModel.normalizeAmount()
                 }
             )
-            .padding(.trailing, 8)
         }
     }
 }

@@ -22,7 +22,6 @@ struct PasswordSection: View {
             }
         } footer: {
             Text("Use this option to update the account password for improved security.")
-                .padding(.bottom)
         }
     }
 }

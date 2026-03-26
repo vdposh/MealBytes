@@ -34,7 +34,6 @@ struct RdiSectionView: View {
                                     .foregroundStyle(.accent)
                             }
                         }
-                        .labelIconToTitleSpacing(10)
                     }
                     .disabled(!goalsViewModel.isDataLoaded)
                 }
@@ -49,7 +48,6 @@ struct RdiSectionView: View {
                             .foregroundStyle(.accent)
                     }
                 }
-                .labelIconToTitleSpacing(10)
             }
         } footer: {
             Text("MealBytes calculates the Recommended Daily Intake (RDI) to provide a daily calorie target tailored to help achieve the desired weight.")

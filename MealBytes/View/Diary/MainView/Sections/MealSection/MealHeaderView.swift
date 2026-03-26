@@ -50,7 +50,6 @@ struct MealHeaderView: View {
                                     )
                                     .symbolColorRenderingMode(.gradient)
                             }
-                            .labelIconToTitleSpacing(10)
                             
                             if mainViewModel
                                 .hasMealItemsForMealType(

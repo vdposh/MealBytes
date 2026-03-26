@@ -689,25 +689,23 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Alert
     func triggerFoodAlert() {
-        guard !isAlertInProgress else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.triggerFoodAlert()
+        Task { @MainActor in
+            guard !isAlertInProgress else {
+                try? await Task.sleep(for: .seconds(0.3))
+                triggerFoodAlert()
+                return
             }
-            return
-        }
-        
-        isAlertInProgress = true
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.isFoodAddedAlertVisible = true
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                self.isFoodAddedAlertVisible = false
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    self.isAlertInProgress = false
-                }
-            }
+            isAlertInProgress = true
+            
+            try? await Task.sleep(for: .seconds(0.1))
+            isFoodAddedAlertVisible = true
+            
+            try? await Task.sleep(for: .seconds(1.5))
+            isFoodAddedAlertVisible = false
+            
+            try? await Task.sleep(for: .seconds(0.3))
+            isAlertInProgress = false
         }
     }
     
