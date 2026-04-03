@@ -8,13 +8,13 @@
 import SwiftUI
 
 final class ThemeManager: ObservableObject {
-    @AppStorage("selectedTheme") var selectedTheme: ThemeMode = .automatic
+    @AppStorage("selectedTheme") var selectedTheme: ThemeMode = .system
     
     var appliedColorScheme: ColorScheme? {
         switch selectedTheme {
         case .light: return .light
         case .dark: return .dark
-        case .automatic: return nil
+        case .system: return nil
         }
     }
 }
@@ -22,13 +22,13 @@ final class ThemeManager: ObservableObject {
 enum ThemeMode: String, CaseIterable {
     case light
     case dark
-    case automatic
+    case system
     
     var themeName: String {
         switch self {
         case .light: "Light"
         case .dark: "Dark"
-        case .automatic: "Automatic"
+        case .system: "System"
         }
     }
     
@@ -36,7 +36,7 @@ enum ThemeMode: String, CaseIterable {
         switch self {
         case .light: "sun.max.fill"
         case .dark: "moon.fill"
-        case .automatic: "circle.lefthalf.filled"
+        case .system: "circle.lefthalf.filled"
         }
     }
 }

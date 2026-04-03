@@ -14,36 +14,29 @@ struct ThemePickerView: View {
     var body: some View {
         Form {
             Section {
-                HStack(spacing: 60) {
-                    ThemeButton(
-                        theme: .light,
-                        imageName: "themeLight",
-                        label: "Light",
-                        isSelected: shouldShowCheckmark(for: .light),
-                        isAutomaticEnabled: themeManager
-                            .selectedTheme == .automatic
-                    ) {
-                        themeManager.selectedTheme = .light
-                    }
-                    
-                    ThemeButton(
-                        theme: .dark,
-                        imageName: "themeDark",
-                        label: "Dark",
-                        isSelected: shouldShowCheckmark(for: .dark),
-                        isAutomaticEnabled: themeManager
-                            .selectedTheme == .automatic
-                    ) {
-                        themeManager.selectedTheme = .dark
-                    }
+                ThemeButton(
+                    theme: .light,
+                    text: "Light",
+                    isSelected: shouldShowCheckmark(for: .light),
+                    themeManager: themeManager
+                ) {
+                    themeManager.selectedTheme = .light
                 }
-                .frame(maxWidth: .infinity)
+                
+                ThemeButton(
+                    theme: .dark,
+                    text: "Dark",
+                    isSelected: shouldShowCheckmark(for: .dark),
+                    themeManager: themeManager
+                ) {
+                    themeManager.selectedTheme = .dark
+                }
                 
                 Toggle(isOn: Binding(
-                    get: { themeManager.selectedTheme == .automatic },
+                    get: { themeManager.selectedTheme == .system },
                     set: { isOn in
                         if isOn {
-                            themeManager.selectedTheme = .automatic
+                            themeManager.selectedTheme = .system
                         } else {
                             let systemIsDark = colorScheme == .dark
                             themeManager.selectedTheme = systemIsDark
@@ -52,19 +45,19 @@ struct ThemePickerView: View {
                         }
                     }
                 )) {
-                    Text("Automatic")
-                    Text("Follows system settings")
+                    Text("System")
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .accent))
+            } footer: {
+                Text("Enable for app theme to follow your system settings")
             }
-            .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
         }
         .navigationTitle("App Theme")
         .navigationBarTitleDisplayMode(.inline)
     }
     
     private func shouldShowCheckmark(for theme: ThemeMode) -> Bool {
-        if themeManager.selectedTheme == .automatic {
+        if themeManager.selectedTheme == .system {
             return theme == (colorScheme == .dark ? .dark : .light)
         } else {
             return themeManager.selectedTheme == theme

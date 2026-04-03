@@ -9,39 +9,28 @@ import SwiftUI
 
 struct ThemeButton: View {
     let theme: ThemeMode
-    let imageName: String
-    let label: String
+    let text: String
     let isSelected: Bool
-    let isAutomaticEnabled: Bool
+    let themeManager: ThemeManager
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 10) {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                
-                Text(label)
-                
-                Image(
-                    systemName: isSelected ? "checkmark.circle.fill" : "circle"
-                )
-                .foregroundStyle(
-                    isSelected && !isAutomaticEnabled
-                    ? .accent
-                    : .secondary
-                )
-                .font(.title2)
-                .contentTransition(
-                    isSelected
-                    ? .symbolEffect(.replace.magic(fallback: .replace))
-                    : .identity
-                )
-            }
+            Text(text)
+                .foregroundStyle(Color.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .trailing) {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.headline)
+                            .foregroundStyle(
+                                isSelected && themeManager.selectedTheme != .system
+                                ? .accent
+                                : .secondary.opacity(0.7)
+                            )
+                    }
+                }
         }
-        .buttonStyle(.plain)
     }
 }
 
