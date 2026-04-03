@@ -45,7 +45,6 @@ struct TabBarView: View {
             }
         }
         .disabled(profileViewModel.isLoading)
-        .tabBarMinimizeBehavior(.onScrollDown)
         .overlay {
             FoodAddedAlertView(
                 isVisible: $mainViewModel.isFoodAddedAlertVisible

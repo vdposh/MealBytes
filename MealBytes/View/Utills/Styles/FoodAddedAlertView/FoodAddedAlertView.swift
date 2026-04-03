@@ -21,7 +21,6 @@ struct FoodAddedAlertView: View {
                 .symbolEffect(.drawOn, isActive: symbolEffect)
                 .symbolColorRenderingMode(.gradient)
         }
-        .labelIconToTitleSpacing(10)
         .foregroundStyle(.secondary)
         .padding(.vertical, 14)
         .padding(.horizontal, 16)

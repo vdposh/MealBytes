@@ -109,3 +109,7 @@ struct CalendarView: View {
 #Preview {
     PreviewContentView.contentView
 }
+
+#Preview {
+    PreviewCalendarView.calendarView
+}
