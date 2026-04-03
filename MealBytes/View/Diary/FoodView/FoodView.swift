@@ -198,7 +198,7 @@ struct FoodView: View {
                     )
                 }
             } else {
-                HStack(spacing: 15) {
+                HStack(spacing: 10) {
                     ActionButtonView(
                         title: "Add",
                         action: {
