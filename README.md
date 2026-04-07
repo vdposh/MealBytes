@@ -24,10 +24,10 @@
 ## 📸 Interface Screenshots
 
 
-<img width="200" src="https://github.com/user-attachments/assets/ee36d561-0cd1-4529-86fb-b830deffae2b" />
-<img width="200" src="https://github.com/user-attachments/assets/b4884cae-fad8-4633-be2e-a680fef27f24" />
-<img width="200" src="https://github.com/user-attachments/assets/0eb6b29a-09a2-42a4-bb74-162652b31edb" />
-<img width="200" src="https://github.com/user-attachments/assets/e4dce4d6-f2be-464b-aa75-75dfae85afd6" />
+<img width="200" src="https://github.com/user-attachments/assets/b43942a0-fd62-4bcd-9264-ef58fce76b2a" />
+<img width="200" src="https://github.com/user-attachments/assets/f3a16a15-e0a5-4343-a083-d2f407e5c797" />
+<img width="200" src="https://github.com/user-attachments/assets/f0cf98af-5940-4ad2-b792-eabc28a1294a" />
+<img width="200" src="https://github.com/user-attachments/assets/f890d9e0-4af5-4cf1-a898-676617747c3b" />
 
 ---
 

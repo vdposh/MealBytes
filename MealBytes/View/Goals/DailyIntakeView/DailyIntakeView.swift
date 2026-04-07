@@ -27,6 +27,17 @@ struct DailyIntakeView: View {
             .toolbar {
                 dailyIntakeViewToolbar
             }
+            .safeAreaInset(edge: .bottom) {
+                if caloriesFocused || macronutrientsFocused != nil {
+                    buildKeyboardToolbar(
+                        current: macronutrientsFocused,
+                        ordered: macroOrder,
+                        set: { macronutrientsFocused = $0 },
+                        normalize: dailyIntakeViewModel.normalizeInputs,
+                        extraDone: { caloriesFocused = false }
+                    )
+                }
+            }
             .alert(isPresented: $dailyIntakeViewModel.showAlert) {
                 dailyIntakeViewAlert
             }
@@ -54,16 +65,6 @@ struct DailyIntakeView: View {
     
     @ToolbarContentBuilder
     private var dailyIntakeViewToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .keyboard) {
-            buildKeyboardToolbar(
-                current: macronutrientsFocused,
-                ordered: macroOrder,
-                set: { macronutrientsFocused = $0 },
-                normalize: dailyIntakeViewModel.normalizeInputs,
-                extraDone: { caloriesFocused = false }
-            )
-        }
-        
         ToolbarItem {
             Button(role: .confirm) {
                 if dailyIntakeViewModel.handleDailyIntakeSave() {

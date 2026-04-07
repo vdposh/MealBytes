@@ -50,8 +50,15 @@ struct FoodView: View {
             .navigationTitle(navigationTitleText)
             .toolbarTitleDisplayMode(.inline)
             .navigationSubtitle(foodViewModel.mainViewModel.formattedDate())
-            .toolbar {
-                foodViewToolbar
+            .safeAreaInset(edge: .bottom) {
+                if amountFocused {
+                    KeyboardToolbarView(
+                        done: {
+                            amountFocused = false
+                            foodViewModel.normalizeAmount()
+                        }
+                    )
+                }
             }
             .onChange(of: mealType) {
                 foodViewModel.mealType = mealType
@@ -282,18 +289,6 @@ struct FoodView: View {
         isEditingMealItem
         ? "Edit in Diary"
         : "Add to \(foodViewModel.mealType.rawValue)"
-    }
-    
-    @ToolbarContentBuilder
-    private var foodViewToolbar: some ToolbarContent {
-        ToolbarItem(placement: .keyboard) {
-            KeyboardToolbarView(
-                done: {
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
-                }
-            )
-        }
     }
 }
 

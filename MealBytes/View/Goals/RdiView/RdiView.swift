@@ -22,6 +22,16 @@ struct RdiView: View {
             .toolbar {
                 rdiViewToolbar
             }
+            .safeAreaInset(edge: .bottom) {
+                if rdiFocused != nil {
+                    buildKeyboardToolbar(
+                        current: rdiFocused,
+                        ordered: rdiOrder,
+                        set: { rdiFocused = $0 },
+                        normalize: rdiViewModel.normalizeInputs
+                    )
+                }
+            }
             .alert(isPresented: $rdiViewModel.showAlert) {
                 rdiViewAlert
             }
@@ -52,15 +62,6 @@ struct RdiView: View {
     
     @ToolbarContentBuilder
     private var rdiViewToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .keyboard) {
-            buildKeyboardToolbar(
-                current: rdiFocused,
-                ordered: rdiOrder,
-                set: { rdiFocused = $0 },
-                normalize: rdiViewModel.normalizeInputs
-            )
-        }
-        
         ToolbarItem {
             Button(role: .confirm) {
                 if rdiViewModel.handleRdiSave() {

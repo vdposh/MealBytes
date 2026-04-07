@@ -16,30 +16,39 @@ struct KeyboardToolbarView: View {
     var done: () -> Void
     
     var body: some View {
-        if showArrows {
-            ToolbarIconButton(
-                systemImage: "chevron.up",
-                isActive: canMoveUp,
-                action: moveUp
-            )
+        HStack(spacing: 5) {
+            if showArrows {
+                ToolbarIconButton(
+                    systemImage: "chevron.up",
+                    isActive: canMoveUp,
+                    action: moveUp
+                )
+                
+                ToolbarIconButton(
+                    systemImage: "chevron.down",
+                    isActive: canMoveDown,
+                    action: moveDown
+                )
+            }
             
             ToolbarIconButton(
-                systemImage: "chevron.down",
-                isActive: canMoveDown,
-                action: moveDown
+                systemImage: "checkmark",
+                isActive: true,
+                action: done
             )
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        
-        ToolbarIconButton(
-            systemImage: "checkmark",
-            isActive: true,
-            action: done
-        )
-        .frame(maxWidth: .infinity, alignment: .trailing)
-        .padding(.trailing, showArrows ? 0 : 8)
+        .glassEffect(.regular.interactive())
+        .padding(.horizontal)
+        .padding(.bottom, 10)
+        .contentShape(Rectangle())
     }
 }
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewDailyIntakeView.dailyIntakeView
 }

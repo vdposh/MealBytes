@@ -17,7 +17,18 @@ struct ToolbarIconButton: View {
             action()
         } label: {
             Image(systemName: systemImage)
+                .font(.title2)
+                .frame(width: 50, height: 50)
         }
+        .foregroundStyle(isActive ? .primary: .quaternary)
         .disabled(!isActive)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewDailyIntakeView.dailyIntakeView
 }
