@@ -18,7 +18,7 @@ struct ToolbarIconButton: View {
         } label: {
             Image(systemName: systemImage)
                 .font(.title2)
-                .frame(width: 50, height: 50)
+                .frame(height: 50)
         }
         .foregroundStyle(isActive ? .primary: .quaternary)
         .disabled(!isActive)

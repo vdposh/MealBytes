@@ -16,7 +16,7 @@ struct KeyboardToolbarView: View {
     var done: () -> Void
     
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 30) {
             if showArrows {
                 ToolbarIconButton(
                     systemImage: "chevron.up",
@@ -38,6 +38,7 @@ struct KeyboardToolbarView: View {
             )
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
+        .padding(.horizontal)
         .glassEffect(.regular.interactive())
         .padding(.horizontal)
         .padding(.bottom, 10)
