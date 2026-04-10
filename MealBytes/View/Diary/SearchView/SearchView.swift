@@ -289,7 +289,7 @@ struct SearchView: View {
                         }
                     }
                     
-                    if !searchViewModel.foods.isEmpty {
+                    if searchViewModel.canEditMealType {
                         Button {
                             searchViewModel.editingState = .active
                             

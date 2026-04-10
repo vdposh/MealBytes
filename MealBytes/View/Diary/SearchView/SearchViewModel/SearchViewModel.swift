@@ -46,6 +46,7 @@ final class SearchViewModel: ObservableObject {
     let mainViewModel: MainViewModelProtocol
     
     private var currentTask: Task<Void, Never>?
+    private var currentSearchTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
@@ -80,23 +81,36 @@ final class SearchViewModel: ObservableObject {
             return
         }
         
-        isLoading = true
+        currentSearchTask?.cancel()
         
-        Task {
+        isLoading = true
+        let searchQuery = query
+        
+        currentSearchTask = Task {
             do {
                 let foods = try await fatSecretManager.fetchFoods(
-                    query: query,
+                    query: searchQuery,
                     page: currentPage
                 )
                 
+                guard !Task.isCancelled, self.query == searchQuery else {
+                    return
+                }
+                
                 await MainActor.run {
-                    guard !self.query.isEmpty else { return }
+                    guard !Task.isCancelled, self.query == searchQuery else {
+                        return
+                    }
                     
                     self.foods = foods
                     self.appError = nil
                     self.isLoading = false
                 }
             } catch {
+                guard !Task.isCancelled, self.query == searchQuery else {
+                    return
+                }
+                
                 await MainActor.run {
                     switch error {
                     case let appError as AppError:
@@ -362,6 +376,10 @@ final class SearchViewModel: ObservableObject {
         return count == 1
         ? "Remove bookmark"
         : "Remove \(count) bookmarks"
+    }
+    
+    var canEditMealType: Bool {
+        return !isLoadingBookmarks && !isLoading && !foods.isEmpty
     }
     
     var isEditModeActive: Bool {
