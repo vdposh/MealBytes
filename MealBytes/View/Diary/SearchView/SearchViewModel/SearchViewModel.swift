@@ -45,6 +45,7 @@ final class SearchViewModel: ObservableObject {
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModelProtocol
     
+    private var currentTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
@@ -118,39 +119,49 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Load Bookmarks Data
     func loadBookmarksSearchView(for mealType: MealType) async {
-        guard firebaseAuth.currentUserExists() else { return }
+        currentTask?.cancel()
         
-        await MainActor.run {
-            if query.isEmpty {
-                isLoading = true
-                query = ""
-            }
-            
-            selectedMealType = mealType
-        }
-        
-        do {
-            let favorites = try await firestore.loadBookmarksFirestore(
-                for: mealType
-            )
-            let bookmarked = Set(favorites.map { $0.searchFoodId })
+        currentTask = Task {
+            guard firebaseAuth.currentUserExists() else { return }
             
             await MainActor.run {
-                self.favoriteFoods = favorites
-                self.bookmarkedFoods = bookmarked
-                
                 if query.isEmpty {
-                    self.foods = favorites
+                    isLoading = true
+                    query = ""
                 }
-                
-                self.isLoading = false
-                self.isLoadingBookmarks = false
-                self.appError = nil
             }
-        } catch {
-            await MainActor.run {
-                self.isLoading = false
-                self.isLoadingBookmarks = false
+            
+            do {
+                let favorites = try await firestore.loadBookmarksFirestore(
+                    for: mealType
+                )
+                
+                guard !Task.isCancelled else { return }
+                
+                let bookmarked = Set(favorites.map { $0.searchFoodId })
+                
+                await MainActor.run {
+                    guard !Task.isCancelled else { return }
+                    
+                    self.favoriteFoods = favorites
+                    self.bookmarkedFoods = bookmarked
+                    
+                    if query.isEmpty {
+                        self.foods = favorites
+                    }
+                    
+                    self.isLoading = false
+                    self.isLoadingBookmarks = false
+                    self.appError = nil
+                    self.selectedMealType = mealType
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+                
+                await MainActor.run {
+                    self.isLoading = false
+                    self.isLoadingBookmarks = false
+                }
             }
         }
     }

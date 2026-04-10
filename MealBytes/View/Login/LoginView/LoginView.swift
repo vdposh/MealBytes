@@ -8,16 +8,12 @@
 import SwiftUI
 
 struct LoginView: View {
-//    @EnvironmentObject var themeManager: ThemeManager
     @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
         loginViewContentBody
             .navigationTitle("Sign in")
             .navigationBarTitleDisplayMode(.inline)
-//            .toolbar {
-//                loginViewToolbar
-//            }
             .alert(isPresented: $loginViewModel.showAlert) {
                 loginViewModel.getLoginErrorAlert()
             }
