@@ -11,7 +11,6 @@ struct TabBarView: View {
     @State private var selectedTab: Tabs = .diary
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
-    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
     
@@ -34,15 +33,6 @@ struct TabBarView: View {
                     ProfileView(profileViewModel: profileViewModel)
                 }
             }
-            
-            Tab(value: .search, role: .search) {
-                NavigationStack {
-                    SearchView(
-                        searchViewModel: searchViewModel,
-                        mealType: searchViewModel.selectedMealType
-                    )
-                }
-            }
         }
         .disabled(profileViewModel.isLoading)
         .overlay {
@@ -56,15 +46,6 @@ struct TabBarView: View {
         }
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             loginErrorAlert
-        }
-        .onChange(of: selectedTab) {
-            mainViewModel.handleMainTabChange(to: selectedTab)
-            
-            if selectedTab == .search {
-                if searchViewModel.query.isEmpty {
-                    searchViewModel.loadingBookmarks()
-                }
-            }
         }
     }
     

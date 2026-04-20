@@ -104,7 +104,7 @@ struct MealHeaderView: View {
                             mealType: mealType,
                             mainViewModel: mainViewModel
                         )
-                        .swipeActions(allowsFullSwipe: false) {
+                        .swipeActions {
                             Button(
                                 "Delete",
                                 systemImage: "trash",

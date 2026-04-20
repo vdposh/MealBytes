@@ -11,7 +11,6 @@ import FirebaseAuth
 struct ContentView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
-    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
     
@@ -28,7 +27,6 @@ struct ContentView: View {
                 TabBarView(
                     loginViewModel: loginViewModel,
                     mainViewModel: mainViewModel,
-                    searchViewModel: searchViewModel,
                     goalsViewModel: goalsViewModel,
                     profileViewModel: profileViewModel
                 )

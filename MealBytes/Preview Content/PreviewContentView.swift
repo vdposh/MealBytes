@@ -10,7 +10,6 @@ import SwiftUI
 struct PreviewContentView {
     static var contentView: some View {
         let mainViewModel = MainViewModel()
-        let searchViewModel = SearchViewModel(mainViewModel: mainViewModel)
         let dailyIntakeViewModel:
         DailyIntakeViewModelProtocol = DailyIntakeViewModel(
             mainViewModel: mainViewModel
@@ -36,7 +35,6 @@ struct PreviewContentView {
         return ContentView(
             loginViewModel: loginViewModel,
             mainViewModel: mainViewModel,
-            searchViewModel: searchViewModel,
             goalsViewModel: goalsViewModel,
             profileViewModel: profileViewModel
         )
