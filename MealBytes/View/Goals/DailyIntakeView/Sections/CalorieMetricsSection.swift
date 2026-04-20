@@ -12,26 +12,31 @@ struct CalorieMetricsSection: View {
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {
-        if !dailyIntakeViewModel.toggleOn {
-            Section {
-                HStack {
-                    ServingTextFieldView(
-                        text: $dailyIntakeViewModel.calories,
-                        placeholder: "Calories amount",
-                        keyboardType: .numberPad,
-                        inputMode: .integer,
-                        maxIntegerDigits: 5
-                    )
-                    .focused(focus)
-                }
-            } header: {
-                Text("Calories")
-                    .foregroundStyle(
-                        dailyIntakeViewModel
-                            .titleColor(for: dailyIntakeViewModel.calories))
-            } footer: {
-                Text("Necessary calorie amount can be entered directly.")
+        Section {
+            HStack {
+                ServingTextFieldView(
+                    text: $dailyIntakeViewModel.calories,
+                    placeholder: "Calories amount",
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    maxIntegerDigits: 5
+                )
+                .foregroundStyle(
+                    dailyIntakeViewModel.toggleOn ? .secondary : .primary
+                )
+                .focused(focus)
+                .disabled(dailyIntakeViewModel.toggleOn)
             }
+        } header: {
+            Text("Calories")
+                .foregroundStyle(
+                    dailyIntakeViewModel.toggleOn
+                    ? .secondary
+                    : dailyIntakeViewModel
+                        .titleColor(for: dailyIntakeViewModel.calories)
+                )
+        } footer: {
+            Text("Set daily intake by entering calories directly or calculate it based on macronutrient distribution.")
         }
     }
 }

@@ -12,23 +12,32 @@ struct AccountInfoSection: View {
     
     var body: some View {
         Section {
-        } footer: {
             if let email = profileViewModel.email {
                 VStack {
                     Text("This account is signed in:")
-                        .font(.subheadline)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    
                     
                     Text(email)
-                        .font(.headline)
-                        .foregroundStyle(Color.primary)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                 }
             } else {
                 Text("Account disconnected.")
                     .font(.subheadline)
             }
         }
+        .listSectionMargins(.vertical, 10)
         .listRowBackground(Color.clear)
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.bottom)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewProfileView.profileView
 }

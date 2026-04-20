@@ -151,11 +151,20 @@ final class DailyIntakeViewModel: ObservableObject {
         let fatValue = Double(fat.sanitizedForDouble) ?? 0
         let carbValue = Double(carbohydrate.sanitizedForDouble) ?? 0
         let protValue = Double(protein.sanitizedForDouble) ?? 0
+        
+        let allEmpty = fat.isEmpty && carbohydrate.isEmpty && protein.isEmpty
+        let allZero = fatValue == 0 && carbValue == 0 && protValue == 0
+        
+        if allEmpty || allZero {
+            calories = "0"
+            return
+        }
+        
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         
         calories = totalCalories > 0
         ? formatter.roundedValue(totalCalories)
-        : ""
+        : "0"
     }
     
     // MARK: - Input Validation

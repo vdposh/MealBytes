@@ -48,9 +48,6 @@ struct DailyIntakeView: View {
     
     private var dailyIntakeViewContentBody: some View {
         Form {
-            OverviewDailyIntakeSection(
-                dailyIntakeViewModel: dailyIntakeViewModel
-            )
             CalorieMetricsSection(
                 focus: $caloriesFocused,
                 dailyIntakeViewModel: dailyIntakeViewModel

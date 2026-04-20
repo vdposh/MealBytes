@@ -41,6 +41,7 @@ struct MealHeaderView: View {
                                     )
                             } icon: {
                                 Image(systemName: mealType.iconName)
+                                    .font(.title3)
                                     .foregroundStyle(
                                         mealType.foregroundStyle.0,
                                         mealType.foregroundStyle.1
@@ -50,7 +51,7 @@ struct MealHeaderView: View {
                                     )
                                     .symbolColorRenderingMode(.gradient)
                             }
-                            .labelIconToTitleSpacing(10)
+                            .labelIconToTitleSpacing(15)
                             
                             if mainViewModel
                                 .hasMealItemsForMealType(
@@ -82,6 +83,7 @@ struct MealHeaderView: View {
                     }
                     
                     Image(systemName: "plus")
+                        .font(.title3)
                         .fontWeight(.bold)
                         .foregroundStyle(.accent)
                         .symbolColorRenderingMode(.gradient)

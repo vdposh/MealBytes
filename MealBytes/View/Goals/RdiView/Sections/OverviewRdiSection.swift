@@ -11,11 +11,17 @@ struct OverviewRdiSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        OverviewIntake(
-            valueText: rdiViewModel.text(for: rdiViewModel.calculatedRdi),
-            color: rdiViewModel.color(for: rdiViewModel.calculatedRdi),
-            footerText: "The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level. RDI is an estimate and not medical advice."
-        )
+        Section {
+            Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(
+                    rdiViewModel.color(for: rdiViewModel.calculatedRdi)
+                )
+        } footer: {
+            Text("The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level. RDI is an estimate and not medical advice.")
+        }
+        .listRowBackground(Color.clear)
     }
 }
 
