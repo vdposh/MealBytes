@@ -54,7 +54,7 @@ final class FoodViewModel: ObservableObject {
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
-        let roundedAmount = Formatter().formattedValue(
+        let roundedAmount = formatter.formattedValue(
             Double(initialAmount),
             unit: .empty,
             alwaysRoundUp: false
@@ -422,7 +422,7 @@ final class FoodViewModel: ObservableObject {
             return Formatter.Unit.g.description(for: scaledAmount, full: true)
         }
         
-        return Formatter().formattedValue(
+        return formatter.formattedValue(
             scaledAmount,
             unit: unit,
             fullUnitName: true
