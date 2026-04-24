@@ -27,8 +27,8 @@ struct RdiView: View {
                     buildKeyboardToolbar(
                         current: rdiFocused,
                         ordered: rdiOrder,
-                        set: { rdiFocused = $0 },
-                        normalize: rdiViewModel.normalizeInputs
+                        normalize: rdiViewModel.normalizeInputs,
+                        set: { rdiFocused = $0 }
                     )
                 }
             }

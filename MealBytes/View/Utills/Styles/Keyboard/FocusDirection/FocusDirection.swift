@@ -47,8 +47,8 @@ func canMoveFocus<T: Equatable>(
 func buildKeyboardToolbar<T: Equatable>(
     current: T?,
     ordered: [T],
-    set: @escaping (T?) -> Void,
     normalize: @escaping () -> Void,
+    set: @escaping (T?) -> Void,
     extraDone: (() -> Void)? = nil
 ) -> KeyboardToolbarView {
     KeyboardToolbarView(
@@ -74,9 +74,9 @@ func buildKeyboardToolbar<T: Equatable>(
             }
         },
         done: {
+            normalize()
             set(nil)
             extraDone?()
-            normalize()
         }
     )
 }

@@ -32,8 +32,8 @@ struct DailyIntakeView: View {
                     buildKeyboardToolbar(
                         current: macronutrientsFocused,
                         ordered: macroOrder,
-                        set: { macronutrientsFocused = $0 },
                         normalize: dailyIntakeViewModel.normalizeInputs,
+                        set: { macronutrientsFocused = $0 },
                         extraDone: { caloriesFocused = false }
                     )
                 }

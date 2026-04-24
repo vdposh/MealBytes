@@ -38,6 +38,7 @@ struct CalorieMetricsSection: View {
         } footer: {
             Text("Set daily intake by entering calories directly or calculate it based on macronutrient distribution.")
         }
+        .id(dailyIntakeViewModel.toggleOn)
     }
 }
 
