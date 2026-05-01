@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ShowHideButtonView: View {
     @Binding var isExpanded: Bool
+    var context: Bool = false
     
     var body: some View {
         Button {
@@ -27,6 +28,11 @@ struct ShowHideButtonView: View {
             .lineLimit(1)
             .labelIconToTitleSpacing(2)
             .frame(maxWidth: .infinity, alignment: .center)
+            
+            
+            if context {
+                Text(isExpanded ? "Collapse section" : "Expand section")
+            }
         }
         .listRowSeparator(.hidden)
     }

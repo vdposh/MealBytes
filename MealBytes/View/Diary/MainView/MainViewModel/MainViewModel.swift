@@ -77,12 +77,6 @@ final class MainViewModel: ObservableObject {
         self.mealItems = items
         self.nutrientSummaries = summaries
         self.expandedSections = sections
-        
-        setupBindingsMainView()
-    }
-    
-    deinit {
-        cancellables.removeAll()
     }
     
     // MARK: - Load Main Data
@@ -92,10 +86,6 @@ final class MainViewModel: ObservableObject {
         async let displayIntakeTask: () = loadDisplayIntakeMainView()
         
         _ = await (mealItemsTask, currentIntakeTask, displayIntakeTask)
-        
-        await MainActor.run {
-            updateProgress()
-        }
     }
     
     // MARK: - Load Meal Item
@@ -108,7 +98,8 @@ final class MainViewModel: ObservableObject {
                     grouping: mealItems,
                     by: { $0.mealType }
                 )
-                self.recalculateNutrients(for: self.date)
+                
+                updateProgress()
             }
         } catch {
             await MainActor.run {
@@ -125,7 +116,8 @@ final class MainViewModel: ObservableObject {
     ) {
         mealItems[mealType, default: []].append(item)
         expandedSections[mealType] = true
-        recalculateNutrients(for: date)
+        
+        updateProgress()
     }
     
     // MARK: - Update Meal Item
@@ -142,45 +134,69 @@ final class MainViewModel: ObservableObject {
             }
         ) {
             mealItems[mealType]?[index] = updatedItem
-            recalculateNutrients(for: date)
+        }
+        
+        updateProgress()
+    }
+    
+    // MARK: - Move Meal Item
+    func moveMealItem(_ item: MealItem, to newMealType: MealType) {
+        let updatedItem = MealItem(
+            id: item.id,
+            foodId: item.foodId,
+            foodName: item.foodName,
+            portionUnit: item.portionUnit,
+            nutrients: item.nutrients,
+            measurementDescription: item.measurementDescription,
+            amount: item.amount,
+            date: item.date,
+            mealType: newMealType,
+            createdAt: Date()
+        )
+        
+        withAnimation {
+            var newMealItems = mealItems
+            newMealItems[item.mealType]?.removeAll { $0.id == item.id }
+            newMealItems[newMealType, default: []].append(updatedItem)
+            mealItems = newMealItems
+            
+            expandedSections[newMealType] = true
+        }
+        
+        Task {
+            do {
+                try await firestore.updateMealItemFirestore(updatedItem)
+            } catch {
+                await MainActor.run {
+                    appError = .network
+                }
+            }
         }
     }
     
     // MARK: - Delete Meal Item
     func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
-        var items = mealItems[mealType] ?? []
+        let itemToDelete = mealItems[mealType]?.first(where: { $0.id == id })
         
-        if let itemToDelete = items.first(
-            where: { $0.id == id }
-        ) {
-            items.removeAll { $0.id == id }
+        withAnimation {
+            var newMealItems = mealItems
+            newMealItems[mealType]?.removeAll { $0.id == id }
+            mealItems = newMealItems
             
-            let updatedItems = items
+            updateProgress()
+        }
+        
+        Task {
+            guard let itemToDelete else { return }
             
-            Task {
+            do {
+                try await firestore.deleteMealItemFirestore(itemToDelete)
+            } catch {
                 await MainActor.run {
-                    mealItems[mealType] = updatedItems
-                    recalculateNutrients(for: date)
-                }
-                
-                do {
-                    try await firestore.deleteMealItemFirestore(itemToDelete)
-                } catch {
-                    await MainActor.run {
-                        self.appError = .network
-                    }
+                    appError = .network
                 }
             }
         }
-        
-        uniqueId = UUID()
-    }
-    
-    func deletionButtonRole(for mealType: MealType) -> ButtonRole? {
-        return filteredMealItems(
-            for: mealType,
-            on: date
-        ).count == 1 ? nil : .destructive
     }
     
     // MARK: - Load Current Intake
@@ -226,7 +242,7 @@ final class MainViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                appError = .decoding
+                appError = .network
             }
         }
     }
@@ -241,22 +257,12 @@ final class MainViewModel: ObservableObject {
             try await firestore.saveDisplayIntakeFirestore(newValue)
         } catch {
             await MainActor.run {
-                appError = .decoding
+                appError = .network
             }
         }
     }
     
     // MARK: - Calculation (Intake)
-    private func setupBindingsMainView() {
-        $mealItems
-            .combineLatest($nutrientSummaries)
-            .sink { [weak self] _, _ in
-                guard let self else { return }
-                self.updateProgress()
-            }
-            .store(in: &cancellables)
-    }
-    
     private func calculateIntakePercentage(from calories: Double?) -> String {
         guard let intakeValue = Double(intake),
               intakeValue > 0 else { return "0%" }
@@ -267,6 +273,12 @@ final class MainViewModel: ObservableObject {
         return "\(Int(percentage))%"
     }
     
+    private func updateProgress() {
+        let calories = summariesForCaloriesSection()[.calories] ?? 0.0
+        updateIntakeProgress(calories: calories)
+        recalculateNutrients(for: date)
+    }
+    
     private func updateIntakeProgress(calories: Double) {
         guard let intakeValue = Double(intake), intakeValue > 0 else {
             intakeProgress = 0.0
@@ -274,11 +286,6 @@ final class MainViewModel: ObservableObject {
         }
         
         intakeProgress = min(max(calories / intakeValue, 0), 1)
-    }
-    
-    private func updateProgress() {
-        let calories = summariesForCaloriesSection()[.calories] ?? 0.0
-        updateIntakeProgress(calories: calories)
     }
     
     func intakePercentage(for calories: Double?) -> String {
@@ -706,6 +713,16 @@ final class MainViewModel: ObservableObject {
             
             try? await Task.sleep(for: .seconds(0.3))
             isAlertInProgress = false
+        }
+    }
+    
+    // MARK: - Navigation
+    func navigateToSearch(for mealType: MealType) {
+        selectedMealType = mealType
+        searchViewModel.loadingBookmarks()
+        
+        Task {
+            await searchViewModel.loadBookmarksSearchView(for: mealType)
         }
     }
     

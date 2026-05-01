@@ -20,14 +20,8 @@ struct MealHeaderView: View {
     var body: some View {
         Section {
             Button {
-                mainViewModel.selectedMealType = mealType
-                mainViewModel.searchViewModel.loadingBookmarks()
-                
-                Task {
-                    await mainViewModel.searchViewModel
-                        .loadBookmarksSearchView(for: mealType)
-                }
-            } label: {
+                mainViewModel.navigateToSearch(for: mealType)
+            } label: {                
                 HStack(spacing: 10) {
                     VStack(spacing: 15) {
                         HStack {
@@ -90,38 +84,49 @@ struct MealHeaderView: View {
                 }
             }
             .transaction { $0.animation = nil }
-            
-            let filteredItems = mainViewModel.filteredMealItems(
-                for: mealType,
-                on: mainViewModel.date
-            )
+            .contextMenu {
+                Button {
+                    mainViewModel.navigateToSearch(for: mealType)
+                } label: {
+                    Label("Go to \(title)", systemImage: mealType.iconName)
+                }
+                
+                if !filteredItems.isEmpty {
+                    ShowHideButtonView(
+                        isExpanded: Binding(
+                            get: {
+                                mainViewModel
+                                    .expandedSections[mealType] ?? false
+                            },
+                            set: {
+                                mainViewModel
+                                    .expandedSections[mealType] = $0
+                            }
+                        ),
+                        context: true
+                    )
+                }
+            }
             
             if mainViewModel.expandedSections[mealType] == true {
-                if !filteredItems.isEmpty {
-                    ForEach(filteredItems, id: \.id) { item in
-                        FoodItemRow(
-                            mealItem: item,
-                            mealType: mealType,
-                            mainViewModel: mainViewModel
-                        )
-                        .swipeActions {
-                            Button(
-                                "Delete",
-                                systemImage: "trash",
-                                role: mainViewModel
-                                    .deletionButtonRole(for: mealType)
-                            ) {
-                                mainViewModel.deleteMealItemMainView(
-                                    with: item.id,
-                                    for: mealType
-                                )
-                            }
-                            .tint(.red)
+                ForEach(filteredItems, id: \.id) { item in
+                    FoodItemRow(
+                        mealItem: item,
+                        mealType: mealType,
+                        mainViewModel: mainViewModel
+                    )
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            mainViewModel.deleteMealItemMainView(
+                                with: item.id,
+                                for: mealType
+                            )
+                        } label: {
+                            Image(systemName: "trash")
                         }
                     }
                 }
             }
-            
             if !filteredItems.isEmpty {
                 ShowHideButtonView(
                     isExpanded: Binding(
@@ -138,6 +143,10 @@ struct MealHeaderView: View {
             }
         }
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+    
+    private var filteredItems: [MealItem] {
+        mainViewModel.filteredMealItems(for: mealType, on: mainViewModel.date)
     }
 }
 

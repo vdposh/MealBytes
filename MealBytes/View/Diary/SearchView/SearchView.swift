@@ -135,14 +135,9 @@ struct SearchView: View {
                         await searchViewModel
                             .toggleBookmarkSearchView(for: food)
                     }
-                    
-                    searchViewModel.uniqueId = UUID()
                 } label: {
-                    Label(
-                        searchViewModel.isBookmarkedSearchView(food)
-                        ? "Remove bookmark"
-                        : "Add to favorites",
-                        systemImage: searchViewModel
+                    Image(
+                        systemName: searchViewModel
                             .isBookmarkedSearchView(food)
                         ? "bookmark.slash"
                         : "bookmark"

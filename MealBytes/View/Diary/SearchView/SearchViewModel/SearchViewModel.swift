@@ -305,8 +305,7 @@ final class SearchViewModel: ObservableObject {
     func bookmarkButtonRole(for food: Food) -> ButtonRole? {
         let isBookmarked = isBookmarkedSearchView(food)
         let isShowingBookmarks = query.isEmpty
-        let isLastBookmark = favoriteFoods.count == 1
-        return isBookmarked && isShowingBookmarks && !isLastBookmark
+        return isBookmarked && isShowingBookmarks
         ? .destructive
         : nil
     }

@@ -14,21 +14,7 @@ struct FoodItemRow: View {
     
     var body: some View {
         NavigationLink {
-            FoodView(
-                mealType: mealItem.mealType,
-                food: Food(
-                    searchFoodId: mealItem.foodId,
-                    searchFoodName: mealItem.foodName,
-                    searchFoodDescription: ""
-                ),
-                searchViewModel: mainViewModel.searchViewModel,
-                mainViewModel: mainViewModel,
-                amount: String(mealItem.amount),
-                measurementDescription: mealItem.measurementDescription,
-                isEditingMealItem: true,
-                originalCreatedAt: mealItem.createdAt,
-                originalMealItemId: mealItem.id
-            )
+            foodView
         } label: {
             HStack {
                 VStack(spacing: 5) {
@@ -104,7 +90,65 @@ struct FoodItemRow: View {
                 }
             }
             .transaction { $0.animation = nil }
+            .contextMenu {
+                NavigationLink {
+                    foodView
+                } label: {
+                    Label("Go to Food", systemImage: "fork.knife")
+                }
+                
+                Menu {
+                    ForEach(
+                        MealType.allCases.filter { $0 != mealItem.mealType },
+                        id: \.self
+                    ) { mealType in
+                        Button {
+                            mainViewModel.moveMealItem(mealItem, to: mealType)
+                        } label: {
+                            Label(
+                                mealType.rawValue,
+                                systemImage: mealType.iconName
+                            )
+                        }
+                    }
+                } label: {
+                    Label(
+                        mealItem.mealType.rawValue,
+                        systemImage: mealItem.mealType.iconName
+                    )
+                    Text("Current meal type")
+                }
+                
+                Divider()
+                
+                Button(role: .destructive) {
+                    mainViewModel.deleteMealItemMainView(
+                        with: mealItem.id,
+                        for: mealType
+                    )
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
         }
+    }
+    
+    private var foodView: some View {
+        FoodView(
+            mealType: mealItem.mealType,
+            food: Food(
+                searchFoodId: mealItem.foodId,
+                searchFoodName: mealItem.foodName,
+                searchFoodDescription: ""
+            ),
+            searchViewModel: mainViewModel.searchViewModel,
+            mainViewModel: mainViewModel,
+            amount: String(mealItem.amount),
+            measurementDescription: mealItem.measurementDescription,
+            isEditingMealItem: true,
+            originalCreatedAt: mealItem.createdAt,
+            originalMealItemId: mealItem.id
+        )
     }
 }
 
