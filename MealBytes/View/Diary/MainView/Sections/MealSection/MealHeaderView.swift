@@ -21,7 +21,7 @@ struct MealHeaderView: View {
         Section {
             Button {
                 mainViewModel.navigateToSearch(for: mealType)
-            } label: {                
+            } label: {
                 HStack(spacing: 10) {
                     VStack(spacing: 15) {
                         HStack {
@@ -115,15 +115,17 @@ struct MealHeaderView: View {
                         mealType: mealType,
                         mainViewModel: mainViewModel
                     )
-                    .swipeActions {
-                        Button(role: .destructive) {
+                    .swipeActions(allowsFullSwipe: false) {
+                        Button {
                             mainViewModel.deleteMealItemMainView(
                                 with: item.id,
                                 for: mealType
                             )
+                            mainViewModel.uniqueId = UUID()
                         } label: {
                             Image(systemName: "trash")
                         }
+                        .tint(.red)
                     }
                 }
             }

@@ -129,12 +129,13 @@ struct SearchView: View {
                     searchViewModel: searchViewModel
                 )
             }
-            .swipeActions {
+            .swipeActions(allowsFullSwipe: false) {
                 Button(role: searchViewModel.bookmarkButtonRole(for: food)) {
                     Task {
                         await searchViewModel
                             .toggleBookmarkSearchView(for: food)
                     }
+                    searchViewModel.uniqueId = UUID()
                 } label: {
                     Image(
                         systemName: searchViewModel
