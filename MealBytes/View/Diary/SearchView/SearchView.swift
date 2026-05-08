@@ -92,8 +92,10 @@ struct SearchView: View {
                         }
                     }
                     
-                    pageButton(direction: .next)
-                    pageButton(direction: .previous)
+                    if searchViewModel.showPagination {
+                        pageButton(direction: .next)
+                        pageButton(direction: .previous)
+                    }
                 }
             }
             .transaction { $0.animation = nil }
@@ -135,7 +137,6 @@ struct SearchView: View {
                         await searchViewModel
                             .toggleBookmarkSearchView(for: food)
                     }
-                    searchViewModel.uniqueId = UUID()
                 } label: {
                     Image(
                         systemName: searchViewModel
@@ -144,11 +145,7 @@ struct SearchView: View {
                         : "bookmark"
                     )
                 }
-                .tint(
-                    searchViewModel.isBookmarkedSearchView(food)
-                    ? .red
-                    : .accent
-                )
+                .tint(.customOrange)
             }
         }
     }

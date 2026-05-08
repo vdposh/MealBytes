@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MealSection: View {
+    @Binding var selectedMealItemForMove: MealItem?
     let mealSectionModel: MealSectionModel
     let mainViewModel: MainViewModel
     
@@ -20,6 +21,7 @@ struct MealSection: View {
             fat: mealSectionModel.fat,
             protein: mealSectionModel.protein,
             carbohydrate: mealSectionModel.carbohydrate,
+            selectedMealItemForMove:$selectedMealItemForMove,
             mainViewModel: mainViewModel
         )
     }

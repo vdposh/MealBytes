@@ -705,7 +705,6 @@ final class MainViewModel: ObservableObject {
             
             isAlertInProgress = true
             
-            try? await Task.sleep(for: .seconds(0.1))
             isFoodAddedAlertVisible = true
             
             try? await Task.sleep(for: .seconds(1.5))

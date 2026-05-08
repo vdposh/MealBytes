@@ -355,6 +355,10 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    var showPagination: Bool {
+        return !query.isEmpty && contentState == .results
+    }
+    
     var selectionStatusText: String {
         selectedItems.isEmpty
         ? "Select bookmarks"

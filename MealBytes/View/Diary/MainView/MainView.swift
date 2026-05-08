@@ -9,6 +9,7 @@ import SwiftUI
 import FirebaseCore
 
 struct MainView: View {
+    @State private var selectedMealItemForMove: MealItem?
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -55,6 +56,9 @@ struct MainView: View {
             .bouncy(duration: 0.3),
             value: mainViewModel.isExpandedCalendar
         )
+        .sheet(item: $selectedMealItemForMove) { item in
+            MoveMealSheet(mealItem: item, mainViewModel: mainViewModel)
+        }
         .navigationDestination(
             item: $mainViewModel.selectedMealType
         ) { mealType in
@@ -83,6 +87,7 @@ struct MainView: View {
             )
             
             MealSectionView(
+                selectedMealItemForMove: $selectedMealItemForMove,
                 mealType: mealType,
                 mealItems: filteredItems,
                 mainViewModel: mainViewModel

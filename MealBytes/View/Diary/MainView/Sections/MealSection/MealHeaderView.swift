@@ -15,6 +15,7 @@ struct MealHeaderView: View {
     let fat: Double
     let protein: Double
     let carbohydrate: Double
+    @Binding var selectedMealItemForMove: MealItem?
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -25,27 +26,11 @@ struct MealHeaderView: View {
                 HStack(spacing: 10) {
                     VStack(spacing: 15) {
                         HStack {
-                            Label {
-                                Text(title)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(Color.primary)
-                                    .frame(
-                                        maxWidth: .infinity,
-                                        alignment: .leading
-                                    )
-                            } icon: {
-                                Image(systemName: mealType.iconName)
-                                    .font(.title3)
-                                    .foregroundStyle(
-                                        mealType.foregroundStyle.0,
-                                        mealType.foregroundStyle.1
-                                    )
-                                    .symbolRenderingMode(
-                                        mealType.renderingMode
-                                    )
-                                    .symbolColorRenderingMode(.gradient)
-                            }
-                            .labelIconToTitleSpacing(15)
+                            MealTypeLabel(
+                                mealType: mealType,
+                                title: title,
+                                isHeader: true
+                            )
                             
                             if mainViewModel
                                 .hasMealItemsForMealType(
@@ -88,7 +73,7 @@ struct MealHeaderView: View {
                 Button {
                     mainViewModel.navigateToSearch(for: mealType)
                 } label: {
-                    Label("Go to \(title)", systemImage: mealType.iconName)
+                    Label("Search", systemImage: "magnifyingglass")
                 }
                 
                 if !filteredItems.isEmpty {
@@ -105,6 +90,18 @@ struct MealHeaderView: View {
                         ),
                         context: true
                     )
+                }
+            } preview: {
+                Button {
+                    mainViewModel.navigateToSearch(for: mealType)
+                } label: {
+                    if let searchViewModel = mainViewModel
+                        .searchViewModel as? SearchViewModel {
+                        SearchView(
+                            searchViewModel: searchViewModel,
+                            mealType: mealType
+                        )
+                    }
                 }
             }
             
@@ -125,7 +122,14 @@ struct MealHeaderView: View {
                         } label: {
                             Image(systemName: "trash")
                         }
-                        .tint(.red)
+                        .tint(.customRedSwipe)
+                        
+                        Button {
+                            selectedMealItemForMove = item
+                        } label: {
+                            Image(systemName: "fork.knife")
+                        }
+                        .tint(.customGreenSwipe)
                     }
                 }
             }
@@ -149,6 +153,31 @@ struct MealHeaderView: View {
     
     private var filteredItems: [MealItem] {
         mainViewModel.filteredMealItems(for: mealType, on: mainViewModel.date)
+    }
+    
+    private func mealTypeLabel(
+        for mealType: MealType,
+        title: String? = nil,
+        isHeader: Bool = false
+    ) -> some View {
+        Label {
+            Text(title ?? mealType.rawValue)
+                .foregroundStyle(Color.primary)
+                .fontWeight(isHeader ? .medium : nil)
+        } icon: {
+            Image(systemName: mealType.iconName)
+                .font(isHeader ? .title3 : nil)
+                .foregroundStyle(
+                    mealType.foregroundStyle.0,
+                    mealType.foregroundStyle.1
+                )
+                .symbolRenderingMode(
+                    mealType.renderingMode
+                )
+                .symbolColorRenderingMode(.gradient)
+        }
+        .labelIconToTitleSpacing(15)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
