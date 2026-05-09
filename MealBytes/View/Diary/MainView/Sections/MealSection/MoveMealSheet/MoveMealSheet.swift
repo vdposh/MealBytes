@@ -66,7 +66,7 @@ struct MoveMealSheet: View {
                     HStack(spacing: 5) {
                         Image(systemName: "fork.knife.circle.fill")
                             .font(.largeTitle)
-                            .foregroundStyle(.customGreen)
+                            .foregroundStyle(.accent)
                             .symbolColorRenderingMode(.gradient)
                         
                         VStack(alignment: .leading) {

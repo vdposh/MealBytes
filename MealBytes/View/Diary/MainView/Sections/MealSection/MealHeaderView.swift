@@ -70,12 +70,6 @@ struct MealHeaderView: View {
             }
             .transaction { $0.animation = nil }
             .contextMenu {
-                Button {
-                    mainViewModel.navigateToSearch(for: mealType)
-                } label: {
-                    Label("Search", systemImage: "magnifyingglass")
-                }
-                
                 if !filteredItems.isEmpty {
                     ShowHideButtonView(
                         isExpanded: Binding(
@@ -90,18 +84,6 @@ struct MealHeaderView: View {
                         ),
                         context: true
                     )
-                }
-            } preview: {
-                Button {
-                    mainViewModel.navigateToSearch(for: mealType)
-                } label: {
-                    if let searchViewModel = mainViewModel
-                        .searchViewModel as? SearchViewModel {
-                        SearchView(
-                            searchViewModel: searchViewModel,
-                            mealType: mealType
-                        )
-                    }
                 }
             }
             
@@ -129,7 +111,7 @@ struct MealHeaderView: View {
                         } label: {
                             Image(systemName: "fork.knife")
                         }
-                        .tint(.customGreenSwipe)
+                        .tint(.customGreen)
                     }
                 }
             }

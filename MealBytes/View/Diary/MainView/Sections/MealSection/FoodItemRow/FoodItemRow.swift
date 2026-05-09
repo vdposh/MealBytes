@@ -91,12 +91,6 @@ struct FoodItemRow: View {
             }
             .transaction { $0.animation = nil }
             .contextMenu {
-                NavigationLink {
-                    foodView
-                } label: {
-                    Label("Go to Food", systemImage: "fork.knife")
-                }
-                
                 Menu {
                     ForEach(
                         MealType.allCases.filter { $0 != mealItem.mealType },
