@@ -111,7 +111,7 @@ struct MealHeaderView: View {
                         } label: {
                             Image(systemName: "fork.knife")
                         }
-                        .tint(.customGreen)
+                        .tint(.customGreenSwipe)
                     }
                 }
             }

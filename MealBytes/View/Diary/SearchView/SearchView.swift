@@ -98,7 +98,7 @@ struct SearchView: View {
                     }
                 }
             }
-            .transaction { $0.animation = nil }
+            .animation(nil, value: searchViewModel.editingState)
             .listStyle(.plain)
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
@@ -145,7 +145,7 @@ struct SearchView: View {
                         : "bookmark"
                     )
                 }
-                .tint(.customOrange)
+                .tint(.customOrangeSwipe)
             }
         }
     }
