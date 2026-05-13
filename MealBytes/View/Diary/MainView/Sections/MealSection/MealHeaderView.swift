@@ -32,17 +32,22 @@ struct MealHeaderView: View {
                                 isHeader: true
                             )
                             
-                            if mainViewModel
-                                .hasMealItemsForMealType(
-                                    for: mealType,
-                                    on: mainViewModel.date
-                                ) {
-                                Text(mainViewModel.formattedCalories(calories))
-                                    .layoutPriority(1)
-                                    .font(.callout)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(Color.primary)
-                            }
+//                            if !mainViewModel.canDisplayIntake() {
+//                                if mainViewModel
+//                                    .hasMealItemsForMealType(
+//                                        for: mealType,
+//                                        on: mainViewModel.date
+//                                    ) {
+//                                    Text(
+//                                        mainViewModel
+//                                            .formattedCalories(calories)
+//                                    )
+//                                    .layoutPriority(1)
+//                                    .font(.callout)
+//                                    .fontWeight(.medium)
+//                                    .foregroundStyle(Color.primary)
+//                                }
+//                            }
                         }
                         .lineLimit(1)
                         
@@ -61,11 +66,53 @@ struct MealHeaderView: View {
                         }
                     }
                     
-                    Image(systemName: "plus")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.accent)
-                        .symbolColorRenderingMode(.gradient)
+                    if mainViewModel
+                        .hasMealItemsForMealType(
+                            for: mealType,
+                            on: mainViewModel.date
+                        ) {
+                        if mainViewModel.canDisplayIntake() {
+                            Gauge(value: mainViewModel
+                                .progress(for: mealType)) {
+                                    Text(
+                                        mainViewModel
+                                            .intakePercentage(for: calories)
+                                    )
+                                        .tint(.primary)
+                                } currentValueLabel: {
+                                    Text(
+                                        mainViewModel
+                                            .formattedCalories(calories)
+                                    )
+                                        .font(.callout)
+                                        .fontWeight(.medium)
+                                        .tint(.primary)
+                                }
+                                .gaugeStyle(.accessoryCircular)
+                                .tint(Gradient.progressGradientGreen)
+                        } else {
+                            if mainViewModel
+                                .hasMealItemsForMealType(
+                                    for: mealType,
+                                    on: mainViewModel.date
+                                ) {
+                                Text(
+                                    mainViewModel
+                                        .formattedCalories(calories)
+                                )
+                                .layoutPriority(1)
+                                .font(.callout)
+                                .fontWeight(.medium)
+                                .foregroundStyle(Color.primary)
+                            }
+                        }
+                    } else {
+                        Image(systemName: "plus")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.accent)
+                            .symbolColorRenderingMode(.gradient)
+                    }
                 }
             }
             .transaction { $0.animation = nil }

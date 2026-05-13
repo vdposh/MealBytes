@@ -15,8 +15,9 @@ struct MealTypeLabel: View {
     var body: some View {
         Label {
             Text(title ?? mealType.rawValue)
-                .foregroundStyle(Color.primary)
+                .font(isHeader ? .system(size: 18) : nil)
                 .fontWeight(isHeader ? .medium : nil)
+                .foregroundStyle(Color.primary)
         } icon: {
             Image(systemName: mealType.iconName)
                 .font(.title3)

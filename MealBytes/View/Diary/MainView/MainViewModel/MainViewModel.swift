@@ -292,6 +292,17 @@ final class MainViewModel: ObservableObject {
         return calculateIntakePercentage(from: calories ?? 0.0)
     }
     
+    func progress(for mealType: MealType) -> Double {
+        let calories = totalNutrient(
+            .calories,
+            for: filteredMealItems(for: mealType, on: date)
+        )
+        guard let intakeValue = Double(intake), intakeValue > 0 else {
+            return 0
+        }
+        return min(max(calories / intakeValue, 0), 1)
+    }
+    
     func canDisplayIntake() -> Bool {
         return displayIntake && !intake.isEmpty
     }

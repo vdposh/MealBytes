@@ -15,6 +15,10 @@ struct NutrientLabel: View {
         Text(label)
             .foregroundStyle(Color.secondary)
             .font(.subheadline)
+//        Image(systemName: "f.circle.fill")
+//            .foregroundStyle(.customStar)
+//            .symbolRenderingMode(.monochrome)
+//            .symbolColorRenderingMode(.gradient)
         
         Text(formattedValue)
             .foregroundStyle(Color.secondary)

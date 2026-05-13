@@ -16,7 +16,7 @@ struct CaloriesSection: View {
             VStack(spacing: 10) {
                 HStack {
                     Text("Calories")
-                        .font(.subheadline)
+                        .font(.callout)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
@@ -42,12 +42,9 @@ struct CaloriesSection: View {
                 
                 if mainViewModel.hasMealItems {
                     if mainViewModel.canDisplayIntake() {
-                        ProgressView(value: mainViewModel.intakeProgress)
-                            .progressViewStyle(.linear)
-                            .scaleEffect(x: 1, y: 2, anchor: .center)
-                            .frame(height: 6)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .tint(.accent)
+                        Gauge(value: mainViewModel.intakeProgress) { }
+                            .gaugeStyle(.accessoryLinear)
+                            .tint(Gradient.progressGradientOrange)
                     }
                     
                     HStack {
