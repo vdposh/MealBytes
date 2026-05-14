@@ -16,20 +16,21 @@ struct NutrientSummaryRow: View {
     
     var body: some View {
         HStack {
-            let nutrients = mainViewModel.formattedNutrients(
-                source: .details(
-                    fat: fat,
-                    carbohydrate: carbohydrate,
-                    protein: protein
-                )
+            NutrientLabel(
+                label: "F",
+                formattedValue: mainViewModel.formatter
+                    .formattedValue(fat, unit: .empty)
             )
-            
-            ForEach(["F", "C", "P"], id: \.self) { label in
-                NutrientLabel(
-                    label: label,
-                    formattedValue: nutrients[label] ?? ""
-                )
-            }
+            NutrientLabel(
+                label: "C",
+                formattedValue: mainViewModel.formatter
+                    .formattedValue(carbohydrate, unit: .empty)
+            )
+            NutrientLabel(
+                label: "P",
+                formattedValue: mainViewModel.formatter
+                    .formattedValue(protein, unit: .empty)
+            )
         }
         .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)

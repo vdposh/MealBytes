@@ -440,6 +440,46 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    var nutrientValuesForAllMeals: [NutrientValue] {
+        let totals = totalNutrientsForAllMeals()
+        let totalCalories = totalCaloriesForAllMeals()
+        
+        return filteredNutrientValues.map { nutrient in
+            switch nutrient.type {
+            case .calories:
+                return NutrientValue(
+                    type: .calories,
+                    value: Double(totalCalories) ?? 0,
+                    isSubValue: nutrient.isSubValue,
+                    unit: nutrient.unit
+                )
+            case .fat:
+                return NutrientValue(
+                    type: .fat,
+                    value: totals.fat,
+                    isSubValue: nutrient.isSubValue,
+                    unit: nutrient.unit
+                )
+            case .carbohydrate:
+                return NutrientValue(
+                    type: .carbohydrate,
+                    value: totals.carbs,
+                    isSubValue: nutrient.isSubValue,
+                    unit: nutrient.unit
+                )
+            case .protein:
+                return NutrientValue(
+                    type: .protein,
+                    value: totals.protein,
+                    isSubValue: nutrient.isSubValue,
+                    unit: nutrient.unit
+                )
+            default:
+                return nutrient
+            }
+        }
+    }
+    
     // MARK: - Format Serving Size
     private func formattedServingSize(for mealItem: MealItem) -> String {
         return formatter.formattedValue(
@@ -472,25 +512,30 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Format Calories
-    func formattedCalories(_ calories: Double) -> String {
-        return formatter.formattedValue(
-            calories,
-            unit: .empty,
-            alwaysRoundUp: true
-        )
+    func totalCalories(for mealType: MealType) -> String {
+        let items = filteredMealItems(for: mealType, on: date)
+        
+        let totalRounded = items.reduce(0) { sum, item in
+            let calories = item.nutrients[.calories] ?? 0
+            let rounded = round(calories)
+            return sum + Int(rounded)
+        }
+        
+        return "\(totalRounded)"
     }
     
-    // MARK: - Format Value
-    func formattedValue(
-        _ value: Double,
-        unit: Formatter.Unit,
-        alwaysRoundUp: Bool
-    ) -> String {
-        return formatter.formattedValue(
-            value,
-            unit: unit,
-            alwaysRoundUp: alwaysRoundUp
-        )
+    func totalCaloriesForAllMeals() -> String {
+        let totalRounded = MealType.allCases.reduce(0) { sum, mealType in
+            let items = filteredMealItems(for: mealType, on: date)
+            let sectionTotal = items.reduce(0) { sectionSum, item in
+                let calories = item.nutrients[.calories] ?? 0
+                let rounded = round(calories)
+                return sectionSum + Int(rounded)
+            }
+            return sum + sectionTotal
+        }
+        
+        return "\(totalRounded)"
     }
     
     // MARK: - Calculate Totals for Nutrients
@@ -523,6 +568,53 @@ final class MainViewModel: ObservableObject {
                 "P": format(protein)
             ]
         }
+    }
+    
+    func totalNutrients(for mealType: MealType) -> (
+        fat: Double,
+        carbs: Double,
+        protein: Double
+    ) {
+        let items = filteredMealItems(for: mealType, on: date)
+        
+        var totalFat: Double = 0
+        var totalCarbs: Double = 0
+        var totalProtein: Double = 0
+        
+        for item in items {
+            let fatValue = item.nutrients[.fat] ?? 0
+            let carbsValue = item.nutrients[.carbohydrate] ?? 0
+            let proteinValue = item.nutrients[.protein] ?? 0
+            
+            let roundedFat = round(fatValue * 100) / 100
+            let roundedCarbs = round(carbsValue * 100) / 100
+            let roundedProtein = round(proteinValue * 100) / 100
+            
+            totalFat += roundedFat
+            totalCarbs += roundedCarbs
+            totalProtein += roundedProtein
+        }
+        
+        return (fat: totalFat, carbs: totalCarbs, protein: totalProtein)
+    }
+    
+    func totalNutrientsForAllMeals() -> (
+        fat: Double,
+        carbs: Double,
+        protein: Double
+    ) {
+        var totalFat: Double = 0
+        var totalCarbs: Double = 0
+        var totalProtein: Double = 0
+        
+        for mealType in MealType.allCases {
+            let nutrients = totalNutrients(for: mealType)
+            totalFat += nutrients.fat
+            totalCarbs += nutrients.carbs
+            totalProtein += nutrients.protein
+        }
+        
+        return (fat: totalFat, carbs: totalCarbs, protein: totalProtein)
     }
     
     // MARK: - Calculate Date Offset

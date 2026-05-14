@@ -20,13 +20,7 @@ struct CaloriesSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
-                        Text(
-                            mainViewModel.formatter.formattedValue(
-                                summaries[.calories],
-                                unit: .empty,
-                                alwaysRoundUp: true
-                            )
-                        )
+                        Text(mainViewModel.totalCaloriesForAllMeals())
                         
                         if mainViewModel.canDisplayIntake() {
                             Text("/")
@@ -48,19 +42,36 @@ struct CaloriesSection: View {
                     }
                     
                     HStack {
-                        let nutrients = mainViewModel.formattedNutrients(
-                            source: .summaries(summaries)
-                        )
+                        let totalNutrientsForAllMeals = mainViewModel
+                            .totalNutrientsForAllMeals()
                         
-                        ForEach(
-                            ["Fat", "Carbs", "Protein"],
-                            id: \.self
-                        ) { key in
+                        HStack {
                             NutrientLabel(
-                                label: String(key.prefix(1)),
-                                formattedValue: nutrients[key] ?? ""
+                                label: "F",
+                                formattedValue: mainViewModel.formatter
+                                    .formattedValue(
+                                        totalNutrientsForAllMeals.fat,
+                                        unit: .empty
+                                    )
+                            )
+                            NutrientLabel(
+                                label: "C",
+                                formattedValue: mainViewModel.formatter
+                                    .formattedValue(
+                                        totalNutrientsForAllMeals.carbs,
+                                        unit: .empty
+                                    )
+                            )
+                            NutrientLabel(
+                                label: "P",
+                                formattedValue: mainViewModel.formatter
+                                    .formattedValue(
+                                        totalNutrientsForAllMeals.protein,
+                                        unit: .empty
+                                    )
                             )
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if mainViewModel.canDisplayIntake() {
                             Text(
@@ -68,10 +79,8 @@ struct CaloriesSection: View {
                             )
                             .foregroundStyle(.secondary)
                             .font(.subheadline)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .transaction { $0.animation = nil }

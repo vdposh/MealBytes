@@ -98,7 +98,7 @@ struct MainView: View {
     private var detailedInformationSection: some View {
         if mainViewModel.hasMealItems {
             NutrientValueSection(
-                nutrients: mainViewModel.filteredNutrientValues,
+                nutrients: mainViewModel.nutrientValuesForAllMeals,
                 isExpandable: $mainViewModel.isExpanded,
                 macroDistribution: mainViewModel
                     .macroDistribution(from: mainViewModel.nutrientSummaries),

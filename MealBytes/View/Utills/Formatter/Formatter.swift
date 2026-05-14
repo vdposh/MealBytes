@@ -15,7 +15,7 @@ struct Formatter {
         fullUnitName: Bool = false
     ) -> String {
         let safeValue = value ?? 0.0
-        let baseValue = alwaysRoundUp ? ceil(safeValue) : safeValue
+        let baseValue = alwaysRoundUp ? round(safeValue) : safeValue
         let rounded = (baseValue * 100).rounded() / 100
         let raw = String(format: "%.2f", rounded)
         let cleaned: String
@@ -35,7 +35,7 @@ struct Formatter {
     }
     
     func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
-        let roundedValue = ceil(value)
+        let roundedValue = round(value)
         let unitText = unit.description(for: roundedValue)
         
         return unit == .empty

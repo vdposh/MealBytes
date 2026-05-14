@@ -21,6 +21,7 @@ struct PickerRowView<MenuContent: View>: View {
             } icon: {
                 if useRendering {
                     Image(systemName: iconName)
+                        .font(.title3)
                         .foregroundStyle(
                             mealType.foregroundStyle.0,
                             mealType.foregroundStyle.1
