@@ -64,9 +64,7 @@ struct CaloriesSection: View {
                         
                         if mainViewModel.canDisplayIntake() {
                             Text(
-                                mainViewModel.intakePercentage(
-                                    for: summaries[.calories]
-                                )
+                                mainViewModel.totalIntakePercentageForAllMeals()
                             )
                             .foregroundStyle(.secondary)
                             .font(.subheadline)

@@ -105,10 +105,7 @@ struct MainView: View {
                 intake: mainViewModel
                     .canDisplayIntake() ? mainViewModel.intake : nil,
                 intakePercentage: mainViewModel.canDisplayIntake()
-                ? mainViewModel
-                    .intakePercentage(
-                        for: mainViewModel.nutrientSummaries[.calories]
-                    )
+                ? mainViewModel.totalIntakePercentageForAllMeals()
                 : nil
             )
         } else {

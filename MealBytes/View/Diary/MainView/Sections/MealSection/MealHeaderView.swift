@@ -31,23 +31,6 @@ struct MealHeaderView: View {
                                 title: title,
                                 isHeader: true
                             )
-                            
-//                            if !mainViewModel.canDisplayIntake() {
-//                                if mainViewModel
-//                                    .hasMealItemsForMealType(
-//                                        for: mealType,
-//                                        on: mainViewModel.date
-//                                    ) {
-//                                    Text(
-//                                        mainViewModel
-//                                            .formattedCalories(calories)
-//                                    )
-//                                    .layoutPriority(1)
-//                                    .font(.callout)
-//                                    .fontWeight(.medium)
-//                                    .foregroundStyle(Color.primary)
-//                                }
-//                            }
                         }
                         .lineLimit(1)
                         
@@ -76,17 +59,19 @@ struct MealHeaderView: View {
                                 .progress(for: mealType)) {
                                     Text(
                                         mainViewModel
-                                            .intakePercentage(for: calories)
+                                            .totalIntakePercentage(
+                                                for: mealType
+                                            )
                                     )
-                                        .tint(.primary)
+                                    .tint(.primary)
                                 } currentValueLabel: {
                                     Text(
                                         mainViewModel
                                             .formattedCalories(calories)
                                     )
-                                        .font(.callout)
-                                        .fontWeight(.medium)
-                                        .tint(.primary)
+                                    .font(.callout)
+                                    .fontWeight(.medium)
+                                    .tint(.primary)
                                 }
                                 .gaugeStyle(.accessoryCircular)
                                 .tint(Gradient.progressGradientGreen)
@@ -182,31 +167,6 @@ struct MealHeaderView: View {
     
     private var filteredItems: [MealItem] {
         mainViewModel.filteredMealItems(for: mealType, on: mainViewModel.date)
-    }
-    
-    private func mealTypeLabel(
-        for mealType: MealType,
-        title: String? = nil,
-        isHeader: Bool = false
-    ) -> some View {
-        Label {
-            Text(title ?? mealType.rawValue)
-                .foregroundStyle(Color.primary)
-                .fontWeight(isHeader ? .medium : nil)
-        } icon: {
-            Image(systemName: mealType.iconName)
-                .font(isHeader ? .title3 : nil)
-                .foregroundStyle(
-                    mealType.foregroundStyle.0,
-                    mealType.foregroundStyle.1
-                )
-                .symbolRenderingMode(
-                    mealType.renderingMode
-                )
-                .symbolColorRenderingMode(.gradient)
-        }
-        .labelIconToTitleSpacing(15)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

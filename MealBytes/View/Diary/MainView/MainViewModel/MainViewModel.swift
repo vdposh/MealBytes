@@ -266,11 +266,59 @@ final class MainViewModel: ObservableObject {
     private func calculateIntakePercentage(from calories: Double?) -> String {
         guard let intakeValue = Double(intake),
               intakeValue > 0 else { return "0%" }
-        
         let safeCalories = calories ?? 0.0
         let percentage = round((safeCalories / intakeValue) * 100)
-        
         return "\(Int(percentage))%"
+    }
+    
+    func intakePercentage(for calories: Double?) -> String {
+        return calculateIntakePercentage(from: calories ?? 0.0)
+    }
+    
+    func totalIntakePercentage(for mealType: MealType) -> String {
+        let items = filteredMealItems(for: mealType, on: date)
+        let totalRoundedPercentage = items.reduce(0) { sum, item in
+            let calories = item.nutrients[.calories] ?? 0
+            guard let intakeValue = Double(intake), intakeValue > 0 else {
+                return sum
+            }
+            let rawPercentage = (calories / intakeValue) * 100
+            let rounded = round(rawPercentage)
+            return sum + Int(rounded)
+        }
+        
+        return "\(totalRoundedPercentage)%"
+    }
+    
+    func totalIntakePercentageForAllMeals() -> String {
+        let totalRoundedPercentage = MealType.allCases.reduce(
+            0
+        ) { sum, mealType in
+            let items = filteredMealItems(for: mealType, on: date)
+            let sectionTotal = items.reduce(0) { sectionSum, item in
+                let calories = item.nutrients[.calories] ?? 0
+                guard let intakeValue = Double(intake), intakeValue > 0 else {
+                    return sectionSum
+                }
+                let rawPercentage = (calories / intakeValue) * 100
+                let rounded = round(rawPercentage)
+                return sectionSum + Int(rounded)
+            }
+            return sum + sectionTotal
+        }
+        
+        return "\(totalRoundedPercentage)%"
+    }
+    
+    func progress(for mealType: MealType) -> Double {
+        let calories = totalNutrient(
+            .calories,
+            for: filteredMealItems(for: mealType, on: date)
+        )
+        guard let intakeValue = Double(intake), intakeValue > 0 else {
+            return 0
+        }
+        return min(max(calories / intakeValue, 0), 1)
     }
     
     private func updateProgress() {
@@ -286,21 +334,6 @@ final class MainViewModel: ObservableObject {
         }
         
         intakeProgress = min(max(calories / intakeValue, 0), 1)
-    }
-    
-    func intakePercentage(for calories: Double?) -> String {
-        return calculateIntakePercentage(from: calories ?? 0.0)
-    }
-    
-    func progress(for mealType: MealType) -> Double {
-        let calories = totalNutrient(
-            .calories,
-            for: filteredMealItems(for: mealType, on: date)
-        )
-        guard let intakeValue = Double(intake), intakeValue > 0 else {
-            return 0
-        }
-        return min(max(calories / intakeValue, 0), 1)
     }
     
     func canDisplayIntake() -> Bool {
@@ -753,6 +786,11 @@ final class MainViewModel: ObservableObject {
     enum DisplayElement {
         case day
         case weekday
+    }
+    
+    enum PercentageType {
+        case single(calories: Double?)
+        case total(mealType: MealType)
     }
 }
 

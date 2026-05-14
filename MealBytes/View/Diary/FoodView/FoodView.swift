@@ -241,7 +241,8 @@ struct FoodView: View {
                     Array(foodViewModel.compactNutrientDetails.enumerated()),
                     id: \.element.id
                 ) { index, nutrient in
-                    let intakePercentageText = foodViewModel.mainViewModel.canDisplayIntake()
+                    let intakePercentageText = foodViewModel
+                        .mainViewModel.canDisplayIntake()
                     ? foodViewModel.mainViewModel
                         .intakePercentage(for: nutrient.value)
                     : nil
