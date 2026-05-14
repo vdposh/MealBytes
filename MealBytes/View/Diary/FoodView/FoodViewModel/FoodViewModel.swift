@@ -148,7 +148,9 @@ final class FoodViewModel: ObservableObject {
             into: [NutrientType: Double]()
         ) {
             result, detail in
-            result[detail.type] = detail.value
+            
+            let roundedValue = (detail.value * 100).rounded() / 100
+            result[detail.type] = roundedValue
         }
         let newItem = MealItem(
             foodId: food.searchFoodId,
@@ -197,14 +199,21 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing else { return }
         
         let createdAt = didChangeMealType ? Date() : originalCreatedAt
+        
+        let roundedNutrients = nutrientValues.reduce(
+            into: [NutrientType: Double]()
+        ) {
+            result, detail in
+            let roundedValue = (detail.value * 100).rounded() / 100
+            result[detail.type] = roundedValue
+        }
+        
         let updatedMealItem = MealItem(
             id: originalMealItemId,
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             portionUnit: selectedServing.metricServingUnit,
-            nutrients: nutrientValues.reduce(into: [NutrientType: Double]()) {
-                result, detail in result[detail.type] = detail.value
-            },
+            nutrients: roundedNutrients,
             measurementDescription: selectedServing.measurementDescription,
             amount: Double(amount.sanitizedForDouble) ?? 0,
             date: date,
