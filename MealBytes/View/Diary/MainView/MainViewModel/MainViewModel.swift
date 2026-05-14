@@ -577,25 +577,15 @@ final class MainViewModel: ObservableObject {
     ) {
         let items = filteredMealItems(for: mealType, on: date)
         
-        var totalFat: Double = 0
-        var totalCarbs: Double = 0
-        var totalProtein: Double = 0
+        let fats = items.map { $0.nutrients[.fat] ?? 0 }
+        let carbs = items.map { $0.nutrients[.carbohydrate] ?? 0 }
+        let proteins = items.map { $0.nutrients[.protein] ?? 0 }
         
-        for item in items {
-            let fatValue = item.nutrients[.fat] ?? 0
-            let carbsValue = item.nutrients[.carbohydrate] ?? 0
-            let proteinValue = item.nutrients[.protein] ?? 0
-            
-            let roundedFat = round(fatValue * 100) / 100
-            let roundedCarbs = round(carbsValue * 100) / 100
-            let roundedProtein = round(proteinValue * 100) / 100
-            
-            totalFat += roundedFat
-            totalCarbs += roundedCarbs
-            totalProtein += roundedProtein
-        }
-        
-        return (fat: totalFat, carbs: totalCarbs, protein: totalProtein)
+        return (
+            fat: formatter.sumOfRoundedValues(fats),
+            carbs: formatter.sumOfRoundedValues(carbs),
+            protein: formatter.sumOfRoundedValues(proteins)
+        )
     }
     
     func totalNutrientsForAllMeals() -> (

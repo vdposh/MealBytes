@@ -149,7 +149,7 @@ final class FoodViewModel: ObservableObject {
         ) {
             result, detail in
             
-            let roundedValue = (detail.value * 100).rounded() / 100
+            let roundedValue = formatter.round(detail.value)
             result[detail.type] = roundedValue
         }
         let newItem = MealItem(
@@ -204,7 +204,7 @@ final class FoodViewModel: ObservableObject {
             into: [NutrientType: Double]()
         ) {
             result, detail in
-            let roundedValue = (detail.value * 100).rounded() / 100
+            let roundedValue = formatter.round(detail.value)
             result[detail.type] = roundedValue
         }
         

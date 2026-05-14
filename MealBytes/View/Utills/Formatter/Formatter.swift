@@ -15,23 +15,32 @@ struct Formatter {
         fullUnitName: Bool = false
     ) -> String {
         let safeValue = value ?? 0.0
-        let baseValue = alwaysRoundUp ? round(safeValue) : safeValue
-        let rounded = (baseValue * 100).rounded() / 100
-        let raw = String(format: "%.2f", rounded)
-        let cleaned: String
         
-        if raw.hasSuffix("00") {
-            cleaned = "\(Int(rounded))"
-        } else if raw.hasSuffix("0") {
-            cleaned = String(raw.dropLast())
-        } else {
-            cleaned = raw
+        switch alwaysRoundUp {
+        case true:
+            let rounded = round(safeValue)
+            let intValue = Int(rounded)
+            let unitText = unit.description(for: rounded, full: fullUnitName)
+            return unit == .empty ? "\(intValue)" : "\(intValue) \(unitText)"
+            
+        case false:
+            let rounded = (safeValue * 100).rounded() / 100
+            let raw = String(format: "%.2f", rounded)
+            let cleaned: String
+            
+            if raw.hasSuffix("00") {
+                cleaned = "\(Int(rounded))"
+            } else if raw.hasSuffix("0") {
+                cleaned = String(raw.dropLast())
+            } else {
+                cleaned = raw
+            }
+            
+            let finalValue = cleaned.preparedForLocaleDecimal
+            let unitText = unit.description(for: rounded, full: fullUnitName)
+            
+            return unit == .empty ? finalValue : "\(finalValue) \(unitText)"
         }
-        
-        let finalValue = cleaned.preparedForLocaleDecimal
-        let unitText = unit.description(for: rounded, full: fullUnitName)
-        
-        return unit == .empty ? finalValue : "\(finalValue) \(unitText)"
     }
     
     func roundedValue(_ value: Double, unit: Unit = .empty) -> String {
@@ -41,6 +50,17 @@ struct Formatter {
         return unit == .empty
         ? String(format: "%.0f", roundedValue)
         : "\(String(format: "%.0f", roundedValue)) \(unitText)"
+    }
+    
+    // MARK: - Rounding Helpers
+    func round(_ value: Double, to places: Int = 2) -> Double {
+        let multiplier = pow(10.0, Double(places))
+        return (value * multiplier).rounded() / multiplier
+    }
+    
+    func sumOfRoundedValues(_ values: [Double], to places: Int = 2) -> Double {
+        let roundedValues = values.map { round($0, to: places) }
+        return roundedValues.reduce(0, +)
     }
     
     enum Unit: String {
