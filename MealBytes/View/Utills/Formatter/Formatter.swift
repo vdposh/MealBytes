@@ -16,29 +16,14 @@ struct Formatter {
     ) -> String {
         let safeValue = value ?? 0.0
         
-        switch alwaysRoundUp {
-        case true:
-            let rounded = round(safeValue)
-            let intValue = Int(rounded)
-            let unitText = unit.description(for: rounded, full: fullUnitName)
+        if alwaysRoundUp {
+            let intValue = Int(safeValue)
+            let unitText = unit.description(for: safeValue, full: fullUnitName)
             return unit == .empty ? "\(intValue)" : "\(intValue) \(unitText)"
-            
-        case false:
-            let rounded = (safeValue * 100).rounded() / 100
-            let raw = String(format: "%.2f", rounded)
-            let cleaned: String
-            
-            if raw.hasSuffix("00") {
-                cleaned = "\(Int(rounded))"
-            } else if raw.hasSuffix("0") {
-                cleaned = String(raw.dropLast())
-            } else {
-                cleaned = raw
-            }
-            
+        } else {
+            let cleaned = cleanDecimalString(String(format: "%.2f", safeValue))
             let finalValue = cleaned.preparedForLocaleDecimal
-            let unitText = unit.description(for: rounded, full: fullUnitName)
-            
+            let unitText = unit.description(for: safeValue, full: fullUnitName)
             return unit == .empty ? finalValue : "\(finalValue) \(unitText)"
         }
     }
@@ -52,10 +37,14 @@ struct Formatter {
         : "\(String(format: "%.0f", roundedValue)) \(unitText)"
     }
     
-    // MARK: - Rounding Helpers
-    func round(_ value: Double, to places: Int = 2) -> Double {
-        let multiplier = pow(10.0, Double(places))
-        return (value * multiplier).rounded() / multiplier
+    private func cleanDecimalString(_ string: String) -> String {
+        if string.hasSuffix("00") {
+            return String(string.dropLast(3))
+        } else if string.hasSuffix("0") {
+            return String(string.dropLast())
+        } else {
+            return string
+        }
     }
     
     enum Unit: String {

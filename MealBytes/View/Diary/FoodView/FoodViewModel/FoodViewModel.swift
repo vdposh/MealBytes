@@ -56,8 +56,7 @@ final class FoodViewModel: ObservableObject {
     ) {
         let roundedAmount = formatter.formattedValue(
             Double(initialAmount),
-            unit: .empty,
-            alwaysRoundUp: false
+            unit: .empty
         )
         self.food = food
         self.mealType = mealType

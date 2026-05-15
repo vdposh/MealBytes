@@ -41,7 +41,11 @@ struct Serving: Decodable, Hashable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let formatter = Formatter()
+        
+        func roundValue(_ value: Double, to places: Int) -> Double {
+            let multiplier = pow(10.0, Double(places))
+            return (value * multiplier).rounded() / multiplier
+        }
         
         func decodeString(forKey key: CodingKeys) -> String {
             (try? container.decode(String.self, forKey: key)) ?? ""
@@ -52,7 +56,12 @@ struct Serving: Decodable, Hashable {
                 try? container.decodeIfPresent(String.self, forKey: key)
             ) ?? ""
             let doubleValue = Double(stringValue) ?? 0
-            return Int(formatter.round(doubleValue, to: 0))
+            return Int(
+                roundValue(
+                    doubleValue,
+                    to: NutrientPrecision.calories.rawValue
+                )
+            )
         }
         
         func decodeValue(forKey key: CodingKeys, to places: Int) -> Double {
@@ -60,26 +69,62 @@ struct Serving: Decodable, Hashable {
                 try? container.decodeIfPresent(String.self, forKey: key)
             ) ?? ""
             guard let doubleValue = Double(stringValue) else { return 0.0 }
-            return formatter.round(doubleValue, to: places)
+            return roundValue(doubleValue, to: places)
         }
         
         calories = decodeInt(forKey: .calories)
         
-        fat = decodeValue(forKey: .fat, to: 2)
-        carbohydrate = decodeValue(forKey: .carbohydrate, to: 2)
-        protein = decodeValue(forKey: .protein, to: 2)
+        fat = decodeValue(
+            forKey: .fat,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        carbohydrate = decodeValue(
+            forKey: .carbohydrate,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        protein = decodeValue(
+            forKey: .protein,
+            to: NutrientPrecision.nutrients.rawValue
+        )
         
-        saturatedFat = decodeValue(forKey: .saturatedFat, to: 3)
-        monounsaturatedFat = decodeValue(forKey: .monounsaturatedFat, to: 3)
-        polyunsaturatedFat = decodeValue(forKey: .polyunsaturatedFat, to: 3)
-        sugar = decodeValue(forKey: .sugar, to: 3)
-        fiber = decodeValue(forKey: .fiber, to: 3)
-        sodium = decodeValue(forKey: .sodium, to: 3)
-        cholesterol = decodeValue(forKey: .cholesterol, to: 3)
-        potassium = decodeValue(forKey: .potassium, to: 3)
+        saturatedFat = decodeValue(
+            forKey: .saturatedFat,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        monounsaturatedFat = decodeValue(
+            forKey: .monounsaturatedFat,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        polyunsaturatedFat = decodeValue(
+            forKey: .polyunsaturatedFat,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        sugar = decodeValue(
+            forKey: .sugar,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        fiber = decodeValue(
+            forKey: .fiber,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        sodium = decodeValue(
+            forKey: .sodium,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        cholesterol = decodeValue(
+            forKey: .cholesterol,
+            to: NutrientPrecision.nutrients.rawValue
+        )
+        potassium = decodeValue(
+            forKey: .potassium,
+            to: NutrientPrecision.nutrients.rawValue
+        )
         
+        metricServingAmount = decodeValue(
+            forKey: .metricServingAmount,
+            to: NutrientPrecision.nutrients.rawValue
+        )
         measurementDescription = decodeString(forKey: .measurementDescription)
-        metricServingAmount = decodeValue(forKey: .metricServingAmount, to: 2)
         metricServingUnit = decodeString(forKey: .metricServingUnit)
     }
     
@@ -112,6 +157,11 @@ struct Serving: Decodable, Hashable {
             }
         }
     }
+    
+    private enum NutrientPrecision: Int {
+        case calories = 0
+        case nutrients = 2
+    }
 }
 
 enum MeasurementUnit: String, CaseIterable, Identifiable {
@@ -119,4 +169,8 @@ enum MeasurementUnit: String, CaseIterable, Identifiable {
     case grams = "Grams"
     
     var id: String { self.rawValue }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }
