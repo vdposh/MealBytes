@@ -12,7 +12,7 @@ struct NutrientValueProvider {
         NutrientType.allCases.compactMap { type in
             let value: Double?
             switch type {
-            case .calories: value = serving.calories
+            case .calories: value = Double(serving.calories)
             case .servingSize: value = serving.metricServingAmount
             case .fat: value = serving.fat
             case .saturatedFat: value = serving.saturatedFat

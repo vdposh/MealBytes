@@ -39,13 +39,13 @@ struct MealHeaderView: View {
                                 for: mealType,
                                 on: mainViewModel.date
                             ) {
-                            let roundedNutrients = mainViewModel
+                            let nutrients = mainViewModel
                                 .totalNutrients(for: mealType)
                             
                             NutrientSummaryRow(
-                                fat: roundedNutrients.fat,
-                                carbohydrate: roundedNutrients.carbs,
-                                protein: roundedNutrients.protein,
+                                fat: nutrients.fat,
+                                carbs: nutrients.carbs,
+                                protein: nutrients.protein,
                                 calories: calories,
                                 mainViewModel: mainViewModel
                             )
@@ -70,7 +70,7 @@ struct MealHeaderView: View {
                                 } currentValueLabel: {
                                     Text(
                                         mainViewModel
-                                            .totalCalories(for: mealType)
+                                            .totalCaloriesString(for: mealType)
                                     )
                                     .font(.callout)
                                     .fontWeight(.medium)
@@ -86,7 +86,7 @@ struct MealHeaderView: View {
                                 ) {
                                 Text(
                                     mainViewModel
-                                        .totalCalories(for: mealType)
+                                        .totalCaloriesString(for: mealType)
                                 )
                                 .layoutPriority(1)
                                 .font(.callout)

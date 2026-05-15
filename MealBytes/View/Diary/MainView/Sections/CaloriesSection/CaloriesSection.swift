@@ -20,7 +20,7 @@ struct CaloriesSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
-                        Text(mainViewModel.totalCaloriesForAllMeals())
+                        Text(mainViewModel.totalCaloriesString())
                         
                         if mainViewModel.canDisplayIntake() {
                             Text("/")
@@ -42,15 +42,15 @@ struct CaloriesSection: View {
                     }
                     
                     HStack {
-                        let totalNutrientsForAllMeals = mainViewModel
-                            .totalNutrientsForAllMeals()
+                        let totalNutrients = mainViewModel
+                            .totalNutrients()
                         
                         HStack {
                             NutrientLabel(
                                 label: "F",
                                 formattedValue: mainViewModel.formatter
                                     .formattedValue(
-                                        totalNutrientsForAllMeals.fat,
+                                        totalNutrients.fat,
                                         unit: .empty
                                     )
                             )
@@ -58,7 +58,7 @@ struct CaloriesSection: View {
                                 label: "C",
                                 formattedValue: mainViewModel.formatter
                                     .formattedValue(
-                                        totalNutrientsForAllMeals.carbs,
+                                        totalNutrients.carbs,
                                         unit: .empty
                                     )
                             )
@@ -66,7 +66,7 @@ struct CaloriesSection: View {
                                 label: "P",
                                 formattedValue: mainViewModel.formatter
                                     .formattedValue(
-                                        totalNutrientsForAllMeals.protein,
+                                        totalNutrients.protein,
                                         unit: .empty
                                     )
                             )
@@ -74,11 +74,9 @@ struct CaloriesSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if mainViewModel.canDisplayIntake() {
-                            Text(
-                                mainViewModel.totalIntakePercentageForAllMeals()
-                            )
-                            .foregroundStyle(.secondary)
-                            .font(.subheadline)
+                            Text(mainViewModel.totalIntakePercentage())
+                                .foregroundStyle(.secondary)
+                                .font(.subheadline)
                         }
                     }
                 }

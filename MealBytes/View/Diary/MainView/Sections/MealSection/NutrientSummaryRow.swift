@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NutrientSummaryRow: View {
     let fat: Double
-    let carbohydrate: Double
+    let carbs: Double
     let protein: Double
     let calories: Double
     @ObservedObject var mainViewModel: MainViewModel
@@ -24,7 +24,7 @@ struct NutrientSummaryRow: View {
             NutrientLabel(
                 label: "C",
                 formattedValue: mainViewModel.formatter
-                    .formattedValue(carbohydrate, unit: .empty)
+                    .formattedValue(carbs, unit: .empty)
             )
             NutrientLabel(
                 label: "P",

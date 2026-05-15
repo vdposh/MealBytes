@@ -271,50 +271,38 @@ final class MainViewModel: ObservableObject {
         return "\(Int(percentage))%"
     }
     
-    func intakePercentage(for calories: Double?) -> String {
-        return calculateIntakePercentage(from: calories ?? 0.0)
-    }
-    
-    func totalIntakePercentage(for mealType: MealType) -> String {
-        let items = filteredMealItems(for: mealType, on: date)
-        let totalRoundedPercentage = items.reduce(0) { sum, item in
+    private func calculateIntakePercentageForItems(
+        _ items: [MealItem]
+    ) -> Int {
+        items.reduce(0) { sum, item in
             let calories = item.nutrients[.calories] ?? 0
             guard let intakeValue = Double(intake), intakeValue > 0 else {
                 return sum
             }
             let rawPercentage = (calories / intakeValue) * 100
-            let rounded = round(rawPercentage)
-            return sum + Int(rounded)
+            return sum + Int(round(rawPercentage))
+        }
+    }
+    
+    func totalIntakePercentage(for mealType: MealType? = nil) -> String {
+        let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
+        
+        let totalRoundedPercentage = types.reduce(0) { sum, type in
+            let items = filteredMealItems(for: type, on: date)
+            return sum + calculateIntakePercentageForItems(items)
         }
         
         return "\(totalRoundedPercentage)%"
     }
     
-    func totalIntakePercentageForAllMeals() -> String {
-        let totalRoundedPercentage = MealType.allCases.reduce(
-            0
-        ) { sum, mealType in
-            let items = filteredMealItems(for: mealType, on: date)
-            let sectionTotal = items.reduce(0) { sectionSum, item in
-                let calories = item.nutrients[.calories] ?? 0
-                guard let intakeValue = Double(intake), intakeValue > 0 else {
-                    return sectionSum
-                }
-                let rawPercentage = (calories / intakeValue) * 100
-                let rounded = round(rawPercentage)
-                return sectionSum + Int(rounded)
-            }
-            return sum + sectionTotal
-        }
-        
-        return "\(totalRoundedPercentage)%"
+    func intakePercentage(for calories: Double?) -> String {
+        return calculateIntakePercentage(from: calories ?? 0.0)
     }
     
     func progress(for mealType: MealType) -> Double {
-        let calories = totalNutrient(
-            .calories,
-            for: filteredMealItems(for: mealType, on: date)
-        )
+        let calories = filteredMealItems(for: mealType, on: date).reduce(0) {
+            $0 + ($1.nutrients[.calories] ?? 0)
+        }
         guard let intakeValue = Double(intake), intakeValue > 0 else {
             return 0
         }
@@ -338,6 +326,48 @@ final class MainViewModel: ObservableObject {
     
     func canDisplayIntake() -> Bool {
         return displayIntake && !intake.isEmpty
+    }
+    
+    // MARK: - Total Calories
+    func totalCalories(for mealType: MealType? = nil) -> Int {
+        let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
+        
+        return types.reduce(0) { sum, type in
+            let items = filteredMealItems(for: type, on: date)
+            let typeTotal = items.reduce(0) {
+                $0 + Int($1.nutrients[.calories] ?? 0)
+            }
+            return sum + typeTotal
+        }
+    }
+    
+    func totalCaloriesString(for mealType: MealType? = nil) -> String {
+        return "\(totalCalories(for: mealType))"
+    }
+    
+    // MARK: - Total Nutrients
+    func totalNutrients(for mealType: MealType? = nil) -> (
+        fat: Double,
+        carbs: Double,
+        protein: Double
+    ) {
+        let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
+        
+        return types.reduce((0, 0, 0)) { result, type in
+            let items = filteredMealItems(for: type, on: date)
+            let typeTotal = items.reduce((0, 0, 0)) { partialResult, item in
+                (
+                    partialResult.0 + (item.nutrients[.fat] ?? 0),
+                    partialResult.1 + (item.nutrients[.carbohydrate] ?? 0),
+                    partialResult.2 + (item.nutrients[.protein] ?? 0)
+                )
+            }
+            return (
+                result.0 + typeTotal.0,
+                result.1 + typeTotal.1,
+                result.2 + typeTotal.2
+            )
+        }
     }
     
     // MARK: - Recalculate Nutrients
@@ -440,46 +470,6 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    var nutrientValuesForAllMeals: [NutrientValue] {
-        let totals = totalNutrientsForAllMeals()
-        let totalCalories = totalCaloriesForAllMeals()
-        
-        return filteredNutrientValues.map { nutrient in
-            switch nutrient.type {
-            case .calories:
-                return NutrientValue(
-                    type: .calories,
-                    value: Double(totalCalories) ?? 0,
-                    isSubValue: nutrient.isSubValue,
-                    unit: nutrient.unit
-                )
-            case .fat:
-                return NutrientValue(
-                    type: .fat,
-                    value: totals.fat,
-                    isSubValue: nutrient.isSubValue,
-                    unit: nutrient.unit
-                )
-            case .carbohydrate:
-                return NutrientValue(
-                    type: .carbohydrate,
-                    value: totals.carbs,
-                    isSubValue: nutrient.isSubValue,
-                    unit: nutrient.unit
-                )
-            case .protein:
-                return NutrientValue(
-                    type: .protein,
-                    value: totals.protein,
-                    isSubValue: nutrient.isSubValue,
-                    unit: nutrient.unit
-                )
-            default:
-                return nutrient
-            }
-        }
-    }
-    
     // MARK: - Format Serving Size
     private func formattedServingSize(for mealItem: MealItem) -> String {
         return formatter.formattedValue(
@@ -511,41 +501,6 @@ final class MainViewModel: ObservableObject {
         return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit))"
     }
     
-    // MARK: - Format Calories
-    func totalCalories(for mealType: MealType) -> String {
-        let items = filteredMealItems(for: mealType, on: date)
-        
-        let totalRounded = items.reduce(0) { sum, item in
-            let calories = item.nutrients[.calories] ?? 0
-            let rounded = round(calories)
-            return sum + Int(rounded)
-        }
-        
-        return "\(totalRounded)"
-    }
-    
-    func totalCaloriesForAllMeals() -> String {
-        let totalRounded = MealType.allCases.reduce(0) { sum, mealType in
-            let items = filteredMealItems(for: mealType, on: date)
-            let sectionTotal = items.reduce(0) { sectionSum, item in
-                let calories = item.nutrients[.calories] ?? 0
-                let rounded = round(calories)
-                return sectionSum + Int(rounded)
-            }
-            return sum + sectionTotal
-        }
-        
-        return "\(totalRounded)"
-    }
-    
-    // MARK: - Calculate Totals for Nutrients
-    func totalNutrient(
-        _ nutrient: NutrientType,
-        for mealItems: [MealItem]
-    ) -> Double {
-        mealItems.reduce(0) { $0 + ($1.nutrients[nutrient] ?? 0.0) }
-    }
-    
     // MARK: - Formatting nutrients
     func formattedNutrients(
         source: NutrientSource
@@ -568,43 +523,6 @@ final class MainViewModel: ObservableObject {
                 "P": format(protein)
             ]
         }
-    }
-    
-    func totalNutrients(for mealType: MealType) -> (
-        fat: Double,
-        carbs: Double,
-        protein: Double
-    ) {
-        let items = filteredMealItems(for: mealType, on: date)
-        
-        let fats = items.map { $0.nutrients[.fat] ?? 0 }
-        let carbs = items.map { $0.nutrients[.carbohydrate] ?? 0 }
-        let proteins = items.map { $0.nutrients[.protein] ?? 0 }
-        
-        return (
-            fat: formatter.sumOfRoundedValues(fats),
-            carbs: formatter.sumOfRoundedValues(carbs),
-            protein: formatter.sumOfRoundedValues(proteins)
-        )
-    }
-    
-    func totalNutrientsForAllMeals() -> (
-        fat: Double,
-        carbs: Double,
-        protein: Double
-    ) {
-        var totalFat: Double = 0
-        var totalCarbs: Double = 0
-        var totalProtein: Double = 0
-        
-        for mealType in MealType.allCases {
-            let nutrients = totalNutrients(for: mealType)
-            totalFat += nutrients.fat
-            totalCarbs += nutrients.carbs
-            totalProtein += nutrients.protein
-        }
-        
-        return (fat: totalFat, carbs: totalCarbs, protein: totalProtein)
     }
     
     // MARK: - Calculate Date Offset
@@ -868,11 +786,6 @@ final class MainViewModel: ObservableObject {
     enum DisplayElement {
         case day
         case weekday
-    }
-    
-    enum PercentageType {
-        case single(calories: Double?)
-        case total(mealType: MealType)
     }
 }
 

@@ -14,26 +14,16 @@ struct MealSectionView: View {
     let mainViewModel: MainViewModel
     
     var body: some View {
+        let nutrients = mainViewModel.totalNutrients(for: mealType)
+        
         let model = MealSectionModel(
             mealType: mealType,
             title: mealType.rawValue,
             iconName: mealType.iconName,
-            calories: mainViewModel.totalNutrient(
-                .calories,
-                for: mealItems
-            ),
-            fat: mainViewModel.totalNutrient(
-                .fat,
-                for: mealItems
-            ),
-            protein: mainViewModel.totalNutrient(
-                .protein,
-                for: mealItems
-            ),
-            carbohydrate: mainViewModel.totalNutrient(
-                .carbohydrate,
-                for: mealItems
-            ),
+            calories: Double(mainViewModel.totalCalories(for: mealType)),
+            fat: nutrients.fat,
+            protein: nutrients.protein,
+            carbohydrate: nutrients.carbs,
             foodItems: mealItems
         )
         

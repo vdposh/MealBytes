@@ -98,14 +98,14 @@ struct MainView: View {
     private var detailedInformationSection: some View {
         if mainViewModel.hasMealItems {
             NutrientValueSection(
-                nutrients: mainViewModel.nutrientValuesForAllMeals,
+                nutrients: mainViewModel.filteredNutrientValues,
                 isExpandable: $mainViewModel.isExpanded,
                 macroDistribution: mainViewModel
                     .macroDistribution(from: mainViewModel.nutrientSummaries),
                 intake: mainViewModel
                     .canDisplayIntake() ? mainViewModel.intake : nil,
                 intakePercentage: mainViewModel.canDisplayIntake()
-                ? mainViewModel.totalIntakePercentageForAllMeals()
+                ? mainViewModel.totalIntakePercentage()
                 : nil
             )
         } else {

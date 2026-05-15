@@ -58,11 +58,6 @@ struct Formatter {
         return (value * multiplier).rounded() / multiplier
     }
     
-    func sumOfRoundedValues(_ values: [Double], to places: Int = 2) -> Double {
-        let roundedValues = values.map { round($0, to: places) }
-        return roundedValues.reduce(0, +)
-    }
-    
     enum Unit: String {
         case empty
         case kcal

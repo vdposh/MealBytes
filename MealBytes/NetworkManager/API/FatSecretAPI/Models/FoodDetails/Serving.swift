@@ -16,7 +16,7 @@ struct Serving: Decodable, Hashable {
     let sugar: Double
     let fiber: Double
     let protein: Double
-    let calories: Double
+    let calories: Int
     let sodium: Double
     let cholesterol: Double
     let potassium: Double
@@ -41,33 +41,45 @@ struct Serving: Decodable, Hashable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        func decodeDouble(forKey key: CodingKeys) -> Double {
-            (
-                try? Double(
-                    container.decodeIfPresent(String.self, forKey: key) ?? ""
-                )
-            ) ?? 0
-        }
+        let formatter = Formatter()
         
         func decodeString(forKey key: CodingKeys) -> String {
             (try? container.decode(String.self, forKey: key)) ?? ""
         }
         
-        fat = decodeDouble(forKey: .fat)
-        saturatedFat = decodeDouble(forKey: .saturatedFat)
-        monounsaturatedFat = decodeDouble(forKey: .monounsaturatedFat)
-        polyunsaturatedFat = decodeDouble(forKey: .polyunsaturatedFat)
-        carbohydrate = decodeDouble(forKey: .carbohydrate)
-        sugar = decodeDouble(forKey: .sugar)
-        fiber = decodeDouble(forKey: .fiber)
-        protein = decodeDouble(forKey: .protein)
-        calories = decodeDouble(forKey: .calories)
-        sodium = decodeDouble(forKey: .sodium)
-        cholesterol = decodeDouble(forKey: .cholesterol)
-        potassium = decodeDouble(forKey: .potassium)
+        func decodeInt(forKey key: CodingKeys) -> Int {
+            let stringValue = (
+                try? container.decodeIfPresent(String.self, forKey: key)
+            ) ?? ""
+            let doubleValue = Double(stringValue) ?? 0
+            return Int(formatter.round(doubleValue, to: 0))
+        }
+        
+        func decodeValue(forKey key: CodingKeys, to places: Int) -> Double {
+            let stringValue = (
+                try? container.decodeIfPresent(String.self, forKey: key)
+            ) ?? ""
+            guard let doubleValue = Double(stringValue) else { return 0.0 }
+            return formatter.round(doubleValue, to: places)
+        }
+        
+        calories = decodeInt(forKey: .calories)
+        
+        fat = decodeValue(forKey: .fat, to: 2)
+        carbohydrate = decodeValue(forKey: .carbohydrate, to: 2)
+        protein = decodeValue(forKey: .protein, to: 2)
+        
+        saturatedFat = decodeValue(forKey: .saturatedFat, to: 3)
+        monounsaturatedFat = decodeValue(forKey: .monounsaturatedFat, to: 3)
+        polyunsaturatedFat = decodeValue(forKey: .polyunsaturatedFat, to: 3)
+        sugar = decodeValue(forKey: .sugar, to: 3)
+        fiber = decodeValue(forKey: .fiber, to: 3)
+        sodium = decodeValue(forKey: .sodium, to: 3)
+        cholesterol = decodeValue(forKey: .cholesterol, to: 3)
+        potassium = decodeValue(forKey: .potassium, to: 3)
+        
         measurementDescription = decodeString(forKey: .measurementDescription)
-        metricServingAmount = decodeDouble(forKey: .metricServingAmount)
+        metricServingAmount = decodeValue(forKey: .metricServingAmount, to: 2)
         metricServingUnit = decodeString(forKey: .metricServingUnit)
     }
     

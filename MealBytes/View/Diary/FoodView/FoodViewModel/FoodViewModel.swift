@@ -148,9 +148,7 @@ final class FoodViewModel: ObservableObject {
             into: [NutrientType: Double]()
         ) {
             result, detail in
-            
-            let roundedValue = formatter.round(detail.value)
-            result[detail.type] = roundedValue
+            result[detail.type] = detail.value
         }
         let newItem = MealItem(
             foodId: food.searchFoodId,
@@ -204,8 +202,7 @@ final class FoodViewModel: ObservableObject {
             into: [NutrientType: Double]()
         ) {
             result, detail in
-            let roundedValue = formatter.round(detail.value)
-            result[detail.type] = roundedValue
+            result[detail.type] = detail.value
         }
         
         let updatedMealItem = MealItem(

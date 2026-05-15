@@ -15,7 +15,7 @@ struct CompactNutrientValueProvider {
         [
             CompactNutrientValue(
                 type: .calories,
-                value: serving.calories,
+                value: Double(serving.calories),
                 serving: serving
             ),
             CompactNutrientValue(
