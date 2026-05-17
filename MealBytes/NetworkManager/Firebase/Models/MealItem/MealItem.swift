@@ -102,3 +102,10 @@ struct MealItem: Codable, Identifiable, Hashable {
              createdAt
     }
 }
+
+extension MealItem {
+    var caloriesValue: Double { nutrients[.calories] ?? 0 }
+    var fatValue: Double { nutrients[.fat] ?? 0 }
+    var carbsValue: Double { nutrients[.carbohydrate] ?? 0 }
+    var proteinValue: Double { nutrients[.protein] ?? 0 }
+}

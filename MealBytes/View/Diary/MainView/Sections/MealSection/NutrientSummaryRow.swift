@@ -18,18 +18,15 @@ struct NutrientSummaryRow: View {
         HStack {
             NutrientLabel(
                 label: "F",
-                formattedValue: mainViewModel.formatter
-                    .formattedValue(fat, unit: .empty)
+                formattedValue: fat.asNutrient()
             )
             NutrientLabel(
                 label: "C",
-                formattedValue: mainViewModel.formatter
-                    .formattedValue(carbs, unit: .empty)
+                formattedValue: carbs.asNutrient()
             )
             NutrientLabel(
                 label: "P",
-                formattedValue: mainViewModel.formatter
-                    .formattedValue(protein, unit: .empty)
+                formattedValue: protein.asNutrient()
             )
         }
         .lineLimit(1)

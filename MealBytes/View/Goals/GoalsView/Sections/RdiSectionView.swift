@@ -23,7 +23,7 @@ struct RdiSectionView: View {
                         )
                         
                         LabeledContent {
-                            Text(rdiState.text)
+                            Text(rdiViewModel.rdiText)
                                 .foregroundStyle(rdiState.color)
                                 .fontWeight(rdiState.weight)
                         } label: {

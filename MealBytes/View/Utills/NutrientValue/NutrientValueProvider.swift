@@ -12,7 +12,7 @@ struct NutrientValueProvider {
         NutrientType.allCases.compactMap { type in
             let value: Double?
             switch type {
-            case .calories: value = Double(serving.calories)
+            case .calories: value = serving.calories
             case .servingSize: value = serving.metricServingAmount
             case .fat: value = serving.fat
             case .saturatedFat: value = serving.saturatedFat
@@ -27,7 +27,7 @@ struct NutrientValueProvider {
             case .cholesterol: value = serving.cholesterol
             }
             
-            let unit = Formatter.Unit(
+            let unit = UnitNutrients(
                 rawValue: type.unit(for: serving)
             ) ?? .empty
             
@@ -45,7 +45,7 @@ struct NutrientValueProvider {
             .filter { $0 != .servingSize }
             .map { type in
                 let value = summary[type] ?? 0
-                let unit = Formatter.Unit(
+                let unit = UnitNutrients(
                     rawValue: type.baseUnit
                 ) ?? .empty
                 

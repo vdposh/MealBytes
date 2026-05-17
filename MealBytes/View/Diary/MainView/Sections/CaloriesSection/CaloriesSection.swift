@@ -20,12 +20,12 @@ struct CaloriesSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
-                        Text(mainViewModel.totalCaloriesString())
+                        Text(mainViewModel.totalCalories().asCalories())
                         
                         if mainViewModel.canDisplayIntake() {
                             Text("/")
                                 .foregroundStyle(.secondary)
-                            Text(mainViewModel.intake)
+                            Text(mainViewModel.currentIntake)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -48,28 +48,16 @@ struct CaloriesSection: View {
                         HStack {
                             NutrientLabel(
                                 label: "F",
-                                formattedValue: mainViewModel.formatter
-                                    .formattedValue(
-                                        totalNutrients.fat,
-                                        unit: .empty
-                                    )
-                            )
+                                formattedValue: totalNutrients
+                                    .fat.asNutrient())
                             NutrientLabel(
                                 label: "C",
-                                formattedValue: mainViewModel.formatter
-                                    .formattedValue(
-                                        totalNutrients.carbs,
-                                        unit: .empty
-                                    )
-                            )
+                                formattedValue: totalNutrients
+                                    .carbs.asNutrient())
                             NutrientLabel(
                                 label: "P",
-                                formattedValue: mainViewModel.formatter
-                                    .formattedValue(
-                                        totalNutrients.protein,
-                                        unit: .empty
-                                    )
-                            )
+                                formattedValue: totalNutrients
+                                    .protein.asNutrient())
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         

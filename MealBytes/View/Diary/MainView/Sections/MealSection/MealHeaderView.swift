@@ -59,7 +59,7 @@ struct MealHeaderView: View {
                         ) {
                         if mainViewModel.canDisplayIntake() {
                             Gauge(value: mainViewModel
-                                .progress(for: mealType)) {
+                                .progressValue(for: mealType)) {
                                     Text(
                                         mainViewModel
                                             .totalIntakePercentage(
@@ -70,7 +70,9 @@ struct MealHeaderView: View {
                                 } currentValueLabel: {
                                     Text(
                                         mainViewModel
-                                            .totalCaloriesString(for: mealType)
+                                            .totalCalories(
+                                                for: mealType
+                                            ).asCalories()
                                     )
                                     .font(.callout)
                                     .fontWeight(.medium)
@@ -86,7 +88,9 @@ struct MealHeaderView: View {
                                 ) {
                                 Text(
                                     mainViewModel
-                                        .totalCaloriesString(for: mealType)
+                                        .totalCalories(
+                                            for: mealType
+                                        ).asCalories()
                                 )
                                 .layoutPriority(1)
                                 .font(.callout)

@@ -23,7 +23,7 @@ protocol MainViewModelProtocol {
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType)
-    func intakePercentage(for calories: Double?) -> String
+    func intakePercentage(for calories: Double) -> String
     func updateIntake(to value: String)
     func collapseSection(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
@@ -56,7 +56,6 @@ final class MainViewModel: ObservableObject {
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
-    let formatter = Formatter()
     let calendar = Calendar.current
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
@@ -263,47 +262,36 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Calculation (Intake)
-    private func calculateIntakePercentage(from calories: Double?) -> String {
-        guard let intakeValue = Double(intake),
-              intakeValue > 0 else { return "0%" }
-        let safeCalories = calories ?? 0.0
-        let percentage = round((safeCalories / intakeValue) * 100)
-        return "\(Int(percentage))%"
-    }
-    
-    private func calculateIntakePercentageForItems(
-        _ items: [MealItem]
-    ) -> Int {
-        items.reduce(0) { sum, item in
-            let calories = item.nutrients[.calories] ?? 0
-            guard let intakeValue = Double(intake), intakeValue > 0 else {
-                return sum
-            }
-            let rawPercentage = (calories / intakeValue) * 100
-            return sum + Int(round(rawPercentage))
-        }
-    }
-    
     func totalIntakePercentage(for mealType: MealType? = nil) -> String {
         let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
         
-        let totalRoundedPercentage = types.reduce(0) { sum, type in
+        let totalCalories = types.reduce(0.0) { sum, type in
             let items = filteredMealItems(for: type, on: date)
-            return sum + calculateIntakePercentageForItems(items)
+            let calories = items.reduce(0.0) { $0 + $1.caloriesValue }
+            return sum + calories
         }
         
-        return "\(totalRoundedPercentage)%"
+        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
+            return "0%"
+        }
+        
+        let percentage = totalCalories / intakeValue
+        return percentage.asPercentage()
     }
     
-    func intakePercentage(for calories: Double?) -> String {
-        return calculateIntakePercentage(from: calories ?? 0.0)
+    func intakePercentage(for calories: Double) -> String {
+        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
+            return "0%"
+        }
+        let percentage = (calories / intakeValue)
+        return percentage.asPercentage()
     }
     
-    func progress(for mealType: MealType) -> Double {
+    func progressValue(for mealType: MealType) -> Double {
         let calories = filteredMealItems(for: mealType, on: date).reduce(0) {
             $0 + ($1.nutrients[.calories] ?? 0)
         }
-        guard let intakeValue = Double(intake), intakeValue > 0 else {
+        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
             return 0
         }
         return min(max(calories / intakeValue, 0), 1)
@@ -316,7 +304,7 @@ final class MainViewModel: ObservableObject {
     }
     
     private func updateIntakeProgress(calories: Double) {
-        guard let intakeValue = Double(intake), intakeValue > 0 else {
+        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
             intakeProgress = 0.0
             return
         }
@@ -324,12 +312,31 @@ final class MainViewModel: ObservableObject {
         intakeProgress = min(max(calories / intakeValue, 0), 1)
     }
     
+    func summariesForCaloriesSection() -> [NutrientType: Double] {
+        mealItems.values.reduce(
+            into: [NutrientType: Double]()) { result, items in
+                items.forEach { item in
+                    guard calendar.isDate(
+                        item.date,
+                        inSameDayAs: date
+                    ) else { return }
+                    item.nutrients.forEach { nutrient, value in
+                        result[nutrient, default: 0.0] += value
+                    }
+                }
+            }
+    }
+    
     func canDisplayIntake() -> Bool {
         return displayIntake && !intake.isEmpty
     }
     
-    // MARK: - Total Calories
-    func totalCalories(for mealType: MealType? = nil) -> Int {
+    var currentIntake: String {
+        (intake.doubleValue ?? 0).asCalories()
+    }
+    
+    // MARK: - Calculation (Calories)
+    func totalCalories(for mealType: MealType? = nil) -> Double {
         let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
         
         return types.reduce(0) { sum, type in
@@ -337,15 +344,11 @@ final class MainViewModel: ObservableObject {
             let typeTotal = items.reduce(0) {
                 $0 + Int($1.nutrients[.calories] ?? 0)
             }
-            return sum + typeTotal
+            return sum + Double(typeTotal)
         }
     }
     
-    func totalCaloriesString(for mealType: MealType? = nil) -> String {
-        return "\(totalCalories(for: mealType))"
-    }
-    
-    // MARK: - Total Nutrients
+    // MARK: - Calculation (Nutrients)
     func totalNutrients(for mealType: MealType? = nil) -> (
         fat: Double,
         carbs: Double,
@@ -370,7 +373,6 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Recalculate Nutrients
     private func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(
             into: [NutrientType: Double]()
@@ -385,22 +387,6 @@ final class MainViewModel: ObservableObject {
                 }
             }
         }
-    }
-    
-    // MARK: - Summary
-    func summariesForCaloriesSection() -> [NutrientType: Double] {
-        mealItems.values.reduce(
-            into: [NutrientType: Double]()) { result, items in
-                items.forEach { item in
-                    guard calendar.isDate(
-                        item.date,
-                        inSameDayAs: date
-                    ) else { return }
-                    item.nutrients.forEach { nutrient, value in
-                        result[nutrient, default: 0.0] += value
-                    }
-                }
-            }
     }
     
     func macroDistribution(from summary: [NutrientType: Double]) -> [NutrientType: Int] {
@@ -471,26 +457,8 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Format Serving Size
-    private func formattedServingSize(for mealItem: MealItem) -> String {
-        return formatter.formattedValue(
-            mealItem.nutrients[.servingSize],
-            unit: .empty
-        )
-    }
-    
-    private func formattedMeasurement(for mealItem: MealItem) -> String {
-        if mealItem.measurementDescription.starts(with: "serving (") {
-            return "serving"
-        } else {
-            return mealItem.measurementDescription
-        }
-    }
-    
     func formattedMealText(for mealItem: MealItem) -> String {
-        let formattedAmount = formatter.formattedValue(
-            mealItem.amount,
-            unit: .empty
-        )
+        let formattedAmount = mealItem.amount.asNutrient()
         let measurement = formattedMeasurement(for: mealItem)
             .pluralized(for: mealItem.amount)
         
@@ -501,27 +469,15 @@ final class MainViewModel: ObservableObject {
         return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit))"
     }
     
-    // MARK: - Formatting nutrients
-    func formattedNutrients(
-        source: NutrientSource
-    ) -> [String: String] {
-        func format(_ value: Double?) -> String {
-            formatter.formattedValue(value, unit: .empty)
-        }
-        
-        switch source {
-        case .summaries(let summaries):
-            return [
-                "Fat": format(summaries[.fat]),
-                "Carbs": format(summaries[.carbohydrate]),
-                "Protein": format(summaries[.protein])
-            ]
-        case .details(let fat, let carbohydrate, let protein):
-            return [
-                "F": format(fat),
-                "C": format(carbohydrate),
-                "P": format(protein)
-            ]
+    private func formattedServingSize(for mealItem: MealItem) -> String {
+        return (mealItem.nutrients[.servingSize] ?? 0).asNutrient()
+    }
+    
+    private func formattedMeasurement(for mealItem: MealItem) -> String {
+        if mealItem.measurementDescription.starts(with: "serving (") {
+            return "serving"
+        } else {
+            return mealItem.measurementDescription
         }
     }
     
@@ -548,45 +504,6 @@ final class MainViewModel: ObservableObject {
             return date.formatted(
                 .dateTime.weekday(.wide).day().month(.wide).year()
             )
-        }
-    }
-    
-    // MARK: - Color for Calendar
-    func color(
-        for element: DisplayElement,
-        date: Date? = nil,
-        isSelected: Bool = false,
-        isToday: Bool = false,
-        forcePrimary: Bool = false
-    ) -> Color {
-        if isSelected || isToday {
-            return .accent.opacity(1)
-        }
-        
-        if forcePrimary {
-            return .primary
-        }
-        
-        if let date, !calendar.isDate(
-            date,
-            equalTo: self.date,
-            toGranularity: .month
-        ) {
-            return .secondary
-        }
-        
-        return element == .day ? .primary : .secondary
-    }
-    
-    @ViewBuilder
-    func colorBackground(for date: Date) -> some View {
-        let isSelected = calendar.isDate(self.date, inSameDayAs: date)
-        
-        if isSelected {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.accent.opacity(0.2).gradient)
-        } else {
-            Color.clear
         }
     }
     
@@ -711,6 +628,45 @@ final class MainViewModel: ObservableObject {
         isExpanded = false
     }
     
+    // MARK: - Color (Calendar)
+    func color(
+        for element: DisplayElement,
+        date: Date? = nil,
+        isSelected: Bool = false,
+        isToday: Bool = false,
+        forcePrimary: Bool = false
+    ) -> Color {
+        if isSelected || isToday {
+            return .accent.opacity(1)
+        }
+        
+        if forcePrimary {
+            return .primary
+        }
+        
+        if let date, !calendar.isDate(
+            date,
+            equalTo: self.date,
+            toGranularity: .month
+        ) {
+            return .secondary
+        }
+        
+        return element == .day ? .primary : .secondary
+    }
+    
+    @ViewBuilder
+    func colorBackground(for date: Date) -> some View {
+        let isSelected = calendar.isDate(self.date, inSameDayAs: date)
+        
+        if isSelected {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.accent.opacity(0.2).gradient)
+        } else {
+            Color.clear
+        }
+    }
+    
     // MARK: - Close sections
     func collapseAllSections() {
         expandedSections.keys.forEach { key in
@@ -803,7 +759,7 @@ extension MainViewModel: MainViewModelProtocol {
     }
     
     func updateIntake(to value: String) {
-        intake = value
+        intake = (Double(value) ?? 0).asCalories(grouping: false)
     }
 }
 

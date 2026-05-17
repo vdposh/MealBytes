@@ -280,7 +280,7 @@ struct FoodView: View {
             intakePercentage: foodViewModel.mainViewModel.canDisplayIntake()
             ? foodViewModel.mainViewModel.intakePercentage(
                 for: foodViewModel.nutrientValues
-                    .first(where: { $0.type == .calories })?.value
+                    .first(where: { $0.type == .calories })?.value ?? 0
             )
             : nil
         )

@@ -14,13 +14,13 @@ struct NutrientValue: Identifiable {
     let type: NutrientType
     let value: Double
     let isSubValue: Bool
-    let unit: Formatter.Unit
+    let unit: UnitNutrients
     
     init(
         type: NutrientType,
         value: Double?,
         isSubValue: Bool,
-        unit: Formatter.Unit = .empty
+        unit: UnitNutrients = .empty
     ) {
         self.type = type
         self.value = value ?? 0.0
@@ -29,11 +29,11 @@ struct NutrientValue: Identifiable {
     }
     
     var formattedValue: String {
-        Formatter().formattedValue(
-            value,
-            unit: unit,
-            alwaysRoundUp: type == .calories
-        )
+        if type == .calories {
+            return value.asCalories()
+        } else {
+            return value.asNutrient(unit: unit.description(for: value))
+        }
     }
     
     var formattedValueOrDash: String {

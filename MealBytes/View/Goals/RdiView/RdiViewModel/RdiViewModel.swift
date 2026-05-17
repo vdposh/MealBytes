@@ -9,11 +9,12 @@ import SwiftUI
 import Combine
 
 protocol RdiViewModelProtocol {
+    var rdiText: String { get }
+    
     func loadRdiView() async
     func saveRdiView() async
     func clearRdi()
     func conditionallyClearRdi()
-    func rdiText() -> String
 }
 
 final class RdiViewModel: ObservableObject {
@@ -30,8 +31,6 @@ final class RdiViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyRdi: Bool = false
-    
-    private let formatter = Formatter()
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
@@ -62,11 +61,11 @@ final class RdiViewModel: ObservableObject {
                 self.selectedActivity = Activity(
                     rawValue: rdiData.selectedActivity
                 ) ?? .notSelected
-                self.weight = rdiData.weight.preparedForLocaleDecimal
+                self.weight = (Double(rdiData.weight) ?? 0).asNutrient()
                 self.selectedWeightUnit = WeightUnit(
                     rawValue: rdiData.selectedWeightUnit
                 ) ?? .notSelected
-                self.height = rdiData.height.preparedForLocaleDecimal
+                self.height = (Double(rdiData.height) ?? 0).asNutrient()
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .notSelected
@@ -101,16 +100,16 @@ final class RdiViewModel: ObservableObject {
     
     // MARK: - Save RDI Data
     func saveRdiView() async {
-        let stableRdi = calculatedRdi
+        let stableRdi = String(calculatedRdi.doubleValue ?? 0)
         
         let rdiData = RdiData(
             calculatedRdi: stableRdi,
             age: age.trimmedLeadingZeros,
             selectedGender: selectedGender.rawValue,
             selectedActivity: selectedActivity.rawValue,
-            weight: weight.trimmedLeadingZeros,
+            weight: String(weight.doubleValue ?? 0),
             selectedWeightUnit: selectedWeightUnit.rawValue,
-            height: height.trimmedLeadingZeros,
+            height: String(height.doubleValue ?? 0),
             selectedHeightUnit: selectedHeightUnit.rawValue
         )
         
@@ -180,9 +179,9 @@ final class RdiViewModel: ObservableObject {
             return
         }
         
-        let ageValue = Double(age.sanitizedForDouble) ?? 0
-        let weightValue = Double(weight.sanitizedForDouble) ?? 0
-        let heightValue = Double(height.sanitizedForDouble) ?? 0
+        let ageValue = age.doubleValue ?? 0
+        let weightValue = weight.doubleValue ?? 0
+        let heightValue = height.doubleValue ?? 0
         let weightInKg = weightUnit == .lbs
         ? weightValue * 0.453592
         : weightValue
@@ -209,9 +208,7 @@ final class RdiViewModel: ObservableObject {
         case .notSelected: return
         }
         
-        self.calculatedRdi = formatter.roundedValue(
-            max(1, bmr * activityFactor)
-        )
+        self.calculatedRdi = (max(1, bmr * activityFactor)).asCalories()
     }
     
     // MARK: - Input Validation
@@ -299,7 +296,7 @@ final class RdiViewModel: ObservableObject {
     
     // MARK: - Text
     func text(for calculatedRdi: String) -> String {
-        guard let rdiValue = Double(calculatedRdi.sanitizedForDouble),
+        guard let rdiValue = calculatedRdi.doubleValue,
               rdiValue > 0,
               isInputValidForCalculation,
               selectedWeightUnit != .notSelected,
@@ -307,12 +304,14 @@ final class RdiViewModel: ObservableObject {
             return "Fill in the data"
         }
         
+        let formattedValue = rdiValue.asCalories()
+        
         return rdiValue == 1
-        ? "\(calculatedRdi) calorie"
-        : "\(calculatedRdi) calories"
+        ? "\(formattedValue) calorie"
+        : "\(formattedValue) calories"
     }
     
-    func rdiText() -> String {
+    var rdiText: String {
         text(for: calculatedRdi)
     }
     

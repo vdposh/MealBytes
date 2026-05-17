@@ -30,54 +30,35 @@ struct FoodItemRow: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Text(
-                            mainViewModel.formatter
-                                .formattedValue(
-                                    mealItem.nutrients[.calories],
-                                    unit: .empty,
-                                    alwaysRoundUp: true
-                                )
-                        )
-                        .lineLimit(1)
-                        .layoutPriority(1)
-                        .font(.callout)
-                        .fontWeight(.medium)
-                        .foregroundStyle(Color.secondary)
+                        Text(mealItem.caloriesValue.asCalories())
+                            .lineLimit(1)
+                            .layoutPriority(1)
+                            .font(.callout)
+                            .fontWeight(.medium)
+                            .foregroundStyle(Color.secondary)
                     }
                     
                     HStack {
                         NutrientLabel(
                             label: "F",
-                            formattedValue: mainViewModel
-                                .formatter.formattedValue(
-                                    mealItem.nutrients[.fat],
-                                    unit: .empty
-                                )
+                            formattedValue: mealItem.fatValue.asNutrient()
                         )
                         
                         NutrientLabel(
                             label: "C",
-                            formattedValue: mainViewModel
-                                .formatter.formattedValue(
-                                    mealItem.nutrients[.carbohydrate],
-                                    unit: .empty
-                                )
+                            formattedValue: mealItem.carbsValue.asNutrient()
                         )
                         
                         NutrientLabel(
                             label: "P",
-                            formattedValue: mainViewModel
-                                .formatter.formattedValue(
-                                    mealItem.nutrients[.protein],
-                                    unit: .empty
-                                )
+                            formattedValue: mealItem.proteinValue.asNutrient()
                         )
                         
                         if mainViewModel.canDisplayIntake() {
                             Text(
                                 mainViewModel
                                     .intakePercentage(
-                                        for: mealItem.nutrients[.calories]
+                                        for: mealItem.caloriesValue
                                     )
                             )
                             .foregroundStyle(Color.secondary)
@@ -137,7 +118,7 @@ struct FoodItemRow: View {
             ),
             searchViewModel: mainViewModel.searchViewModel,
             mainViewModel: mainViewModel,
-            amount: String(mealItem.amount),
+            amount: mealItem.amount.asNutrient(grouping: false),
             measurementDescription: mealItem.measurementDescription,
             isEditingMealItem: true,
             originalCreatedAt: mealItem.createdAt,

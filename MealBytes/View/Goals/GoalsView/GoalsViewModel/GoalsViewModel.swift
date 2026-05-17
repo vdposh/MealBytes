@@ -69,8 +69,8 @@ final class GoalsViewModel: ObservableObject {
         let text: String
         
         switch source {
-        case .rdiView: text = rdiViewModel.rdiText()
-        case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText()
+        case .rdiView: text = rdiViewModel.rdiText
+        case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText
         }
         
         return IntakeDisplayState(
@@ -85,10 +85,10 @@ final class GoalsViewModel: ObservableObject {
         switch source {
         case .rdiView:
             return currentIntakeSource == source &&
-            rdiViewModel.rdiText() != "Fill in the data"
+            rdiViewModel.rdiText != "Fill in the data"
         case .dailyIntakeView:
             return currentIntakeSource == source &&
-            dailyIntakeViewModel.dailyIntakeText() != "Fill in the data"
+            dailyIntakeViewModel.dailyIntakeText != "Fill in the data"
         }
     }
     

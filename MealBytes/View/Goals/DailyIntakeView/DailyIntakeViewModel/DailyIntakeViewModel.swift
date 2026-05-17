@@ -9,11 +9,12 @@ import SwiftUI
 import Combine
 
 protocol DailyIntakeViewModelProtocol {
+    var dailyIntakeText: String { get }
+    
     func loadDailyIntakeView() async
     func saveDailyIntakeView() async
     func conditionallyClearDailyIntake()
     func clearDailyIntake()
-    func dailyIntakeText() -> String
 }
 
 final class DailyIntakeViewModel: ObservableObject {
@@ -31,8 +32,6 @@ final class DailyIntakeViewModel: ObservableObject {
             handleToggleChange()
         }
     }
-    
-    private let formatter = Formatter()
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
@@ -148,9 +147,9 @@ final class DailyIntakeViewModel: ObservableObject {
     ) {
         guard toggleOn else { return }
         
-        let fatValue = Double(fat.sanitizedForDouble) ?? 0
-        let carbValue = Double(carbohydrate.sanitizedForDouble) ?? 0
-        let protValue = Double(protein.sanitizedForDouble) ?? 0
+        let fatValue = fat.doubleValue ?? 0
+        let carbValue = carbohydrate.doubleValue ?? 0
+        let protValue = protein.doubleValue ?? 0
         
         let allEmpty = fat.isEmpty && carbohydrate.isEmpty && protein.isEmpty
         let allZero = fatValue == 0 && carbValue == 0 && protValue == 0
@@ -163,7 +162,7 @@ final class DailyIntakeViewModel: ObservableObject {
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         
         calories = totalCalories > 0
-        ? formatter.roundedValue(totalCalories)
+        ? totalCalories.asCalories()
         : "0"
     }
     
@@ -234,9 +233,9 @@ final class DailyIntakeViewModel: ObservableObject {
     
     // MARK: - Text
     func text(for calculatedIntake: String) -> String {
-        let sanitized = calculatedIntake.sanitizedForDouble
+        let sanitized = calculatedIntake.doubleValue
         
-        guard let intakeValue = Double(sanitized), intakeValue > 0 else {
+        guard let intakeValue = sanitized, intakeValue > 0 else {
             return "Fill in the data"
         }
         
@@ -250,13 +249,19 @@ final class DailyIntakeViewModel: ObservableObject {
             return "Fill in the data"
         }
         
+        let formattedValue = intakeValue.asCalories()
+        
         return intakeValue == 1
-        ? "\(calculatedIntake) calorie"
-        : "\(calculatedIntake) calories"
+        ? "\(formattedValue) calorie"
+        : "\(formattedValue) calories"
     }
     
-    func dailyIntakeText() -> String {
+    var dailyIntakeText: String {
         text(for: calories)
+    }
+    
+    var displayCalories: String {
+        (calories.doubleValue ?? 0).asCalories()
     }
     
     // MARK: - UI Helper
@@ -279,8 +284,8 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     func unitDescription(for value: String) -> String {
-        guard let value = Int(value.sanitizedForDouble),
-              value == 1 else {
+        guard let doubleValue = value.doubleValue,
+              Int(doubleValue) == 1 else {
             return "grams"
         }
         

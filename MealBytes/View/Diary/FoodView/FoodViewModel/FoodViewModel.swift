@@ -25,7 +25,6 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    private let formatter = Formatter()
     private let originalMealType: MealType
     private let originalCreatedAt: Date
     private let originalMealItemId: UUID
@@ -54,16 +53,12 @@ final class FoodViewModel: ObservableObject {
         originalCreatedAt: Date = Date(),
         originalMealItemId: UUID? = nil
     ) {
-        let roundedAmount = formatter.formattedValue(
-            Double(initialAmount),
-            unit: .empty
-        )
         self.food = food
         self.mealType = mealType
         self.originalMealType = mealType
         self.searchViewModel = searchViewModel
         self.mainViewModel = mainViewModel
-        self.amount = roundedAmount
+        self.amount = initialAmount
         self.initialMeasurementDescription = initialMeasurementDescription
         self.isEditingMealItem = isEditingMealItem
         self.originalCreatedAt = originalCreatedAt
@@ -106,7 +101,8 @@ final class FoodViewModel: ObservableObject {
                     foodName: food.searchFoodName,
                     mealType: mealType
                 ) {
-                    amount = metadata.amount
+                    let value = Double(metadata.amount) ?? 0
+                    amount = value.asNutrient(grouping: false)
                     
                     if let serving = fetchedFoodDetail.servings.serving.first(
                         where: {
@@ -156,7 +152,7 @@ final class FoodViewModel: ObservableObject {
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
-            amount: Double(amount.sanitizedForDouble) ?? 0,
+            amount: amount.doubleValue ?? 0,
             date: date, mealType: mealType
         )
         
@@ -172,7 +168,7 @@ final class FoodViewModel: ObservableObject {
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType,
-                    amount: amount,
+                    amount:  String(amount.doubleValue ?? 0),
                     servingDescription: selectedServing?
                         .measurementDescription ?? ""
                 )
@@ -211,7 +207,7 @@ final class FoodViewModel: ObservableObject {
             portionUnit: selectedServing.metricServingUnit,
             nutrients: roundedNutrients,
             measurementDescription: selectedServing.measurementDescription,
-            amount: Double(amount.sanitizedForDouble) ?? 0,
+            amount: amount.doubleValue ?? 0,
             date: date,
             mealType: mealType,
             createdAt: createdAt
@@ -332,10 +328,7 @@ final class FoodViewModel: ObservableObject {
         showUnit: Bool = false
     ) -> String {
         let metricUnit = serving.metricServingUnit
-        let metricAmountFormatted = formatter.formattedValue(
-            serving.metricServingAmount,
-            unit: .empty
-        )
+        let metricAmountFormatted = serving.metricServingAmount.asNutrient()
         var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
@@ -364,7 +357,7 @@ final class FoodViewModel: ObservableObject {
     private func calculateSelectedAmountValue() -> Double {
         guard let selectedServing, canAddFood else { return 0 }
         
-        let amountValue = Double(amount.sanitizedForDouble) ?? 0
+        let amountValue = amount.doubleValue ?? 0
         
         return calculateBaseAmountValue(
             amountValue,
@@ -419,19 +412,16 @@ final class FoodViewModel: ObservableObject {
     var servingUnit: String {
         guard let serving = selectedServing else { return "" }
         
-        let scaledAmount = serving.metricServingAmount * calculateSelectedAmountValue()
-        let unit = Formatter
-            .Unit(rawValue: serving.metricServingUnit) ?? .empty
+        let scaledAmount = serving
+            .metricServingAmount * calculateSelectedAmountValue()
+        let unit = UnitNutrients(rawValue: serving.metricServingUnit) ?? .empty
         
         if serving.measurementDescription.lowercased() == "g" {
-            return Formatter.Unit.g.description(for: scaledAmount, full: true)
+            return UnitNutrients.g.description(for: scaledAmount, full: true)
         }
         
-        return formatter.formattedValue(
-            scaledAmount,
-            unit: unit,
-            fullUnitName: true
-        )
+        return scaledAmount
+            .asNutrient(unit: unit.description(for: scaledAmount))
     }
     
     // MARK: - Keyboard
@@ -445,7 +435,7 @@ final class FoodViewModel: ObservableObject {
             originalAmount = amount
             amount = ""
         } else {
-            if let newAmount = Double(amount.sanitizedForDouble),
+            if let newAmount = amount.doubleValue,
                newAmount > 0 {
                 originalAmount = amount
             } else {

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ServingTextFieldView: View {
-    @State private var textWidth: CGFloat = 0
     @Binding var text: String
     @FocusState private var focus: Bool
     var placeholder: String = "amount"
@@ -23,9 +22,14 @@ struct ServingTextFieldView: View {
     var maxFractionalDigits: Int = 2
     var maxIntegerDigits: Int = 4
     
+    private var decimalSeparator: String {
+        Locale.current.decimalSeparator ?? "."
+    }
+    
     var body: some View {
         let field = TextField(placeholder, text: $text)
             .keyboardType(keyboardType)
+            .focused($focus)
             .onChange(of: text) {
                 validateInput(&text)
             }
@@ -66,7 +70,7 @@ struct ServingTextFieldView: View {
         }
         .overlay(
             Button {
-                $focus.wrappedValue = true
+                focus = true
             } label: {
                 Color.clear
             }
@@ -78,37 +82,45 @@ struct ServingTextFieldView: View {
     private func validateInput(_ input: inout String) {
         switch inputMode {
         case .decimal:
-            let components = input.split(separator: ",")
-            let sanitized = input.sanitizedForDouble
+            let separator = decimalSeparator
             
-            input = input.preparedForLocaleDecimal
+            input = input.filter { $0.isNumber || String($0) == separator }
             
-            if let intPart = components.first,
-               intPart.count > maxIntegerDigits {
-                input = String(intPart.prefix(maxIntegerDigits))
+            let separatorCount = input.filter { String($0) == separator }.count
+            if separatorCount > 1 {
+                input = String(input.dropLast())
                 return
             }
             
-            if components.count > 1 {
-                let fracPart = components.last ?? ""
-                input = "\(components.first!),\(fracPart.prefix(maxFractionalDigits))"
+            let components = input.split(separator: Character(separator))
+            
+            if let intPart = components.first,
+               intPart.count > maxIntegerDigits {
+                let trimmedIntPart = String(intPart.prefix(maxIntegerDigits))
+                if components.count > 1, let lastComponent = components.last {
+                    input = "\(trimmedIntPart)\(separator)\(lastComponent)"
+                } else {
+                    input = trimmedIntPart
+                }
+                return
             }
             
-            if let doubleVal = Double(sanitized),
+            if components.count > 1,
+               let intPart = components.first,
+               let fracPart = components.last {
+                let trimmedFracPart = String(
+                    fracPart.prefix(maxFractionalDigits)
+                )
+                input = "\(intPart)\(separator)\(trimmedFracPart)"
+            }
+            
+            if let doubleVal = input.doubleValue,
                doubleVal > Double(maxInteger) {
-                input = "\(maxInteger)".preparedForLocaleDecimal
+                input = "\(maxInteger)"
             }
             
         case .integer:
-            let separators: [Character] = [",", "."]
-            
             input = input.filter { $0.isNumber }
-            
-            if let separatorIndex = input.firstIndex(
-                where: { separators.contains($0) }
-            ) {
-                input = String(input[..<separatorIndex])
-            }
             
             if input.count > maxIntegerDigits {
                 input = String(input.prefix(maxIntegerDigits))
@@ -123,25 +135,25 @@ struct ServingTextFieldView: View {
     private func finalizeInput(_ input: inout String) {
         switch inputMode {
         case .decimal:
-            let suffixesToTrim = [",00", ".00", ",0", ".0"]
+            let separator = decimalSeparator
             
-            if input.hasSuffix(",") || input.hasSuffix(".") {
+            if input.hasSuffix(separator) {
                 input.removeLast()
                 return
             }
             
-            for suffix in suffixesToTrim {
-                if input.hasSuffix(suffix) {
-                    input.removeLast(suffix.count)
-                    return
+            let components = input.split(separator: Character(separator))
+            if components.count > 1,
+               let firstComponent = components.first,
+               let lastComponent = components.last {
+                var fracPart = String(lastComponent)
+                while fracPart.hasSuffix("0") {
+                    fracPart.removeLast()
                 }
-            }
-            
-            if let commaIndex = input.firstIndex(of: ",") {
-                let fractional = input[commaIndex...]
-                
-                if fractional.hasSuffix("0") && fractional.count == 3 {
-                    input.removeLast()
+                if fracPart.isEmpty {
+                    input = String(firstComponent)
+                } else {
+                    input = "\(firstComponent)\(separator)\(fracPart)"
                 }
             }
             
@@ -158,8 +170,4 @@ struct ServingTextFieldView: View {
 
 #Preview {
     PreviewContentView.contentView
-}
-
-#Preview {
-    PreviewFoodView.foodView
 }

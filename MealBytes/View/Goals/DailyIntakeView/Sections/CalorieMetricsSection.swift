@@ -13,7 +13,10 @@ struct CalorieMetricsSection: View {
     
     var body: some View {
         Section {
-            HStack {
+            if dailyIntakeViewModel.toggleOn {
+                Text(dailyIntakeViewModel.displayCalories)
+                    .foregroundStyle(.secondary)
+            } else {
                 ServingTextFieldView(
                     text: $dailyIntakeViewModel.calories,
                     placeholder: "Calories amount",
@@ -25,7 +28,6 @@ struct CalorieMetricsSection: View {
                     dailyIntakeViewModel.toggleOn ? .secondary : .primary
                 )
                 .focused(focus)
-                .disabled(dailyIntakeViewModel.toggleOn)
             }
         } header: {
             Text("Calories")

@@ -25,7 +25,7 @@ struct DailyIntakeSectionView: View {
                         )
                         
                         LabeledContent {
-                            Text(dailyIntakeState.text)
+                            Text(dailyIntakeViewModel.dailyIntakeText)
                                 .foregroundStyle(dailyIntakeState.color)
                                 .fontWeight(dailyIntakeState.weight)
                         } label: {

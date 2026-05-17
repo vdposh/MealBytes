@@ -34,3 +34,7 @@ extension Gradient {
         )
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

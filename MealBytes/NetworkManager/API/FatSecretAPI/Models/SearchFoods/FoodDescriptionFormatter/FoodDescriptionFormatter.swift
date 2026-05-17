@@ -62,9 +62,10 @@ struct FoodDescriptionFormatter {
             return spaced
         }
         
-        let normalizedKcal = Int((kcal / grams * 100).rounded())
-        let kcalLabel = normalizedKcal == 1 ? "calorie" : "calories"
+        let kcalPerServing = (kcal / grams * 100)
+        let formattedKcal = kcalPerServing.asCalories()
+        let kcalLabel = kcalPerServing == 1 ? "calorie" : "calories"
         
-        return "Per 100 grams - \(normalizedKcal) \(kcalLabel)"
+        return "Per 100 grams - \(formattedKcal) \(kcalLabel)"
     }
 }
