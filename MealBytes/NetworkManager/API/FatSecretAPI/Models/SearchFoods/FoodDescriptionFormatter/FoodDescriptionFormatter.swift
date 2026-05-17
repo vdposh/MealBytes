@@ -63,7 +63,7 @@ struct FoodDescriptionFormatter {
         }
         
         let kcalPerServing = (kcal / grams * 100)
-        let formattedKcal = kcalPerServing.asCalories()
+        let formattedKcal = kcalPerServing.asWhole()
         let kcalLabel = kcalPerServing == 1 ? "calorie" : "calories"
         
         return "Per 100 grams - \(formattedKcal) \(kcalLabel)"

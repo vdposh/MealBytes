@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Double {
-    func asCalories(grouping: Bool = true) -> String {
+    func asWhole(grouping: Bool = true) -> String {
         var format = FloatingPointFormatStyle<Double>()
             .precision(.fractionLength(0))
         
@@ -19,7 +19,7 @@ extension Double {
         return self.formatted(format)
     }
     
-    func asNutrient(unit: String? = nil, grouping: Bool = true) -> String {
+    func asDecimal(unit: String? = nil, grouping: Bool = true) -> String {
         var format = FloatingPointFormatStyle<Double>()
             .precision(.fractionLength(0...2))
         

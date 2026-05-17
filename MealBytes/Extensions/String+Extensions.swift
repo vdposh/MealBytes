@@ -20,8 +20,8 @@ extension String {
         
         let isInteger = number.truncatingRemainder(dividingBy: 1) == 0
         return isInteger ? number
-            .asCalories(grouping: false) : number
-            .asNutrient(grouping: false)
+            .asWhole(grouping: false) : number
+            .asDecimal(grouping: false)
     }
     
     func isValidNumericInput(in range: ClosedRange<Double>? = nil) -> Bool {

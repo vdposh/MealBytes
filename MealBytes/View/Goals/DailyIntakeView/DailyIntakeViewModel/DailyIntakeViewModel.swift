@@ -162,7 +162,7 @@ final class DailyIntakeViewModel: ObservableObject {
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         
         calories = totalCalories > 0
-        ? totalCalories.asCalories()
+        ? totalCalories.asWhole()
         : "0"
     }
     
@@ -249,7 +249,7 @@ final class DailyIntakeViewModel: ObservableObject {
             return "Fill in the data"
         }
         
-        let formattedValue = intakeValue.asCalories()
+        let formattedValue = intakeValue.asWhole()
         
         return intakeValue == 1
         ? "\(formattedValue) calorie"
@@ -261,7 +261,7 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     var displayCalories: String {
-        (calories.doubleValue ?? 0).asCalories()
+        (calories.doubleValue ?? 0).asWhole()
     }
     
     // MARK: - UI Helper

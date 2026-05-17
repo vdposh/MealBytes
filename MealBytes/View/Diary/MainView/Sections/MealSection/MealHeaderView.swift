@@ -90,7 +90,7 @@ struct MealHeaderView: View {
                                     mainViewModel
                                         .totalCalories(
                                             for: mealType
-                                        ).asCalories()
+                                        ).asWhole()
                                 )
                                 .layoutPriority(1)
                                 .font(.callout)

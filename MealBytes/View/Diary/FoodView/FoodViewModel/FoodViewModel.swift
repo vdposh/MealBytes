@@ -102,7 +102,7 @@ final class FoodViewModel: ObservableObject {
                     mealType: mealType
                 ) {
                     let value = Double(metadata.amount) ?? 0
-                    amount = value.asNutrient(grouping: false)
+                    amount = value.asDecimal(grouping: false)
                     
                     if let serving = fetchedFoodDetail.servings.serving.first(
                         where: {
@@ -328,7 +328,7 @@ final class FoodViewModel: ObservableObject {
         showUnit: Bool = false
     ) -> String {
         let metricUnit = serving.metricServingUnit
-        let metricAmountFormatted = serving.metricServingAmount.asNutrient()
+        let metricAmountFormatted = serving.metricServingAmount.asDecimal()
         var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
@@ -421,7 +421,7 @@ final class FoodViewModel: ObservableObject {
         }
         
         return scaledAmount
-            .asNutrient(unit: unit.description(for: scaledAmount))
+            .asDecimal(unit: unit.description(for: scaledAmount))
     }
     
     // MARK: - Keyboard

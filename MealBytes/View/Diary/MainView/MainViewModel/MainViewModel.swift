@@ -332,7 +332,7 @@ final class MainViewModel: ObservableObject {
     }
     
     var currentIntake: String {
-        (intake.doubleValue ?? 0).asCalories()
+        (intake.doubleValue ?? 0).asWhole()
     }
     
     // MARK: - Calculation (Calories)
@@ -458,7 +458,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Format Serving Size
     func formattedMealText(for mealItem: MealItem) -> String {
-        let formattedAmount = mealItem.amount.asNutrient()
+        let formattedAmount = mealItem.amount.asDecimal()
         let measurement = formattedMeasurement(for: mealItem)
             .pluralized(for: mealItem.amount)
         
@@ -470,7 +470,7 @@ final class MainViewModel: ObservableObject {
     }
     
     private func formattedServingSize(for mealItem: MealItem) -> String {
-        return (mealItem.nutrients[.servingSize] ?? 0).asNutrient()
+        return (mealItem.nutrients[.servingSize] ?? 0).asDecimal()
     }
     
     private func formattedMeasurement(for mealItem: MealItem) -> String {
@@ -759,7 +759,7 @@ extension MainViewModel: MainViewModelProtocol {
     }
     
     func updateIntake(to value: String) {
-        intake = (Double(value) ?? 0).asCalories(grouping: false)
+        intake = (Double(value) ?? 0).asWhole(grouping: false)
     }
 }
 

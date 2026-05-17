@@ -103,7 +103,7 @@ struct MainView: View {
                 macroDistribution: mainViewModel
                     .macroDistribution(from: mainViewModel.nutrientSummaries),
                 intake: mainViewModel
-                    .canDisplayIntake() ? mainViewModel.intake : nil,
+                    .canDisplayIntake() ? mainViewModel.currentIntake : nil,
                 intakePercentage: mainViewModel.canDisplayIntake()
                 ? mainViewModel.totalIntakePercentage()
                 : nil

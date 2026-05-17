@@ -61,11 +61,11 @@ final class RdiViewModel: ObservableObject {
                 self.selectedActivity = Activity(
                     rawValue: rdiData.selectedActivity
                 ) ?? .notSelected
-                self.weight = (Double(rdiData.weight) ?? 0).asNutrient()
+                self.weight = (Double(rdiData.weight) ?? 0).asDecimal()
                 self.selectedWeightUnit = WeightUnit(
                     rawValue: rdiData.selectedWeightUnit
                 ) ?? .notSelected
-                self.height = (Double(rdiData.height) ?? 0).asNutrient()
+                self.height = (Double(rdiData.height) ?? 0).asDecimal()
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .notSelected
@@ -208,7 +208,7 @@ final class RdiViewModel: ObservableObject {
         case .notSelected: return
         }
         
-        self.calculatedRdi = (max(1, bmr * activityFactor)).asCalories()
+        self.calculatedRdi = (max(1, bmr * activityFactor)).asWhole()
     }
     
     // MARK: - Input Validation
@@ -304,7 +304,7 @@ final class RdiViewModel: ObservableObject {
             return "Fill in the data"
         }
         
-        let formattedValue = rdiValue.asCalories()
+        let formattedValue = rdiValue.asWhole()
         
         return rdiValue == 1
         ? "\(formattedValue) calorie"

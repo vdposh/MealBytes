@@ -118,7 +118,7 @@ struct FoodItemRow: View {
             ),
             searchViewModel: mainViewModel.searchViewModel,
             mainViewModel: mainViewModel,
-            amount: mealItem.amount.asNutrient(grouping: false),
+            amount: mealItem.amount.asDecimal(grouping: false),
             measurementDescription: mealItem.measurementDescription,
             isEditingMealItem: true,
             originalCreatedAt: mealItem.createdAt,

@@ -30,9 +30,9 @@ struct NutrientValue: Identifiable {
     
     var formattedValue: String {
         if type == .calories {
-            return value.asCalories()
+            return value.asWhole()
         } else {
-            return value.asNutrient(unit: unit.description(for: value))
+            return value.asDecimal(unit: unit.description(for: value))
         }
     }
     
