@@ -232,18 +232,6 @@ final class FoodViewModel: ObservableObject {
                     )
                 }
                 
-                if mainViewModel.filteredMealItems(
-                    for: originalMealType,
-                    on: date
-                ).isEmpty {
-                    await MainActor.run {
-                        mainViewModel.collapseSection(
-                            for: originalMealType,
-                            to: false
-                        )
-                    }
-                }
-                
                 await MainActor.run {
                     mainViewModel.addMealItemMainView(
                         updatedMealItem,

@@ -20,7 +20,7 @@ struct CaloriesSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
-                        Text(mainViewModel.totalCalories().asCalories())
+                        Text(mainViewModel.totalCalories().asWhole())
                         
                         if mainViewModel.canDisplayIntake() {
                             Text("/")

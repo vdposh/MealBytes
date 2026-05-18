@@ -11,11 +11,10 @@ extension Gradient {
     static var progressGradientOrange: Gradient {
         Gradient(
             colors: [
-                .customOrange,
-                .customOrangeSwipe,
-                .customStar,
-                .accent,
-                .customGreenSwipe
+                .customGreenSwipe.opacity(0.6),
+                .customGreenSwipe.opacity(0.8),
+                .customGreenSwipe,
+                .accent
             ]
         )
     }
@@ -25,11 +24,10 @@ extension Gradient {
     static var progressGradientGreen: Gradient {
         Gradient(
             colors: [
-                .customGreenSwipe,
                 .accent,
-                .customStar,
-                .customOrangeSwipe,
-                .customOrange
+                .customGreenSwipe,
+                .customGreenSwipe.opacity(0.8),
+                .customGreenSwipe.opacity(0.6),
             ]
         )
     }
