@@ -21,7 +21,7 @@ struct ShowHideButtonView: View {
         } label: {
             if showCount && !isExpanded {
                 Label {
-                    Text(itemCount == 1 ? "1 entry" : "\(itemCount) entries")
+                    Text(entryText)
                         .font(.footnote)
                 } icon: {
                     Image(
@@ -42,7 +42,7 @@ struct ShowHideButtonView: View {
             }
             
             if context {
-                Text(isExpanded ? "Collapse section" : "Expand section")
+                Text(isExpanded ? "Collapse meal type" : entryText)
             }
         }
         .transaction { $0.animation = nil }
@@ -50,6 +50,10 @@ struct ShowHideButtonView: View {
         .labelIconToTitleSpacing(2)
         .frame(maxWidth: .infinity, alignment: .center)
         .listRowSeparator(.hidden)
+    }
+    
+    private var entryText: String {
+        itemCount == 1 ? "1 entry" : "\(itemCount) entries"
     }
 }
 
