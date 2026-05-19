@@ -24,13 +24,28 @@ struct MealHeaderView: View {
                 mainViewModel.navigateToSearch(for: mealType)
             } label: {
                 HStack(spacing: 10) {
-                    VStack(spacing: 15) {
+                    VStack(spacing: 12.5) {
                         HStack {
                             MealTypeLabel(
                                 mealType: mealType,
                                 title: title,
                                 isHeader: true
                             )
+                            
+                            if mainViewModel
+                                .hasMealItemsForMealType(
+                                    for: mealType,
+                                    on: mainViewModel.date
+                                ) {
+                                Text(
+                                    mainViewModel
+                                        .totalCalories(for: mealType).asWhole()
+                                )
+                                .layoutPriority(1)
+                                .font(.callout)
+                                .fontWeight(.medium)
+                                .foregroundStyle(Color.primary)
+                            }
                         }
                         .lineLimit(1)
                         
@@ -42,13 +57,26 @@ struct MealHeaderView: View {
                             let nutrients = mainViewModel
                                 .totalNutrients(for: mealType)
                             
-                            NutrientSummaryRow(
-                                fat: nutrients.fat,
-                                carbs: nutrients.carbs,
-                                protein: nutrients.protein,
-                                calories: calories,
-                                mainViewModel: mainViewModel
-                            )
+                            HStack {
+                                NutrientSummaryRow(
+                                    fat: nutrients.fat,
+                                    carbs: nutrients.carbs,
+                                    protein: nutrients.protein,
+                                    calories: calories,
+                                    mainViewModel: mainViewModel
+                                )
+                                
+                                if mainViewModel.canDisplayIntake() {
+                                    Text(
+                                        mainViewModel
+                                            .totalIntakePercentage(
+                                                for: mealType
+                                            )
+                                    )
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.secondary)
+                                }
+                            }
                         }
                     }
                     
@@ -57,48 +85,6 @@ struct MealHeaderView: View {
                             for: mealType,
                             on: mainViewModel.date
                         ) {
-                        if mainViewModel.canDisplayIntake() {
-                            Gauge(value: mainViewModel
-                                .progressValue(for: mealType)) {
-                                    Text(
-                                        mainViewModel
-                                            .totalIntakePercentage(
-                                                for: mealType
-                                            )
-                                    )
-                                    .tint(.primary)
-                                } currentValueLabel: {
-                                    Text(
-                                        mainViewModel
-                                            .totalCalories(
-                                                for: mealType
-                                            ).asCalories()
-                                    )
-                                    .font(.callout)
-                                    .fontWeight(.medium)
-                                    .tint(.primary)
-                                }
-                                .gaugeStyle(.accessoryCircular)
-                                .tint(Gradient.progressGradientGreen)
-                        } else {
-                            if mainViewModel
-                                .hasMealItemsForMealType(
-                                    for: mealType,
-                                    on: mainViewModel.date
-                                ) {
-                                Text(
-                                    mainViewModel
-                                        .totalCalories(
-                                            for: mealType
-                                        ).asWhole()
-                                )
-                                .layoutPriority(1)
-                                .font(.callout)
-                                .fontWeight(.medium)
-                                .foregroundStyle(Color.primary)
-                            }
-                        }
-                    } else {
                         Image(systemName: "plus")
                             .font(.title3)
                             .fontWeight(.bold)
@@ -158,14 +144,14 @@ struct MealHeaderView: View {
                 ShowHideButtonView(
                     isExpanded: Binding(
                         get: {
-                            mainViewModel
-                                .expandedSections[mealType] ?? false
+                            mainViewModel.expandedSections[mealType] ?? false
                         },
                         set: {
-                            mainViewModel
-                                .expandedSections[mealType] = $0
+                            mainViewModel.expandedSections[mealType] = $0
                         }
-                    )
+                    ),
+                    showCount: true,
+                    itemCount: filteredItems.count
                 )
             }
         }

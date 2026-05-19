@@ -51,6 +51,7 @@ struct ServingTextFieldView: View {
                     field
                 } icon: {
                     Image(systemName: labelIconName)
+                        .font(.system(size: 18))
                         .foregroundStyle(.customGray)
                         .symbolColorRenderingMode(.gradient)
                 }

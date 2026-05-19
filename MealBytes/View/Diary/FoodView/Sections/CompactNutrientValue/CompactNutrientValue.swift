@@ -36,7 +36,7 @@ struct CompactNutrientValue: Identifiable {
         if type == .calories {
             return value.asWhole()
         } else {
-            return value.asDecimal()
+            return value.asWhole()
         }
     }
 }

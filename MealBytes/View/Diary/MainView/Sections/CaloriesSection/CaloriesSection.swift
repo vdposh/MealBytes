@@ -15,49 +15,76 @@ struct CaloriesSection: View {
         Section {
             VStack(spacing: 10) {
                 HStack {
-                    Text("Calories")
-                        .font(.callout)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    HStack(spacing: 5) {
-                        Text(mainViewModel.totalCalories().asWhole())
-                        
-                        if mainViewModel.canDisplayIntake() {
-                            Text("/")
-                                .foregroundStyle(.secondary)
-                            Text(mainViewModel.currentIntake)
+                    if mainViewModel.hasMealItems {
+                        HStack(alignment: .lastTextBaseline, spacing: 5) {
+                            Text(mainViewModel.totalCalories().asWhole())
+                                .fontWeight(.medium)
+                            
+                            Text(mainViewModel.remainingCaloriesUnit)
                                 .foregroundStyle(.secondary)
                         }
+                        .font(.callout)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        HStack {
+                            Text("Calories")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Text("-")
+                        }
+                        .font(.callout)
                     }
-                    .layoutPriority(1)
-                    .font(.callout)
-                    .fontWeight(.medium)
+                    
+                    if mainViewModel.canDisplayIntake() {
+                        HStack(alignment: .lastTextBaseline, spacing: 5) {
+                            Text(mainViewModel.remainingCaloriesText)
+                            Text(mainViewModel.remainingCaloriesWord)
+                        }
+                        .font(.callout)
+                        .fontWeight(.medium)
+                        .foregroundStyle(
+                            mainViewModel.remainingCaloriesWordColor
+                        )
+                    }
+                }
+                
+                if mainViewModel.canDisplayIntake() {
+                    LinearProgressView(value: mainViewModel.intakeProgress)
                 }
                 
                 if mainViewModel.hasMealItems {
-                    if mainViewModel.canDisplayIntake() {
-                        Gauge(value: mainViewModel.intakeProgress) { }
-                            .gaugeStyle(.accessoryLinear)
-                            .tint(Gradient.progressGradientOrange)
-                    }
-                    
                     HStack {
                         let totalNutrients = mainViewModel
                             .totalNutrients()
                         
-                        HStack {
+                        HStack(spacing: 10) {
                             NutrientLabel(
                                 label: "F",
-                                formattedValue: totalNutrients
-                                    .fat.asNutrient())
+                                value: totalNutrients.fat
+                            )
                             NutrientLabel(
                                 label: "C",
-                                formattedValue: totalNutrients
-                                    .carbs.asNutrient())
+                                value: totalNutrients.carbs
+                            )
                             NutrientLabel(
                                 label: "P",
-                                formattedValue: totalNutrients
-                                    .protein.asNutrient())
+                                value: totalNutrients.protein
+                            )
+//                            NutrientLabel(
+//                                image: "f.circle.fill",
+//                                value: totalNutrients.fat,
+//                                color: .customFat
+//                            )
+//                            NutrientLabel(
+//                                image: "c.circle.fill",
+//                                value: totalNutrients.carbs,
+//                                color: .customCarbs
+//                            )
+//                            NutrientLabel(
+//                                image: "p.circle.fill",
+//                                value: totalNutrients.protein,
+//                                color: .customProtein
+//                            )
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
@@ -71,42 +98,8 @@ struct CaloriesSection: View {
             }
             .transaction { $0.animation = nil }
             .lineLimit(1)
-        } header: {
-            dateSection
         }
         .id(mainViewModel.displayIntake)
-    }
-    
-    private var dateSection: some View {
-        HStack {
-            ForEach(-3...3, id: \.self) { offset in
-                let date = mainViewModel.dateByAddingOffset(for: offset)
-                
-                Button {
-                    withAnimation {
-                        mainViewModel.date = date
-                    }
-                } label: {
-                    DateView(
-                        date: date,
-                        isToday: Calendar.current.isDate(
-                            date,
-                            inSameDayAs: Date()
-                        ),
-                        isSelected: Calendar.current.isDate(
-                            date,
-                            inSameDayAs: mainViewModel.date
-                        ),
-                        mainViewModel: mainViewModel
-                    )
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .transaction { $0.animation = nil }
-        .listRowInsets(
-            EdgeInsets(top: 20, leading: 0, bottom: 16, trailing: 0)
-        )
     }
 }
 

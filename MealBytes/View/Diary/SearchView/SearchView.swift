@@ -54,7 +54,6 @@ struct SearchView: View {
             }
     }
     
-    @ViewBuilder
     private var searchViewContentBody: some View {
         ZStack {
             if searchViewModel.contentState == .loading {

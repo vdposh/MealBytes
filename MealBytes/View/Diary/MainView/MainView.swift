@@ -27,6 +27,7 @@ struct MainView: View {
     
     private var mainViewContentBody: some View {
         Form {
+            dateSection
             caloriesSection
             mealSections
             detailedInformationSection
@@ -70,6 +71,10 @@ struct MainView: View {
                 )
             }
         }
+    }
+    
+    private var dateSection: some View {
+        DateSection(mainViewModel: mainViewModel)
     }
     
     private var caloriesSection: some View {

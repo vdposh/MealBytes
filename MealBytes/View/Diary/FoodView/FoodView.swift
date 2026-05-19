@@ -74,7 +74,6 @@ struct FoodView: View {
             }
     }
     
-    @ViewBuilder
     private var foodViewContentBody: some View {
         ZStack {
             switch foodViewModel.viewState {

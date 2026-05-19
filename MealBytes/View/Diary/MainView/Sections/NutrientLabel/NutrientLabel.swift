@@ -8,35 +8,45 @@
 import SwiftUI
 
 struct NutrientLabel: View {
-    let formattedValue: String
     var label: String? = nil
     var image: String? = nil
+    var value: Double = 0
+    var unit: UnitNutrients = .g
     var color: Color = .secondary
+    var renderingMode: SymbolRenderingMode = .hierarchical
+    
+    var formattedValue: String {
+        value.asWhole()
+    }
     
     var body: some View {
         if let image {
-            Label {
-                Text(formattedValue)
-                    .foregroundStyle(color)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-            } icon: {
+            HStack(spacing: 2.5) {
                 Image(systemName: image)
-                    .foregroundStyle(color)
-                    .symbolRenderingMode(.monochrome)
+                    .symbolRenderingMode(renderingMode)
                     .symbolColorRenderingMode(.gradient)
                     .imageScale(.medium)
+                
+                Text(formattedValue)
+                    .font(.subheadline)
+                
+                Text(unit.description(for: value))
+                    .font(.subheadline)
             }
-            .labelIconToTitleSpacing(2)
+            .foregroundStyle(color)
+            .padding(.trailing, 2.5)
         } else if let label {
-            Text(label)
-                .foregroundStyle(Color.secondary)
-                .font(.subheadline)
-            
-            Text(formattedValue)
-                .foregroundStyle(Color.secondary)
-                .font(.subheadline)
-                .padding(.trailing, 5)
+            HStack(spacing: 2.5) {
+                Text(label)
+                
+                HStack(spacing: 2.5) {
+                    Text(formattedValue)
+                    Text(unit.description(for: value))
+                }
+            }
+            .font(.subheadline)
+            .foregroundStyle(Color.secondary)
+            .padding(.trailing, 2.5)
         }
     }
 }

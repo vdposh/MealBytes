@@ -328,7 +328,7 @@ final class MainViewModel: ObservableObject {
     }
     
     func canDisplayIntake() -> Bool {
-        return displayIntake && !intake.isEmpty
+        return displayIntake && !intake.isEmpty && hasMealItems
     }
     
     var currentIntake: String {
@@ -346,6 +346,33 @@ final class MainViewModel: ObservableObject {
             }
             return sum + Double(typeTotal)
         }
+    }
+    
+    var remainingCalories: Double {
+        let total = totalCalories()
+        let intake = self.intake.doubleValue ?? 0
+        return intake - total
+    }
+
+    var isOverLimit: Bool {
+        remainingCalories < 0
+    }
+
+    var remainingCaloriesText: String {
+        abs(remainingCalories).asWhole()
+    }
+
+    var remainingCaloriesWord: String {
+        isOverLimit ? "over" : "under"
+    }
+    
+    var remainingCaloriesUnit: String {
+        let value = abs(remainingCalories)
+        return value == 1 ? "calorie" : "calories"
+    }
+
+    var remainingCaloriesWordColor: Color {
+        isOverLimit ? .customRedSwipe : .accent
     }
     
     // MARK: - Calculation (Nutrients)

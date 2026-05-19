@@ -30,7 +30,7 @@ struct FoodItemRow: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Text(mealItem.caloriesValue.asCalories())
+                        Text(mealItem.caloriesValue.asWhole())
                             .lineLimit(1)
                             .layoutPriority(1)
                             .font(.callout)
@@ -41,18 +41,31 @@ struct FoodItemRow: View {
                     HStack {
                         NutrientLabel(
                             label: "F",
-                            formattedValue: mealItem.fatValue.asNutrient()
+                            value: mealItem.fatValue
                         )
-                        
                         NutrientLabel(
                             label: "C",
-                            formattedValue: mealItem.carbsValue.asNutrient()
+                            value: mealItem.carbsValue
                         )
-                        
                         NutrientLabel(
                             label: "P",
-                            formattedValue: mealItem.proteinValue.asNutrient()
+                            value: mealItem.proteinValue
                         )
+//                        NutrientLabel(
+//                            image: "f.circle.fill",
+//                            value: mealItem.fatValue,
+//                            color: .customFat
+//                        )
+//                        NutrientLabel(
+//                            image: "c.circle.fill",
+//                            value: mealItem.fatValue,
+//                            color: .customCarbs
+//                        )
+//                        NutrientLabel(
+//                            image: "p.circle.fill",
+//                            value: mealItem.proteinValue,
+//                            color: .customProtein
+//                        )
                         
                         if mainViewModel.canDisplayIntake() {
                             Text(
