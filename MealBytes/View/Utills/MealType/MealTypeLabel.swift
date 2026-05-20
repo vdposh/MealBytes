@@ -20,12 +20,11 @@ struct MealTypeLabel: View {
                 .foregroundStyle(Color.primary)
         } icon: {
             Image(systemName: mealType.iconName)
-                .font(.system(size: 18))
-                .foregroundStyle(
-                    mealType.foregroundStyle.0,
-                    mealType.foregroundStyle.1
+                .imageScale(.large).foregroundStyle(
+                    mealType.colors.secondary,
+                    mealType.colors.primary
                 )
-                .symbolRenderingMode(mealType.renderingMode)
+                .symbolRenderingMode(mealType.symbolRendering)
                 .symbolColorRenderingMode(.gradient)
         }
         .labelIconToTitleSpacing(12.5)

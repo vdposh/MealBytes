@@ -70,21 +70,6 @@ struct CaloriesSection: View {
                                 label: "P",
                                 value: totalNutrients.protein
                             )
-//                            NutrientLabel(
-//                                image: "f.circle.fill",
-//                                value: totalNutrients.fat,
-//                                color: .customFat
-//                            )
-//                            NutrientLabel(
-//                                image: "c.circle.fill",
-//                                value: totalNutrients.carbs,
-//                                color: .customCarbs
-//                            )
-//                            NutrientLabel(
-//                                image: "p.circle.fill",
-//                                value: totalNutrients.protein,
-//                                color: .customProtein
-//                            )
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         

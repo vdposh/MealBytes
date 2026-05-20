@@ -16,33 +16,17 @@ struct NutrientSummaryRow: View {
     
     var body: some View {
         HStack {
-//            NutrientLabel(
-//                label: "F",
-//                value: fat
-//            )
-//            NutrientLabel(
-//                label: "C",
-//                value: carbs
-//            )
-//            NutrientLabel(
-//                label: "P",
-//                value: protein
-//            )
-            
             NutrientLabel(
-                image: "f.circle.fill",
-                value: fat,
-                color: .customFat
+                label: "F",
+                value: fat
             )
             NutrientLabel(
-                image: "c.circle.fill",
-                value: carbs,
-                color: .customCarbs
+                label: "C",
+                value: carbs
             )
             NutrientLabel(
-                image: "p.circle.fill",
-                value: protein,
-                color: .customProtein
+                label: "P",
+                value: protein
             )
         }
         .lineLimit(1)

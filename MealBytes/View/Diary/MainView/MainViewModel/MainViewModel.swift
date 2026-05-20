@@ -372,7 +372,7 @@ final class MainViewModel: ObservableObject {
     }
 
     var remainingCaloriesWordColor: Color {
-        isOverLimit ? .customRedSwipe : .accent
+        isOverLimit ? .secondary : .accent
     }
     
     // MARK: - Calculation (Nutrients)

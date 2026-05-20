@@ -20,34 +20,20 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         case .breakfast: "sun.horizon.fill"
         case .lunch: "sun.max.fill"
         case .dinner: "sun.haze.fill"
-        case .snacks: "moon.stars.fill"
+        case .snacks: "clock.badge"
         }
     }
     
-    var renderingMode: SymbolRenderingMode {
-        switch rendering {
-        case .multicolor: .multicolor
-        case .palette: .palette
-        }
+    var symbolRendering: SymbolRenderingMode {
+        self == .snacks ? .palette : .multicolor
     }
     
-    var foregroundStyle: (Color, Color) {
-        switch rendering {
-        case .multicolor: (.primary, .primary)
-        case .palette(let a, let b): (a, b)
+    var colors: (primary: Color, secondary: Color) {
+        if self == .snacks {
+            return (.customYellow, .customFat)
+        } else {
+            return (.primary, .primary)
         }
-    }
-    
-    var rendering: Rendering {
-        switch self {
-        case .snacks: .palette(.customMoon, .customStar)
-        default: .multicolor
-        }
-    }
-    
-    enum Rendering {
-        case multicolor
-        case palette(Color, Color)
     }
 }
 

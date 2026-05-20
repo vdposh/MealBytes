@@ -24,7 +24,7 @@ struct MealHeaderView: View {
                 mainViewModel.navigateToSearch(for: mealType)
             } label: {
                 HStack(spacing: 10) {
-                    VStack(spacing: 12.5) {
+                    VStack(alignment: .leading, spacing: 12.5) {
                         HStack {
                             MealTypeLabel(
                                 mealType: mealType,
@@ -80,17 +80,11 @@ struct MealHeaderView: View {
                         }
                     }
                     
-                    if mainViewModel
-                        .hasMealItemsForMealType(
-                            for: mealType,
-                            on: mainViewModel.date
-                        ) {
-                        Image(systemName: "plus")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.accent)
-                            .symbolColorRenderingMode(.gradient)
-                    }
+                    Image(systemName: "plus")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.accent)
+                        .symbolColorRenderingMode(.gradient)
                 }
             }
             .transaction { $0.animation = nil }
@@ -107,7 +101,8 @@ struct MealHeaderView: View {
                                     .expandedSections[mealType] = $0
                             }
                         ),
-                        context: true
+                        context: true,
+                        itemCount: filteredItems.count
                     )
                 }
             }

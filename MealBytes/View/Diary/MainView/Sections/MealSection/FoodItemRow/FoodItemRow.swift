@@ -51,21 +51,6 @@ struct FoodItemRow: View {
                             label: "P",
                             value: mealItem.proteinValue
                         )
-//                        NutrientLabel(
-//                            image: "f.circle.fill",
-//                            value: mealItem.fatValue,
-//                            color: .customFat
-//                        )
-//                        NutrientLabel(
-//                            image: "c.circle.fill",
-//                            value: mealItem.fatValue,
-//                            color: .customCarbs
-//                        )
-//                        NutrientLabel(
-//                            image: "p.circle.fill",
-//                            value: mealItem.proteinValue,
-//                            color: .customProtein
-//                        )
                         
                         if mainViewModel.canDisplayIntake() {
                             Text(
