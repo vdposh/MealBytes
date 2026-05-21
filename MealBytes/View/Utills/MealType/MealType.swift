@@ -8,6 +8,7 @@
 import SwiftUI
 
 enum MealType: String, Codable, CaseIterable, Identifiable {
+    
     case breakfast = "Breakfast"
     case lunch = "Lunch"
     case dinner = "Dinner"
@@ -20,7 +21,7 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         case .breakfast: "sun.horizon.fill"
         case .lunch: "sun.max.fill"
         case .dinner: "sun.haze.fill"
-        case .snacks: "clock.badge"
+        case .snacks: "clock"
         }
     }
     
@@ -28,9 +29,20 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         self == .snacks ? .palette : .multicolor
     }
     
-    var colors: (primary: Color, secondary: Color) {
+    func colors(for colorScheme: ColorScheme) -> (
+        primary: Color,
+        secondary: Color
+    ) {
         if self == .snacks {
-            return (.customYellow, .customFat)
+            let mainColor = colorScheme == .dark
+            ? Color.customYellowMain
+            : .customYellow
+            
+            let secondaryColor = colorScheme == .dark
+            ? Color.primary
+            : Color(.systemGray5)
+            
+            return (mainColor, secondaryColor)
         } else {
             return (.primary, .primary)
         }

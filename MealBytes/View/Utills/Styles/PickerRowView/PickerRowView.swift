@@ -12,6 +12,7 @@ struct PickerRowView<MenuContent: View>: View {
     let iconName: String
     let mealType: MealType
     let useRendering: Bool
+    @Environment(\.colorScheme) var colorScheme
     @ViewBuilder let menuContent: () -> MenuContent
     
     var body: some View {
@@ -20,12 +21,11 @@ struct PickerRowView<MenuContent: View>: View {
                 Text(title)
             } icon: {
                 if useRendering {
+                    let colors = mealType.colors(for: colorScheme)
+                    
                     Image(systemName: iconName)
                         .imageScale(.large)
-                        .foregroundStyle(
-                            mealType.colors.secondary,
-                            mealType.colors.primary
-                        )
+                        .foregroundStyle(colors.secondary, colors.primary)
                         .symbolRenderingMode(mealType.symbolRendering)
                         .symbolColorRenderingMode(.gradient)
                 } else {

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MealTypeLabel: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     let mealType: MealType
     var title: String?
     var isHeader: Bool = false
@@ -19,11 +21,11 @@ struct MealTypeLabel: View {
                 .fontWeight(isHeader ? .medium : nil)
                 .foregroundStyle(Color.primary)
         } icon: {
+            let colors = mealType.colors(for: colorScheme)
+            
             Image(systemName: mealType.iconName)
-                .imageScale(.large).foregroundStyle(
-                    mealType.colors.secondary,
-                    mealType.colors.primary
-                )
+                .imageScale(.large)
+                .foregroundStyle(colors.secondary, colors.primary)
                 .symbolRenderingMode(mealType.symbolRendering)
                 .symbolColorRenderingMode(.gradient)
         }

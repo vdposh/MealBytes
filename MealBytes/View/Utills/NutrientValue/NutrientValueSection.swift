@@ -68,7 +68,7 @@ struct NutrientValueSection: View {
                             Text("/")
                                 .foregroundStyle(.secondary)
                             
-                            Text("\(percent)%")
+                            Text((Double(percent) / 100).asPercentage())
                                 .foregroundStyle(.secondary)
                         }
                     }

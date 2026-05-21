@@ -16,7 +16,7 @@ struct CaloriesSection: View {
             VStack(spacing: 10) {
                 HStack {
                     if mainViewModel.hasMealItems {
-                        HStack(alignment: .lastTextBaseline, spacing: 5) {
+                        HStack(spacing: 5) {
                             Text(mainViewModel.totalCalories().asWhole())
                                 .fontWeight(.medium)
                             
@@ -28,7 +28,10 @@ struct CaloriesSection: View {
                     } else {
                         HStack {
                             Text("Calories")
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(
+                                    maxWidth: .infinity,
+                                    alignment: .leading
+                                )
                             
                             Text("-")
                         }
@@ -36,7 +39,7 @@ struct CaloriesSection: View {
                     }
                     
                     if mainViewModel.canDisplayIntake() {
-                        HStack(alignment: .lastTextBaseline, spacing: 5) {
+                        HStack(spacing: 5) {
                             Text(mainViewModel.remainingCaloriesText)
                             Text(mainViewModel.remainingCaloriesWord)
                         }
@@ -57,7 +60,7 @@ struct CaloriesSection: View {
                         let totalNutrients = mainViewModel
                             .totalNutrients()
                         
-                        HStack(spacing: 10) {
+                        HStack {
                             NutrientLabel(
                                 label: "F",
                                 value: totalNutrients.fat

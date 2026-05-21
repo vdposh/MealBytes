@@ -34,19 +34,12 @@ struct NutrientLabel: View {
                     .font(.subheadline)
             }
             .foregroundStyle(color)
-            .padding(.trailing, 2.5)
+            .padding(.trailing, 5)
         } else if let label {
-            HStack(spacing: 2.5) {
-                Text(label)
-                
-                HStack(spacing: 2.5) {
-                    Text(formattedValue)
-                    Text(unit.description(for: value))
-                }
-            }
+            Text("\(label) \(formattedValue) \(unit.description(for: value))")
             .font(.subheadline)
             .foregroundStyle(Color.secondary)
-            .padding(.trailing, 2.5)
+            .padding(.trailing, 5)
         }
     }
 }

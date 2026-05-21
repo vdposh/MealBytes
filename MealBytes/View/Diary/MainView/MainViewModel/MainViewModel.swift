@@ -29,7 +29,6 @@ protocol MainViewModelProtocol {
     func setDisplayIntake(_ value: Bool)
     func canDisplayIntake() -> Bool
     func formattedDate() -> String
-    func collapseAllSections()
     func resetDateToToday()
     func resetMainState()
 }
@@ -353,26 +352,26 @@ final class MainViewModel: ObservableObject {
         let intake = self.intake.doubleValue ?? 0
         return intake - total
     }
-
+    
     var isOverLimit: Bool {
         remainingCalories < 0
     }
-
+    
     var remainingCaloriesText: String {
         abs(remainingCalories).asWhole()
     }
-
+    
     var remainingCaloriesWord: String {
-        isOverLimit ? "over" : "under"
+        isOverLimit ? "over" : "left"
     }
     
     var remainingCaloriesUnit: String {
         let value = abs(remainingCalories)
         return value == 1 ? "calorie" : "calories"
     }
-
+    
     var remainingCaloriesWordColor: Color {
-        isOverLimit ? .secondary : .accent
+        isOverLimit ? .customRed : .accent
     }
     
     // MARK: - Calculation (Nutrients)

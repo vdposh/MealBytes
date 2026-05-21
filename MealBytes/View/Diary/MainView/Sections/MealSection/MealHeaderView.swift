@@ -47,7 +47,6 @@ struct MealHeaderView: View {
                                 .foregroundStyle(Color.primary)
                             }
                         }
-                        .lineLimit(1)
                         
                         if mainViewModel
                             .hasMealItemsForMealType(
@@ -86,6 +85,7 @@ struct MealHeaderView: View {
                         .foregroundStyle(.accent)
                         .symbolColorRenderingMode(.gradient)
                 }
+                .lineLimit(1)
             }
             .transaction { $0.animation = nil }
             .contextMenu {
