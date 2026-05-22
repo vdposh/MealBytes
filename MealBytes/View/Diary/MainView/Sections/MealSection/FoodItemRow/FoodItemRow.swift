@@ -78,17 +78,11 @@ struct FoodItemRow: View {
                         Button {
                             mainViewModel.moveMealItem(mealItem, to: mealType)
                         } label: {
-                            Label(
-                                mealType.rawValue,
-                                systemImage: mealType.iconName
-                            )
+                            Text(mealType.rawValue)
                         }
                     }
                 } label: {
-                    Label(
-                        mealItem.mealType.rawValue,
-                        systemImage: mealItem.mealType.iconName
-                    )
+                    Text(mealItem.mealType.rawValue)
                     Text("Current meal type")
                 }
                 

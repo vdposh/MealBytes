@@ -119,29 +119,29 @@ struct FoodView: View {
                     title: foodViewModel
                         .servingDescription(for: selected),
                     iconName: "text.justify",
-                    mealType: mealType,
-                    useRendering: false
+                    mealType: mealType
                 ) {
-                    ForEach(servings, id: \.self) { serving in
-                        Button {
-                            foodViewModel.updateServing(serving)
-                            amountFocused = false
-                            foodViewModel.normalizeAmount()
-                        } label: {
-                            Label {
-                                Text(
-                                    foodViewModel
-                                        .servingDescription(
-                                            for: serving,
-                                            showUnit: true
-                                        )
-                                )
-                            } icon: {
-                                if serving == selected {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
+                    Picker(
+                        selection: $foodViewModel.selectedServing,
+                        label: Text(
+                            foodViewModel.servingDescription(for: selected)
+                        )
+                    ) {
+                        ForEach(servings, id: \.self) { serving in
+                            Text(
+                                foodViewModel
+                                    .servingDescription(
+                                        for: serving,
+                                        showUnit: true
+                                    )
+                            )
+                            .tag(serving as Serving?)
                         }
+                    }
+                    .onChange(of: selected) {
+                        foodViewModel.updateServing(selected)
+                        amountFocused = false
+                        foodViewModel.normalizeAmount()
                     }
                 }
             }
@@ -149,13 +149,12 @@ struct FoodView: View {
             if isEditingMealItem {
                 PickerRowView(
                     title: mealType.rawValue,
-                    iconName: mealType.iconName,
-                    mealType: mealType,
-                    useRendering: true
+                    iconName: "fork.knife",
+                    mealType: mealType
                 ) {
                     Picker("Meal Type", selection: $mealType) {
                         ForEach(MealType.allCases, id: \.self) { meal in
-                            Label(meal.rawValue, systemImage: meal.iconName)
+                            Text(meal.rawValue)
                                 .tag(meal)
                         }
                     }

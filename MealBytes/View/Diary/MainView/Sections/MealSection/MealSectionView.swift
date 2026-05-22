@@ -19,7 +19,6 @@ struct MealSectionView: View {
         let model = MealSectionModel(
             mealType: mealType,
             title: mealType.rawValue,
-            iconName: mealType.iconName,
             calories: Double(mainViewModel.totalCalories(for: mealType)),
             fat: nutrients.fat,
             protein: nutrients.protein,

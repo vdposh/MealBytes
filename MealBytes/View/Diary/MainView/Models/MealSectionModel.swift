@@ -10,7 +10,6 @@ import SwiftUI
 struct MealSectionModel {
     let mealType: MealType
     let title: String
-    let iconName: String
     let calories: Double
     let fat: Double
     let protein: Double

@@ -16,7 +16,6 @@ struct MealSection: View {
         MealHeaderView(
             mealType: mealSectionModel.mealType,
             title: mealSectionModel.title,
-            iconName: mealSectionModel.iconName,
             calories: mealSectionModel.calories,
             fat: mealSectionModel.fat,
             protein: mealSectionModel.protein,

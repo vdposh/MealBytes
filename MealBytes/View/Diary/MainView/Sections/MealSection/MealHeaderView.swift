@@ -10,7 +10,6 @@ import SwiftUI
 struct MealHeaderView: View {
     let mealType: MealType
     let title: String
-    let iconName: String
     let calories: Double
     let fat: Double
     let protein: Double
@@ -24,9 +23,9 @@ struct MealHeaderView: View {
                 mainViewModel.navigateToSearch(for: mealType)
             } label: {
                 HStack(spacing: 10) {
-                    VStack(alignment: .leading, spacing: 12.5) {
+                    VStack(alignment: .leading, spacing: 10) {
                         HStack {
-                            MealTypeLabel(
+                            MealTypeText(
                                 mealType: mealType,
                                 title: title,
                                 isHeader: true

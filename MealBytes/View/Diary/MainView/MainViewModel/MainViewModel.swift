@@ -25,7 +25,7 @@ protocol MainViewModelProtocol {
     func deleteMealItemMainView(with id: UUID, for: MealType)
     func intakePercentage(for calories: Double) -> String
     func updateIntake(to value: String)
-    func collapseSection(for mealType: MealType, to isExpanded: Bool)
+    func setSectionExpanded(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
     func canDisplayIntake() -> Bool
     func formattedDate() -> String
@@ -50,8 +50,7 @@ final class MainViewModel: ObservableObject {
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
-    @Published var isExpandedCalendar: Bool = false
-    @Published var isCalendarInteractive: Bool = true
+    @Published var showDatePicker: Bool = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -70,7 +69,7 @@ final class MainViewModel: ObservableObject {
         
         MealType.allCases.forEach { items[$0] = [] }
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
-        MealType.allCases.forEach { sections[$0] = false }
+        MealType.allCases.forEach { sections[$0] = true }
         
         self.mealItems = items
         self.nutrientSummaries = summaries
@@ -507,20 +506,57 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Calculate Date Offset
-    func dateByAddingOffset(for offset: Int) -> Date {
-        Calendar.current.date(
-            byAdding: .day,
-            value: offset,
-            to: Date()
-        ) ?? Date()
+    // MARK: - Date methods
+    func weeksForDate(
+        _ date: Date,
+        range: ClosedRange<Int> = -2...2
+    ) -> [[Date]] {
+        guard let weekStart = calendar.date(
+            from: calendar.dateComponents(
+                [.yearForWeekOfYear, .weekOfYear],
+                from: date
+            )
+        ) else {
+            return []
+        }
+        
+        var weeks: [[Date]] = []
+        for offset in range {
+            guard let targetWeek = calendar.date(
+                byAdding: .weekOfYear,
+                value: offset, to: weekStart
+            ) else { continue }
+            let week = (0...6).compactMap { dayOffset in
+                calendar.date(byAdding: .day, value: dayOffset, to: targetWeek)
+            }
+            weeks.append(week)
+        }
+        return weeks
     }
     
-    func dayComponent(for date: Date) -> Int {
-        calendar.component(.day, from: date)
+    func loadMoreWeeks(
+        currentWeeks: [[Date]],
+        direction: DirectionDateView
+    ) -> (newWeek: [Date], offset: Int)? {
+        let currentWeekStart = direction == .backward
+        ? currentWeeks.first?.first
+        : currentWeeks.last?.first
+        guard let weekStart = currentWeekStart,
+              let newWeekStart = calendar.date(
+                byAdding: .weekOfYear,
+                value: direction == .backward ? -1 : 1,
+                to: weekStart
+              ) else {
+            return nil
+        }
+        
+        let newWeek = (0...6).compactMap { offset in
+            calendar.date(byAdding: .day, value: offset, to: newWeekStart)
+        }
+        let offset = direction == .backward ? 1 : 0
+        return (newWeek, offset)
     }
     
-    // MARK: - Formatted year for Calendar
     func formattedDate() -> String {
         if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
             return date.formatted(
@@ -533,180 +569,39 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Date (calendar) Management Methods
-    func hasMealItems(for date: Date) -> Bool {
-        return mealItems.values.first { items in
-            items.first { calendar.isDate($0.date, inSameDayAs: date) } != nil
-        } != nil
-    }
-    
-    func selectDate(
-        _ date: Date,
-        selectedDate: inout Date,
-        isPresented: inout Bool
-    ) {
-        selectedDate = date
-        isPresented = false
-    }
-    
-    func changeMonth(by value: Int, selectedDate: inout Date) {
-        guard let newMonth = calendar.date(
-            byAdding: .month,
-            value: value,
-            to: selectedDate
-        ) else { return }
-        
-        let components = calendar.dateComponents(
-            [.year, .month],
-            from: newMonth
-        )
-        
-        if value > 0 {
-            if let firstDay = calendar.date(from: components) {
-                selectedDate = firstDay
-            }
-        } else {
-            if let range = calendar.range(of: .day, in: .month, for: newMonth),
-               let lastDay = calendar.date(
-                from: DateComponents(
-                    year: components.year,
-                    month: components.month,
-                    day: range.count
-                )
-               ) {
-                selectedDate = lastDay
-            }
-        }
-    }
-    
-    func daysForCurrentMonth(selectedDate: Date) -> [Date] {
-        guard let startOfMonth = calendar.date(
-            from: DateComponents(
-                year: calendar.component(.year, from: selectedDate),
-                month: calendar.component(.month, from: selectedDate),
-                day: 1
-            )
-        ),
-              let range = calendar.range(
-                of: .day,
-                in: .month,
-                for: startOfMonth
-              ),
-              let prevMonth = calendar.date(
-                byAdding: .month,
-                value: -1,
-                to: startOfMonth
-              ),
-              let prevMonthRange = calendar.range(
-                of: .day,
-                in: .month,
-                for: prevMonth
-              )
-        else { return [] }
-        
-        let days = range.compactMap {
-            calendar.date(byAdding: .day, value: $0 - 1, to: startOfMonth)
-        }
-        let firstWeekday = calendar.component(.weekday, from: startOfMonth) - 1
-        let adjustedWeekday = firstWeekday == 0 ? 6 : (firstWeekday - 1)
-        let prevDays = prevMonthRange.compactMap {
-            calendar.date(byAdding: .day, value: $0 - 1, to: prevMonth)
-        }.suffix(adjustedWeekday)
-        let fillerCount = (7 - (days.count + adjustedWeekday) % 7) % 7
-        let nextDays: [Date] = (
-            fillerCount > 0
-            ? Array(1...fillerCount)
-            : []
-        ).compactMap {
-            guard let last = days.last else { return nil }
-            
-            let candidate = calendar.date(byAdding: .day, value: $0, to: last)
-            
-            guard let date = candidate else { return nil }
-            
-            return calendar.isDate(
-                date,
-                equalTo: startOfMonth,
-                toGranularity: .month
-            ) ? nil : date
-        }
-        
-        return Array(prevDays) + days + nextDays
-    }
-    
-    func weekdaySymbols() -> [String] {
-        var calendar = Calendar.current
-        calendar.firstWeekday = 2
-        let symbols = calendar.shortWeekdaySymbols
-        let firstWeekdayIndex = calendar.firstWeekday - 1
-        
-        return Array(
-            symbols[firstWeekdayIndex...] + symbols[..<firstWeekdayIndex]
-        )
-    }
-    
     private func handleDateChange(from oldDate: Date, to newDate: Date) {
         guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
         
         recalculateNutrients(for: newDate)
         updateProgress()
-        collapseAllSections()
+        expandAllSections()
         isExpanded = false
     }
     
-    // MARK: - Color (Calendar)
     func color(
-        for element: DisplayElement,
-        date: Date? = nil,
-        isSelected: Bool = false,
-        isToday: Bool = false,
-        forcePrimary: Bool = false
+        for date: Date,
+        isSelected: Bool,
+        isToday: Bool,
+        isWeekday: Bool = false
     ) -> Color {
-        if isSelected || isToday {
-            return .accent.opacity(1)
-        }
-        
-        if forcePrimary {
-            return .primary
-        }
-        
-        if let date, !calendar.isDate(
-            date,
-            equalTo: self.date,
-            toGranularity: .month
-        ) {
+        switch true {
+        case isSelected:
+            return .white
+        case isToday:
+            return .accent
+        case isWeekday:
             return .secondary
-        }
-        
-        return element == .day ? .primary : .secondary
-    }
-    
-    @ViewBuilder
-    func colorBackground(for date: Date) -> some View {
-        let isSelected = calendar.isDate(self.date, inSameDayAs: date)
-        
-        if isSelected {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.accent.opacity(0.2).gradient)
-        } else {
-            Color.clear
+        default:
+            let weekday = calendar.component(.weekday, from: date)
+            let isWeekend = weekday == 7 || weekday == 1
+            return isWeekend ? .secondary : .primary
         }
     }
     
     // MARK: - Close sections
-    func collapseAllSections() {
+    func expandAllSections() {
         expandedSections.keys.forEach { key in
-            expandedSections[key] = false
-        }
-    }
-    
-    func handleMainTabChange(to tab: Tabs) {
-        if tab != .diary {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if self.isExpandedCalendar {
-                    self.isExpandedCalendar = false
-                }
-            }
+            expandedSections[key] = true
         }
     }
     
@@ -715,7 +610,7 @@ final class MainViewModel: ObservableObject {
         selectedMealType = nil
         
         updateIntake(to: "")
-        collapseAllSections()
+        expandAllSections()
         resetDateToToday()
         setDisplayIntake(true)
     }
@@ -752,14 +647,6 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-    var navigationTitle: String {
-        isExpandedCalendar ? "" : "Diary"
-    }
-    
-    var navigationSubtitle: String {
-        isExpandedCalendar ? "" : formattedDate()
-    }
-    
     enum NutrientSource {
         case summaries([NutrientType: Double])
         case details(fat: Double, carbohydrate: Double, protein: Double)
@@ -776,7 +663,7 @@ extension MainViewModel: MainViewModelProtocol {
         date = Date()
     }
     
-    func collapseSection(for mealType: MealType, to isExpanded: Bool) {
+    func setSectionExpanded(for mealType: MealType, to isExpanded: Bool) {
         expandedSections[mealType] = isExpanded
     }
     
@@ -787,6 +674,11 @@ extension MainViewModel: MainViewModelProtocol {
     func updateIntake(to value: String) {
         intake = (Double(value) ?? 0).asWhole(grouping: false)
     }
+}
+
+enum DirectionDateView {
+    case forward
+    case backward
 }
 
 #Preview {

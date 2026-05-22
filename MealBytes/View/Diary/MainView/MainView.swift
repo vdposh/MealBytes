@@ -14,8 +14,8 @@ struct MainView: View {
     
     var body: some View {
         mainViewContentBody
-            .navigationTitle(mainViewModel.navigationTitle)
-            .navigationSubtitle(mainViewModel.navigationSubtitle)
+            .navigationTitle("Diary")
+            .navigationSubtitle(mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 mainViewToolbar
@@ -35,28 +35,6 @@ struct MainView: View {
         .environment(\.defaultMinListRowHeight, 0)
         .scrollIndicators(.hidden)
         .listSectionSpacing(15)
-        .overlay(alignment: .top) {
-            if mainViewModel.isExpandedCalendar {
-                CalendarButtonView {
-                    mainViewModel.isCalendarInteractive = false
-                    
-                    withAnimation {
-                        mainViewModel.isExpandedCalendar = false
-                        mainViewModel.isCalendarInteractive = true
-                    }
-                }
-            }
-        }
-        .overlay(alignment: .top) {
-            if mainViewModel.isExpandedCalendar {
-                CalendarView(mainViewModel: mainViewModel)
-                    .allowsHitTesting(mainViewModel.isCalendarInteractive)
-            }
-        }
-        .animation(
-            .bouncy(duration: 0.3),
-            value: mainViewModel.isExpandedCalendar
-        )
         .sheet(item: $selectedMealItemForMove) { item in
             MoveMealSheet(mealItem: item, mainViewModel: mainViewModel)
         }
@@ -124,79 +102,14 @@ struct MainView: View {
     
     @ToolbarContentBuilder
     private var mainViewToolbar: some ToolbarContent {
-        if mainViewModel.isExpandedCalendar {
-            ToolbarItemGroup {
-                Button {
-                    withTransaction(
-                        Transaction(animation: .bouncy)
-                    ) {
-                        mainViewModel.changeMonth(
-                            by: -1,
-                            selectedDate: &mainViewModel.date
-                        )
-                    }
-                } label: {
-                    Image(systemName: "chevron.left")
-                }
-                
-                Button {
-                    withTransaction(
-                        Transaction(animation: .bouncy)
-                    ) {
-                        mainViewModel.changeMonth(
-                            by: 1,
-                            selectedDate: &mainViewModel.date
-                        )
-                    }
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                mainViewModel.showDatePicker.toggle()
+            } label: {
+                Image(systemName: "calendar")
             }
-            
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Today") {
-                    withAnimation {
-                        mainViewModel.isCalendarInteractive = false
-                    }
-                    
-                    withTransaction(
-                        Transaction(animation: .bouncy)
-                    ) {
-                        mainViewModel.selectDate(
-                            Date(),
-                            selectedDate: &mainViewModel.date,
-                            isPresented: &mainViewModel.isExpandedCalendar
-                        )
-                    }
-                    
-                    withAnimation {
-                        mainViewModel.isCalendarInteractive = true
-                    }
-                }
-                .font(.headline)
-            }
-        }
-        
-        ToolbarSpacer(.fixed)
-        
-        ToolbarItemGroup(placement: .topBarTrailing) {
-            if mainViewModel.isExpandedCalendar {
-                Button(role: .cancel) {
-                    mainViewModel.isCalendarInteractive = false
-                    
-                    withAnimation {
-                        mainViewModel.isExpandedCalendar = false
-                        mainViewModel.isCalendarInteractive = true
-                    }
-                }
-            } else {
-                Button {
-                    withAnimation {
-                        mainViewModel.isExpandedCalendar = true
-                    }
-                } label: {
-                    Image(systemName: "calendar")
-                }
+            .popover(isPresented: $mainViewModel.showDatePicker) {
+                DatePickerView(date: $mainViewModel.date)
             }
         }
     }

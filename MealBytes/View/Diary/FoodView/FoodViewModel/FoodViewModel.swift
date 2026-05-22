@@ -238,7 +238,7 @@ final class FoodViewModel: ObservableObject {
                         to: mealType,
                         for: date
                     )
-                    mainViewModel.collapseSection(
+                    mainViewModel.setSectionExpanded(
                         for: originalMealType,
                         to: true
                     )

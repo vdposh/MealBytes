@@ -26,7 +26,7 @@ struct MoveMealSheet: View {
                             }
                         } label: {
                             HStack {
-                                MealTypeLabel(mealType: mealType)
+                                MealTypeText(mealType: mealType)
                                 
                                 if mealType == mealItem.mealType {
                                     Image(systemName: "checkmark")

@@ -276,7 +276,7 @@ struct SearchView: View {
                 Menu {
                     Picker("Meal Type", selection: $mealType) {
                         ForEach(MealType.allCases, id: \.self) { meal in
-                            Label(meal.rawValue, systemImage: meal.iconName)
+                            Text(meal.rawValue)
                                 .tag(meal)
                         }
                     }

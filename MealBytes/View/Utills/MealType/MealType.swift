@@ -15,38 +15,6 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     case snacks = "Snacks"
     
     var id: String { rawValue }
-    
-    var iconName: String {
-        switch self {
-        case .breakfast: "sun.horizon.fill"
-        case .lunch: "sun.max.fill"
-        case .dinner: "sun.haze.fill"
-        case .snacks: "clock"
-        }
-    }
-    
-    var symbolRendering: SymbolRenderingMode {
-        self == .snacks ? .palette : .multicolor
-    }
-    
-    func colors(for colorScheme: ColorScheme) -> (
-        primary: Color,
-        secondary: Color
-    ) {
-        if self == .snacks {
-            let mainColor = colorScheme == .dark
-            ? Color.customYellowMain
-            : .customYellow
-            
-            let secondaryColor = colorScheme == .dark
-            ? Color.primary
-            : Color(.systemGray5)
-            
-            return (mainColor, secondaryColor)
-        } else {
-            return (.primary, .primary)
-        }
-    }
 }
 
 #Preview {

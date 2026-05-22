@@ -14,34 +14,35 @@ struct DateView: View {
     let mainViewModel: MainViewModel
     
     var body: some View {
-        VStack {
-            Text(date.formatted(.dateTime.day()))
-                .font(.body)
+        VStack(spacing: 5) {
+            Text(date.formatted(.dateTime.weekday()))
+                .font(.footnote)
                 .foregroundStyle(
                     mainViewModel.color(
-                        for: .day,
-                        date: date,
+                        for: date,
                         isSelected: isSelected,
                         isToday: isToday,
-                        forcePrimary: true
+                        isWeekday: true
                     )
                 )
             
-            Text(date.formatted(.dateTime.weekday(.short)))
+            Text(date.formatted(.dateTime.day()))
+                .fontWeight(.medium)
                 .foregroundStyle(
                     mainViewModel.color(
-                        for: .weekday,
-                        date: date,
+                        for: date,
                         isSelected: isSelected,
                         isToday: isToday
                     )
                 )
-                .font(.footnote)
         }
-        .padding(5)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
         .background {
-            mainViewModel.colorBackground(for: date)
+            if isSelected {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(.accent)
+            }
         }
     }
 }
