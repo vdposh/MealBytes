@@ -52,7 +52,7 @@ struct DateSection: View {
                         }
                     }
                 }
-                .scrollTargetLayout()
+                .id(mainViewModel.uniqueId)
             }
             .scrollTargetBehavior(.paging)
             .scrollPosition(id: $scrollPosition)
@@ -97,12 +97,13 @@ struct DateSection: View {
             weeks.append(result.newWeek)
         }
         
+        mainViewModel.uniqueId = UUID()
         isLoadingMore = false
     }
     
-    @MainActor
     private func loadWeeks() {
-        weeks = mainViewModel.weeksForDate(mainViewModel.date, range: -2...2)
+        weeks = mainViewModel
+            .weeksForDate(mainViewModel.date, range: -100...100)
         if let index = weeks.firstIndex(
             where: { $0.contains {
                 mainViewModel.calendar

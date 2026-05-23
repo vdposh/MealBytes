@@ -11,12 +11,12 @@ struct DateView: View {
     let date: Date
     let isToday: Bool
     let isSelected: Bool
-    let mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        VStack(spacing: 5) {
+        VStack(spacing: 2.5) {
             Text(date.formatted(.dateTime.weekday()))
-                .font(.footnote)
+                .font(.caption)
                 .foregroundStyle(
                     mainViewModel.color(
                         for: date,
@@ -27,7 +27,7 @@ struct DateView: View {
                 )
             
             Text(date.formatted(.dateTime.day()))
-                .fontWeight(.medium)
+                .font(.system(size: 18))
                 .foregroundStyle(
                     mainViewModel.color(
                         for: date,
@@ -36,8 +36,9 @@ struct DateView: View {
                     )
                 )
         }
-        .padding(.vertical, 10)
+        .fontWeight(.medium)
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
         .background {
             if isSelected {
                 RoundedRectangle(cornerRadius: 18)
