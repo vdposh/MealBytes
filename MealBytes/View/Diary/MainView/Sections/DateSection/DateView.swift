@@ -14,7 +14,7 @@ struct DateView: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        VStack(spacing: 2.5) {
+        VStack(spacing: 5) {
             Text(date.formatted(.dateTime.weekday()))
                 .font(.caption)
                 .foregroundStyle(

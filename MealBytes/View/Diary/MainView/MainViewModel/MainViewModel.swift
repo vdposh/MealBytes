@@ -42,15 +42,18 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
+    @Published var dateSectionWeeks: [[Date]] = []
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
+    @Published var dateSectionScrollPosition: Int? = 0
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
+    @Published var isLoadingMore = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -74,6 +77,8 @@ final class MainViewModel: ObservableObject {
         self.mealItems = items
         self.nutrientSummaries = summaries
         self.expandedSections = sections
+        
+        updateDateSection()
     }
     
     // MARK: - Load Main Data
@@ -534,6 +539,13 @@ final class MainViewModel: ObservableObject {
         return weeks
     }
     
+    func updateDateSection() {
+        dateSectionWeeks = weeksForDate(date, range: -100...100)
+        dateSectionScrollPosition = dateSectionWeeks.firstIndex { week in
+            week.contains { calendar.isDate($0, inSameDayAs: date) }
+        } ?? 0
+    }
+    
     func loadMoreWeeks(
         currentWeeks: [[Date]],
         direction: DirectionDateView
@@ -592,9 +604,7 @@ final class MainViewModel: ObservableObject {
         case isWeekday:
             return .secondary
         default:
-            let weekday = calendar.component(.weekday, from: date)
-            let isWeekend = weekday == 7 || weekday == 1
-            return isWeekend ? .secondary : .primary
+            return .primary
         }
     }
     

@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct DateSection: View {
-    @State private var weeks: [[Date]] = []
-    @State private var scrollPosition: Int?
-    @State private var isLoadingMore = false
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -20,11 +17,9 @@ struct DateSection: View {
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
                     ForEach(
-                        Array(weeks.enumerated()),
+                        Array(mainViewModel.dateSectionWeeks.enumerated()),
                         id: \.offset
-                    ) {
-                        index,
-                        week in
+                    ) { index, week in
                         HStack {
                             ForEach(week, id: \.self) { date in
                                 Button {
@@ -55,63 +50,50 @@ struct DateSection: View {
                 .id(mainViewModel.uniqueId)
             }
             .scrollTargetBehavior(.paging)
-            .scrollPosition(id: $scrollPosition)
+            .scrollPosition(id: $mainViewModel.dateSectionScrollPosition)
             .scrollIndicators(.hidden)
         }
         .listRowInsets(
             EdgeInsets(top: 20, leading: -16, bottom: 0, trailing: -16)
         )
-        .task {
-            loadWeeks()
-        }
         .onChange(of: mainViewModel.date) {
-            loadWeeks()
+            mainViewModel.updateDateSection()
         }
     }
     
     private func checkAndLoadMore(at index: Int) {
-        guard !isLoadingMore else { return }
+        guard !mainViewModel.isLoadingMore else { return }
         
         if index == 0 {
-            isLoadingMore = true
+            mainViewModel.isLoadingMore = true
             loadMoreWeeks(direction: .backward)
-        } else if index == weeks.count - 1 {
-            isLoadingMore = true
+        } else if index == mainViewModel.dateSectionWeeks.count - 1 {
+            mainViewModel.isLoadingMore = true
             loadMoreWeeks(direction: .forward)
         }
     }
     
     private func loadMoreWeeks(direction: DirectionDateView) {
         guard let result = mainViewModel.loadMoreWeeks(
-            currentWeeks: weeks,
+            currentWeeks: mainViewModel.dateSectionWeeks,
             direction: direction
         ) else {
-            isLoadingMore = false
+            mainViewModel.isLoadingMore = false
             return
         }
         
         if direction == .backward {
-            weeks.insert(result.newWeek, at: 0)
-            scrollPosition = (scrollPosition ?? 0) + result.offset
+            mainViewModel.dateSectionWeeks.insert(result.newWeek, at: 0)
+            if let currentPos = mainViewModel.dateSectionScrollPosition {
+                mainViewModel
+                    .dateSectionScrollPosition = currentPos + result.offset
+            }
         } else {
-            weeks.append(result.newWeek)
+            mainViewModel.dateSectionWeeks.append(result.newWeek)
         }
         
         mainViewModel.uniqueId = UUID()
-        isLoadingMore = false
-    }
-    
-    private func loadWeeks() {
-        weeks = mainViewModel
-            .weeksForDate(mainViewModel.date, range: -100...100)
-        if let index = weeks.firstIndex(
-            where: { $0.contains {
-                mainViewModel.calendar
-                    .isDate($0, inSameDayAs: mainViewModel.date)
-            }
-            }) {
-            scrollPosition = index
-        }
+        mainViewModel.isLoadingMore = false
     }
 }
 
