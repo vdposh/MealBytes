@@ -16,7 +16,6 @@ struct MealTypeText: View {
     
     var body: some View {
         Text(title ?? mealType.rawValue)
-            .font(isHeader ? .system(size: 18) : nil)
             .fontWeight(isHeader ? .medium : nil)
             .foregroundStyle(Color.primary)
             .frame(maxWidth: .infinity, alignment: .leading)

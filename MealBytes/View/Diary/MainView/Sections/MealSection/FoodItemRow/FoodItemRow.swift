@@ -17,10 +17,11 @@ struct FoodItemRow: View {
             foodView
         } label: {
             HStack {
-                VStack(spacing: 5) {
-                    HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(mealItem.foodName)
+                                .font(.callout)
                                 .foregroundStyle(Color.primary)
                             Text(
                                 mainViewModel.formattedMealText(for: mealItem)

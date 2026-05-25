@@ -9,7 +9,6 @@ import SwiftUI
 
 struct DatePickerView: View {
     @Binding var date: Date
-    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack {
@@ -19,13 +18,9 @@ struct DatePickerView: View {
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
-            .onChange(of: date) {
-                dismiss()
-            }
             
             Button {
                 date = Date()
-                dismiss()
             } label: {
                 Text("Today")
                     .fontWeight(.medium)
@@ -34,7 +29,7 @@ struct DatePickerView: View {
         .frame(width: 320)
         .padding(.horizontal)
         .padding(.top, 6)
-        .padding(.bottom, 26)
+        .padding(.bottom, 24)
         .presentationCompactAdaptation(.popover)
     }
 }

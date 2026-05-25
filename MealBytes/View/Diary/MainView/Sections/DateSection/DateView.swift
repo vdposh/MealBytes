@@ -14,9 +14,9 @@ struct DateView: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        VStack(spacing: 5) {
+        VStack {
             Text(date.formatted(.dateTime.weekday()))
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(
                     mainViewModel.color(
                         for: date,
@@ -27,7 +27,7 @@ struct DateView: View {
                 )
             
             Text(date.formatted(.dateTime.day()))
-                .font(.system(size: 18))
+                .fontWeight(.medium)
                 .foregroundStyle(
                     mainViewModel.color(
                         for: date,
@@ -36,9 +36,8 @@ struct DateView: View {
                     )
                 )
         }
-        .fontWeight(.medium)
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.vertical, 12)
         .background {
             if isSelected {
                 RoundedRectangle(cornerRadius: 18)

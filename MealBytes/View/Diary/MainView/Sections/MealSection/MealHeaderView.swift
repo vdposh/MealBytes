@@ -23,7 +23,7 @@ struct MealHeaderView: View {
                 mainViewModel.navigateToSearch(for: mealType)
             } label: {
                 HStack(spacing: 10) {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 7.5) {
                         HStack {
                             MealTypeText(
                                 mealType: mealType,

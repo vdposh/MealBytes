@@ -63,7 +63,7 @@ struct MoveMealSheet: View {
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    HStack(spacing: 5) {
+                    HStack {
                         Image(systemName: "fork.knife.circle.fill")
                             .font(.largeTitle)
                             .foregroundStyle(.accent)

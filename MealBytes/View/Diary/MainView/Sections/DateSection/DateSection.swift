@@ -20,7 +20,7 @@ struct DateSection: View {
                         Array(mainViewModel.dateSectionWeeks.enumerated()),
                         id: \.offset
                     ) { index, week in
-                        HStack {
+                        HStack(spacing: 5) {
                             ForEach(week, id: \.self) { date in
                                 Button {
                                     mainViewModel.date = date

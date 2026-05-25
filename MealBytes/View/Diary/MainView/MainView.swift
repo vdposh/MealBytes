@@ -34,7 +34,7 @@ struct MainView: View {
         }
         .environment(\.defaultMinListRowHeight, 0)
         .scrollIndicators(.hidden)
-        .listSectionSpacing(15)
+        .listSectionSpacing(20)
         .sheet(item: $selectedMealItemForMove) { item in
             MoveMealSheet(mealItem: item, mainViewModel: mainViewModel)
         }

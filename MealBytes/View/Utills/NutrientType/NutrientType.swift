@@ -14,15 +14,15 @@ enum NutrientType: String, Identifiable, CaseIterable {
          servingSize,
          fat,
          saturatedFat,
-         monounsaturatedFat,
          polyunsaturatedFat,
+         monounsaturatedFat,
+         cholesterol,
          carbohydrate,
-         sugar,
          fiber,
+         sugar,
          protein,
          potassium,
-         sodium,
-         cholesterol
+         sodium
     
     var title: String {
         switch self {

@@ -21,9 +21,9 @@ struct CaloriesSection: View {
                                 .fontWeight(.medium)
                             
                             Text(mainViewModel.remainingCaloriesUnit)
+                                .font(.callout)
                                 .foregroundStyle(.secondary)
                         }
-                        .font(.callout)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     } else {
                         HStack {
@@ -43,7 +43,6 @@ struct CaloriesSection: View {
                             Text(mainViewModel.remainingCaloriesText)
                             Text(mainViewModel.remainingCaloriesWord)
                         }
-                        .font(.callout)
                         .fontWeight(.medium)
                         .foregroundStyle(
                             mainViewModel.remainingCaloriesWordColor
