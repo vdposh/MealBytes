@@ -11,91 +11,160 @@ import UIKit
 class DateCell: UICollectionViewCell {
     static let reuseIdentifier = "DateCell"
     
-    private let weekdayLabel = UILabel()
-    private let dayLabel = UILabel()
-    private var date: Date?
+    private var weekContainerView: UIStackView!
+    private var weekDates: [Date] = []
     private var onDateSelected: ((Date) -> Void)?
+    private var mainViewModel: MainViewModel?
+    private var dayButtons: [UIButton] = []
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupViews()
+        setupWeekView()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupViews() {
-        let containerView = UIStackView()
-        containerView.axis = .vertical
-        containerView.alignment = .center
-        containerView.spacing = 4
-        containerView.translatesAutoresizingMaskIntoConstraints = false
+    private func setupWeekView() {
+        weekContainerView = UIStackView()
+        weekContainerView.axis = .horizontal
+        weekContainerView.distribution = .fillEqually
+        weekContainerView.alignment = .fill
+        weekContainerView.spacing = 5
+        weekContainerView.translatesAutoresizingMaskIntoConstraints = false
         
+        contentView.addSubview(weekContainerView)
+        
+        NSLayoutConstraint.activate([
+            weekContainerView.leadingAnchor
+                .constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            contentView.trailingAnchor
+                .constraint(
+                    equalTo: weekContainerView.trailingAnchor,
+                    constant: 16
+                ),
+            weekContainerView.topAnchor
+                .constraint(equalTo: contentView.topAnchor),
+            weekContainerView.bottomAnchor
+                .constraint(equalTo: contentView.bottomAnchor)
+        ])
+        
+        for i in 0..<7 {
+            let button = createDayButton(index: i)
+            weekContainerView.addArrangedSubview(button)
+            dayButtons.append(button)
+        }
+    }
+    
+    private func createDayButton(index: Int) -> UIButton {
+        let button = UIButton(type: .custom)
+        button.tag = index
+        
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 2.5
+        stackView.isUserInteractionEnabled = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let weekdayLabel = UILabel()
         weekdayLabel.textAlignment = .center
         weekdayLabel.font = .systemFont(ofSize: 11, weight: .medium)
         
+        let dayLabel = UILabel()
         dayLabel.textAlignment = .center
         dayLabel.font = .systemFont(ofSize: 18, weight: .medium)
         
-        containerView.addArrangedSubview(weekdayLabel)
-        containerView.addArrangedSubview(dayLabel)
+        stackView.addArrangedSubview(weekdayLabel)
+        stackView.addArrangedSubview(dayLabel)
         
-        contentView.addSubview(containerView)
+        button.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            containerView.centerXAnchor
-                .constraint(equalTo: contentView.centerXAnchor),
-            containerView.centerYAnchor
-                .constraint(equalTo: contentView.centerYAnchor)
+            stackView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: button.centerYAnchor)
         ])
         
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(didTap)
-        )
-        contentView.addGestureRecognizer(tapGesture)
+        button.accessibilityElements = [weekdayLabel, dayLabel]
+        
+        let action = UIAction { [weak self] _ in
+            self?.didTapDay(at: index)
+        }
+        button.addAction(action, for: .touchUpInside)
+        
+        return button
     }
     
     func configure(
-        date: Date,
-        isToday: Bool,
-        isSelected: Bool,
+        weekDates: [Date],
+        mainViewModel: MainViewModel,
         onDateSelected: @escaping (Date) -> Void
     ) {
-        self.date = date
+        self.weekDates = weekDates
+        self.mainViewModel = mainViewModel
         self.onDateSelected = onDateSelected
         
-        weekdayLabel.text = date.formatted(.dateTime.weekday())
-        dayLabel.text = date.formatted(.dateTime.day())
+        updateDays()
+    }
+    
+    private func updateDays() {
+        guard let mainViewModel = mainViewModel else { return }
         
-        if isSelected {
-            contentView.backgroundColor = UIColor.accent
-            contentView.layer.cornerRadius = 18
-            weekdayLabel.textColor = .white
-            dayLabel.textColor = .white
-        } else {
-            contentView.backgroundColor = .clear
-            if isToday {
-                weekdayLabel.textColor = UIColor.accent
-                dayLabel.textColor = UIColor.accent
+        for (index, date) in weekDates.enumerated() {
+            guard index < dayButtons.count else { break }
+            
+            let button = dayButtons[index]
+            guard let labels = button.accessibilityElements as? [UILabel],
+                  labels.count == 2 else { continue }
+            
+            let weekdayLabel = labels[0]
+            let dayLabel = labels[1]
+            
+            weekdayLabel.text = date.formatted(.dateTime.weekday(.abbreviated))
+            dayLabel.text = date.formatted(.dateTime.day())
+            
+            let isToday = mainViewModel.calendar.isDate(
+                date,
+                inSameDayAs: Date()
+            )
+            let isSelected = mainViewModel.calendar.isDate(
+                date,
+                inSameDayAs: mainViewModel.date
+            )
+            
+            if isSelected {
+                button.backgroundColor = UIColor.accent
+                button.layer.cornerRadius = 18
+                weekdayLabel.textColor = .white
+                dayLabel.textColor = .white
             } else {
-                weekdayLabel.textColor = .secondaryLabel
-                dayLabel.textColor = .label
+                button.backgroundColor = .clear
+                if isToday {
+                    weekdayLabel.textColor = UIColor.accent
+                    dayLabel.textColor = UIColor.accent
+                } else {
+                    weekdayLabel.textColor = .secondaryLabel
+                    dayLabel.textColor = .label
+                }
             }
         }
     }
     
-    @objc private func didTap() {
-        guard let date = date else { return }
-        onDateSelected?(date)
+    private func didTapDay(at index: Int) {
+        guard index < weekDates.count else { return }
+        
+        let selectedDate = weekDates[index]
+        onDateSelected?(selectedDate)
+        
+        updateDays()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        contentView.backgroundColor = .clear
-        date = nil
+        weekDates = []
         onDateSelected = nil
+        mainViewModel = nil
     }
 }
 

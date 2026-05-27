@@ -44,20 +44,22 @@ struct DateCollectionView: UIViewRepresentable {
         context.coordinator.updateWeeks(dateSectionWeeks)
         collectionView.reloadData()
         
-        let allDates = dateSectionWeeks.flatMap { $0 }
-        if let index = allDates.firstIndex(
-            where: { mainViewModel.calendar.isDate(
-                $0,
-                inSameDayAs: mainViewModel.date
-            )
-            }) {
-            let indexPath = IndexPath(item: index, section: 0)
-            collectionView
-                .scrollToItem(
+        for (weekIndex, week) in dateSectionWeeks.enumerated() {
+            if week
+                .contains(
+                    where: { mainViewModel.calendar.isDate(
+                        $0,
+                        inSameDayAs: mainViewModel.date
+                    )
+                    }) {
+                let indexPath = IndexPath(item: weekIndex, section: 0)
+                collectionView.scrollToItem(
                     at: indexPath,
                     at: .centeredHorizontally,
                     animated: false
                 )
+                break
+            }
         }
     }
     
@@ -71,6 +73,7 @@ struct DateCollectionView: UIViewRepresentable {
                        UICollectionViewDelegateFlowLayout {
         var parent: DateCollectionView
         private var weeks: [[Date]] = []
+        private var lastSelectedPage: Int = -1
         private var isLoadingMore = false
         
         init(parent: DateCollectionView) {
@@ -85,7 +88,7 @@ struct DateCollectionView: UIViewRepresentable {
             _ collectionView: UICollectionView,
             numberOfItemsInSection section: Int
         ) -> Int {
-            return weeks.flatMap { $0 }.count
+            return weeks.count
         }
         
         func collectionView(
@@ -99,25 +102,15 @@ struct DateCollectionView: UIViewRepresentable {
                 return UICollectionViewCell()
             }
             
-            let allDates = weeks.flatMap { $0 }
-            
-            guard indexPath.item < allDates.count else {
+            guard indexPath.item < weeks.count else {
                 return cell
             }
             
-            let date = allDates[indexPath.item]
-            let isToday = parent.mainViewModel.calendar.isDate(
-                date,
-                inSameDayAs: Date()
-            )
-            let isSelected = parent.mainViewModel.calendar.isDate(
-                date, inSameDayAs: parent.mainViewModel.date
-            )
+            let week = weeks[indexPath.item]
             
             cell.configure(
-                date: date,
-                isToday: isToday,
-                isSelected: isSelected
+                weekDates: week,
+                mainViewModel: parent.mainViewModel
             ) { selectedDate in
                 self.parent.onDateSelected(selectedDate)
             }
@@ -130,8 +123,16 @@ struct DateCollectionView: UIViewRepresentable {
             layout collectionViewLayout: UICollectionViewLayout,
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-            let width = collectionView.bounds.width / 7
+            // Каждая ячейка занимает всю ширину экрана
+            let width = collectionView.bounds.width
             return CGSize(width: width, height: collectionView.bounds.height)
+        }
+        
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            let pageWidth = scrollView.bounds.width
+            lastSelectedPage = Int(
+                round(scrollView.contentOffset.x / pageWidth)
+            )
         }
         
         func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -149,18 +150,15 @@ struct DateCollectionView: UIViewRepresentable {
         
         private func scrollViewDidEndScrolling(_ scrollView: UIScrollView) {
             let pageWidth = scrollView.bounds.width
-            let currentPage = Int(
-                (scrollView.contentOffset.x + pageWidth / 2) / pageWidth
-            )
+            let currentPage = Int(round(scrollView.contentOffset.x / pageWidth))
             
-            let allDates = weeks.flatMap { $0 }
-            let itemsPerPage = 7
-            let startIndex = currentPage * itemsPerPage
-            guard startIndex + itemsPerPage <= allDates.count else { return }
+            guard currentPage >= 0 && currentPage < weeks.count else { return }
             
-            let weekDates = Array(
-                allDates[startIndex..<startIndex + itemsPerPage]
-            )
+            if currentPage == lastSelectedPage {
+                return
+            }
+            
+            let weekDates = weeks[currentPage]
             
             let isCurrentWeek = weekDates.contains { date in
                 parent.mainViewModel.calendar.isDate(date, inSameDayAs: Date())
@@ -175,7 +173,7 @@ struct DateCollectionView: UIViewRepresentable {
             
             parent.onDateSelected(targetDate)
             
-            let totalPages = (allDates.count + itemsPerPage - 1) / itemsPerPage
+            let totalPages = weeks.count
             checkAndLoadMore(currentPage: currentPage, totalPages: totalPages)
         }
         
@@ -186,9 +184,7 @@ struct DateCollectionView: UIViewRepresentable {
                 isLoadingMore = true
                 parent.onLoadMore(.backward)
                 isLoadingMore = false
-            }
-            
-            else if currentPage >= totalPages - 1 {
+            } else if currentPage >= totalPages - 1 {
                 isLoadingMore = true
                 parent.onLoadMore(.forward)
                 isLoadingMore = false
