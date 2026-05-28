@@ -73,8 +73,9 @@ struct DateCollectionView: UIViewRepresentable {
                        UICollectionViewDelegateFlowLayout {
         var parent: DateCollectionView
         private var weeks: [[Date]] = []
-        private var lastSelectedPage: Int = -1
         private var isLoadingMore = false
+        private var isUpdatingDate = false
+        private var lastWeeksCount = 0
         
         init(parent: DateCollectionView) {
             self.parent = parent
@@ -123,40 +124,26 @@ struct DateCollectionView: UIViewRepresentable {
             layout collectionViewLayout: UICollectionViewLayout,
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-            // Каждая ячейка занимает всю ширину экрана
             let width = collectionView.bounds.width
             return CGSize(width: width, height: collectionView.bounds.height)
         }
         
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-            let pageWidth = scrollView.bounds.width
-            lastSelectedPage = Int(
-                round(scrollView.contentOffset.x / pageWidth)
-            )
-        }
-        
-        func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-            scrollViewDidEndScrolling(scrollView)
-        }
-        
-        func scrollViewDidEndDragging(
-            _ scrollView: UIScrollView,
-            willDecelerate decelerate: Bool
-        ) {
-            if !decelerate {
-                scrollViewDidEndScrolling(scrollView)
+            if isUpdatingDate {
+                scrollView.isScrollEnabled = false
+                DispatchQueue.main.async {
+                    scrollView.isScrollEnabled = true
+                }
             }
         }
         
-        private func scrollViewDidEndScrolling(_ scrollView: UIScrollView) {
+        func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+            guard !isUpdatingDate else { return }
+            
             let pageWidth = scrollView.bounds.width
             let currentPage = Int(round(scrollView.contentOffset.x / pageWidth))
             
             guard currentPage >= 0 && currentPage < weeks.count else { return }
-            
-            if currentPage == lastSelectedPage {
-                return
-            }
             
             let weekDates = weeks[currentPage]
             
@@ -171,21 +158,41 @@ struct DateCollectionView: UIViewRepresentable {
                 targetDate = weekDates.first ?? weekDates[weekDates.count / 2]
             }
             
+            isUpdatingDate = true
+            scrollView.isScrollEnabled = false
+            
             parent.onDateSelected(targetDate)
+            
+            Task { @MainActor in
+                self.isUpdatingDate = false
+                scrollView.isScrollEnabled = true
+            }
             
             let totalPages = weeks.count
             checkAndLoadMore(currentPage: currentPage, totalPages: totalPages)
         }
         
+        func scrollViewDidEndDragging(
+            _ scrollView: UIScrollView,
+            willDecelerate decelerate: Bool
+        ) {
+            if !decelerate {
+                scrollViewDidEndDecelerating(scrollView)
+            }
+        }
+        
         private func checkAndLoadMore(currentPage: Int, totalPages: Int) {
             guard !isLoadingMore else { return }
             
-            if currentPage <= 0 {
+            if currentPage <= 0, weeks.count != lastWeeksCount {
                 isLoadingMore = true
+                lastWeeksCount = weeks.count
                 parent.onLoadMore(.backward)
                 isLoadingMore = false
-            } else if currentPage >= totalPages - 1 {
+            } else if currentPage >= totalPages - 1,
+                        weeks.count != lastWeeksCount {
                 isLoadingMore = true
+                lastWeeksCount = weeks.count
                 parent.onLoadMore(.forward)
                 isLoadingMore = false
             }
