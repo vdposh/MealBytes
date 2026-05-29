@@ -27,7 +27,7 @@ struct DateSection: View {
             .frame(height: 65)
         }
         .listRowInsets(
-            EdgeInsets(top: 8, leading: -16, bottom: 0, trailing: -16)
+            EdgeInsets(top: 8, leading: 0, bottom: 0, trailing: 0)
         )
     }
 }

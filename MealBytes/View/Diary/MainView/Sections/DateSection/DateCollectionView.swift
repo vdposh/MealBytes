@@ -35,6 +35,7 @@ struct DateCollectionView: UIViewRepresentable {
             DateCell.self,
             forCellWithReuseIdentifier: DateCell.reuseIdentifier
         )
+        collectionView.allowsSelection = true
         
         return collectionView
     }
@@ -44,22 +45,21 @@ struct DateCollectionView: UIViewRepresentable {
         context.coordinator.updateWeeks(dateSectionWeeks)
         collectionView.reloadData()
         
+        // Находим индекс даты для скролла
+        var targetIndexPath: IndexPath?
         for (weekIndex, week) in dateSectionWeeks.enumerated() {
-            if week
-                .contains(
-                    where: { mainViewModel.calendar.isDate(
-                        $0,
-                        inSameDayAs: mainViewModel.date
-                    )
-                    }) {
-                let indexPath = IndexPath(item: weekIndex, section: 0)
-                collectionView.scrollToItem(
-                    at: indexPath,
-                    at: .centeredHorizontally,
-                    animated: false
-                )
+            if let dayIndex = week.firstIndex(where: { mainViewModel.calendar.isDate($0, inSameDayAs: mainViewModel.date) }) {
+                targetIndexPath = IndexPath(item: weekIndex * 7 + dayIndex, section: 0)
                 break
             }
+        }
+        
+        if let indexPath = targetIndexPath {
+            collectionView.scrollToItem(
+                at: indexPath,
+                at: .centeredHorizontally,
+                animated: false
+            )
         }
     }
     
@@ -85,11 +85,12 @@ struct DateCollectionView: UIViewRepresentable {
             self.weeks = weeks
         }
         
+        // MARK: - UICollectionViewDataSource
         func collectionView(
             _ collectionView: UICollectionView,
             numberOfItemsInSection section: Int
         ) -> Int {
-            return weeks.count
+            return weeks.count * 7 // 7 дней в неделе
         }
         
         func collectionView(
@@ -103,31 +104,44 @@ struct DateCollectionView: UIViewRepresentable {
                 return UICollectionViewCell()
             }
             
-            guard indexPath.item < weeks.count else {
+            let weekIndex = indexPath.item / 7
+            let dayIndex = indexPath.item % 7
+            
+            guard weekIndex < weeks.count,
+                  dayIndex < weeks[weekIndex].count else {
                 return cell
             }
             
-            let week = weeks[indexPath.item]
+            let date = weeks[weekIndex][dayIndex]
+            let isToday = parent.mainViewModel.calendar.isDate(date, inSameDayAs: Date())
+            let isSelected = parent.mainViewModel.calendar.isDate(date, inSameDayAs: parent.mainViewModel.date)
             
-            cell.configure(
-                weekDates: week,
-                mainViewModel: parent.mainViewModel
-            ) { selectedDate in
-                self.parent.onDateSelected(selectedDate)
-            }
+            cell.configure(date: date, isToday: isToday, isSelected: isSelected)
             
             return cell
         }
         
+        // MARK: - UICollectionViewDelegate
+        func collectionView(
+            _ collectionView: UICollectionView,
+            didSelectItemAt indexPath: IndexPath
+        ) {
+            guard let cell = collectionView.cellForItem(at: indexPath) as? DateCell,
+                  let date = cell.getDate() else { return }
+            parent.onDateSelected(date)
+        }
+        
+        // MARK: - UICollectionViewDelegateFlowLayout
         func collectionView(
             _ collectionView: UICollectionView,
             layout collectionViewLayout: UICollectionViewLayout,
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
-            let width = collectionView.bounds.width
+            let width = collectionView.bounds.width / 7
             return CGSize(width: width, height: collectionView.bounds.height)
         }
         
+        // MARK: - UIScrollViewDelegate
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
             if isUpdatingDate {
                 scrollView.isScrollEnabled = false
@@ -143,9 +157,11 @@ struct DateCollectionView: UIViewRepresentable {
             let pageWidth = scrollView.bounds.width
             let currentPage = Int(round(scrollView.contentOffset.x / pageWidth))
             
-            guard currentPage >= 0 && currentPage < weeks.count else { return }
+            let currentWeekIndex = currentPage
             
-            let weekDates = weeks[currentPage]
+            guard currentWeekIndex >= 0 && currentWeekIndex < weeks.count else { return }
+            
+            let weekDates = weeks[currentWeekIndex]
             
             let isCurrentWeek = weekDates.contains { date in
                 parent.mainViewModel.calendar.isDate(date, inSameDayAs: Date())
@@ -169,7 +185,7 @@ struct DateCollectionView: UIViewRepresentable {
             }
             
             let totalPages = weeks.count
-            checkAndLoadMore(currentPage: currentPage, totalPages: totalPages)
+            checkAndLoadMore(currentPage: currentWeekIndex, totalPages: totalPages)
         }
         
         func scrollViewDidEndDragging(
@@ -181,6 +197,7 @@ struct DateCollectionView: UIViewRepresentable {
             }
         }
         
+        // MARK: - Helper
         private func checkAndLoadMore(currentPage: Int, totalPages: Int) {
             guard !isLoadingMore else { return }
             
@@ -188,13 +205,17 @@ struct DateCollectionView: UIViewRepresentable {
                 isLoadingMore = true
                 lastWeeksCount = weeks.count
                 parent.onLoadMore(.backward)
-                isLoadingMore = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.isLoadingMore = false
+                }
             } else if currentPage >= totalPages - 1,
-                        weeks.count != lastWeeksCount {
+                      weeks.count != lastWeeksCount {
                 isLoadingMore = true
                 lastWeeksCount = weeks.count
                 parent.onLoadMore(.forward)
-                isLoadingMore = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.isLoadingMore = false
+                }
             }
         }
     }
