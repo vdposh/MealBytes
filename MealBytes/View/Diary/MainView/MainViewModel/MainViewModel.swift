@@ -52,7 +52,6 @@ final class MainViewModel: ObservableObject {
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
-    @Published var isLoadingMore = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -418,7 +417,9 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    func macroDistribution(from summary: [NutrientType: Double]) -> [NutrientType: Int] {
+    func macroDistribution(
+        from summary: [NutrientType: Double]
+    ) -> [NutrientType: Int] {
         let values: [(NutrientType, Double)] = [
             (.fat, summary[.fat] ?? 0),
             (.carbohydrate, summary[.carbohydrate] ?? 0),
@@ -512,10 +513,6 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Calendar methods
     func loadMoreWeeks(direction: DirectionDateView) {
-        guard !isLoadingMore else { return }
-        
-        isLoadingMore = true
-        
         let currentWeekStart = direction == .backward
         ? dateSectionWeeks.first?.first
         : dateSectionWeeks.last?.first
@@ -526,7 +523,6 @@ final class MainViewModel: ObservableObject {
                 value: direction == .backward ? -1 : 1,
                 to: weekStart
               ) else {
-            isLoadingMore = false
             return
         }
         
@@ -539,8 +535,6 @@ final class MainViewModel: ObservableObject {
         } else {
             dateSectionWeeks.append(newWeek)
         }
-        
-        isLoadingMore = false
     }
     
     func updateDateSection() {

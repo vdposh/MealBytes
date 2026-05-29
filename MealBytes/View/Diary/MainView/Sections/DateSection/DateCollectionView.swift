@@ -45,11 +45,18 @@ struct DateCollectionView: UIViewRepresentable {
         context.coordinator.updateWeeks(dateSectionWeeks)
         collectionView.reloadData()
         
-        // Находим индекс даты для скролла
         var targetIndexPath: IndexPath?
         for (weekIndex, week) in dateSectionWeeks.enumerated() {
-            if let dayIndex = week.firstIndex(where: { mainViewModel.calendar.isDate($0, inSameDayAs: mainViewModel.date) }) {
-                targetIndexPath = IndexPath(item: weekIndex * 7 + dayIndex, section: 0)
+            if let dayIndex = week.firstIndex(
+                where: { mainViewModel.calendar.isDate(
+                    $0,
+                    inSameDayAs: mainViewModel.date
+                )
+                }) {
+                targetIndexPath = IndexPath(
+                    item: weekIndex * 7 + dayIndex,
+                    section: 0
+                )
                 break
             }
         }
@@ -74,8 +81,8 @@ struct DateCollectionView: UIViewRepresentable {
         var parent: DateCollectionView
         private var weeks: [[Date]] = []
         private var isLoadingMore = false
-        private var isUpdatingDate = false
         private var lastWeeksCount = 0
+        weak var collectionView: UICollectionView?
         
         init(parent: DateCollectionView) {
             self.parent = parent
@@ -90,7 +97,8 @@ struct DateCollectionView: UIViewRepresentable {
             _ collectionView: UICollectionView,
             numberOfItemsInSection section: Int
         ) -> Int {
-            return weeks.count * 7 // 7 дней в неделе
+            self.collectionView = collectionView
+            return weeks.count * 7
         }
         
         func collectionView(
@@ -113,8 +121,14 @@ struct DateCollectionView: UIViewRepresentable {
             }
             
             let date = weeks[weekIndex][dayIndex]
-            let isToday = parent.mainViewModel.calendar.isDate(date, inSameDayAs: Date())
-            let isSelected = parent.mainViewModel.calendar.isDate(date, inSameDayAs: parent.mainViewModel.date)
+            let isToday = parent.mainViewModel.calendar.isDate(
+                date,
+                inSameDayAs: Date()
+            )
+            let isSelected = parent.mainViewModel.calendar.isDate(
+                date,
+                inSameDayAs: parent.mainViewModel.date
+            )
             
             cell.configure(date: date, isToday: isToday, isSelected: isSelected)
             
@@ -126,7 +140,9 @@ struct DateCollectionView: UIViewRepresentable {
             _ collectionView: UICollectionView,
             didSelectItemAt indexPath: IndexPath
         ) {
-            guard let cell = collectionView.cellForItem(at: indexPath) as? DateCell,
+            guard let cell = collectionView.cellForItem(
+                at: indexPath
+            ) as? DateCell,
                   let date = cell.getDate() else { return }
             parent.onDateSelected(date)
         }
@@ -142,26 +158,24 @@ struct DateCollectionView: UIViewRepresentable {
         }
         
         // MARK: - UIScrollViewDelegate
-        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-            if isUpdatingDate {
-                scrollView.isScrollEnabled = false
-                DispatchQueue.main.async {
-                    scrollView.isScrollEnabled = true
-                }
-            }
-        }
-        
         func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-            guard !isUpdatingDate else { return }
+            guard let collectionView = collectionView else { return }
             
-            let pageWidth = scrollView.bounds.width
-            let currentPage = Int(round(scrollView.contentOffset.x / pageWidth))
+            let centerPoint = CGPoint(
+                x: scrollView.contentOffset.x + scrollView.bounds.width / 2,
+                y: scrollView.bounds.height / 2
+            )
             
-            let currentWeekIndex = currentPage
+            guard let centerIndexPath = collectionView
+                .indexPathForItem(at: centerPoint) else {
+                return
+            }
             
-            guard currentWeekIndex >= 0 && currentWeekIndex < weeks.count else { return }
+            let weekIndex = centerIndexPath.item / 7
             
-            let weekDates = weeks[currentWeekIndex]
+            guard weekIndex >= 0 && weekIndex < weeks.count else { return }
+            
+            let weekDates = weeks[weekIndex]
             
             let isCurrentWeek = weekDates.contains { date in
                 parent.mainViewModel.calendar.isDate(date, inSameDayAs: Date())
@@ -174,48 +188,28 @@ struct DateCollectionView: UIViewRepresentable {
                 targetDate = weekDates.first ?? weekDates[weekDates.count / 2]
             }
             
-            isUpdatingDate = true
-            scrollView.isScrollEnabled = false
-            
-            parent.onDateSelected(targetDate)
-            
-            Task { @MainActor in
-                self.isUpdatingDate = false
-                scrollView.isScrollEnabled = true
+            if !parent.mainViewModel.calendar
+                .isDate(parent.mainViewModel.date, inSameDayAs: targetDate) {
+                parent.onDateSelected(targetDate)
             }
             
-            let totalPages = weeks.count
-            checkAndLoadMore(currentPage: currentWeekIndex, totalPages: totalPages)
-        }
-        
-        func scrollViewDidEndDragging(
-            _ scrollView: UIScrollView,
-            willDecelerate decelerate: Bool
-        ) {
-            if !decelerate {
-                scrollViewDidEndDecelerating(scrollView)
-            }
+            checkAndLoadMore(currentPage: weekIndex, totalPages: weeks.count)
         }
         
         // MARK: - Helper
         private func checkAndLoadMore(currentPage: Int, totalPages: Int) {
             guard !isLoadingMore else { return }
             
-            if currentPage <= 0, weeks.count != lastWeeksCount {
+            if currentPage <= 1 {
                 isLoadingMore = true
                 lastWeeksCount = weeks.count
                 parent.onLoadMore(.backward)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    self.isLoadingMore = false
-                }
-            } else if currentPage >= totalPages - 1,
-                      weeks.count != lastWeeksCount {
+                isLoadingMore = false
+            } else if currentPage >= totalPages - 2 {
                 isLoadingMore = true
                 lastWeeksCount = weeks.count
                 parent.onLoadMore(.forward)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    self.isLoadingMore = false
-                }
+                isLoadingMore = false
             }
         }
     }
