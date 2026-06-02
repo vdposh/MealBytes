@@ -18,18 +18,10 @@ struct DatePickerView: View {
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
-            
-            Button {
-                date = Date()
-            } label: {
-                Text("Today")
-                    .fontWeight(.medium)
-            }
         }
         .frame(width: 320)
         .padding(.horizontal)
-        .padding(.top, 6)
-        .padding(.bottom, 24)
+        .padding(.vertical, 8)
         .presentationCompactAdaptation(.popover)
     }
 }

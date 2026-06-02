@@ -112,6 +112,16 @@ struct MainView: View {
                 DatePickerView(date: $mainViewModel.date)
             }
         }
+        
+        if !mainViewModel.isTodaySelected {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        mainViewModel.date = Date()
+                    } label: {
+                        Text("Today")
+                    }
+                }
+            }
     }
 }
 

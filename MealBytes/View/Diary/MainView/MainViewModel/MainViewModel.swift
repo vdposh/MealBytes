@@ -46,14 +46,12 @@ final class MainViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
-    @Published var dateSectionScrollPosition: Int? = 0
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
-    @Published var isLoadingMore = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -513,59 +511,56 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Date methods
-    func weeksForDate(_ date: Date, range: ClosedRange<Int>) -> [[Date]] {
-        guard let weekStart = calendar.date(
-            from: calendar.dateComponents(
-                [.yearForWeekOfYear, .weekOfYear],
-                from: date
-            )
-        ) else {
-            return []
-        }
-        
-        var weeks: [[Date]] = []
-        for offset in range {
-            guard let targetWeek = calendar.date(
-                byAdding: .weekOfYear,
-                value: offset, to: weekStart
-            ) else { continue }
-            let week = (0...6).compactMap { dayOffset in
-                calendar.date(byAdding: .day, value: dayOffset, to: targetWeek)
-            }
-            weeks.append(week)
-        }
-        return weeks
-    }
-    
-    func updateDateSection() {
-        dateSectionWeeks = weeksForDate(date, range: -1...1)
-        dateSectionScrollPosition = dateSectionWeeks.firstIndex { week in
-            week.contains { calendar.isDate($0, inSameDayAs: date) }
-        } ?? 0
-    }
-    
-    func loadMoreWeeks(
-        currentWeeks: [[Date]],
-        direction: DirectionDateView
-    ) -> (newWeek: [Date], offset: Int)? {
+    // MARK: - Calendar methods
+    func loadMoreWeeks(direction: DirectionDateView) {
         let currentWeekStart = direction == .backward
-        ? currentWeeks.first?.first
-        : currentWeeks.last?.first
+        ? dateSectionWeeks.first?.first
+        : dateSectionWeeks.last?.first
+        
         guard let weekStart = currentWeekStart,
               let newWeekStart = calendar.date(
                 byAdding: .weekOfYear,
                 value: direction == .backward ? -1 : 1,
                 to: weekStart
               ) else {
-            return nil
+            return
         }
         
         let newWeek = (0...6).compactMap { offset in
             calendar.date(byAdding: .day, value: offset, to: newWeekStart)
         }
-        let offset = direction == .backward ? 1 : 0
-        return (newWeek, offset)
+        
+        if direction == .backward {
+            dateSectionWeeks.insert(newWeek, at: 0)
+        } else {
+            dateSectionWeeks.append(newWeek)
+        }
+    }
+    
+    func updateDateSection() {
+        guard let weekStart = calendar.date(
+            from: calendar.dateComponents(
+                [.yearForWeekOfYear, .weekOfYear],
+                from: date
+            )
+        ) else {
+            dateSectionWeeks = []
+            return
+        }
+        
+        var weeks: [[Date]] = []
+        for offset in -1...1 {
+            guard let targetWeek = calendar.date(
+                byAdding: .weekOfYear,
+                value: offset,
+                to: weekStart
+            ) else { continue }
+            let week = (0...6).compactMap { dayOffset in
+                calendar.date(byAdding: .day, value: dayOffset, to: targetWeek)
+            }
+            weeks.append(week)
+        }
+        dateSectionWeeks = weeks
     }
     
     func formattedDate() -> String {
@@ -589,22 +584,8 @@ final class MainViewModel: ObservableObject {
         isExpanded = false
     }
     
-    func color(
-        for date: Date,
-        isSelected: Bool,
-        isToday: Bool,
-        isWeekday: Bool = false
-    ) -> Color {
-        switch true {
-        case isSelected:
-            return .white
-        case isToday:
-            return .accent
-        case isWeekday:
-            return .secondary
-        default:
-            return .primary
-        }
+    var isTodaySelected: Bool {
+        calendar.isDate(date, inSameDayAs: Date())
     }
     
     // MARK: - Close sections
