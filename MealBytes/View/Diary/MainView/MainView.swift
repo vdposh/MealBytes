@@ -17,6 +17,30 @@ struct MainView: View {
             .navigationTitle("Diary")
             .navigationSubtitle(mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.inline)
+            .toolbarBackground(
+                Color(.systemGroupedBackground).opacity(0.9),
+                for: .navigationBar
+            )
+            .safeAreaInset(edge: .top) {
+                dateSection
+                    .padding(.horizontal)
+                    .padding(.bottom, 30)
+                    .background {
+                        Color(.systemGroupedBackground).opacity(0.9)
+                            .mask(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        .white,
+                                        .white,
+                                        .white,
+                                        .clear
+                                    ]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                    }
+            }
             .toolbar {
                 mainViewToolbar
             }
@@ -27,11 +51,11 @@ struct MainView: View {
     
     private var mainViewContentBody: some View {
         Form {
-            dateSection
             caloriesSection
             mealSections
             detailedInformationSection
         }
+        .padding(.top, -40)
         .environment(\.defaultMinListRowHeight, 0)
         .scrollIndicators(.hidden)
         .listSectionSpacing(20)
@@ -114,14 +138,14 @@ struct MainView: View {
         }
         
         if !mainViewModel.isTodaySelected {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        mainViewModel.date = Date()
-                    } label: {
-                        Text("Today")
-                    }
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    mainViewModel.date = Date()
+                } label: {
+                    Text("Today")
                 }
             }
+        }
     }
 }
 
