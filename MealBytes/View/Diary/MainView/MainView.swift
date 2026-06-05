@@ -10,6 +10,7 @@ import FirebaseCore
 
 struct MainView: View {
     @State private var selectedMealItemForMove: MealItem?
+    @State private var uniqueId = UUID()
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -35,6 +36,7 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
+        .id(uniqueId)
         .padding(.top, -20)
         .environment(\.defaultMinListRowHeight, 0)
         .scrollIndicators(.hidden)
@@ -110,6 +112,7 @@ struct MainView: View {
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     mainViewModel.date = Date()
+                    uniqueId = UUID()
                 } label: {
                     Text("Today")
                         .fontWeight(.medium)
