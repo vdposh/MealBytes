@@ -22,6 +22,11 @@ struct DateSection: View {
             }
         )
         .frame(height: 65)
+        .padding(.horizontal)
+        .background {
+            VariableBlur(direction: .down)
+                .ignoresSafeArea()
+        }
     }
 }
 

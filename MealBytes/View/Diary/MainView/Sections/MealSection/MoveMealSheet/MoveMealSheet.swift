@@ -63,25 +63,22 @@ struct MoveMealSheet: View {
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    HStack {
-                        Image(systemName: "fork.knife.circle.fill")
-                            .font(.largeTitle)
-                            .foregroundStyle(.accent)
-                            .symbolColorRenderingMode(.gradient)
+                    VStack(alignment: .leading) {
+                        Text(mealItem.foodName)
+                            .font(.headline)
                         
-                        VStack(alignment: .leading) {
-                            Text(mealItem.foodName)
-                                .font(.headline)
-                            
-                            Text(
-                                mainViewModel.formattedMealText(for: mealItem)
-                            )
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        }
-                        .lineLimit(1)
+                        Text(
+                            mainViewModel.formattedMealText(for: mealItem)
+                        )
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                     }
-                    .frame(width: screenSize.width * 0.8, alignment: .leading)
+                    .lineLimit(1)
+                    .padding(.leading)
+                    .frame(
+                        width: UIScreen.currentSize.width * 0.8,
+                        alignment: .leading
+                    )
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -91,12 +88,6 @@ struct MoveMealSheet: View {
                 }
             }
         }
-    }
-    
-    private var screenSize: CGSize {
-        (
-            UIApplication.shared.connectedScenes.first as? UIWindowScene
-        )?.screen.bounds.size ?? .zero
     }
 }
 

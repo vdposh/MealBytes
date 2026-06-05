@@ -560,6 +560,7 @@ final class MainViewModel: ObservableObject {
             }
             weeks.append(week)
         }
+        
         dateSectionWeeks = weeks
     }
     

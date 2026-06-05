@@ -130,7 +130,11 @@ struct DateCollectionView: UIViewRepresentable {
                 inSameDayAs: parent.mainViewModel.date
             )
             
-            cell.configure(date: date, isToday: isToday, isSelected: isSelected)
+            cell.configure(
+                date: date,
+                isToday: isToday,
+                isSelected: isSelected
+            )
             
             return cell
         }
@@ -154,7 +158,8 @@ struct DateCollectionView: UIViewRepresentable {
             sizeForItemAt indexPath: IndexPath
         ) -> CGSize {
             let width = collectionView.bounds.width / 7
-            return CGSize(width: width, height: collectionView.bounds.height)
+            let height: CGFloat = 65
+            return CGSize(width: width, height: height)
         }
         
         // MARK: - UIScrollViewDelegate
@@ -172,12 +177,43 @@ struct DateCollectionView: UIViewRepresentable {
             
             guard let centerIndexPath = collectionView
                 .indexPathForItem(at: centerPoint) else {
+                scrollView.isUserInteractionEnabled = true
                 return
             }
             
             let weekIndex = centerIndexPath.item / 7
             
-            guard weekIndex >= 0 && weekIndex < weeks.count else { return }
+            guard weekIndex >= 0 && weekIndex < weeks.count else {
+                scrollView.isUserInteractionEnabled = true
+                return
+            }
+            
+            let currentWeekStart = parent.mainViewModel.calendar.date(
+                from: parent.mainViewModel.calendar
+                    .dateComponents(
+                        [.yearForWeekOfYear, .weekOfYear],
+                        from: parent.mainViewModel.date
+                    )
+            ) ?? Date()
+            
+            let targetWeekStart = parent.mainViewModel.calendar.date(
+                from: parent.mainViewModel.calendar
+                    .dateComponents(
+                        [.yearForWeekOfYear, .weekOfYear],
+                        from: weeks[weekIndex].first ?? Date()
+                    )
+            ) ?? Date()
+            
+            let isSameWeek = parent.mainViewModel.calendar.isDate(
+                currentWeekStart,
+                equalTo: targetWeekStart,
+                toGranularity: .weekOfYear
+            )
+            
+            guard !isSameWeek else {
+                scrollView.isUserInteractionEnabled = true
+                return
+            }
             
             let weekDates = weeks[weekIndex]
             
@@ -200,15 +236,6 @@ struct DateCollectionView: UIViewRepresentable {
             checkAndLoadMore(currentPage: weekIndex, totalPages: weeks.count)
             
             scrollView.isUserInteractionEnabled = true
-        }
-        
-        func scrollViewDidEndDragging(
-            _ scrollView: UIScrollView,
-            willDecelerate decelerate: Bool
-        ) {
-            if !decelerate {
-                scrollView.isUserInteractionEnabled = true
-            }
         }
         
         // MARK: - Helper

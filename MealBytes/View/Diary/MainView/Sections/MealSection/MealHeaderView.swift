@@ -123,14 +123,14 @@ struct MealHeaderView: View {
                         } label: {
                             Image(systemName: "trash")
                         }
-                        .tint(.customRedSwipe)
+                        .tint(.customRed)
                         
                         Button {
                             selectedMealItemForMove = item
                         } label: {
                             Image(systemName: "fork.knife")
                         }
-                        .tint(.customGreenSwipe)
+                        .tint(.accent)
                     }
                 }
             }

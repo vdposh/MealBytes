@@ -16,30 +16,10 @@ struct MainView: View {
         mainViewContentBody
             .navigationTitle("Diary")
             .navigationSubtitle(mainViewModel.formattedDate())
-            .toolbarTitleDisplayMode(.inline)
-            .toolbarBackground(
-                Color(.systemGroupedBackground).opacity(0.9),
-                for: .navigationBar
-            )
+            .toolbarTitleDisplayMode(.inlineLarge)
+            .scrollEdgeEffectHidden(true ,for: .top)
             .safeAreaInset(edge: .top) {
                 dateSection
-                    .padding(.horizontal)
-                    .padding(.bottom, 30)
-                    .background {
-                        Color(.systemGroupedBackground).opacity(0.9)
-                            .mask(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        .white,
-                                        .white,
-                                        .white,
-                                        .clear
-                                    ]),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                    }
             }
             .toolbar {
                 mainViewToolbar
@@ -55,7 +35,7 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
-        .padding(.top, -40)
+        .padding(.top, -20)
         .environment(\.defaultMinListRowHeight, 0)
         .scrollIndicators(.hidden)
         .listSectionSpacing(20)
@@ -126,7 +106,20 @@ struct MainView: View {
     
     @ToolbarContentBuilder
     private var mainViewToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
+        if !mainViewModel.isTodaySelected {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    mainViewModel.date = Date()
+                } label: {
+                    Text("Today")
+                        .fontWeight(.medium)
+                }
+            }
+        }
+        
+        ToolbarSpacer(.fixed, placement: .primaryAction)
+        
+        ToolbarItem(placement: .primaryAction) {
             Button {
                 mainViewModel.showDatePicker.toggle()
             } label: {
@@ -134,16 +127,6 @@ struct MainView: View {
             }
             .popover(isPresented: $mainViewModel.showDatePicker) {
                 DatePickerView(date: $mainViewModel.date)
-            }
-        }
-        
-        if !mainViewModel.isTodaySelected {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    mainViewModel.date = Date()
-                } label: {
-                    Text("Today")
-                }
             }
         }
     }

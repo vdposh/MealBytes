@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F22D8C7611006FCC12 /* FirebaseCore */; };
 		FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F42D8C7611006FCC12 /* FirebaseFirestore */; };
+		FBC523EF2FD03564002B6027 /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FBC523EE2FD03564002B6027 /* BlurSwiftUI */; };
 		FBCF4DAC2D9819F30008E46B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FBCF4DAB2D9819F30008E46B /* FirebaseAuth */; };
 		FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = FBD6B6C32D79AFC000AE0FDC /* Moya */; };
 /* End PBXBuildFile section */
@@ -33,6 +34,7 @@
 				FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */,
 				FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */,
 				FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */,
+				FBC523EF2FD03564002B6027 /* BlurSwiftUI in Frameworks */,
 				FBCF4DAC2D9819F30008E46B /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +90,7 @@
 				FBA176F22D8C7611006FCC12 /* FirebaseCore */,
 				FBA176F42D8C7611006FCC12 /* FirebaseFirestore */,
 				FBCF4DAB2D9819F30008E46B /* FirebaseAuth */,
+				FBC523EE2FD03564002B6027 /* BlurSwiftUI */,
 			);
 			productName = MealBytes;
 			productReference = FBD6B6862D79AF0700AE0FDC /* MealBytes.app */;
@@ -120,6 +123,7 @@
 			packageReferences = (
 				FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */,
 				FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				FBC523ED2FD03564002B6027 /* XCRemoteSwiftPackageReference "BlurUIKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FBD6B6872D79AF0700AE0FDC /* Products */;
@@ -375,6 +379,14 @@
 				minimumVersion = 11.10.0;
 			};
 		};
+		FBC523ED2FD03564002B6027 /* XCRemoteSwiftPackageReference "BlurUIKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TimOliver/BlurUIKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
 		FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Moya/Moya";
@@ -395,6 +407,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		FBC523EE2FD03564002B6027 /* BlurSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC523ED2FD03564002B6027 /* XCRemoteSwiftPackageReference "BlurUIKit" */;
+			productName = BlurSwiftUI;
 		};
 		FBCF4DAB2D9819F30008E46B /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
