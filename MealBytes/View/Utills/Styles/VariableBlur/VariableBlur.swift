@@ -61,9 +61,9 @@ public struct VariableBlur: UIViewRepresentable {
     private var maximumBlurRadius: CGFloat = 1
     private var blurStartingInset: GradientSizing? = .relative(fraction: 0.9)
     private var dimmingTintColor: UIColor? = .systemBackground
-    private var dimmingAlpha: DimmingAlpha? = .interfaceStyle(lightModeAlpha: 0.9, darkModeAlpha: 0.9)
-    private var dimmingOvershoot: GradientSizing? = .relative(fraction: 1.25)
-    private var dimmingStartingInset: GradientSizing? = .relative(fraction: 0.7)
+    private var dimmingAlpha: DimmingAlpha? = .interfaceStyle(lightModeAlpha: 0.85, darkModeAlpha: 0.85)
+    private var dimmingOvershoot: GradientSizing? = .relative(fraction: 1.2)
+    private var dimmingStartingInset: GradientSizing? = .relative(fraction: 0.8)
     private var passesTouchesThrough: Bool = true
 
     // MARK: - Initializer

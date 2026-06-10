@@ -46,12 +46,14 @@ final class MainViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
+    @Published var dateSectionScrollPosition: Int? = 0
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
+    @Published var isLoadingMore = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -511,45 +513,19 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Calendar methods
-    func loadMoreWeeks(direction: DirectionDateView) {
-        let currentWeekStart = direction == .backward
-        ? dateSectionWeeks.first?.first
-        : dateSectionWeeks.last?.first
-        
-        guard let weekStart = currentWeekStart,
-              let newWeekStart = calendar.date(
-                byAdding: .weekOfYear,
-                value: direction == .backward ? -1 : 1,
-                to: weekStart
-              ) else {
-            return
-        }
-        
-        let newWeek = (0...6).compactMap { offset in
-            calendar.date(byAdding: .day, value: offset, to: newWeekStart)
-        }
-        
-        if direction == .backward {
-            dateSectionWeeks.insert(newWeek, at: 0)
-        } else {
-            dateSectionWeeks.append(newWeek)
-        }
-    }
-    
-    func updateDateSection() {
+    // MARK: - Date methods
+    func weeksForDate(_ date: Date, range: ClosedRange<Int>) -> [[Date]] {
         guard let weekStart = calendar.date(
             from: calendar.dateComponents(
                 [.yearForWeekOfYear, .weekOfYear],
                 from: date
             )
         ) else {
-            dateSectionWeeks = []
-            return
+            return []
         }
         
         var weeks: [[Date]] = []
-        for offset in -1...1 {
+        for offset in range {
             guard let targetWeek = calendar.date(
                 byAdding: .weekOfYear,
                 value: offset,
@@ -560,8 +536,38 @@ final class MainViewModel: ObservableObject {
             }
             weeks.append(week)
         }
+        return weeks
+    }
+    
+    func updateDateSection() {
+        dateSectionWeeks = weeksForDate(date, range: -3...3)
+        dateSectionScrollPosition = dateSectionWeeks.firstIndex { week in
+            week.contains { calendar.isDate($0, inSameDayAs: date) }
+        } ?? 3
+    }
+    
+    func loadMoreWeeks(
+        currentWeeks: [[Date]],
+        direction: DirectionDateView
+    ) -> (newWeek: [Date], offset: Int)? {
+        let currentWeekStart = direction == .backward
+        ? currentWeeks.first?.first
+        : currentWeeks.last?.first
+        guard let weekStart = currentWeekStart,
+              let newWeekStart = calendar.date(
+                byAdding: .weekOfYear,
+                value: direction == .backward ? -1 : 1,
+                to: weekStart
+              ) else {
+            return nil
+        }
         
-        dateSectionWeeks = weeks
+        let newWeek = (0...6).compactMap { offset in
+            calendar.date(byAdding: .day, value: offset, to: newWeekStart)
+        }
+        let offset = direction == .backward ? 1 : 0
+        
+        return (newWeek, offset)
     }
     
     func formattedDate() -> String {
@@ -583,6 +589,24 @@ final class MainViewModel: ObservableObject {
         updateProgress()
         expandAllSections()
         isExpanded = false
+    }
+    
+    func color(
+        for date: Date,
+        isSelected: Bool,
+        isToday: Bool,
+        isWeekday: Bool = false
+    ) -> Color {
+        switch true {
+        case isSelected:
+            return .white
+        case isToday:
+            return .accent
+        case isWeekday:
+            return .secondary
+        default:
+            return .primary
+        }
     }
     
     var isTodaySelected: Bool {
@@ -638,6 +662,17 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
+    func scrollToTop() {
+        guard let windowScene = UIApplication
+            .shared.connectedScenes.first as? UIWindowScene,
+              let rootView = windowScene
+            .windows.first?.rootViewController?.view else {
+            return
+        }
+        
+        rootView.findScrollView()?.scrollToTop()
+    }
+    
     enum NutrientSource {
         case summaries([NutrientType: Double])
         case details(fat: Double, carbohydrate: Double, protein: Double)
