@@ -46,7 +46,7 @@ final class MainViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
-    @Published var dateSectionScrollPosition: Int? = 0
+    @Published var weekPosition: Int? = 0
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
@@ -513,7 +513,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Date methods
+    // MARK: - Date Section Calculation
     func weeksForDate(_ date: Date, range: ClosedRange<Int>) -> [[Date]] {
         guard let weekStart = calendar.date(
             from: calendar.dateComponents(
@@ -541,7 +541,7 @@ final class MainViewModel: ObservableObject {
     
     func updateDateSection() {
         dateSectionWeeks = weeksForDate(date, range: -3...3)
-        dateSectionScrollPosition = dateSectionWeeks.firstIndex { week in
+        weekPosition = dateSectionWeeks.firstIndex { week in
             week.contains { calendar.isDate($0, inSameDayAs: date) }
         } ?? 3
     }
@@ -591,22 +591,24 @@ final class MainViewModel: ObservableObject {
         isExpanded = false
     }
     
-    func color(
-        for date: Date,
-        isSelected: Bool,
-        isToday: Bool,
-        isWeekday: Bool = false
-    ) -> Color {
-        switch true {
-        case isSelected:
-            return .white
-        case isToday:
-            return .accent
-        case isWeekday:
-            return .secondary
-        default:
-            return .primary
+    // MARK: - Date Helpers
+    func dateByPreservingWeekday(
+        from currentDate: Date,
+        in week: [Date]
+    ) -> Date? {
+        let calendar = calendar
+        let currentWeekday = calendar.component(.weekday, from: currentDate)
+        let mondayBasedWeekday = (currentWeekday + 5) % 7
+        
+        guard mondayBasedWeekday >= 0, mondayBasedWeekday < week.count else {
+            return nil
         }
+        
+        return week[mondayBasedWeekday]
+    }
+    
+    func shouldUpdateDate(to newDate: Date, from currentDate: Date) -> Bool {
+        !calendar.isDate(currentDate, inSameDayAs: newDate)
     }
     
     var isTodaySelected: Bool {

@@ -65,7 +65,6 @@ struct LoginView: View {
                 .padding(.vertical)
             }
         }
-        .scrollIndicators(.hidden)
     }
 }
 

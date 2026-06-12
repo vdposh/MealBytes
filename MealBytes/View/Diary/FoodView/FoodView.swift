@@ -98,7 +98,6 @@ struct FoodView: View {
                     detailedInformationSection
                 }
                 .listSectionSpacing(15)
-                .scrollIndicators(.hidden)
             }
         }
     }

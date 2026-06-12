@@ -44,7 +44,6 @@ struct RegisterView: View {
                 .padding(.vertical)
             }
         }
-        .scrollIndicators(.hidden)
     }
     
     @ViewBuilder

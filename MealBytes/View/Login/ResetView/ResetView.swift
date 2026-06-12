@@ -34,7 +34,6 @@ struct ResetView: View {
                 .padding(.vertical)
             }
         }
-        .scrollIndicators(.hidden)
     }
     
     @ViewBuilder

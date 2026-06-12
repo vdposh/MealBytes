@@ -38,10 +38,8 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
-        .padding(.top, -15)
-        .environment(\.defaultMinListRowHeight, 0)
-        .scrollIndicators(.hidden)
-        .listSectionSpacing(20)
+        .environment(\.defaultMinListRowHeight, 20)
+        .listSectionSpacing(22)
         .sheet(item: $selectedMealItemForMove) { item in
             MoveMealSheet(mealItem: item, mainViewModel: mainViewModel)
         }
@@ -122,14 +120,23 @@ struct MainView: View {
         
         ToolbarSpacer(.fixed, placement: .primaryAction)
         
-        ToolbarItem(placement: .primaryAction) {
+        ToolbarItemGroup(placement: .primaryAction) {
             Button {
                 mainViewModel.showDatePicker.toggle()
             } label: {
                 Image(systemName: "calendar")
             }
             .popover(isPresented: $mainViewModel.showDatePicker) {
-                DatePickerView(date: $mainViewModel.date)
+                DatePickerView(
+                    date: $mainViewModel.date,
+                    mainViewModel: mainViewModel
+                )
+            }
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "ellipsis")
             }
         }
     }
