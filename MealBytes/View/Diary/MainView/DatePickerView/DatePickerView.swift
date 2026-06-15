@@ -25,7 +25,7 @@ struct DatePickerView: View {
             } label: {
                 Text("Today")
                     .fontWeight(.medium)
-                    .padding(4)
+                    .padding(6)
             }
             .buttonStyle(.glass)
             .padding(.bottom, 20)

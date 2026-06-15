@@ -53,6 +53,7 @@ final class MainViewModel: ObservableObject {
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
+    @Published var showClearDayAlert: Bool = false
     @Published var isLoadingMore = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
@@ -143,6 +144,8 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Move Meal Item
     func moveMealItem(_ item: MealItem, to newMealType: MealType) {
+        guard item.mealType != newMealType else { return }
+        
         let updatedItem = MealItem(
             id: item.id,
             foodId: item.foodId,
@@ -193,6 +196,31 @@ final class MainViewModel: ObservableObject {
             
             do {
                 try await firestore.deleteMealItemFirestore(itemToDelete)
+            } catch {
+                await MainActor.run {
+                    appError = .network
+                }
+            }
+        }
+    }
+    
+    // MARK: - Clear Day
+    func clearDay() {
+        let dateToClear = date
+        
+        withAnimation {
+            for mealType in MealType.allCases {
+                mealItems[mealType] = mealItems[mealType]?.filter {
+                    !calendar.isDate($0.date, inSameDayAs: dateToClear)
+                }
+            }
+            
+            updateProgress()
+        }
+        
+        Task {
+            do {
+                try await firestore.deleteMealItemsFirestore(on: dateToClear)
             } catch {
                 await MainActor.run {
                     appError = .network
@@ -328,10 +356,6 @@ final class MainViewModel: ObservableObject {
                     }
                 }
             }
-    }
-    
-    func canDisplayIntake() -> Bool {
-        return displayIntake && !intake.isEmpty && hasMealItems
     }
     
     var currentIntake: String {
@@ -591,7 +615,7 @@ final class MainViewModel: ObservableObject {
         isExpanded = false
     }
     
-    // MARK: - Date Helpers
+    // MARK: - Date Section Helpers
     func dateByPreservingWeekday(
         from currentDate: Date,
         in week: [Date]
@@ -607,10 +631,16 @@ final class MainViewModel: ObservableObject {
         return week[mondayBasedWeekday]
     }
     
-    func shouldUpdateDate(to newDate: Date, from currentDate: Date) -> Bool {
-        !calendar.isDate(currentDate, inSameDayAs: newDate)
+    func isToday(weekdayIndex: Int, at position: Int) -> Bool {
+        guard position >= 0, position < dateSectionWeeks.count else {
+            return false
+        }
+        
+        let currentWeek = dateSectionWeeks[position]
+        let date = currentWeek[weekdayIndex]
+        return calendar.isDate(date, inSameDayAs: Date())
     }
-    
+
     var isTodaySelected: Bool {
         calendar.isDate(date, inSameDayAs: Date())
     }
@@ -633,6 +663,34 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Alert
+    func formattedDateForAlert() -> String {
+        let calendar = calendar
+        
+        if calendar.isDate(date, inSameDayAs: Date()) {
+            return "today"
+        }
+        
+        if let yesterday = calendar.date(
+            byAdding: .day,
+            value: -1,
+            to: Date()
+        ),
+           calendar.isDate(date, inSameDayAs: yesterday) {
+            return "yesterday"
+        }
+        
+        if let tomorrow = calendar.date(
+            byAdding: .day,
+            value: 1,
+            to: Date()
+        ),
+           calendar.isDate(date, inSameDayAs: tomorrow) {
+            return "tomorrow"
+        }
+        
+        return date.formatted(date: .long, time: .omitted)
+    }
+    
     func triggerFoodAlert() {
         Task { @MainActor in
             guard !isAlertInProgress else {
@@ -653,16 +711,6 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Navigation
-    func navigateToSearch(for mealType: MealType) {
-        selectedMealType = mealType
-        searchViewModel.loadingBookmarks()
-        
-        Task {
-            await searchViewModel.loadBookmarksSearchView(for: mealType)
-        }
-    }
-    
     // MARK: - UI Helper
     func scrollToTop() {
         guard let windowScene = UIApplication
@@ -675,14 +723,44 @@ final class MainViewModel: ObservableObject {
         rootView.findScrollView()?.scrollToTop()
     }
     
-    enum NutrientSource {
-        case summaries([NutrientType: Double])
-        case details(fat: Double, carbohydrate: Double, protein: Double)
+    func navigateToSearch(for mealType: MealType) {
+        selectedMealType = mealType
+        searchViewModel.loadingBookmarks()
+        
+        Task {
+            await searchViewModel.loadBookmarksSearchView(for: mealType)
+        }
     }
     
-    enum DisplayElement {
-        case day
-        case weekday
+    func filteredItems(for mealType: MealType) -> [MealItem] {
+        filteredMealItems(for: mealType, on: date)
+    }
+
+    func hasItems(for mealType: MealType) -> Bool {
+        hasMealItemsForMealType(for: mealType, on: date)
+    }
+
+    func totalCaloriesText(for mealType: MealType) -> String {
+        totalCalories(for: mealType).asWhole()
+    }
+    
+    func canDisplayIntake() -> Bool {
+        displayIntake && !intake.isEmpty && hasMealItems
+    }
+
+    func intakePercentageText(for mealType: MealType) -> String {
+        totalIntakePercentage(for: mealType)
+    }
+
+    func isExpandedBinding(for mealType: MealType) -> Binding<Bool> {
+        Binding(
+            get: { self.expandedSections[mealType] ?? false },
+            set: { self.expandedSections[mealType] = $0 }
+        )
+    }
+
+    func isExpanded(for mealType: MealType) -> Bool {
+        expandedSections[mealType] == true
     }
 }
 

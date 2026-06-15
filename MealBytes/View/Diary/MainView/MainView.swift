@@ -24,6 +24,10 @@ struct MainView: View {
             .toolbar {
                 mainViewToolbar
             }
+            .alert(
+                isPresented: $mainViewModel.showClearDayAlert,
+                content: clearDayAlert
+            )
             .onChange(of: mainViewModel.date) {
                 mainViewModel.scrollToTop()
             }
@@ -41,7 +45,7 @@ struct MainView: View {
         .environment(\.defaultMinListRowHeight, 20)
         .listSectionSpacing(22)
         .sheet(item: $selectedMealItemForMove) { item in
-            MoveMealSheet(mealItem: item, mainViewModel: mainViewModel)
+            MoveMealSheet(mainViewModel: mainViewModel, mealItem: item)
         }
         .navigationDestination(
             item: $mainViewModel.selectedMealType
@@ -105,6 +109,17 @@ struct MainView: View {
         }
     }
     
+    private func clearDayAlert() -> Alert {
+        Alert(
+            title: Text("Clear Day"),
+            message: Text("Delete all food logs for \(mainViewModel.formattedDateForAlert())?"),
+            primaryButton: .destructive(Text("Delete All")) {
+                mainViewModel.clearDay()
+            },
+            secondaryButton: .cancel(Text("Cancel"))
+        )
+    }
+    
     @ToolbarContentBuilder
     private var mainViewToolbar: some ToolbarContent {
         if !mainViewModel.isTodaySelected {
@@ -133,10 +148,24 @@ struct MainView: View {
                 )
             }
             
-            Button {
-                
-            } label: {
-                Image(systemName: "ellipsis")
+            if mainViewModel.hasMealItems {
+                Menu {
+                    Button {
+                        
+                    } label: {
+                        Label("Select", systemImage: "checkmark.circle")
+                    }
+                    
+                    Divider()
+                    
+                    Button(role: .destructive) {
+                        mainViewModel.showClearDayAlert = true
+                    } label: {
+                        Label("Clear Day", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
             }
         }
     }

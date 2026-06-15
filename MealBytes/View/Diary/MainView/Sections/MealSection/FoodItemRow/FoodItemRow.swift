@@ -13,110 +13,103 @@ struct FoodItemRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        NavigationLink {
-            foodView
-        } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(mealItem.foodName)
-                                .font(.callout)
-                                .foregroundStyle(Color.primary)
-                            Text(
-                                mainViewModel.formattedMealText(for: mealItem)
-                            )
-                            .font(.subheadline)
-                            .foregroundStyle(.accent)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Text(mealItem.caloriesValue.asWhole())
-                            .lineLimit(1)
-                            .layoutPriority(1)
-                            .font(.callout)
-                            .fontWeight(.medium)
-                            .foregroundStyle(Color.secondary)
-                    }
-                    
-                    HStack {
-                        NutrientLabel(
-                            label: "F",
-                            value: mealItem.fatValue
-                        )
-                        NutrientLabel(
-                            label: "C",
-                            value: mealItem.carbsValue
-                        )
-                        NutrientLabel(
-                            label: "P",
-                            value: mealItem.proteinValue
-                        )
-                        
-                        if mainViewModel.canDisplayIntake() {
-                            Text(
-                                mainViewModel
-                                    .intakePercentage(
-                                        for: mealItem.caloriesValue
-                                    )
-                            )
-                            .foregroundStyle(Color.secondary)
-                            .font(.subheadline)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                    }
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
+        foodItemContent
             .transaction { $0.animation = nil }
             .contextMenu {
-                Menu {
-                    ForEach(
-                        MealType.allCases.filter { $0 != mealItem.mealType },
-                        id: \.self
-                    ) { mealType in
-                        Button {
-                            mainViewModel.moveMealItem(mealItem, to: mealType)
-                        } label: {
-                            Text(mealType.rawValue)
-                        }
-                    }
-                } label: {
-                    Text(mealItem.mealType.rawValue)
-                    Text("Current meal type")
-                }
-                
-                Divider()
-                
-                Button(role: .destructive) {
-                    mainViewModel.deleteMealItemMainView(
-                        with: mealItem.id,
-                        for: mealType
-                    )
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
+                foodItemContextMenu
+            }
+    }
+    
+    private var foodItemContent: some View {
+        NavigationLink {
+            FoodView(
+                mealType: mealItem.mealType,
+                food: Food(
+                    searchFoodId: mealItem.foodId,
+                    searchFoodName: mealItem.foodName,
+                    searchFoodDescription: ""
+                ),
+                searchViewModel: mainViewModel.searchViewModel,
+                mainViewModel: mainViewModel,
+                amount: mealItem.amount.asDecimal(grouping: false),
+                measurementDescription: mealItem.measurementDescription,
+                isEditingMealItem: true,
+                originalCreatedAt: mealItem.createdAt,
+                originalMealItemId: mealItem.id
+            )
+        } label: {
+            VStack(alignment: .leading, spacing: 5) {
+                foodItemMainInfo
+                foodItemNutrients
             }
         }
     }
     
-    private var foodView: some View {
-        FoodView(
-            mealType: mealItem.mealType,
-            food: Food(
-                searchFoodId: mealItem.foodId,
-                searchFoodName: mealItem.foodName,
-                searchFoodDescription: ""
-            ),
-            searchViewModel: mainViewModel.searchViewModel,
-            mainViewModel: mainViewModel,
-            amount: mealItem.amount.asDecimal(grouping: false),
-            measurementDescription: mealItem.measurementDescription,
-            isEditingMealItem: true,
-            originalCreatedAt: mealItem.createdAt,
-            originalMealItemId: mealItem.id
-        )
+    private var foodItemMainInfo: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(mealItem.foodName)
+                    .font(.callout)
+                    .foregroundStyle(Color.primary)
+                
+                Text(mainViewModel.formattedMealText(for: mealItem))
+                    .font(.subheadline)
+                    .foregroundStyle(.accent)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Text(mealItem.caloriesValue.asWhole())
+                .lineLimit(1)
+                .layoutPriority(1)
+                .font(.callout)
+                .fontWeight(.medium)
+                .foregroundStyle(Color.secondary)
+        }
+    }
+    
+    private var foodItemNutrients: some View {
+        HStack {
+            NutrientLabel(label: "F", value: mealItem.fatValue)
+            NutrientLabel(label: "C", value: mealItem.carbsValue)
+            NutrientLabel(label: "P", value: mealItem.proteinValue)
+            
+            if mainViewModel.canDisplayIntake() {
+                Text(
+                    mainViewModel.intakePercentage(for: mealItem.caloriesValue)
+                )
+                .font(.subheadline)
+                .foregroundStyle(Color.secondary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        }
+        .lineLimit(1)
+    }
+    
+    @ViewBuilder
+    private var foodItemContextMenu: some View {
+        Menu {
+            Picker("Meal Type", selection: Binding(
+                get: { mealItem.mealType },
+                set: { newMealType in
+                    mainViewModel.moveMealItem(mealItem, to: newMealType)
+                }
+            )) {
+                ForEach(MealType.allCases, id: \.self) { mealType in
+                    Text(mealType.rawValue).tag(mealType)
+                }
+            }
+        } label: {
+            Label("Meal Type", systemImage: "fork.knife")
+        }
+        
+        Divider()
+        
+        Button(role: .destructive) {
+            mainViewModel
+                .deleteMealItemMainView(with: mealItem.id, for: mealType)
+        } label: {
+            Label("Delete", systemImage: "trash")
+        }
     }
 }
 

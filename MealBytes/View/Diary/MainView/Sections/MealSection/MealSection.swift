@@ -14,14 +14,14 @@ struct MealSection: View {
     
     var body: some View {
         MealHeaderView(
+            selectedMealItemForMove: $selectedMealItemForMove,
+            mainViewModel: mainViewModel,
             mealType: mealSectionModel.mealType,
             title: mealSectionModel.title,
             calories: mealSectionModel.calories,
             fat: mealSectionModel.fat,
             protein: mealSectionModel.protein,
-            carbohydrate: mealSectionModel.carbohydrate,
-            selectedMealItemForMove:$selectedMealItemForMove,
-            mainViewModel: mainViewModel
+            carbohydrate: mealSectionModel.carbohydrate
         )
     }
 }

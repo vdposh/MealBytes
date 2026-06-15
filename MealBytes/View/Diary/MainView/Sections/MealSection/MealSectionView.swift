@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MealSectionView: View {
     @Binding var selectedMealItemForMove: MealItem?
+    
     let mealType: MealType
     let mealItems: [MealItem]
     let mainViewModel: MainViewModel

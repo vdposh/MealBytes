@@ -8,152 +8,143 @@
 import SwiftUI
 
 struct MealHeaderView: View {
+    @Binding var selectedMealItemForMove: MealItem?
+    @ObservedObject var mainViewModel: MainViewModel
+    
     let mealType: MealType
     let title: String
     let calories: Double
     let fat: Double
     let protein: Double
     let carbohydrate: Double
-    @Binding var selectedMealItemForMove: MealItem?
-    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         Section {
-            Button {
-                mainViewModel.navigateToSearch(for: mealType)
-            } label: {
-                HStack(spacing: 10) {
-                    VStack(alignment: .leading, spacing: 7.5) {
-                        HStack {
-                            MealTypeText(
-                                mealType: mealType,
-                                title: title,
-                                isHeader: true
-                            )
-                            
-                            if mainViewModel
-                                .hasMealItemsForMealType(
-                                    for: mealType,
-                                    on: mainViewModel.date
-                                ) {
-                                Text(
-                                    mainViewModel
-                                        .totalCalories(for: mealType).asWhole()
-                                )
-                                .layoutPriority(1)
-                                .font(.callout)
-                                .fontWeight(.medium)
-                                .foregroundStyle(Color.primary)
-                            }
-                        }
+            headerContent
+                .transaction { $0.animation = nil }
+                .contextMenu {
+                    contextMenuContent
+                }
+            foodItemContent
+            showHideButton
+        }
+    }
+    
+    private var headerContent: some View {
+        Button {
+            mainViewModel.navigateToSearch(for: mealType)
+        } label: {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 7.5) {
+                    HStack {
+                        MealTypeText(
+                            mealType: mealType,
+                            title: title,
+                            isHeader: true
+                        )
                         
-                        if mainViewModel
-                            .hasMealItemsForMealType(
-                                for: mealType,
-                                on: mainViewModel.date
-                            ) {
-                            let nutrients = mainViewModel
-                                .totalNutrients(for: mealType)
-                            
-                            HStack {
-                                NutrientSummaryRow(
-                                    fat: nutrients.fat,
-                                    carbs: nutrients.carbs,
-                                    protein: nutrients.protein,
-                                    calories: calories,
-                                    mainViewModel: mainViewModel
-                                )
-                                
-                                if mainViewModel.canDisplayIntake() {
-                                    Text(
-                                        mainViewModel
-                                            .totalIntakePercentage(
-                                                for: mealType
-                                            )
-                                    )
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color.secondary)
-                                }
-                            }
+                        if mainViewModel.hasItems(for: mealType) {
+                            Text(
+                                mainViewModel.totalCaloriesText(for: mealType)
+                            )
+                            .layoutPriority(1)
+                            .font(.callout)
+                            .fontWeight(.medium)
+                            .foregroundStyle(Color.primary)
                         }
                     }
                     
-                    Image(systemName: "plus")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.accent)
-                        .symbolColorRenderingMode(.gradient)
-                }
-                .lineLimit(1)
-            }
-            .transaction { $0.animation = nil }
-            .contextMenu {
-                if !filteredItems.isEmpty {
-                    ShowHideButtonView(
-                        isExpanded: Binding(
-                            get: {
-                                mainViewModel
-                                    .expandedSections[mealType] ?? false
-                            },
-                            set: {
-                                mainViewModel
-                                    .expandedSections[mealType] = $0
-                            }
-                        ),
-                        context: true,
-                        itemCount: filteredItems.count
-                    )
-                }
-            }
-            
-            if mainViewModel.expandedSections[mealType] == true {
-                ForEach(filteredItems, id: \.id) { item in
-                    FoodItemRow(
-                        mealItem: item,
-                        mealType: mealType,
-                        mainViewModel: mainViewModel
-                    )
-                    .swipeActions(allowsFullSwipe: false) {
-                        Button {
-                            mainViewModel.deleteMealItemMainView(
-                                with: item.id,
-                                for: mealType
-                            )
-                            mainViewModel.uniqueId = UUID()
-                        } label: {
-                            Image(systemName: "trash")
-                        }
-                        .tint(.customRed)
+                    if mainViewModel.hasItems(for: mealType) {
+                        let nutrients = mainViewModel.totalNutrients(
+                            for: mealType
+                        )
                         
-                        Button {
-                            selectedMealItemForMove = item
-                        } label: {
-                            Image(systemName: "fork.knife")
+                        HStack {
+                            NutrientSummaryRow(
+                                mainViewModel: mainViewModel,
+                                fat: nutrients.fat,
+                                carbs: nutrients.carbs,
+                                protein: nutrients.protein,
+                                calories: calories
+                            )
+                            
+                            if mainViewModel.canDisplayIntake() {
+                                Text(
+                                    mainViewModel
+                                        .intakePercentageText(for: mealType)
+                                )
+                                .font(.subheadline)
+                                .foregroundStyle(Color.secondary)
+                            }
                         }
-                        .tint(.accent)
                     }
                 }
+                
+                Image(systemName: "plus")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.accent)
+                    .symbolColorRenderingMode(.gradient)
             }
-            if !filteredItems.isEmpty {
-                ShowHideButtonView(
-                    isExpanded: Binding(
-                        get: {
-                            mainViewModel.expandedSections[mealType] ?? false
-                        },
-                        set: {
-                            mainViewModel.expandedSections[mealType] = $0
-                        }
-                    ),
-                    showCount: true,
-                    itemCount: filteredItems.count
-                )
-            }
+            .lineLimit(1)
         }
-        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
     
-    private var filteredItems: [MealItem] {
-        mainViewModel.filteredMealItems(for: mealType, on: mainViewModel.date)
+    @ViewBuilder
+    private var contextMenuContent: some View {
+        if !mainViewModel.filteredItems(for: mealType).isEmpty {
+            ShowHideButtonView(
+                isExpanded: mainViewModel.isExpandedBinding(for: mealType),
+                context: true,
+                itemCount: mainViewModel.filteredItems(for: mealType).count
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private var foodItemContent: some View {
+        if mainViewModel.isExpanded(for: mealType) {
+            ForEach(
+                mainViewModel.filteredItems(for: mealType),
+                id: \.id
+            ) { item in
+                FoodItemRow(
+                    mealItem: item,
+                    mealType: mealType,
+                    mainViewModel: mainViewModel
+                )
+                .swipeActions(allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        mainViewModel.deleteMealItemMainView(
+                            with: item.id,
+                            for: mealType
+                        )
+                        mainViewModel.uniqueId = UUID()
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .tint(.customRed)
+                    
+                    Button {
+                        selectedMealItemForMove = item
+                    } label: {
+                        Image(systemName: "fork.knife")
+                    }
+                    .tint(.accent)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var showHideButton: some View {
+        if !mainViewModel.filteredItems(for: mealType).isEmpty {
+            ShowHideButtonView(
+                isExpanded: mainViewModel.isExpandedBinding(for: mealType),
+                showCount: true,
+                itemCount: mainViewModel.filteredItems(for: mealType).count
+            )
+        }
     }
 }
 

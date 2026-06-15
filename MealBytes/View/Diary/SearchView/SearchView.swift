@@ -130,7 +130,7 @@ struct SearchView: View {
                     searchViewModel: searchViewModel
                 )
             }
-            .swipeActions(allowsFullSwipe: false) {
+            .swipeActions {
                 Button(role: searchViewModel.bookmarkButtonRole(for: food)) {
                     Task {
                         await searchViewModel

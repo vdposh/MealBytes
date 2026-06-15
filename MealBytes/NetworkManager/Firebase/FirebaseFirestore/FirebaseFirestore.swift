@@ -42,6 +42,7 @@ protocol FirebaseFirestoreProtocol {
     func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
+    func deleteMealItemsFirestore(on date: Date) async throws
     func deleteLoginDataFirestore() async throws
     func deleteBookmarkMetadata(
         for foodId: Int,
@@ -102,7 +103,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try documentReference.setData(from: mealItem, merge: true)
     }
     
-    // MARK: - Delete Meal
+    // MARK: - Delete Meal Item
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
@@ -115,6 +116,43 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(mealItem.id.uuidString)
         
         try await documentReference.delete()
+    }
+    
+    // MARK: - Delete Meal Items for Date
+    func deleteMealItemsFirestore(on date: Date) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        
+        guard let endOfDay = calendar.date(
+            byAdding: .day,
+            value: 1,
+            to: startOfDay
+        ) else {
+            throw AppError.decoding
+        }
+        
+        let startTimestamp = Timestamp(date: startOfDay)
+        let endTimestamp = Timestamp(date: endOfDay)
+        
+        let snapshot = try await firestore
+            .collection("Users")
+            .document(uid)
+            .collection("MainView")
+            .whereField("date", isGreaterThanOrEqualTo: startTimestamp)
+            .whereField("date", isLessThan: endTimestamp)
+            .getDocuments()
+        
+        let batch = firestore.batch()
+        
+        for document in snapshot.documents {
+            batch.deleteDocument(document.reference)
+        }
+        
+        try await batch.commit()
     }
     
     // MARK: - Load Bookmarks

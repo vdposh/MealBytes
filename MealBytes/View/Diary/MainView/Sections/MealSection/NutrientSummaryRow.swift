@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct NutrientSummaryRow: View {
+    @ObservedObject var mainViewModel: MainViewModel
+    
     let fat: Double
     let carbs: Double
     let protein: Double
     let calories: Double
-    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         HStack {

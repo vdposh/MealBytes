@@ -12,6 +12,26 @@ struct DateSection: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
+        scrollContent
+            .overlay(alignment: .top) {
+                weekdayView
+            }
+            .background {
+                VariableBlur(direction: .down)
+                    .ignoresSafeArea()
+            }
+            .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $mainViewModel.weekPosition)
+            .scrollIndicators(.hidden)
+            .onChange(of: mainViewModel.weekPosition) {
+                handleWeekPositionChange(mainViewModel.weekPosition)
+            }
+            .onChange(of: mainViewModel.date) {
+                mainViewModel.updateDateSection()
+            }
+    }
+    
+    private var scrollContent: some View {
         ScrollView(.horizontal) {
             LazyHStack(alignment: .center, spacing: 0) {
                 ForEach(
@@ -24,7 +44,13 @@ struct DateSection: View {
                                 mainViewModel.date = date
                                 mainViewModel.scrollToTop()
                             } label: {
-                                dateView(for: date)
+                                Text(date.formatted(.dateTime.day()))
+                                    .font(.system(size: 18))
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.top, 28)
+                                    .contentShape(Rectangle())
+                                    .transaction { $0.animation = nil }
                             }
                             .buttonStyle(.plain)
                         }
@@ -37,66 +63,8 @@ struct DateSection: View {
                 }
             }
             .scrollTargetLayout()
+            .frame(height: 65)
         }
-        .frame(height: 65)
-        .overlay(alignment: .top) {
-            weekdayView
-        }
-        .background {
-            VariableBlur(direction: .down)
-                .ignoresSafeArea()
-        }
-        .scrollTargetBehavior(.paging)
-        .scrollPosition(id: $mainViewModel.weekPosition)
-        .scrollIndicators(.hidden)
-        .onChange(of: mainViewModel.weekPosition) { _, newPosition in
-            guard let newPosition,
-                  newPosition >= 0,
-                  newPosition < mainViewModel.dateSectionWeeks.count else {
-                return
-            }
-            
-            scrollTimer?.invalidate()
-            
-            let targetPosition = newPosition
-            
-            scrollTimer = Timer
-                .scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
-                    Task { @MainActor in
-                        guard let finalPos = mainViewModel.weekPosition,
-                              finalPos == targetPosition else { return }
-                        
-                        let currentWeek = mainViewModel
-                            .dateSectionWeeks[finalPos]
-                        let currentDate = mainViewModel.date
-                        
-                        guard let newDate = mainViewModel
-                            .dateByPreservingWeekday(
-                                from: currentDate,
-                                in: currentWeek
-                            ) else { return }
-                        
-                        guard mainViewModel.shouldUpdateDate(
-                            to: newDate,
-                            from: currentDate
-                        ) else { return }
-                        
-                        mainViewModel.date = newDate
-                    }
-                }
-        }
-        .onChange(of: mainViewModel.date) {
-            mainViewModel.updateDateSection()
-        }
-    }
-    
-    private func dateView(for date: Date) -> some View {
-        Text(date.formatted(.dateTime.day()))
-            .fontWeight(.medium)
-            .frame(maxWidth: .infinity)
-            .padding(.top, 28)
-            .contentShape(Rectangle())
-            .transaction { $0.animation = nil }
     }
     
     private var weekdayView: some View {
@@ -112,10 +80,13 @@ struct DateSection: View {
             ForEach(0..<7, id: \.self) { index in
                 let weekday = weekdays[index]
                 let isSelected = index == selectedIndex
-                let isTodayDate = isToday(index)
+                let isTodayDate = mainViewModel.isToday(
+                    weekdayIndex: index,
+                    at: mainViewModel.weekPosition ?? 0
+                )
                 
                 Text(weekday)
-                    .font(.caption2)
+                    .font(.caption)
                     .fontWeight(.medium)
                     .foregroundStyle(
                         isSelected ? (isTodayDate ? .white : .accent) : (
@@ -139,19 +110,39 @@ struct DateSection: View {
         .padding(.top, 8)
     }
     
-    private func isToday(_ weekdayIndex: Int) -> Bool {
-        let calendar = Calendar.current
-        let today = Date()
-        
-        guard let position = mainViewModel.weekPosition,
-              position >= 0,
-              position < mainViewModel.dateSectionWeeks.count else {
-            return false
+    private func handleWeekPositionChange(_ newPosition: Int?) {
+        guard let newPosition,
+              newPosition >= 0,
+              newPosition < mainViewModel.dateSectionWeeks.count else {
+            return
         }
         
-        let currentWeek = mainViewModel.dateSectionWeeks[position]
-        let date = currentWeek[weekdayIndex]
-        return calendar.isDate(date, inSameDayAs: today)
+        scrollTimer?.invalidate()
+        
+        let targetPosition = newPosition
+        
+        scrollTimer = Timer
+            .scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
+                Task { @MainActor in
+                    guard let finalPos = mainViewModel.weekPosition,
+                          finalPos == targetPosition else { return }
+                    
+                    let currentWeek = mainViewModel.dateSectionWeeks[finalPos]
+                    let currentDate = mainViewModel.date
+                    
+                    guard let newDate = mainViewModel.dateByPreservingWeekday(
+                        from: currentDate,
+                        in: currentWeek
+                    ) else { return }
+                    
+                    guard !mainViewModel.calendar
+                        .isDate(currentDate, inSameDayAs: newDate) else {
+                        return
+                    }
+                    
+                    mainViewModel.date = newDate
+                }
+            }
     }
     
     // MARK: - Pagination
