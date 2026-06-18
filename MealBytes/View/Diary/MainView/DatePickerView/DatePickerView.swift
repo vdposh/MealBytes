@@ -25,14 +25,19 @@ struct DatePickerView: View {
             } label: {
                 Text("Today")
                     .fontWeight(.medium)
+                    .foregroundStyle(
+                        mainViewModel.isTodaySelected ? .primary
+                            .opacity(1) : Color.primary
+                    )
                     .padding(6)
             }
             .buttonStyle(.glass)
-            .padding(.bottom, 20)
+            .disabled(mainViewModel.isTodaySelected)
+            .padding(.bottom, 8)
         }
         .frame(width: 320)
         .padding(.horizontal)
-        .padding(.top, 8)
+        .padding(.bottom, 8)
         .presentationCompactAdaptation(.popover)
     }
 }

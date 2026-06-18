@@ -640,7 +640,7 @@ final class MainViewModel: ObservableObject {
         let date = currentWeek[weekdayIndex]
         return calendar.isDate(date, inSameDayAs: Date())
     }
-
+    
     var isTodaySelected: Bool {
         calendar.isDate(date, inSameDayAs: Date())
     }
@@ -732,14 +732,25 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func clearDayAlert(for date: Date) -> Alert {
+        Alert(
+            title: Text("Clear Day"),
+            message: Text("Delete all food logs for \(formattedDateForAlert())?"),
+            primaryButton: .destructive(Text("Delete All")) {
+                self.clearDay()
+            },
+            secondaryButton: .cancel(Text("Cancel"))
+        )
+    }
+    
     func filteredItems(for mealType: MealType) -> [MealItem] {
         filteredMealItems(for: mealType, on: date)
     }
-
+    
     func hasItems(for mealType: MealType) -> Bool {
-        hasMealItemsForMealType(for: mealType, on: date)
+        !filteredItems(for: mealType).isEmpty
     }
-
+    
     func totalCaloriesText(for mealType: MealType) -> String {
         totalCalories(for: mealType).asWhole()
     }
@@ -747,20 +758,59 @@ final class MainViewModel: ObservableObject {
     func canDisplayIntake() -> Bool {
         displayIntake && !intake.isEmpty && hasMealItems
     }
-
+    
     func intakePercentageText(for mealType: MealType) -> String {
         totalIntakePercentage(for: mealType)
     }
-
+    
     func isExpandedBinding(for mealType: MealType) -> Binding<Bool> {
         Binding(
             get: { self.expandedSections[mealType] ?? false },
             set: { self.expandedSections[mealType] = $0 }
         )
     }
-
+    
     func isExpanded(for mealType: MealType) -> Bool {
         expandedSections[mealType] == true
+    }
+    
+    func entryCountText(for mealType: MealType) -> String {
+        let count = filteredItems(for: mealType).count
+        return count == 1 ? "1 entry" : "\(count) entries"
+    }
+    
+    // MARK: - Format Food List
+    func formatFoodList(for mealType: MealType, maxItems: Int = 3) -> String {
+        let items = filteredItems(for: mealType)
+        let foodNames = items.map { $0.foodName }
+        let totalCount = foodNames.count
+        
+        guard totalCount > 0 else { return "" }
+        
+        // Если 1 продукт
+        if totalCount == 1 {
+            return foodNames[0]
+        }
+        
+        // Если 2 продукта
+        if totalCount == 2 {
+            return "\(foodNames[0]) and \(foodNames[1])"
+        }
+        
+        // Если 3 продукта
+        if totalCount == 3 {
+            return "\(foodNames[0]), \(foodNames[1]) and \(foodNames[2])"
+        }
+        
+        // 4+ продуктов - показываем первые maxItems и "and X more"
+        let displayCount = min(maxItems, totalCount - 1)
+        let displayNames = foodNames.prefix(displayCount)
+        let remainingCount = totalCount - displayCount
+        
+        var displayText = displayNames.joined(separator: ", ")
+        displayText += " and \(remainingCount) more"
+        
+        return displayText
     }
 }
 

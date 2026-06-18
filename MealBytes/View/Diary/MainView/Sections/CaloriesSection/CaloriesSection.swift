@@ -15,14 +15,14 @@ struct CaloriesSection: View {
         Section {
             VStack(spacing: 10) {
                 HStack {
-                    if mainViewModel.canDisplayIntake() {
-                        remainingCaloriesView
-                    }
-                    
                     if mainViewModel.hasMealItems {
                         totalCaloriesView
                     } else {
                         emptyCaloriesView
+                    }
+                    
+                    if mainViewModel.canDisplayIntake() {
+                        remainingCaloriesView
                     }
                 }
                 
@@ -34,9 +34,11 @@ struct CaloriesSection: View {
                     macronutrientsAndPercentageView
                 }
             }
-            .transaction { $0.animation = nil }
-            .lineLimit(1)
+        } header: {
+            Text("Goals")
         }
+        .transaction { $0.animation = nil }
+        .lineLimit(1)
         .id(mainViewModel.displayIntake)
     }
     
@@ -60,7 +62,7 @@ struct CaloriesSection: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            .frame(maxWidth: .infinity, alignment: .leading)
         } else {
             HStack {
                 Text("Calories")

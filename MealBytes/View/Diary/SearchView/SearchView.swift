@@ -225,7 +225,6 @@ struct SearchView: View {
             ToolbarItem(placement: .status) {
                 Text(searchViewModel.selectionStatusText)
                     .frame(width: 220)
-                    .transaction { $0.animation = nil }
             }
             .sharedBackgroundVisibility(.hidden)
             
@@ -237,7 +236,6 @@ struct SearchView: View {
                 } label: {
                     Image(systemName: "bookmark.slash")
                 }
-                .transaction { $0.animation = nil }
                 .disabled(
                     !searchViewModel.isEditModeActive
                     || searchViewModel.selectedItems.isEmpty

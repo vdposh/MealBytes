@@ -19,7 +19,7 @@ struct MoveMealSheet: View {
                 mealTypeSection
                 removeSection
             }
-            .presentationDetents([.fraction(0.6), .large])
+            .presentationDetents([.fraction(0.6)])
             .presentationDragIndicator(.hidden)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
@@ -39,6 +39,7 @@ struct MoveMealSheet: View {
                 } label: {
                     HStack {
                         MealTypeText(mealType: mealType)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if mealType == mealItem.mealType {
                             Image(systemName: "checkmark")
@@ -48,8 +49,7 @@ struct MoveMealSheet: View {
                 }
             }
         } header: {
-            Text("Change meal type for this food")
-                .padding(.top)
+            Text("Meal type")
         }
     }
     
@@ -68,7 +68,7 @@ struct MoveMealSheet: View {
             )
             .listRowInsets(EdgeInsets())
         } header: {
-            Text("Remove this food from diary")
+            Text("Remove from diary")
         }
         .listRowBackground(Color.clear)
     }
@@ -92,7 +92,7 @@ struct MoveMealSheet: View {
             )
         }
         
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItem(placement: .primaryAction) {
             Button(role: .close) {
                 dismiss()
             }

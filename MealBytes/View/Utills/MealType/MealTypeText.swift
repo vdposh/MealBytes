@@ -12,13 +12,14 @@ struct MealTypeText: View {
     
     let mealType: MealType
     var title: String?
-    var isHeader: Bool = false
+    var font: Font?
+    var fontWeight: Font.Weight?
     
     var body: some View {
         Text(title ?? mealType.rawValue)
-            .fontWeight(isHeader ? .medium : nil)
+            .font(font)
+            .fontWeight(fontWeight)
             .foregroundStyle(Color.primary)
-            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

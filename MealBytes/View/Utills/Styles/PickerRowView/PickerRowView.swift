@@ -32,11 +32,10 @@ struct PickerRowView<MenuContent: View>: View {
             Menu(content: menuContent) {
                 ZStack {
                     Circle()
-                        .fill(Color.accent.opacity(0.2).gradient)
+                        .fill(Color(.systemGroupedBackground))
                         .frame(width: 30, height: 30)
                     Image(systemName: "ellipsis")
-                        .foregroundStyle(.accent)
-                        .symbolColorRenderingMode(.gradient)
+                        .foregroundStyle(.opacity(0.6))
                 }
             }
             .buttonStyle(.plain)

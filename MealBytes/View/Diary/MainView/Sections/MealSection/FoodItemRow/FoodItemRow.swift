@@ -14,7 +14,6 @@ struct FoodItemRow: View {
     
     var body: some View {
         foodItemContent
-            .transaction { $0.animation = nil }
             .contextMenu {
                 foodItemContextMenu
             }
@@ -38,51 +37,23 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
         } label: {
-            VStack(alignment: .leading, spacing: 5) {
-                foodItemMainInfo
-                foodItemNutrients
-            }
-        }
-    }
-    
-    private var foodItemMainInfo: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 5) {
+            VStack(alignment: .leading, spacing: 2.5) {
                 Text(mealItem.foodName)
-                    .font(.callout)
-                    .foregroundStyle(Color.primary)
+                    .fontWeight(.medium)
                 
                 Text(mainViewModel.formattedMealText(for: mealItem))
-                    .font(.subheadline)
-                    .foregroundStyle(.accent)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            Text(mealItem.caloriesValue.asWhole())
-                .lineLimit(1)
-                .layoutPriority(1)
-                .font(.callout)
-                .fontWeight(.medium)
-                .foregroundStyle(Color.secondary)
-        }
-    }
-    
-    private var foodItemNutrients: some View {
-        HStack {
-            NutrientLabel(label: "F", value: mealItem.fatValue)
-            NutrientLabel(label: "C", value: mealItem.carbsValue)
-            NutrientLabel(label: "P", value: mealItem.proteinValue)
-            
-            if mainViewModel.canDisplayIntake() {
-                Text(
-                    mainViewModel.intakePercentage(for: mealItem.caloriesValue)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                
+                NutrientSummaryRow(
+                    mainViewModel: mainViewModel,
+                    calories: mealItem.caloriesValue,
+                    fat: mealItem.fatValue,
+                    carbs: mealItem.carbsValue,
+                    protein: mealItem.proteinValue
                 )
-                .font(.subheadline)
-                .foregroundStyle(Color.secondary)
-                .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-        .lineLimit(1)
     }
     
     @ViewBuilder

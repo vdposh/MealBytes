@@ -20,89 +20,41 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            headerContent
-                .transaction { $0.animation = nil }
-                .contextMenu {
-                    contextMenuContent
-                }
             foodItemContent
-            showHideButton
+        } header: {
+            header
         }
-    }
-    
-    private var headerContent: some View {
-        Button {
-            mainViewModel.navigateToSearch(for: mealType)
-        } label: {
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 7.5) {
-                    HStack {
-                        MealTypeText(
-                            mealType: mealType,
-                            title: title,
-                            isHeader: true
-                        )
-                        
-                        if mainViewModel.hasItems(for: mealType) {
-                            Text(
-                                mainViewModel.totalCaloriesText(for: mealType)
-                            )
-                            .layoutPriority(1)
-                            .font(.callout)
-                            .fontWeight(.medium)
-                            .foregroundStyle(Color.primary)
-                        }
-                    }
-                    
-                    if mainViewModel.hasItems(for: mealType) {
-                        let nutrients = mainViewModel.totalNutrients(
-                            for: mealType
-                        )
-                        
-                        HStack {
-                            NutrientSummaryRow(
-                                mainViewModel: mainViewModel,
-                                fat: nutrients.fat,
-                                carbs: nutrients.carbs,
-                                protein: nutrients.protein,
-                                calories: calories
-                            )
-                            
-                            if mainViewModel.canDisplayIntake() {
-                                Text(
-                                    mainViewModel
-                                        .intakePercentageText(for: mealType)
-                                )
-                                .font(.subheadline)
-                                .foregroundStyle(Color.secondary)
-                            }
-                        }
-                    }
-                }
-                
-                Image(systemName: "plus")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.accent)
-                    .symbolColorRenderingMode(.gradient)
-            }
-            .lineLimit(1)
-        }
-    }
-    
-    @ViewBuilder
-    private var contextMenuContent: some View {
-        if !mainViewModel.filteredItems(for: mealType).isEmpty {
-            ShowHideButtonView(
-                isExpanded: mainViewModel.isExpandedBinding(for: mealType),
-                context: true,
-                itemCount: mainViewModel.filteredItems(for: mealType).count
-            )
-        }
+        .transaction { $0.animation = nil }
     }
     
     @ViewBuilder
     private var foodItemContent: some View {
+        Button {
+            if mainViewModel.isExpanded(for: mealType) {
+                mainViewModel.navigateToSearch(for: mealType)
+            } else {
+                withAnimation {
+                    mainViewModel.expandedSections[mealType]?.toggle()
+                }
+            }
+        } label: {
+            if mainViewModel.isExpanded(for: mealType) {
+                Text("Add Food")
+            } else {
+                VStack(alignment: .leading, spacing: 2.5) {
+                    Text(mainViewModel.entryCountText(for: mealType))
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.primary)
+                    
+                    Text(mainViewModel.formatFoodList(for: mealType))
+                        .font(.callout)
+                        .foregroundStyle(Color.secondary)
+                        .lineLimit(2)
+                        .truncationMode(.head)
+                }
+            }
+        }
+        
         if mainViewModel.isExpanded(for: mealType) {
             ForEach(
                 mainViewModel.filteredItems(for: mealType),
@@ -113,13 +65,13 @@ struct MealHeaderView: View {
                     mealType: mealType,
                     mainViewModel: mainViewModel
                 )
-                .swipeActions(allowsFullSwipe: false) {
+                .swipeActions {
                     Button(role: .destructive) {
-                        mainViewModel.deleteMealItemMainView(
-                            with: item.id,
-                            for: mealType
-                        )
-                        mainViewModel.uniqueId = UUID()
+                        mainViewModel
+                            .deleteMealItemMainView(
+                                with: item.id,
+                                for: mealType
+                            )
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -137,12 +89,63 @@ struct MealHeaderView: View {
     }
     
     @ViewBuilder
-    private var showHideButton: some View {
+    private var header: some View {
         if !mainViewModel.filteredItems(for: mealType).isEmpty {
-            ShowHideButtonView(
-                isExpanded: mainViewModel.isExpandedBinding(for: mealType),
-                showCount: true,
-                itemCount: mainViewModel.filteredItems(for: mealType).count
+            Button {
+                withAnimation {
+                    mainViewModel.expandedSections[mealType]?.toggle()
+                }
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 5) {
+                        MealTypeText(
+                            mealType: mealType,
+                            title: title,
+                            font: .title3,
+                            fontWeight: .medium
+                        )
+                        
+                        if mainViewModel.hasItems(for: mealType) {
+                            let nutrients = mainViewModel.totalNutrients(
+                                for: mealType
+                            )
+                            
+                            NutrientSummaryRow(
+                                mainViewModel: mainViewModel,
+                                calories: calories,
+                                fat: nutrients.fat,
+                                carbs: nutrients.carbs,
+                                protein: nutrients.protein
+                            )
+                        }
+                    }
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.footnote)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.accent)
+                        .rotationEffect(
+                            .degrees(
+                                mainViewModel
+                                    .isExpanded(for: mealType) ? 90 : 0
+                            )
+                        )
+//                    Image(systemName: "plus")
+//                        .imageScale(.large)
+//                        .fontWeight(.bold)
+//                        .foregroundStyle(.accent)
+//                        .padding(10)
+//                        .glassEffect(.regular.interactive())
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(ButtonStyleInvisible())
+        } else {
+            MealTypeText(
+                mealType: mealType,
+                title: title,
+                font: .title3,
+                fontWeight: .medium
             )
         }
     }

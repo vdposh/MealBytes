@@ -16,10 +16,6 @@ struct DateSection: View {
             .overlay(alignment: .top) {
                 weekdayView
             }
-            .background {
-                VariableBlur(direction: .down)
-                    .ignoresSafeArea()
-            }
             .scrollTargetBehavior(.paging)
             .scrollPosition(id: $mainViewModel.weekPosition)
             .scrollIndicators(.hidden)
@@ -50,7 +46,6 @@ struct DateSection: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 28)
                                     .contentShape(Rectangle())
-                                    .transaction { $0.animation = nil }
                             }
                             .buttonStyle(.plain)
                         }

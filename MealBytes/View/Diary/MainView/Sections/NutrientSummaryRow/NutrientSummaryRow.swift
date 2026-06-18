@@ -10,24 +10,35 @@ import SwiftUI
 struct NutrientSummaryRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
+    let calories: Double
     let fat: Double
     let carbs: Double
     let protein: Double
-    let calories: Double
     
     var body: some View {
-        HStack {
+        HStack(spacing: 10) {
             NutrientLabel(
-                label: "F",
-                value: fat
+                image: "flame.fill",
+                value: calories,
+                color: .customCalories
             )
+            
             NutrientLabel(
-                label: "C",
-                value: carbs
+                image: "f.circle.fill",
+                value: fat,
+                color: .customFat
             )
+            
             NutrientLabel(
-                label: "P",
-                value: protein
+                image: "c.circle.fill",
+                value: carbs,
+                color: .customCarbs
+            )
+            
+            NutrientLabel(
+                image: "p.circle.fill",
+                value: protein,
+                color: .customProtein
             )
         }
         .lineLimit(1)

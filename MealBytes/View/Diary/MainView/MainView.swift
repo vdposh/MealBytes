@@ -17,8 +17,8 @@ struct MainView: View {
             .navigationTitle("Diary")
             .navigationSubtitle(mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.inlineLarge)
-            .scrollEdgeEffectHidden(true ,for: .top)
-            .safeAreaInset(edge: .top) {
+            .safeAreaPadding(.top, 8)
+            .safeAreaBar(edge: .top) {
                 dateSection
             }
             .toolbar {
@@ -26,7 +26,9 @@ struct MainView: View {
             }
             .alert(
                 isPresented: $mainViewModel.showClearDayAlert,
-                content: clearDayAlert
+                content: {
+                    mainViewModel.clearDayAlert(for: mainViewModel.date)
+                }
             )
             .onChange(of: mainViewModel.date) {
                 mainViewModel.scrollToTop()
@@ -42,8 +44,7 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
-        .environment(\.defaultMinListRowHeight, 20)
-        .listSectionSpacing(22)
+        .listSectionSpacing(20)
         .sheet(item: $selectedMealItemForMove) { item in
             MoveMealSheet(mainViewModel: mainViewModel, mealItem: item)
         }
@@ -73,16 +74,10 @@ struct MainView: View {
     
     private var mealSections: some View {
         ForEach(MealType.allCases, id: \.self) { mealType in
-            let filteredItems = mainViewModel.filteredMealItems(
-                for: mealType,
-                on: mainViewModel.date
-            )
-            
             MealSectionView(
                 selectedMealItemForMove: $selectedMealItemForMove,
-                mealType: mealType,
-                mealItems: filteredItems,
-                mainViewModel: mainViewModel
+                mainViewModel: mainViewModel,
+                mealType: mealType
             )
         }
     }
@@ -107,17 +102,6 @@ struct MainView: View {
                 emptyMealItems: true
             )
         }
-    }
-    
-    private func clearDayAlert() -> Alert {
-        Alert(
-            title: Text("Clear Day"),
-            message: Text("Delete all food logs for \(mainViewModel.formattedDateForAlert())?"),
-            primaryButton: .destructive(Text("Delete All")) {
-                mainViewModel.clearDay()
-            },
-            secondaryButton: .cancel(Text("Cancel"))
-        )
     }
     
     @ToolbarContentBuilder

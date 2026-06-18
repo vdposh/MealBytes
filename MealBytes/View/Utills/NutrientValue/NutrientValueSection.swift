@@ -24,7 +24,7 @@ struct NutrientValueSection: View {
                         .foregroundStyle(
                             nutrient.isSubValue ? .secondary : .primary
                         )
-                        .font(.subheadline)
+                        .font(.callout)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
@@ -72,16 +72,23 @@ struct NutrientValueSection: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .font(.subheadline)
+                    .font(.callout)
                     .lineLimit(1)
                     .layoutPriority(1)
                 }
             }
-            .frame(height: 23)
             
             if let isExpandable, !emptyMealItems {
-                ShowHideButtonView(isExpanded: isExpandable)
+                Button {
+                    withAnimation {
+                        isExpandable.wrappedValue.toggle()
+                    }
+                } label: {
+                    Text(isExpandable.wrappedValue ? "Hide" : "More")
+                }
             }
+        } header: {
+            Text("Nutrient total")
         }
         .transaction { $0.animation = nil }
     }

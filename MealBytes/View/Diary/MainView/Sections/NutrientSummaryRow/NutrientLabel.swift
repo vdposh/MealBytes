@@ -22,17 +22,17 @@ struct NutrientLabel: View {
         if let image {
             HStack(spacing: 2.5) {
                 Image(systemName: image)
+                
                 Text(formattedValue)
-                Text(unit.description(for: value))
+                    .fontWeight(.medium)
             }
             .font(.subheadline)
             .foregroundStyle(color)
-            .padding(.trailing, 5)
         } else if let label {
             Text("\(label) \(formattedValue) \(unit.description(for: value))")
-            .font(.subheadline)
-            .foregroundStyle(color)
-            .padding(.trailing, 5)
+                .font(.subheadline)
+                .foregroundStyle(color)
+                .padding(.trailing, 5)
         }
     }
 }
