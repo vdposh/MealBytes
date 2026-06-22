@@ -564,10 +564,10 @@ final class MainViewModel: ObservableObject {
     }
     
     func updateDateSection() {
-        dateSectionWeeks = weeksForDate(date, range: -3...3)
+        dateSectionWeeks = weeksForDate(date, range: -2...2)
         weekPosition = dateSectionWeeks.firstIndex { week in
             week.contains { calendar.isDate($0, inSameDayAs: date) }
-        } ?? 3
+        } ?? (dateSectionWeeks.count / 2)
     }
     
     func loadMoreWeeks(
@@ -777,40 +777,6 @@ final class MainViewModel: ObservableObject {
     func entryCountText(for mealType: MealType) -> String {
         let count = filteredItems(for: mealType).count
         return count == 1 ? "1 entry" : "\(count) entries"
-    }
-    
-    // MARK: - Format Food List
-    func formatFoodList(for mealType: MealType, maxItems: Int = 3) -> String {
-        let items = filteredItems(for: mealType)
-        let foodNames = items.map { $0.foodName }
-        let totalCount = foodNames.count
-        
-        guard totalCount > 0 else { return "" }
-        
-        // Если 1 продукт
-        if totalCount == 1 {
-            return foodNames[0]
-        }
-        
-        // Если 2 продукта
-        if totalCount == 2 {
-            return "\(foodNames[0]) and \(foodNames[1])"
-        }
-        
-        // Если 3 продукта
-        if totalCount == 3 {
-            return "\(foodNames[0]), \(foodNames[1]) and \(foodNames[2])"
-        }
-        
-        // 4+ продуктов - показываем первые maxItems и "and X more"
-        let displayCount = min(maxItems, totalCount - 1)
-        let displayNames = foodNames.prefix(displayCount)
-        let remainingCount = totalCount - displayCount
-        
-        var displayText = displayNames.joined(separator: ", ")
-        displayText += " and \(remainingCount) more"
-        
-        return displayText
     }
 }
 

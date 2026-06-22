@@ -207,7 +207,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         )
     }
     
-    // MARK: - Load loadBookmarksMetadata
+    // MARK: - Load Bookmark Metadata
     func loadBookmarkMetadata(
         for foodId: Int,
         foodName: String,
@@ -217,13 +217,15 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AppError.decoding
         }
         
+        let documentId = "\(foodId)"
+
         let snapshot = try await firestore
             .collection("Users")
             .document(uid)
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
             .collection("metadata")
-            .document(foodName)
+            .document(documentId)
             .getDocument()
         
         guard snapshot.exists else { return nil }
@@ -231,7 +233,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return try snapshot.data(as: BookmarkMetadata.self)
     }
     
-    // MARK: - Load loadBookmarksMetadata
+    // MARK: - Save Bookmark Metadata
     func saveBookmarkMetadata(
         _ metadata: BookmarkMetadata,
         for mealType: MealType
@@ -240,18 +242,20 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AppError.decoding
         }
         
+        let documentId = "\(metadata.foodId)"
+        
         let path = firestore
             .collection("Users")
             .document(uid)
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
             .collection("metadata")
-            .document(metadata.foodName)
+            .document(documentId)
         
         try path.setData(from: metadata, merge: true)
     }
     
-    // MARK: - Delete loadBookmarksMetadata
+    // MARK: - Delete Bookmark Metadata
     func deleteBookmarkMetadata(
         for foodId: Int,
         foodName: String,
@@ -261,13 +265,15 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             throw AppError.decoding
         }
         
+        let documentId = "\(foodId)"
+        
         let path = firestore
             .collection("Users")
             .document(uid)
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
             .collection("metadata")
-            .document(foodName)
+            .document(documentId)
         
         try await path.delete()
     }

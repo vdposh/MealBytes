@@ -18,11 +18,22 @@ struct MealHeaderView: View {
     let protein: Double
     let carbohydrate: Double
     
+    private let formatter = FoodListFormatter()
+    
+    private var formattedFoodList: String {
+        let items = mainViewModel.filteredItems(for: mealType)
+        let foodNames = items.map { $0.foodName }
+        return formatter.format(foodNames: foodNames)
+    }
+    
     var body: some View {
         Section {
+            foodItemsList
             foodItemContent
         } header: {
             header
+        } footer: {
+            nutrientSummaryRow
         }
         .transaction { $0.animation = nil }
     }
@@ -40,21 +51,36 @@ struct MealHeaderView: View {
         } label: {
             if mainViewModel.isExpanded(for: mealType) {
                 Text("Add Food")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.trailing, 50)
+                    .overlay(alignment: .trailing) {
+                        Button {
+                            
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .ellipsisMenuStyle()
+                        }
+                        .buttonStyle(.plain)
+                    }
             } else {
                 VStack(alignment: .leading, spacing: 2.5) {
                     Text(mainViewModel.entryCountText(for: mealType))
                         .fontWeight(.medium)
                         .foregroundStyle(Color.primary)
                     
-                    Text(mainViewModel.formatFoodList(for: mealType))
-                        .font(.callout)
+                    Text(formattedFoodList)
                         .foregroundStyle(Color.secondary)
-                        .lineLimit(2)
-                        .truncationMode(.head)
                 }
+                .font(.subheadline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing)
             }
         }
-        
+        .listRowInsets(.trailing, 0)
+    }
+    
+    @ViewBuilder
+    private var foodItemsList: some View {
         if mainViewModel.isExpanded(for: mealType) {
             ForEach(
                 mainViewModel.filteredItems(for: mealType),
@@ -65,13 +91,12 @@ struct MealHeaderView: View {
                     mealType: mealType,
                     mainViewModel: mainViewModel
                 )
-                .swipeActions {
+                .swipeActions(allowsFullSwipe: false) {
                     Button(role: .destructive) {
-                        mainViewModel
-                            .deleteMealItemMainView(
-                                with: item.id,
-                                for: mealType
-                            )
+                        mainViewModel.deleteMealItemMainView(
+                            with: item.id,
+                            for: mealType
+                        )
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -90,35 +115,22 @@ struct MealHeaderView: View {
     
     @ViewBuilder
     private var header: some View {
-        if !mainViewModel.filteredItems(for: mealType).isEmpty {
+        let mealTypeTitle = MealTypeText(
+            mealType: mealType,
+            title: title,
+            font: .title3,
+            fontWeight: .medium
+        )
+        
+        if mainViewModel.hasItems(for: mealType) {
             Button {
                 withAnimation {
                     mainViewModel.expandedSections[mealType]?.toggle()
                 }
             } label: {
                 HStack {
-                    VStack(alignment: .leading, spacing: 5) {
-                        MealTypeText(
-                            mealType: mealType,
-                            title: title,
-                            font: .title3,
-                            fontWeight: .medium
-                        )
-                        
-                        if mainViewModel.hasItems(for: mealType) {
-                            let nutrients = mainViewModel.totalNutrients(
-                                for: mealType
-                            )
-                            
-                            NutrientSummaryRow(
-                                mainViewModel: mainViewModel,
-                                calories: calories,
-                                fat: nutrients.fat,
-                                carbs: nutrients.carbs,
-                                protein: nutrients.protein
-                            )
-                        }
-                    }
+                    mealTypeTitle
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Image(systemName: "chevron.right")
                         .font(.footnote)
@@ -130,22 +142,33 @@ struct MealHeaderView: View {
                                     .isExpanded(for: mealType) ? 90 : 0
                             )
                         )
-//                    Image(systemName: "plus")
-//                        .imageScale(.large)
-//                        .fontWeight(.bold)
-//                        .foregroundStyle(.accent)
-//                        .padding(10)
-//                        .glassEffect(.regular.interactive())
+                        .animation(
+                            .default,
+                            value: mainViewModel.isExpanded(for: mealType)
+                        )
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
                 .contentShape(Rectangle())
             }
+            .listRowInsets(.all, 0)
             .buttonStyle(ButtonStyleInvisible())
         } else {
-            MealTypeText(
-                mealType: mealType,
-                title: title,
-                font: .title3,
-                fontWeight: .medium
+            mealTypeTitle
+        }
+    }
+    
+    @ViewBuilder
+    private var nutrientSummaryRow: some View {
+        if mainViewModel.hasItems(for: mealType) {
+            let nutrients = mainViewModel.totalNutrients(for: mealType)
+            
+            NutrientSummaryRow(
+                mainViewModel: mainViewModel,
+                calories: calories,
+                fat: nutrients.fat,
+                carbs: nutrients.carbs,
+                protein: nutrients.protein
             )
         }
     }

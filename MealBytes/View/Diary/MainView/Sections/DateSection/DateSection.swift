@@ -124,18 +124,32 @@ struct DateSection: View {
                     
                     let currentWeek = mainViewModel.dateSectionWeeks[finalPos]
                     let currentDate = mainViewModel.date
+                    let today = Date()
                     
-                    guard let newDate = mainViewModel.dateByPreservingWeekday(
-                        from: currentDate,
-                        in: currentWeek
-                    ) else { return }
+                    let targetDate: Date
+                    if currentWeek
+                        .contains(
+                            where: { mainViewModel.calendar.isDate(
+                                $0,
+                                inSameDayAs: today
+                            )
+                            }) {
+                        targetDate = today
+                    } else {
+                        guard let newDate = mainViewModel
+                            .dateByPreservingWeekday(
+                                from: currentDate,
+                                in: currentWeek
+                            ) else { return }
+                        targetDate = newDate
+                    }
                     
                     guard !mainViewModel.calendar
-                        .isDate(currentDate, inSameDayAs: newDate) else {
+                        .isDate(currentDate, inSameDayAs: targetDate) else {
                         return
                     }
                     
-                    mainViewModel.date = newDate
+                    mainViewModel.date = targetDate
                 }
             }
     }

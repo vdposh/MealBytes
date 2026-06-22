@@ -41,7 +41,7 @@ struct ServingTextFieldView: View {
             .overlay(alignment: .trailing) {
                 if let trailingUnit, !text.isEmpty {
                     Text(trailingUnit)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.placeholder)
                 }
             }
         

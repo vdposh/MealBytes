@@ -26,7 +26,7 @@ struct NutrientLabel: View {
                 Text(formattedValue)
                     .fontWeight(.medium)
             }
-            .font(.subheadline)
+            .font(.footnote)
             .foregroundStyle(color)
         } else if let label {
             Text("\(label) \(formattedValue) \(unit.description(for: value))")

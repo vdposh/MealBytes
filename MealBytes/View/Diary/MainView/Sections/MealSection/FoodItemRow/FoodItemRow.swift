@@ -39,10 +39,11 @@ struct FoodItemRow: View {
         } label: {
             VStack(alignment: .leading, spacing: 2.5) {
                 Text(mealItem.foodName)
+                    .font(.subheadline)
                     .fontWeight(.medium)
                 
                 Text(mainViewModel.formattedMealText(for: mealItem))
-                    .font(.callout)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
                 NutrientSummaryRow(
