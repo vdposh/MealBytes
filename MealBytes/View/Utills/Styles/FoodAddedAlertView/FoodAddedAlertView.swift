@@ -25,6 +25,7 @@ struct FoodAddedAlertView: View {
         .padding(.vertical, 14)
         .padding(.horizontal, 16)
         .background(.regularMaterial)
+        .glassEffect(.clear)
         .clipShape(Capsule())
         .containerRelativeFrame(.vertical) { height, _ in
             height * 0.45

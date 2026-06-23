@@ -54,7 +54,6 @@ final class MainViewModel: ObservableObject {
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
     @Published var showClearDayAlert: Bool = false
-    @Published var isLoadingMore = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -79,7 +78,7 @@ final class MainViewModel: ObservableObject {
         self.nutrientSummaries = summaries
         self.expandedSections = sections
         
-        updateDateSection()
+        setupDateSection()
     }
     
     // MARK: - Load Main Data
@@ -563,35 +562,11 @@ final class MainViewModel: ObservableObject {
         return weeks
     }
     
-    func updateDateSection() {
-        dateSectionWeeks = weeksForDate(date, range: -2...2)
+    func setupDateSection() {
+        dateSectionWeeks = weeksForDate(date, range: -1...1)
         weekPosition = dateSectionWeeks.firstIndex { week in
             week.contains { calendar.isDate($0, inSameDayAs: date) }
         } ?? (dateSectionWeeks.count / 2)
-    }
-    
-    func loadMoreWeeks(
-        currentWeeks: [[Date]],
-        direction: DirectionDateView
-    ) -> (newWeek: [Date], offset: Int)? {
-        let currentWeekStart = direction == .backward
-        ? currentWeeks.first?.first
-        : currentWeeks.last?.first
-        guard let weekStart = currentWeekStart,
-              let newWeekStart = calendar.date(
-                byAdding: .weekOfYear,
-                value: direction == .backward ? -1 : 1,
-                to: weekStart
-              ) else {
-            return nil
-        }
-        
-        let newWeek = (0...6).compactMap { offset in
-            calendar.date(byAdding: .day, value: offset, to: newWeekStart)
-        }
-        let offset = direction == .backward ? 1 : 0
-        
-        return (newWeek, offset)
     }
     
     func formattedDate() -> String {

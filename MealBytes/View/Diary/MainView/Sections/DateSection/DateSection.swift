@@ -23,7 +23,7 @@ struct DateSection: View {
                 handleWeekPositionChange(mainViewModel.weekPosition)
             }
             .onChange(of: mainViewModel.date) {
-                mainViewModel.updateDateSection()
+                mainViewModel.setupDateSection()
             }
     }
     
@@ -41,7 +41,7 @@ struct DateSection: View {
                                 mainViewModel.scrollToTop()
                             } label: {
                                 Text(date.formatted(.dateTime.day()))
-                                    .font(.system(size: 18))
+                                    .font(.title3)
                                     .fontWeight(.medium)
                                     .frame(maxWidth: .infinity)
                                     .padding(.top, 28)
@@ -52,9 +52,6 @@ struct DateSection: View {
                     }
                     .padding(.horizontal, 16)
                     .containerRelativeFrame(.horizontal)
-                    .task {
-                        checkAndLoadMore(at: index)
-                    }
                 }
             }
             .scrollTargetLayout()
@@ -152,39 +149,6 @@ struct DateSection: View {
                     mainViewModel.date = targetDate
                 }
             }
-    }
-    
-    // MARK: - Pagination
-    private func checkAndLoadMore(at index: Int) {
-        guard !mainViewModel.isLoadingMore else { return }
-        
-        if index == 0 {
-            mainViewModel.isLoadingMore = true
-            loadMoreWeeks(direction: .backward)
-        } else if index == mainViewModel.dateSectionWeeks.count - 1 {
-            mainViewModel.isLoadingMore = true
-            loadMoreWeeks(direction: .forward)
-        }
-    }
-    
-    private func loadMoreWeeks(direction: DirectionDateView) {
-        defer {
-            mainViewModel.isLoadingMore = false
-        }
-        
-        guard let result = mainViewModel.loadMoreWeeks(
-            currentWeeks: mainViewModel.dateSectionWeeks,
-            direction: direction
-        ) else { return }
-        
-        if direction == .backward {
-            mainViewModel.dateSectionWeeks.insert(result.newWeek, at: 0)
-            if let currentPos = mainViewModel.weekPosition {
-                mainViewModel.weekPosition = currentPos + result.offset
-            }
-        } else {
-            mainViewModel.dateSectionWeeks.append(result.newWeek)
-        }
     }
 }
 

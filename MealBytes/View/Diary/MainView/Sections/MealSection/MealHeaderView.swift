@@ -58,7 +58,9 @@ struct MealHeaderView: View {
                             
                         } label: {
                             Image(systemName: "ellipsis")
-                                .ellipsisMenuStyle()
+                                .foregroundStyle(Color.secondary)
+                                .padding()
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                     }
@@ -91,7 +93,7 @@ struct MealHeaderView: View {
                     mealType: mealType,
                     mainViewModel: mainViewModel
                 )
-                .swipeActions(allowsFullSwipe: false) {
+                .swipeActions {
                     Button(role: .destructive) {
                         mainViewModel.deleteMealItemMainView(
                             with: item.id,
@@ -119,7 +121,7 @@ struct MealHeaderView: View {
             mealType: mealType,
             title: title,
             font: .title3,
-            fontWeight: .medium
+            fontWeight: .semibold
         )
         
         if mainViewModel.hasItems(for: mealType) {

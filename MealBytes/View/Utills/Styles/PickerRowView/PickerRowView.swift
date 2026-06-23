@@ -29,7 +29,9 @@ struct PickerRowView<MenuContent: View>: View {
                 menuContent()
             } label: {
                 Image(systemName: "ellipsis")
-                    .ellipsisMenuStyle()
+                    .foregroundStyle(Color.secondary)
+                    .padding()
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
