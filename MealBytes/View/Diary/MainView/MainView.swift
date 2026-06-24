@@ -126,10 +126,7 @@ struct MainView: View {
                 Image(systemName: "calendar")
             }
             .popover(isPresented: $mainViewModel.showDatePicker) {
-                DatePickerView(
-                    date: $mainViewModel.date,
-                    mainViewModel: mainViewModel
-                )
+                DatePickerView(mainViewModel: mainViewModel)
             }
             
             if mainViewModel.hasMealItems {

@@ -60,7 +60,7 @@ struct FoodItemRow: View {
     @ViewBuilder
     private var foodItemContextMenu: some View {
         Menu {
-            Picker("Meal Type", selection: Binding(
+            Picker("Meal type", selection: Binding(
                 get: { mealItem.mealType },
                 set: { newMealType in
                     mainViewModel.moveMealItem(mealItem, to: newMealType)
@@ -71,7 +71,7 @@ struct FoodItemRow: View {
                 }
             }
         } label: {
-            Label("Meal Type", systemImage: "fork.knife")
+            Label("Meal type", systemImage: "fork.knife")
         }
         
         Divider()

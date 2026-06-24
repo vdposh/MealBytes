@@ -58,6 +58,7 @@ struct MealHeaderView: View {
                             
                         } label: {
                             Image(systemName: "ellipsis")
+                                .imageScale(.medium)
                                 .foregroundStyle(Color.secondary)
                                 .padding()
                                 .contentShape(Rectangle())

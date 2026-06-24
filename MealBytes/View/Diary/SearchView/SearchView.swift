@@ -272,7 +272,7 @@ struct SearchView: View {
         case .inactive:
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Picker("Meal Type", selection: $mealType) {
+                    Picker("Meal type", selection: $mealType) {
                         ForEach(MealType.allCases, id: \.self) { meal in
                             Text(meal.rawValue)
                                 .tag(meal)

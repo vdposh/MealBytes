@@ -11,7 +11,6 @@ struct NutrientValueSection: View {
     let nutrients: [NutrientValue]
     let isExpandable: Binding<Bool>?
     var emptyMealItems: Bool = false
-    var useServing: Bool = false
     var macroDistribution: [NutrientType: Int]? = nil
     var intake: String? = nil
     var intakePercentage: String? = nil

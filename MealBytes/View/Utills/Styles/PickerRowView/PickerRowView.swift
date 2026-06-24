@@ -28,7 +28,8 @@ struct PickerRowView<MenuContent: View>: View {
             Menu {
                 menuContent()
             } label: {
-                Image(systemName: "ellipsis")
+                Image(systemName: "chevron.up.chevron.down")
+                    .imageScale(.small)
                     .foregroundStyle(Color.secondary)
                     .padding()
                     .contentShape(Rectangle())

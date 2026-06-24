@@ -8,20 +8,19 @@
 import SwiftUI
 
 struct DatePickerView: View {
-    @Binding var date: Date
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         VStack(spacing: 0) {
             DatePicker(
                 "Select Date",
-                selection: $date,
+                selection: $mainViewModel.date,
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
             
             Button {
-                date = Date()
+                mainViewModel.date = Date()
             } label: {
                 Text("Today")
                     .fontWeight(.medium)

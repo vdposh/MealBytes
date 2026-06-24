@@ -331,9 +331,11 @@ final class FoodViewModel: ObservableObject {
             description.replaceSubrange(range, with: "serving")
         }
         
-        return showUnit
-        ? "\(description) (\(metricAmountFormatted) \(metricUnit))"
-        : "\(description)"
+        if showUnit && serving.metricServingAmount > 0 {
+            return "\(description) (\(metricAmountFormatted) \(metricUnit))"
+        }
+        
+        return description
     }
     
     // MARK: - Button States
@@ -403,6 +405,10 @@ final class FoodViewModel: ObservableObject {
         let scaledAmount = serving
             .metricServingAmount * calculateSelectedAmountValue()
         let unit = UnitNutrients(rawValue: serving.metricServingUnit) ?? .empty
+        
+        if scaledAmount.isZero {
+            return ""
+        }
         
         if serving.measurementDescription.lowercased() == "g" {
             return UnitNutrients.g.description(for: scaledAmount, full: true)

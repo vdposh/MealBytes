@@ -517,11 +517,17 @@ final class MainViewModel: ObservableObject {
         let measurement = formattedMeasurement(for: mealItem)
             .pluralized(for: mealItem.amount)
         
-        if measurement == "g" || measurement == "ml" {
-            return "\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit)"
+        let servingSize = formattedServingSize(for: mealItem)
+        
+        if servingSize.isEmpty || servingSize == "0" {
+            return "\(formattedAmount) \(measurement)"
         }
         
-        return "\(formattedAmount) \(measurement) (\(formattedServingSize(for: mealItem)) \(mealItem.portionUnit))"
+        if measurement == "g" || measurement == "ml" {
+            return "\(servingSize) \(mealItem.portionUnit)"
+        }
+        
+        return "\(formattedAmount) \(measurement) (\(servingSize) \(mealItem.portionUnit))"
     }
     
     private func formattedServingSize(for mealItem: MealItem) -> String {

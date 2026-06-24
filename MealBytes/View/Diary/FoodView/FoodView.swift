@@ -151,7 +151,7 @@ struct FoodView: View {
                     iconName: "fork.knife",
                     mealType: mealType
                 ) {
-                    Picker("Meal Type", selection: $mealType) {
+                    Picker("Meal type", selection: $mealType) {
                         ForEach(MealType.allCases, id: \.self) { meal in
                             Text(meal.rawValue)
                                 .tag(meal)
@@ -271,7 +271,6 @@ struct FoodView: View {
         NutrientValueSection(
             nutrients: foodViewModel.nutrientValues,
             isExpandable: nil,
-            useServing: true,
             intakePercentage: foodViewModel.mainViewModel.canDisplayIntake()
             ? foodViewModel.mainViewModel.intakePercentage(
                 for: foodViewModel.nutrientValues
