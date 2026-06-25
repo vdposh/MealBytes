@@ -109,7 +109,9 @@ struct MainView: View {
         if !mainViewModel.isTodaySelected {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    mainViewModel.date = Date()
+                    withAnimation {
+                        mainViewModel.date = Date()
+                    }
                 } label: {
                     Text("Today")
                         .fontWeight(.medium)

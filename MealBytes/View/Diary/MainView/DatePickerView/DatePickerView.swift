@@ -8,19 +8,32 @@
 import SwiftUI
 
 struct DatePickerView: View {
+    @State private var selectedDate: Date
     @ObservedObject var mainViewModel: MainViewModel
+    
+    init(mainViewModel: MainViewModel) {
+        self.mainViewModel = mainViewModel
+        self._selectedDate = State(initialValue: mainViewModel.date)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
             DatePicker(
                 "Select Date",
-                selection: $mainViewModel.date,
+                selection: $selectedDate,
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
+            .onChange(of: selectedDate) {
+                withAnimation {
+                    mainViewModel.date = selectedDate
+                }
+            }
             
             Button {
-                mainViewModel.date = Date()
+                withAnimation {
+                    mainViewModel.date = Date()
+                }
             } label: {
                 Text("Today")
                     .fontWeight(.medium)

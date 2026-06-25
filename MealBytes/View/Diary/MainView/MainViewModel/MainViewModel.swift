@@ -737,7 +737,7 @@ final class MainViewModel: ObservableObject {
     }
     
     func canDisplayIntake() -> Bool {
-        displayIntake && !intake.isEmpty && hasMealItems
+        displayIntake && !intake.isEmpty
     }
     
     func intakePercentageText(for mealType: MealType) -> String {

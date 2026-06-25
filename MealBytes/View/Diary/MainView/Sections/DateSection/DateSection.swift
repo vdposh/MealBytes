@@ -37,8 +37,9 @@ struct DateSection: View {
                     HStack {
                         ForEach(week, id: \.self) { date in
                             Button {
-                                mainViewModel.date = date
-                                mainViewModel.scrollToTop()
+                                withAnimation {
+                                    mainViewModel.date = date
+                                }
                             } label: {
                                 Text(date.formatted(.dateTime.day()))
                                     .font(.title3)
@@ -98,6 +99,7 @@ struct DateSection: View {
                     }
             }
         }
+        .transaction { $0.animation = nil }
         .padding(.horizontal, 16)
         .padding(.top, 8)
     }
@@ -146,7 +148,9 @@ struct DateSection: View {
                         return
                     }
                     
-                    mainViewModel.date = targetDate
+                    withAnimation {
+                        mainViewModel.date = targetDate
+                    }
                 }
             }
     }
