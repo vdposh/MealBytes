@@ -13,27 +13,27 @@ struct CaloriesSection: View {
     
     var body: some View {
         Section {
-            VStack(spacing: 10) {
-                HStack {
-                    totalCaloriesView
-                    remainingCaloriesView
-                }
-                .transaction { $0.animation = nil }
-                
-                if mainViewModel.canDisplayIntake() {
-                    LinearProgressView(value: mainViewModel.intakeProgress)
-                }
-                
-                if mainViewModel.hasMealItems {
-                    macronutrientsAndPercentageView
-                        .transaction { $0.animation = nil }
-                }
-            }
+            caloriesBody
         } header: {
             Text("Goals")
         }
+    }
+    
+    private var caloriesBody: some View {
+        VStack(spacing: 10) {
+            HStack {
+                totalCaloriesView
+                remainingCaloriesView
+            }
+            .transaction { $0.animation = nil }
+            
+            if mainViewModel.canDisplayIntake() {
+                LinearProgressView(value: mainViewModel.intakeProgress)
+            }
+            
+            macronutrientsAndPercentageView
+        }
         .lineLimit(1)
-        .id(mainViewModel.canDisplayIntake())
     }
     
     @ViewBuilder
@@ -61,22 +61,26 @@ struct CaloriesSection: View {
         }
     }
     
+    @ViewBuilder
     private var macronutrientsAndPercentageView: some View {
-        HStack {
-            let totalNutrients = mainViewModel.totalNutrients()
-            
+        if mainViewModel.hasMealItems {
             HStack {
-                NutrientLabel(label: "F", value: totalNutrients.fat)
-                NutrientLabel(label: "C", value: totalNutrients.carbs)
-                NutrientLabel(label: "P", value: totalNutrients.protein)
+                let totalNutrients = mainViewModel.totalNutrients()
+                
+                HStack {
+                    NutrientLabel(label: "F", value: totalNutrients.fat)
+                    NutrientLabel(label: "C", value: totalNutrients.carbs)
+                    NutrientLabel(label: "P", value: totalNutrients.protein)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if mainViewModel.canDisplayIntake() {
+                    Text(mainViewModel.totalIntakePercentage())
+                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            if mainViewModel.canDisplayIntake() {
-                Text(mainViewModel.totalIntakePercentage())
-                    .foregroundStyle(.secondary)
-                    .font(.subheadline)
-            }
+            .transaction { $0.animation = nil }
         }
     }
 }

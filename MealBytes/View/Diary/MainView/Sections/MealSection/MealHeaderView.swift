@@ -28,20 +28,22 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            foodItemsList
             foodItemContent
+            foodItemsList
         } header: {
             header
-        } footer: {
-            nutrientSummaryRow
         }
         .transaction { $0.animation = nil }
     }
     
+    // MARK: - Meal Header
     @ViewBuilder
     private var foodItemContent: some View {
+        let isExpanded = mainViewModel.isExpanded(for: mealType)
+        let hasItems = mainViewModel.hasItems(for: mealType)
+        
         Button {
-            if mainViewModel.isExpanded(for: mealType) {
+            if isExpanded {
                 mainViewModel.navigateToSearch(for: mealType)
             } else {
                 withAnimation {
@@ -49,39 +51,48 @@ struct MealHeaderView: View {
                 }
             }
         } label: {
-            if mainViewModel.isExpanded(for: mealType) {
-                Text("Add Food")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.trailing, 50)
-                    .overlay(alignment: .trailing) {
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .imageScale(.medium)
-                                .foregroundStyle(Color.secondary)
-                                .padding()
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                    }
+            if isExpanded || !hasItems {
+                addText
             } else {
-                VStack(alignment: .leading, spacing: 2.5) {
-                    Text(mainViewModel.entryCountText(for: mealType))
-                        .fontWeight(.medium)
-                        .foregroundStyle(Color.primary)
-                    
-                    Text(formattedFoodList)
-                        .foregroundStyle(Color.secondary)
-                }
-                .font(.subheadline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.trailing)
+                collapsedContent
             }
         }
         .listRowInsets(.trailing, 0)
     }
     
+    private var addText: some View {
+        Text("Add Food")
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.trailing, 50)
+            .overlay(alignment: .trailing) {
+                Button {
+                    // Действие
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .imageScale(.medium)
+                        .foregroundStyle(Color.secondary)
+                        .padding()
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+    }
+    
+    private var collapsedContent: some View {
+        VStack(alignment: .leading, spacing: 2.5) {
+            Text(mainViewModel.entryCountText(for: mealType))
+                .fontWeight(.medium)
+                .foregroundStyle(Color.primary)
+            
+            Text(formattedFoodList)
+                .foregroundStyle(Color.secondary)
+        }
+        .font(.subheadline)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.trailing)
+    }
+    
+    // MARK: - Food Items
     @ViewBuilder
     private var foodItemsList: some View {
         if mainViewModel.isExpanded(for: mealType) {
@@ -116,6 +127,7 @@ struct MealHeaderView: View {
         }
     }
     
+    // MARK: - Header
     @ViewBuilder
     private var header: some View {
         let mealTypeTitle = MealTypeText(
@@ -125,16 +137,21 @@ struct MealHeaderView: View {
             fontWeight: .semibold
         )
         
-        if mainViewModel.hasItems(for: mealType) {
-            Button {
-                withAnimation {
-                    mainViewModel.expandedSections[mealType]?.toggle()
-                }
-            } label: {
-                HStack {
+        Button {
+            withAnimation {
+                mainViewModel.expandedSections[mealType]?.toggle()
+            }
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 5) {
                     mealTypeTitle
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     
+                    if mainViewModel.hasItems(for: mealType) {
+                        nutrientSummaryRow
+                    }
+                }
+                
+                if mainViewModel.hasItems(for: mealType) {
                     Image(systemName: "chevron.right")
                         .font(.footnote)
                         .fontWeight(.bold)
@@ -150,15 +167,14 @@ struct MealHeaderView: View {
                             value: mainViewModel.isExpanded(for: mealType)
                         )
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 10)
-                .contentShape(Rectangle())
             }
-            .listRowInsets(.all, 0)
-            .buttonStyle(ButtonStyleInvisible())
-        } else {
-            mealTypeTitle
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
         }
+        .disabled(!mainViewModel.hasItems(for: mealType))
+        .listRowInsets(.all, 0)
+        .buttonStyle(ButtonStyleInvisible())
     }
     
     @ViewBuilder

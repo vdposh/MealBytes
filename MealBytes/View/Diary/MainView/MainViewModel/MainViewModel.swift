@@ -626,10 +626,16 @@ final class MainViewModel: ObservableObject {
         calendar.isDate(date, inSameDayAs: Date())
     }
     
-    // MARK: - Close sections
+    // MARK: - Expand and Close sections
     func expandAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = true
+        }
+    }
+    
+    func collapseAllSections() {
+        expandedSections.keys.forEach { key in
+            expandedSections[key] = false
         }
     }
     

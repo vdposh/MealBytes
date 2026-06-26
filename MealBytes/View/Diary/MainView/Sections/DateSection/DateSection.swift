@@ -37,6 +37,8 @@ struct DateSection: View {
                     HStack {
                         ForEach(week, id: \.self) { date in
                             Button {
+                                mainViewModel.scrollToTop()
+                                
                                 withAnimation {
                                     mainViewModel.date = date
                                 }
