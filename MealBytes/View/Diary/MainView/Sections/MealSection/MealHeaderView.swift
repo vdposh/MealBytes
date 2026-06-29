@@ -34,6 +34,12 @@ struct MealHeaderView: View {
             header
         }
         .transaction { $0.animation = nil }
+        .alert(
+            isPresented: $mainViewModel.showClearMealTypeAlert,
+            content: {
+                mainViewModel.clearMealTypeAlert()
+            }
+        )
     }
     
     // MARK: - Meal Header
@@ -65,16 +71,23 @@ struct MealHeaderView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.trailing, 50)
             .overlay(alignment: .trailing) {
-                Button {
-                    // Действие
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .imageScale(.medium)
-                        .foregroundStyle(Color.secondary)
-                        .padding()
-                        .contentShape(Rectangle())
+                if mainViewModel.hasItems(for: mealType) {
+                    Menu {
+                        Button(role: .destructive) {
+                            mainViewModel.mealTypeToClear = mealType
+                            mainViewModel.showClearMealTypeAlert = true
+                        } label: {
+                            Label("Delete All", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .imageScale(.medium)
+                            .foregroundStyle(Color.secondary)
+                            .padding()
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
     }
     
@@ -130,13 +143,6 @@ struct MealHeaderView: View {
     // MARK: - Header
     @ViewBuilder
     private var header: some View {
-        let mealTypeTitle = MealTypeText(
-            mealType: mealType,
-            title: title,
-            font: .title3,
-            fontWeight: .semibold
-        )
-        
         Button {
             withAnimation {
                 mainViewModel.expandedSections[mealType]?.toggle()
@@ -144,7 +150,12 @@ struct MealHeaderView: View {
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 5) {
-                    mealTypeTitle
+                    MealTypeText(
+                        mealType: mealType,
+                        title: title,
+                        font: .title3,
+                        fontWeight: .semibold
+                    )
                     
                     if mainViewModel.hasItems(for: mealType) {
                         nutrientSummaryRow

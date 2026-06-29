@@ -46,6 +46,7 @@ final class MainViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
+    @Published var mealTypeToClear: MealType?
     @Published var weekPosition: Int? = 0
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
@@ -54,6 +55,7 @@ final class MainViewModel: ObservableObject {
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
     @Published var showClearDayAlert: Bool = false
+    @Published var showClearMealTypeAlert: Bool = false
     @Published var isExpanded: Bool = false
     @Published var displayIntake: Bool = true
     
@@ -220,6 +222,33 @@ final class MainViewModel: ObservableObject {
         Task {
             do {
                 try await firestore.deleteMealItemsFirestore(on: dateToClear)
+            } catch {
+                await MainActor.run {
+                    appError = .network
+                }
+            }
+        }
+    }
+    
+    // MARK: - Clear Meal Type
+    func clearMealType(_ mealType: MealType) {
+        let dateToClear = date
+        
+        let itemsToDelete = filteredMealItems(for: mealType, on: dateToClear)
+        
+        withAnimation {
+            mealItems[mealType] = mealItems[mealType]?.filter {
+                !calendar.isDate($0.date, inSameDayAs: dateToClear)
+            }
+            
+            updateProgress()
+        }
+        
+        Task {
+            do {
+                for item in itemsToDelete {
+                    try await firestore.deleteMealItemFirestore(item)
+                }
             } catch {
                 await MainActor.run {
                     appError = .network
@@ -727,6 +756,24 @@ final class MainViewModel: ObservableObject {
                 self.clearDay()
             },
             secondaryButton: .cancel(Text("Cancel"))
+        )
+    }
+    
+    func clearMealTypeAlert() -> Alert {
+        guard let mealType = mealTypeToClear else {
+            return Alert(title: Text("Error"))
+        }
+        
+        return Alert(
+            title: Text("Clear Meal type"),
+            message: Text("Delete all entries in \(mealType.rawValue)"),
+            primaryButton: .destructive(Text("Delete All")) {
+                self.clearMealType(mealType)
+                self.mealTypeToClear = nil
+            },
+            secondaryButton: .cancel(Text("Cancel")) {
+                self.mealTypeToClear = nil
+            }
         )
     }
     

@@ -53,7 +53,7 @@ struct DateSection: View {
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 8)
                     .containerRelativeFrame(.horizontal)
                 }
             }
@@ -102,7 +102,7 @@ struct DateSection: View {
             }
         }
         .transaction { $0.animation = nil }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 8)
         .padding(.top, 8)
     }
     

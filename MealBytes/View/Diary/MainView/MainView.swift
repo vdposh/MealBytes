@@ -21,35 +21,6 @@ struct MainView: View {
             .safeAreaBar(edge: .top) {
                 dateSection
             }
-            .overlay {
-                if mainViewModel.showDatePicker {
-                    ZStack(alignment: .top) {
-                        Button {
-                            mainViewModel.showDatePicker = false
-                        } label: {
-                            Color.primary.opacity(0.1)
-                                .ignoresSafeArea()
-                        }
-                        .buttonStyle(ButtonStyleInvisible())
-                        
-                        DatePicker(
-                            "Select Date",
-                            selection: $mainViewModel.date,
-                            displayedComponents: .date
-                        )
-                        .datePickerStyle(.graphical)
-                        .glassEffect(
-                            .regular.interactive(),
-                            in: .rect(cornerRadius: 30)
-                        )
-                    }
-                    .transition(.blurReplace)
-                }
-            }
-            .animation(
-                .spring(duration: 0.3),
-                value: mainViewModel.showDatePicker
-            )
             .toolbar {
                 mainViewToolbar
             }
@@ -73,7 +44,6 @@ struct MainView: View {
             mealSections
             detailedInformationSection
         }
-        .listSectionSpacing(20)
         .sheet(item: $selectedMealItemForMove) { item in
             MoveMealSheet(mainViewModel: mainViewModel, mealItem: item)
         }
@@ -155,6 +125,9 @@ struct MainView: View {
                 mainViewModel.showDatePicker.toggle()
             } label: {
                 Image(systemName: "calendar")
+            }
+            .popover(isPresented: $mainViewModel.showDatePicker) {
+                DatePickerView(mainViewModel: mainViewModel)
             }
             
             if mainViewModel.hasMealItems {

@@ -31,20 +31,19 @@ struct DatePickerView: View {
             }
             
             Button {
+                let today = Date()
+                
                 withAnimation {
-                    mainViewModel.date = Date()
+                    selectedDate = today
+                    mainViewModel.date = today
                 }
             } label: {
                 Text("Today")
                     .fontWeight(.medium)
-                    .foregroundStyle(
-                        mainViewModel.isTodaySelected ? .primary
-                            .opacity(1) : Color.primary
-                    )
-                    .padding(6)
             }
             .buttonStyle(.glass)
             .disabled(mainViewModel.isTodaySelected)
+            .controlSize(.large)
             .padding(.bottom, 8)
         }
         .frame(width: 320)
