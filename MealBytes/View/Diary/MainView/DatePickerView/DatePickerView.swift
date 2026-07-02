@@ -9,47 +9,33 @@ import SwiftUI
 
 struct DatePickerView: View {
     @State private var selectedDate: Date
-    @ObservedObject var mainViewModel: MainViewModel
+    @Binding var date: Date
     
-    init(mainViewModel: MainViewModel) {
-        self.mainViewModel = mainViewModel
-        self._selectedDate = State(initialValue: mainViewModel.date)
+    private let today = Date()
+    
+    init(date: Binding<Date>) {
+        self._date = date
+        self._selectedDate = State(initialValue: date.wrappedValue)
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            DatePicker(
-                "Select Date",
-                selection: $selectedDate,
-                displayedComponents: .date
-            )
-            .datePickerStyle(.graphical)
-            .onChange(of: selectedDate) {
-                withAnimation {
-                    mainViewModel.date = selectedDate
-                }
-            }
-            
-            Button {
-                let today = Date()
-                
-                withAnimation {
-                    selectedDate = today
-                    mainViewModel.date = today
-                }
-            } label: {
-                Text("Today")
-                    .fontWeight(.medium)
-            }
-            .buttonStyle(.glass)
-            .disabled(mainViewModel.isTodaySelected)
-            .controlSize(.large)
-            .padding(.bottom, 8)
-        }
+        DatePicker(
+            "Select Date",
+            selection: $selectedDate,
+            displayedComponents: .date
+        )
+        .datePickerStyle(.graphical)
         .frame(width: 320)
         .padding(.horizontal)
-        .padding(.bottom, 8)
+        .padding(.vertical, 8)
         .presentationCompactAdaptation(.popover)
+        .onChange(of: selectedDate) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation {
+                    date = selectedDate
+                }
+            }
+        }
     }
 }
 

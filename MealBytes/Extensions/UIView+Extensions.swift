@@ -1,5 +1,5 @@
 //
-//  UIView+Extension.swift
+//  UIView+Extensions.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 10.06.2026.

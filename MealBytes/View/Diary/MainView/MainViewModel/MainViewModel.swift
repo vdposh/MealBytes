@@ -42,12 +42,10 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
-    @Published var dateSectionWeeks: [[Date]] = []
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
     @Published var mealTypeToClear: MealType?
-    @Published var weekPosition: Int? = 0
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
@@ -79,8 +77,6 @@ final class MainViewModel: ObservableObject {
         self.mealItems = items
         self.nutrientSummaries = summaries
         self.expandedSections = sections
-        
-        setupDateSection()
     }
     
     // MARK: - Load Main Data
@@ -571,39 +567,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Date Section Calculation
-    func weeksForDate(_ date: Date, range: ClosedRange<Int>) -> [[Date]] {
-        guard let weekStart = calendar.date(
-            from: calendar.dateComponents(
-                [.yearForWeekOfYear, .weekOfYear],
-                from: date
-            )
-        ) else {
-            return []
-        }
-        
-        var weeks: [[Date]] = []
-        for offset in range {
-            guard let targetWeek = calendar.date(
-                byAdding: .weekOfYear,
-                value: offset,
-                to: weekStart
-            ) else { continue }
-            let week = (0...6).compactMap { dayOffset in
-                calendar.date(byAdding: .day, value: dayOffset, to: targetWeek)
-            }
-            weeks.append(week)
-        }
-        return weeks
-    }
-    
-    func setupDateSection() {
-        dateSectionWeeks = weeksForDate(date, range: -1...1)
-        weekPosition = dateSectionWeeks.firstIndex { week in
-            week.contains { calendar.isDate($0, inSameDayAs: date) }
-        } ?? (dateSectionWeeks.count / 2)
-    }
-    
+    // MARK: - Date
     func formattedDate() -> String {
         if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
             return date.formatted(
@@ -623,32 +587,6 @@ final class MainViewModel: ObservableObject {
         updateProgress()
         expandAllSections()
         isExpanded = false
-    }
-    
-    // MARK: - Date Section Helpers
-    func dateByPreservingWeekday(
-        from currentDate: Date,
-        in week: [Date]
-    ) -> Date? {
-        let calendar = calendar
-        let currentWeekday = calendar.component(.weekday, from: currentDate)
-        let mondayBasedWeekday = (currentWeekday + 5) % 7
-        
-        guard mondayBasedWeekday >= 0, mondayBasedWeekday < week.count else {
-            return nil
-        }
-        
-        return week[mondayBasedWeekday]
-    }
-    
-    func isToday(weekdayIndex: Int, at position: Int) -> Bool {
-        guard position >= 0, position < dateSectionWeeks.count else {
-            return false
-        }
-        
-        let currentWeek = dateSectionWeeks[position]
-        let date = currentWeek[weekdayIndex]
-        return calendar.isDate(date, inSameDayAs: Date())
     }
     
     var isTodaySelected: Bool {
@@ -830,11 +768,6 @@ extension MainViewModel: MainViewModelProtocol {
     func updateIntake(to value: String) {
         intake = (Double(value) ?? 0).asWhole(grouping: false)
     }
-}
-
-enum DirectionDateView {
-    case forward
-    case backward
 }
 
 #Preview {

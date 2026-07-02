@@ -17,10 +17,6 @@ struct MainView: View {
             .navigationTitle("Diary")
             .navigationSubtitle(mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.inlineLarge)
-            .safeAreaPadding(.top, 8)
-            .safeAreaBar(edge: .top) {
-                dateSection
-            }
             .toolbar {
                 mainViewToolbar
             }
@@ -58,10 +54,6 @@ struct MainView: View {
                 )
             }
         }
-    }
-    
-    private var dateSection: some View {
-        DateSection(mainViewModel: mainViewModel)
     }
     
     private var caloriesSection: some View {
@@ -127,7 +119,7 @@ struct MainView: View {
                 Image(systemName: "calendar")
             }
             .popover(isPresented: $mainViewModel.showDatePicker) {
-                DatePickerView(mainViewModel: mainViewModel)
+                DatePickerView(date: $mainViewModel.date)
             }
             
             if mainViewModel.hasMealItems {
