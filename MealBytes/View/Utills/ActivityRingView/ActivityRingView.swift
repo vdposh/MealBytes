@@ -10,18 +10,18 @@ import SwiftUI
 struct ActivityRingView: View {
     let progress: Double
     var mainColor: Color = .customCalories
-    var lineWidth: CGFloat = 7.5
-    
-    private var endColor: Color {
-        mainColor.darker(by: 15)
-    }
+    var lineWidth: CGFloat = 7
     
     private var startColor: Color {
-        mainColor.lighter(by: 15)
+        mainColor.lighter(by: 40)
+    }
+    
+    private var middleColor: Color {
+        mainColor.lighter(by: 10)
     }
     
     private var backgroundColor: Color {
-        mainColor.opacity(0.15)
+        mainColor.opacity(0.1)
     }
     
     private func overlapRotation() -> Angle {
@@ -39,11 +39,21 @@ struct ActivityRingView: View {
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(
-                        AngularGradient(
-                            gradient: Gradient(colors: [startColor, endColor]),
-                            center: .center,
-                            startAngle: .degrees(0),
-                            endAngle: .degrees(360)
+                        AnyShapeStyle(
+                            AngularGradient(
+                                gradient: Gradient(
+                                    colors: progress > 0.8
+                                    ? [
+                                        startColor,
+                                        middleColor,
+                                        mainColor
+                                    ]
+                                    : progress > 0 ? [mainColor] : [.clear]
+                                ),
+                                center: .center,
+                                startAngle: .degrees(0),
+                                endAngle: .degrees(360)
+                            )
                         ),
                         style: StrokeStyle(
                             lineWidth: lineWidth,
@@ -52,15 +62,36 @@ struct ActivityRingView: View {
                     )
                     .rotationEffect(.degrees(-90))
                 
-                Circle()
-                    .frame(width: lineWidth, height: lineWidth)
-                    .foregroundColor(startColor)
-                    .offset(y: -1 * (geo.size.height / 2))
-                    .opacity(progress > 0 ? 1 : 0)
+                if progress > 0.8 {
+                    Circle()
+                        .frame(width: lineWidth, height: lineWidth)
+                        .foregroundColor(startColor)
+                        .offset(y: -1 * (geo.size.height / 2))
+                }
+                
+                if progress > 0.93 {
+                    Circle()
+                        .trim(from: 0, to: 0.5)
+                        .stroke(
+                            Color(.secondarySystemGroupedBackground),
+                            style: StrokeStyle(
+                                lineWidth: 5,
+                                lineCap: .round
+                            )
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .frame(width: lineWidth * 2, height: lineWidth * 1.75)
+                        .rotationEffect(.degrees(90))
+                        .offset(y: -1 * (geo.size.height / 2))
+                        .rotationEffect(.degrees(progress))
+                }
             }
             .rotationEffect(overlapRotation())
             .scaleEffect(x: -1, y: 1)
         }
+        .aspectRatio(1, contentMode: .fit)
+        .frame(height: 30)
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 

@@ -57,10 +57,7 @@ struct MainView: View {
     }
     
     private var caloriesSection: some View {
-        CaloriesSection(
-            summaries: mainViewModel.summariesForCaloriesSection(),
-            mainViewModel: mainViewModel
-        )
+        CaloriesSection(mainViewModel: mainViewModel)
     }
     
     private var mealSections: some View {

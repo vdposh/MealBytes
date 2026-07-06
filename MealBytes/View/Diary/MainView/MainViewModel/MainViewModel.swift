@@ -364,7 +364,7 @@ final class MainViewModel: ObservableObject {
             return
         }
         
-        intakeProgress = min(max(calories / intakeValue, 0), 1)
+        intakeProgress = calories / intakeValue
     }
     
     func summariesForCaloriesSection() -> [NutrientType: Double] {
@@ -414,7 +414,7 @@ final class MainViewModel: ObservableObject {
     }
     
     var remainingCaloriesWord: String {
-        isOverLimit ? "over" : "left"
+        isOverLimit ? "over" : "under"
     }
     
     var remainingCaloriesUnit: String {
