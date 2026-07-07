@@ -69,14 +69,14 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - Delete Account
-    private func deleteAccount(email: String, password: String) async {
+    private func deleteAccount() async {
         uniqueId = UUID()
         
+        await MainActor.run {
+            isDeletingAccount = true
+        }
+        
         do {
-            try await firebaseAuth.reauthenticateAuth(
-                email: email,
-                password: password
-            )
             try await firebaseAuth.deleteAccountAuth()
             
             do {
@@ -93,6 +93,10 @@ final class ProfileViewModel: ObservableObject {
                 appError = .decoding
             }
         }
+        
+        await MainActor.run {
+            isDeletingAccount = false
+        }
     }
     
     // MARK: - Change Password
@@ -102,10 +106,18 @@ final class ProfileViewModel: ObservableObject {
     ) async throws {
         uniqueId = UUID()
         
+        await MainActor.run {
+            isPasswordChanging = true
+        }
+        
         try await firebaseAuth.changePasswordAuth(
             currentPassword: currentPassword,
             newPassword: newPassword
         )
+        
+        await MainActor.run {
+            isPasswordChanging = false
+        }
     }
     
     // MARK: - Alert
@@ -125,37 +137,9 @@ final class ProfileViewModel: ObservableObject {
             signOut()
             
         case .deleteAccount:
-            isDeletingAccount = true
-            
-            guard let email = email, !email.isEmpty else {
-                await showOverrideMessage(
-                    ProfileMessage.emailMissing.text,
-                    for: .deleteAccount
-                )
-                
-                return
-            }
-            
-            do {
-                try await firebaseAuth.reauthenticateAuth(
-                    email: email,
-                    password: password
-                )
-                
-                await deleteAccount(email: email, password: password)
-                await MainActor.run {
-                    isDeletingAccount = false
-                }
-            } catch {
-                await showOverrideMessage(
-                    ProfileMessage.incorrectPassword.text,
-                    for: .deleteAccount
-                )
-            }
+            await deleteAccount()
             
         case .changePassword:
-            isPasswordChanging = true
-            
             if let validationError = validatePassword() {
                 await showOverrideMessage(
                     validationError.message,
@@ -209,8 +193,6 @@ final class ProfileViewModel: ObservableObject {
                 isSuccess: isSuccess
             )
             showAlert = true
-            isPasswordChanging = false
-            isDeletingAccount = false
         }
     }
     

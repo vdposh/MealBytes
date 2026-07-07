@@ -15,7 +15,7 @@ struct AccountInfoSection: View {
             if let email = profileViewModel.email {
                 VStack {
                     Text("This account is signed in:")
-                        .font(.callout)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                     
                     

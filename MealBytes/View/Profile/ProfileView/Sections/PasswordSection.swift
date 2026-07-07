@@ -20,8 +20,6 @@ struct PasswordSection: View {
                     profileViewModel.prepareAlert(for: .changePassword)
                 }
             }
-        } footer: {
-            Text("Use this option to update the account password for improved security.")
         }
     }
 }

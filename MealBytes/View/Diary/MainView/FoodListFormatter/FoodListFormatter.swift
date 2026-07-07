@@ -11,7 +11,7 @@ struct FoodListFormatter {
     private let font: UIFont
     private let maxWidth: CGFloat
     
-    init(font: UIFont = .preferredFont(forTextStyle: .callout),
+    init(font: UIFont = .preferredFont(forTextStyle: .subheadline),
          maxWidth: CGFloat = UIScreen.currentSize.width - 32) {
         self.font = font
         self.maxWidth = maxWidth

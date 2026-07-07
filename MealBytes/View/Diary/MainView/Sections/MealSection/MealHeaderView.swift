@@ -94,7 +94,7 @@ struct MealHeaderView: View {
     private var collapsedContent: some View {
         VStack(alignment: .leading, spacing: 2.5) {
             Text(mainViewModel.entryCountText(for: mealType))
-                .fontWeight(.medium)
+                .fontWeight(.semibold)
                 .foregroundStyle(Color.primary)
             
             Text(formattedFoodList)
@@ -148,8 +148,8 @@ struct MealHeaderView: View {
                 mainViewModel.expandedSections[mealType]?.toggle()
             }
         } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
+            HStack(alignment: .lastTextBaseline) {
+                VStack(alignment: .leading, spacing: 2.5) {
                     MealTypeText(
                         mealType: mealType,
                         title: title,

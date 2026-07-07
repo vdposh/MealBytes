@@ -14,7 +14,6 @@ protocol FirebaseAuthProtocol {
     func checkCurrentUserAuth() -> Bool
     func currentUserExists() -> Bool
     func signUpAuth(email: String, password: String) async throws
-    func reauthenticateAuth(email: String, password: String) async throws
     func resetPasswordAuth(email: String) async throws
     func signOutAuth() throws
     func deleteAccountAuth() async throws
@@ -72,22 +71,6 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         }
         
         try await user.delete()
-    }
-    
-    func reauthenticateAuth(
-        email: String,
-        password: String
-    ) async throws {
-        guard let user = Auth.auth().currentUser else {
-            throw AuthError.userNotFound
-        }
-        
-        let credential = EmailAuthProvider.credential(
-            withEmail: email,
-            password: password
-        )
-        
-        try await user.reauthenticate(with: credential)
     }
     
     // MARK: - Change Password

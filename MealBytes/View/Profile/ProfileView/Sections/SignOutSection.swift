@@ -17,27 +17,16 @@ struct SignOutSection: View {
                 profileViewModel.prepareAlert(for: .signOut)
             }
             .foregroundStyle(.customRed)
-            .frame(maxWidth: .infinity, alignment: .center)
-        } footer: {
+        }
+        
+        Section {
             if profileViewModel.isDeletingAccount {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+                LoadingView(showLabel: true)
             } else {
-                HStack(spacing: 5) {
-                    Text("Do you want to")
-                    
-                    Button("delete") {
-                        profileViewModel.prepareAlert(for: .deleteAccount)
-                    }
-                    .font(.footnote)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.customRed)
-                    
-                    Text("the account?")
+                Button("Delete Account") {
+                    profileViewModel.prepareAlert(for: .deleteAccount)
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .frame(height: 50)
+                .foregroundStyle(.customRed)
             }
         }
     }

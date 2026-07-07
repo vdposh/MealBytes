@@ -40,7 +40,7 @@ struct FoodItemRow: View {
             VStack(alignment: .leading, spacing: 2.5) {
                 Text(mealItem.foodName)
                     .font(.subheadline)
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
                 
                 Text(mainViewModel.formattedMealText(for: mealItem))
                     .font(.subheadline)

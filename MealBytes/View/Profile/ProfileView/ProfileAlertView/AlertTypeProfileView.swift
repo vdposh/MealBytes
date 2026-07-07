@@ -23,7 +23,7 @@ enum AlertTypeProfileView {
     var destructiveTitle: String {
         switch self {
         case .signOut: return "Sign Out"
-        case .deleteAccount: return "Delete"
+        case .deleteAccount: return "Delete Account"
         case .changePassword: return "Update Password"
         }
     }
@@ -33,10 +33,7 @@ enum AlertTypeProfileView {
         case .signOut:
             return "Signing out will require signing in again to access the account."
         case .deleteAccount:
-            return """
-            To delete the account, enter the password associated with it.
-            Data and account details will be permanently erased. This action cannot be undone.
-            """
+            return "Data and account details will be permanently erased. This action cannot be undone."
         case .changePassword:
             return "Provide the current password and a new password to update account credentials."
         }

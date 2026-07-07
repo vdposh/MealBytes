@@ -40,16 +40,13 @@ struct ProfileView: View {
     private var alertActions: some View {
         switch profileViewModel.alertContent?.type {
         case .deleteAccount:
-            SecureField(
-                "Current Password",
-                text: $profileViewModel.password
-            )
-            .textContentType(.password)
-            
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
                     await profileViewModel.handleProfileAlertAction()
                 }
+            }
+            Button("Cancel", role: .cancel) {
+                profileViewModel.showAlert = false
             }
             
         case .signOut:

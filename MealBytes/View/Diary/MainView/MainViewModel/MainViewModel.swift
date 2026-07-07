@@ -382,10 +382,6 @@ final class MainViewModel: ObservableObject {
             }
     }
     
-    var currentIntake: String {
-        (intake.doubleValue ?? 0).asWhole()
-    }
-    
     // MARK: - Calculation (Calories)
     func totalCalories(for mealType: MealType? = nil) -> Double {
         let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
@@ -713,6 +709,10 @@ final class MainViewModel: ObservableObject {
                 self.mealTypeToClear = nil
             }
         )
+    }
+    
+    var currentIntake: String {
+        (intake.doubleValue ?? 0).asWhole()
     }
     
     func filteredItems(for mealType: MealType) -> [MealItem] {
