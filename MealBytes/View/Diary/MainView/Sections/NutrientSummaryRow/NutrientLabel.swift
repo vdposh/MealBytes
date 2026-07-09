@@ -17,9 +17,7 @@ struct NutrientLabel: View {
             Image(systemName: image)
             
             Text(value.asWhole())
-                .fontWeight(.medium)
         }
-        .font(.footnote)
         .foregroundStyle(color)
     }
 }

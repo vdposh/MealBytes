@@ -39,7 +39,6 @@ struct MoveMealSheet: View {
                 } label: {
                     HStack {
                         MealTypeText(mealType: mealType)
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         
                         if mealType == mealItem.mealType {
                             Image(systemName: "checkmark")

@@ -107,24 +107,16 @@ struct FoodView: View {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
                 placeholder: "Serving size",
-                trailingUnit: foodViewModel.servingUnit,
                 useLabel: true
             )
             .focused($amountFocused)
             
             if let selected = foodViewModel.selectedServing,
                let servings = foodViewModel.foodDetail?.servings.serving {
-                PickerRowView(
-                    title: foodViewModel
-                        .servingDescription(for: selected),
-                    iconName: "text.justify",
-                    mealType: mealType
-                ) {
+                Label {
                     Picker(
-                        selection: $foodViewModel.selectedServing,
-                        label: Text(
-                            foodViewModel.servingDescription(for: selected)
-                        )
+                        "Portion",
+                        selection: $foodViewModel.selectedServing
                     ) {
                         ForEach(servings, id: \.self) { serving in
                             Text(
@@ -137,26 +129,30 @@ struct FoodView: View {
                             .tag(serving as Serving?)
                         }
                     }
-                    .onChange(of: selected) {
-                        foodViewModel.updateServing(selected)
-                        amountFocused = false
-                        foodViewModel.normalizeAmount()
-                    }
+                } icon: {
+                    Image(systemName: "text.justify")
+                        .foregroundStyle(.customGray)
+                        .symbolColorRenderingMode(.gradient)
+                }
+                .onChange(of: selected) {
+                    foodViewModel.updateServing(selected)
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
                 }
             }
             
             if isEditingMealItem {
-                PickerRowView(
-                    title: mealType.rawValue,
-                    iconName: "fork.knife",
-                    mealType: mealType
-                ) {
+                Label {
                     Picker("Meal type", selection: $mealType) {
                         ForEach(MealType.allCases, id: \.self) { meal in
                             Text(meal.rawValue)
                                 .tag(meal)
                         }
                     }
+                } icon: {
+                    Image(systemName: "fork.knife")
+                        .foregroundStyle(.customGray)
+                        .symbolColorRenderingMode(.gradient)
                 }
                 .onChange(of: mealType) {
                     amountFocused = false

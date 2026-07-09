@@ -20,6 +20,7 @@ struct MealTypeText: View {
             .font(font)
             .fontWeight(fontWeight)
             .foregroundStyle(Color.primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

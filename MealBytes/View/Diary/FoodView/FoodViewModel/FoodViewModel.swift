@@ -320,6 +320,10 @@ final class FoodViewModel: ObservableObject {
         var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
+            if description == "g" {
+                let unit = UnitNutrients(rawValue: "g") ?? .g
+                return unit.description(for: 0, full: true)
+            }
             return description
         }
         

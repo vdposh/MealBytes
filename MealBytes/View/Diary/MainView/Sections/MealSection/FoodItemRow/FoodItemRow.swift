@@ -37,7 +37,7 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
         } label: {
-            VStack(alignment: .leading, spacing: 2.5) {
+            VStack(alignment: .leading) {
                 Text(mealItem.foodName)
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -53,6 +53,8 @@ struct FoodItemRow: View {
                     carbs: mealItem.carbsValue,
                     protein: mealItem.proteinValue
                 )
+                .font(.footnote)
+                .fontWeight(.medium)
             }
         }
     }

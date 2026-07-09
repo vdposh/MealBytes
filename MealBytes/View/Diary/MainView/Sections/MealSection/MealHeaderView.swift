@@ -28,10 +28,12 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            foodItemContent
             foodItemsList
+            addFood
         } header: {
-            header
+            headerContent
+        } footer: {
+            footerContent
         }
         .transaction { $0.animation = nil }
         .alert(
@@ -44,7 +46,7 @@ struct MealHeaderView: View {
     
     // MARK: - Meal Header
     @ViewBuilder
-    private var foodItemContent: some View {
+    private var addFood: some View {
         let isExpanded = mainViewModel.isExpanded(for: mealType)
         let hasItems = mainViewModel.hasItems(for: mealType)
         
@@ -92,7 +94,7 @@ struct MealHeaderView: View {
     }
     
     private var collapsedContent: some View {
-        VStack(alignment: .leading, spacing: 2.5) {
+        VStack(alignment: .leading) {
             Text(mainViewModel.entryCountText(for: mealType))
                 .fontWeight(.semibold)
                 .foregroundStyle(Color.primary)
@@ -142,25 +144,19 @@ struct MealHeaderView: View {
     
     // MARK: - Header
     @ViewBuilder
-    private var header: some View {
+    private var headerContent: some View {
         Button {
             withAnimation {
                 mainViewModel.expandedSections[mealType]?.toggle()
             }
         } label: {
-            HStack(alignment: .lastTextBaseline) {
-                VStack(alignment: .leading, spacing: 2.5) {
-                    MealTypeText(
-                        mealType: mealType,
-                        title: title,
-                        font: .title3,
-                        fontWeight: .semibold
-                    )
-                    
-                    if mainViewModel.hasItems(for: mealType) {
-                        nutrientSummaryRow
-                    }
-                }
+            HStack {
+                MealTypeText(
+                    mealType: mealType,
+                    title: title,
+                    font: .title3,
+                    fontWeight: .semibold
+                )
                 
                 if mainViewModel.hasItems(for: mealType) {
                     Image(systemName: "chevron.right")
@@ -189,7 +185,7 @@ struct MealHeaderView: View {
     }
     
     @ViewBuilder
-    private var nutrientSummaryRow: some View {
+    private var footerContent: some View {
         if mainViewModel.hasItems(for: mealType) {
             let nutrients = mainViewModel.totalNutrients(for: mealType)
             
@@ -200,6 +196,10 @@ struct MealHeaderView: View {
                 carbs: nutrients.carbs,
                 protein: nutrients.protein
             )
+            .fontWeight(.medium)
+            .padding(.bottom)
+        } else {
+            EmptyView()
         }
     }
 }

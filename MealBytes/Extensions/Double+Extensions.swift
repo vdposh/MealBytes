@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Double {
-    func asWhole(grouping: Bool = true) -> String {
+    func asWhole(unit: String? = nil, grouping: Bool = true) -> String {
         var format = FloatingPointFormatStyle<Double>()
             .precision(.fractionLength(0))
         
@@ -16,7 +16,13 @@ extension Double {
             format = format.grouping(.never)
         }
         
-        return self.formatted(format)
+        let formattedNumber = self.formatted(format)
+        
+        if let unit {
+            return "\(formattedNumber) \(unit)"
+        } else {
+            return formattedNumber
+        }
     }
     
     func asDecimal(unit: String? = nil, grouping: Bool = true) -> String {

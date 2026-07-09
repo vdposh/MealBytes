@@ -15,28 +15,27 @@ struct PickerRowView<MenuContent: View>: View {
     @ViewBuilder let menuContent: () -> MenuContent
     
     var body: some View {
-        Label {
-            Text(title)
-        } icon: {
-            Image(systemName: iconName)
-                .foregroundStyle(.customGray)
-                .symbolColorRenderingMode(.gradient)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.trailing, 50)
-        .overlay(alignment: .trailing) {
-            Menu {
-                menuContent()
-            } label: {
-                Image(systemName: "chevron.up.chevron.down")
-                    .imageScale(.small)
-                    .foregroundStyle(Color.secondary)
-                    .padding()
-                    .contentShape(Rectangle())
+        HStack {
+            Label {
+                Text(title)
+            } icon: {
+                Image(systemName: iconName)
+                    .foregroundStyle(.customGray)
+                    .symbolColorRenderingMode(.gradient)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .trailing) {
+                Menu {
+                    menuContent()
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .foregroundStyle(Color.secondary)
+                        .padding(.vertical)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
         }
-        .listRowInsets(.trailing, 0)
     }
 }
 

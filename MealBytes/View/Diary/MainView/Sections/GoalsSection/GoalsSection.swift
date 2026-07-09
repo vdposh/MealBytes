@@ -1,5 +1,5 @@
 //
-//  CaloriesSection.swift
+//  GoalsSection.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 16/03/2025.
@@ -12,55 +12,61 @@ struct GoalsSection: View {
     
     var body: some View {
         Section {
-            goalsBody
+            VStack(spacing: 10) {
+                HStack(spacing: 10) {
+                    calorieCard
+                    fatCard
+                }
+                HStack(spacing: 10) {
+                    carbsCard
+                    proteinCard
+                }
+            }
         } header: {
             Text("Goals")
+                .padding(.horizontal)
+                .padding(.bottom, 8)
         }
+        .listRowInsets(.vertical, 0)
+        .listSectionMargins(.horizontal, 0)
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
     
-    @ViewBuilder
-    private var goalsBody: some View {
-        caloriesSection
+    // MARK: - Cards
+    private var calorieCard: some View {
+        GoalCard(
+            title: "Calories",
+            value: mainViewModel.totalCalories().asWhole(unit: "cal"),
+            progress: mainViewModel.canDisplayIntake() ? mainViewModel.intakeProgress : nil
+        )
     }
     
-    @ViewBuilder
-    private var caloriesSection: some View {
-        if mainViewModel.canDisplayIntake() {
-            HStack {
-                VStack(alignment: .leading, spacing: 2.5) {
-                    Text("Calories")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    
-                    Text(
-                        "\(mainViewModel.totalCalories().asWhole())/\(mainViewModel.currentIntake)"
-                    )
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.customCalories)
-                }
-                .lineLimit(1)
-                .transaction { $0.animation = nil }
-                
-                if mainViewModel.canDisplayIntake() {
-                    ActivityRingView(progress: mainViewModel.intakeProgress)
-                }
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 2.5) {
-                Text("Calories")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                
-                Text(mainViewModel.totalCalories().asWhole())
-                    .fontWeight(.semibold)
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.customCalories)
-            }
-            .lineLimit(1)
-            .transaction { $0.animation = nil }
-        }
+    private var fatCard: some View {
+        let nutrients = mainViewModel.totalNutrients()
+        return GoalCard(
+            title: "Fat",
+            value: nutrients.fat.asWhole(unit: "g"),
+            progress: nil
+        )
+    }
+    
+    private var carbsCard: some View {
+        let nutrients = mainViewModel.totalNutrients()
+        return GoalCard(
+            title: "Carbs",
+            value: nutrients.carbs.asWhole(unit: "g"),
+            progress: nil
+        )
+    }
+    
+    private var proteinCard: some View {
+        let nutrients = mainViewModel.totalNutrients()
+        return GoalCard(
+            title: "Protein",
+            value: nutrients.protein.asWhole(unit: "g"),
+            progress: nil
+        )
     }
 }
 

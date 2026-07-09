@@ -10,18 +10,34 @@ import SwiftUI
 struct NutrientSummaryRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
-    let calories: Double
+    let calories: Double?
     let fat: Double
     let carbs: Double
     let protein: Double
     
+    init(
+        mainViewModel: MainViewModel,
+        calories: Double? = nil,
+        fat: Double,
+        carbs: Double,
+        protein: Double
+    ) {
+        self.mainViewModel = mainViewModel
+        self.calories = calories
+        self.fat = fat
+        self.carbs = carbs
+        self.protein = protein
+    }
+    
     var body: some View {
         HStack(spacing: 10) {
-            NutrientLabel(
-                image: "flame.fill",
-                value: calories,
-                color: .customCalories
-            )
+            if let calories {
+                NutrientLabel(
+                    image: "flame.fill",
+                    value: calories,
+                    color: .customCalories
+                )
+            }
             
             NutrientLabel(
                 image: "f.circle.fill",

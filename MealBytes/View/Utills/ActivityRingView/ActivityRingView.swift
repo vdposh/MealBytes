@@ -75,12 +75,12 @@ struct ActivityRingView: View {
                         .stroke(
                             Color(.secondarySystemGroupedBackground),
                             style: StrokeStyle(
-                                lineWidth: 5,
+                                lineWidth: 6,
                                 lineCap: .round
                             )
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .frame(width: lineWidth * 2, height: lineWidth * 1.75)
+                        .clipShape(.capsule)
+                        .frame(width: lineWidth * 2, height: lineWidth * 2)
                         .rotationEffect(.degrees(90))
                         .offset(y: -1 * (geo.size.height / 2))
                         .rotationEffect(.degrees(progress))
@@ -89,9 +89,7 @@ struct ActivityRingView: View {
             .rotationEffect(overlapRotation())
             .scaleEffect(x: -1, y: 1)
         }
-        .aspectRatio(1, contentMode: .fit)
-        .frame(height: 30)
-        .frame(maxWidth: .infinity, alignment: .trailing)
+        .frame(width: 32, height: 32)
     }
 }
 
