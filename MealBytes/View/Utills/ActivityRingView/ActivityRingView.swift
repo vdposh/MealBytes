@@ -10,7 +10,7 @@ import SwiftUI
 struct ActivityRingView: View {
     let progress: Double
     var mainColor: Color = .customCalories
-    var lineWidth: CGFloat = 7
+    var lineWidth: CGFloat = 6
     
     private var startColor: Color {
         mainColor.lighter(by: 40)
@@ -63,33 +63,37 @@ struct ActivityRingView: View {
                     .rotationEffect(.degrees(-90))
                 
                 if progress > 0.8 {
-                    Circle()
-                        .frame(width: lineWidth, height: lineWidth)
-                        .foregroundColor(startColor)
-                        .offset(y: -1 * (geo.size.height / 2))
-                }
-                
-                if progress > 0.93 {
-                    Circle()
-                        .trim(from: 0, to: 0.5)
-                        .stroke(
-                            Color(.secondarySystemGroupedBackground),
-                            style: StrokeStyle(
-                                lineWidth: 6,
-                                lineCap: .round
-                            )
-                        )
-                        .clipShape(.capsule)
-                        .frame(width: lineWidth * 2, height: lineWidth * 2)
-                        .rotationEffect(.degrees(90))
-                        .offset(y: -1 * (geo.size.height / 2))
-                        .rotationEffect(.degrees(progress))
+                    ZStack {
+                        Circle()
+                            .frame(width: lineWidth, height: lineWidth)
+                            .foregroundColor(startColor)
+                        
+                        if progress > 0.93 {
+                            Circle()
+                                .trim(from: 0, to: 0.5)
+                                .stroke(
+                                    Color(.secondarySystemGroupedBackground),
+                                    style: StrokeStyle(
+                                        lineWidth: 5,
+                                        lineCap: .round
+                                    )
+                                )
+                                .clipShape(.circle)
+                                .frame(
+                                    width: lineWidth * 1.8,
+                                    height: lineWidth * 1.8
+                                )
+                                .rotationEffect(.degrees(90))
+                                .offset(x: 1)
+                        }
+                    }
+                    .offset(y: -1 * (geo.size.height / 2))
                 }
             }
             .rotationEffect(overlapRotation())
             .scaleEffect(x: -1, y: 1)
         }
-        .frame(width: 32, height: 32)
+        .frame(width: 30, height: 30)
     }
 }
 
