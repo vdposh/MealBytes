@@ -10,12 +10,14 @@ import SwiftUI
 struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var focus: Bool
-    var placeholder: String = "amount"
+    
+    var placeholder: String = "Enter value"
     var labelIconName: String = "plus.forwardslash.minus"
     var stackText: String = ""
     var trailingUnit: String? = nil
     var useLabel: Bool = false
     var useStack: Bool = false
+    var useStackTrailing: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -63,6 +65,13 @@ struct ServingTextFieldView: View {
                             length,
                             _ in length * 0.5
                         }
+                }
+            } else if useStackTrailing {
+                HStack {
+                    Text(stackText)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    field
+                        .multilineTextAlignment(.trailing)
                 }
             } else {
                 field

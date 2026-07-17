@@ -15,49 +15,36 @@ struct HeightSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.height,
-                placeholder: "Height value",
                 maxIntegerDigits: 3
             )
             .focused($focus, equals: .height)
             
             Picker(
-                "Height unit",
+                "Unit",
                 selection: $rdiViewModel.selectedHeightUnit
             ) {
-                if rdiViewModel.selectedHeightUnit == .notSelected {
-                    Text("Not Selected")
-                        .tag(HeightUnit.notSelected)
-                }
-                
                 ForEach(
-                    HeightUnit.allCases.filter { $0 != .notSelected },
+                    HeightUnit.allCases,
                     id: \.self
                 ) { unit in
                     Text(unit.rawValue).tag(unit)
                 }
             }
-            .foregroundStyle(rdiViewModel.selectedHeightUnit.selectedColor)
         } header: {
             Text("Height")
                 .foregroundStyle(
                     rdiViewModel.fieldTitleColor(for: rdiViewModel.height)
                 )
-        } footer: {
-            Text("Enter height and, if necessary, adjust the unit (centimeters or inches).")
         }
     }
 }
 
 enum HeightUnit: String, CaseIterable {
-    case notSelected = "Not selected"
     case cm = "cm"
     case inches = "inches"
     
     var selectedColor: Color {
-        switch self {
-        case .notSelected: .customRed
-        default: .primary
-        }
+        .primary
     }
 }
 

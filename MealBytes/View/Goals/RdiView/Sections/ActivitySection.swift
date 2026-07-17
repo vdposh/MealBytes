@@ -11,26 +11,22 @@ struct ActivitySection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            Picker(
-                "Activity",
-                selection: $rdiViewModel.selectedActivity
-            ) {
-                if rdiViewModel.selectedActivity == .notSelected {
-                    Text("Not Selected").tag(Activity.notSelected)
-                }
-                
-                ForEach(
-                    Activity.allCases.filter { $0 != .notSelected },
-                    id: \.self
-                ) { level in
-                    Text(level.rawValue).tag(level)
-                }
+        Picker(
+            "Activity",
+            selection: $rdiViewModel.selectedActivity
+        ) {
+            if rdiViewModel.selectedActivity == .notSelected {
+                Text("Not Selected").tag(Activity.notSelected)
             }
-            .foregroundStyle(rdiViewModel.selectedActivity.selectedColor)
-        } footer: {
-            Text("Select the necessary indicator based on daily activity level.")
+            
+            ForEach(
+                Activity.allCases.filter { $0 != .notSelected },
+                id: \.self
+            ) { level in
+                Text(level.rawValue).tag(level)
+            }
         }
+        .foregroundStyle(rdiViewModel.selectedActivity.selectedColor)
     }
 }
 

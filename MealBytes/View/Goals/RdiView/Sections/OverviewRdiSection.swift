@@ -19,7 +19,7 @@ struct OverviewRdiSection: View {
                     rdiViewModel.color(for: rdiViewModel.calculatedRdi)
                 )
         } footer: {
-            Text("The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level. RDI is an estimate and not medical advice.")
+            Text("The Recommended Daily Intake (RDI) calculation is based on unique factors, including age, weight, height, gender, and activity level.")
         }
         .listRowBackground(Color.clear)
     }

@@ -24,8 +24,8 @@ final class RdiViewModel: ObservableObject {
     @Published var height: String = ""
     @Published var selectedGender: Gender = .notSelected
     @Published var selectedActivity: Activity = .notSelected
-    @Published var selectedWeightUnit: WeightUnit = .notSelected
-    @Published var selectedHeightUnit: HeightUnit = .notSelected
+    @Published var selectedWeightUnit: WeightUnit = .kg
+    @Published var selectedHeightUnit: HeightUnit = .cm
     @Published var calculatedRdi: String = ""
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
@@ -64,11 +64,11 @@ final class RdiViewModel: ObservableObject {
                 self.weight = (Double(rdiData.weight) ?? 0).asDecimal()
                 self.selectedWeightUnit = WeightUnit(
                     rawValue: rdiData.selectedWeightUnit
-                ) ?? .notSelected
+                ) ?? .kg
                 self.height = (Double(rdiData.height) ?? 0).asDecimal()
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
-                ) ?? .notSelected
+                ) ?? .cm
                 self.didLoadNonEmptyRdi = hasAnyData
             }
         } catch {
@@ -94,8 +94,8 @@ final class RdiViewModel: ObservableObject {
         height = ""
         selectedGender = .notSelected
         selectedActivity = .notSelected
-        selectedWeightUnit = .notSelected
-        selectedHeightUnit = .notSelected
+        selectedWeightUnit = .kg
+        selectedHeightUnit = .cm
     }
     
     // MARK: - Save RDI Data
@@ -215,7 +215,6 @@ final class RdiViewModel: ObservableObject {
     private func validateInputs() -> String? {
         var invalidFields: [String] = []
         var missingSelections: [String] = []
-        var missingUnits: [String] = []
         
         if !age.isValidNumericInput(in: 1...120) {
             invalidFields.append("Age")
@@ -237,14 +236,6 @@ final class RdiViewModel: ObservableObject {
             missingSelections.append("Activity Level")
         }
         
-        if selectedWeightUnit == .notSelected {
-            missingUnits.append("Weight")
-        }
-        
-        if selectedHeightUnit == .notSelected {
-            missingUnits.append("Height")
-        }
-        
         var messages: [String] = []
         
         if !invalidFields.isEmpty {
@@ -253,14 +244,6 @@ final class RdiViewModel: ObservableObject {
         
         if !missingSelections.isEmpty {
             messages.append("Select \(formatList(missingSelections)).")
-        }
-        
-        if !missingUnits.isEmpty {
-            let isPlural = missingUnits.count != 1
-            let unitMessage = isPlural
-            ? "Specify units for \(formatList(missingUnits))."
-            : "Specify unit for \(formatList(missingUnits))."
-            messages.append(unitMessage)
         }
         
         return messages.isEmpty ? nil : messages.joined(separator: "\n")
@@ -298,9 +281,7 @@ final class RdiViewModel: ObservableObject {
     func text(for calculatedRdi: String) -> String {
         guard let rdiValue = calculatedRdi.doubleValue,
               rdiValue > 0,
-              isInputValidForCalculation,
-              selectedWeightUnit != .notSelected,
-              selectedHeightUnit != .notSelected else {
+              isInputValidForCalculation else {
             return "Fill in the data"
         }
         
@@ -317,9 +298,7 @@ final class RdiViewModel: ObservableObject {
     
     func color(for calculatedRdi: String) -> Color {
         guard !calculatedRdi.isEmpty,
-              isInputValidForCalculation,
-              selectedWeightUnit != .notSelected,
-              selectedHeightUnit != .notSelected else {
+              isInputValidForCalculation else {
             return .secondary.opacity(0.5)
         }
         

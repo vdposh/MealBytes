@@ -15,7 +15,6 @@ struct AgeSection: View {
         Section {
             ServingTextFieldView(
                 text: $rdiViewModel.age,
-                placeholder: "Years old",
                 keyboardType: .numberPad,
                 inputMode: .integer,
                 maxIntegerDigits: 3
@@ -26,8 +25,6 @@ struct AgeSection: View {
                 .foregroundStyle(
                     rdiViewModel.fieldTitleColor(for: rdiViewModel.age)
                 )
-        } footer: {
-            Text("Enter full age to personalize recommendations.")
         }
     }
 }

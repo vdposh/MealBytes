@@ -19,7 +19,6 @@ struct CalorieMetricsSection: View {
             } else {
                 ServingTextFieldView(
                     text: $dailyIntakeViewModel.calories,
-                    placeholder: "Calories amount",
                     keyboardType: .numberPad,
                     inputMode: .integer,
                     maxIntegerDigits: 5
@@ -38,7 +37,7 @@ struct CalorieMetricsSection: View {
                         .titleColor(for: dailyIntakeViewModel.calories)
                 )
         } footer: {
-            Text("Set daily intake by entering calories directly or calculate it based on macronutrient distribution.")
+            Text(dailyIntakeViewModel.toggleOn ? "Calculate calories based on macronutrient distribution." : "Set daily intake by entering calories directly.")
         }
         .id(dailyIntakeViewModel.toggleOn)
     }

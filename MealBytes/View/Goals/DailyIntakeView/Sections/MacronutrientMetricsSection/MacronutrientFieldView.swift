@@ -17,7 +17,6 @@ struct MacronutrientFieldView: View {
     var body: some View {
         ServingTextFieldView(
             text: binding,
-            placeholder: "Amount in grams",
             stackText: title,
             trailingUnit: dailyIntakeViewModel
                 .unitDescription(for: binding.wrappedValue),
