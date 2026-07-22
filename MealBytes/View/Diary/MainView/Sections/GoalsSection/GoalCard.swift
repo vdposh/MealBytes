@@ -14,11 +14,11 @@ struct GoalCard: View {
     
     var body: some View {
         ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 24)
+            RoundedRectangle(cornerRadius: 26)
                 .fill(Color(.secondarySystemGroupedBackground))
             
             HStack {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading) {
                     Text(title)
                         .font(.callout)
                         .fontWeight(.semibold)
@@ -36,7 +36,8 @@ struct GoalCard: View {
                     ActivityRingView(progress: progress)
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.vertical, 14)
         }
     }
 }

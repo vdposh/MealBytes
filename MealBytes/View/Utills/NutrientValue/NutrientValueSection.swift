@@ -19,12 +19,16 @@ struct NutrientValueSection: View {
         Section {
             ForEach(nutrients) { nutrient in
                 HStack {
-                    Text(nutrient.type.title)
-                        .foregroundStyle(
-                            nutrient.isSubValue ? .secondary : .primary
-                        )
-                        .font(.callout)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(
+                        nutrient.type == .fat
+                        ? nutrient.type.alternativeTitle
+                        : nutrient.type.title
+                    )
+                    .foregroundStyle(
+                        nutrient.isSubValue ? .secondary : .primary
+                    )
+                    .font(.callout)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 5) {
                         if nutrient.type == .calories {

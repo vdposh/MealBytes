@@ -45,6 +45,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
     var alternativeTitle: String {
         switch self {
         case .carbohydrate: "Carbs"
+        case .fat: "Total Fat"
         default: title
         }
     }

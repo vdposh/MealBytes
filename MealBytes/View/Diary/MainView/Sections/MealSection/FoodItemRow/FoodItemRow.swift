@@ -53,8 +53,6 @@ struct FoodItemRow: View {
                     carbs: mealItem.carbsValue,
                     protein: mealItem.proteinValue
                 )
-                .font(.footnote)
-                .fontWeight(.medium)
             }
         }
     }

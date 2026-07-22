@@ -35,7 +35,7 @@ struct NutrientSummaryRow: View {
                 NutrientLabel(
                     image: "flame.fill",
                     value: calories,
-                    color: .customCalories
+                    fontImage: .system(size: 13)
                 )
             }
             

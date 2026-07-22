@@ -8,17 +8,35 @@
 import SwiftUI
 
 struct NutrientLabel: View {
-    var image: String
+    var label: String? = nil
+    var image: String? = nil
     var value: Double = 0
-    var color: Color = .secondary
+    var fontImage: Font = .subheadline
+    var color: Color = .customCalories
+    
+    var formattedValue: String {
+        value.asWhole()
+    }
     
     var body: some View {
-        HStack(spacing: 2.5) {
-            Image(systemName: image)
-            
-            Text(value.asWhole())
+        if let image {
+            HStack(spacing: 2.5) {
+                Image(systemName: image)
+                    .font(fontImage)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(color)
+                
+                Text(formattedValue)
+                    .font(.footnote)
+                    .fontWeight(.medium)
+                    .foregroundStyle(color)
+            }
+        } else if let label {
+            Text("\(label) \(formattedValue) g")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.trailing, 5)
         }
-        .foregroundStyle(color)
     }
 }
 

@@ -17,6 +17,7 @@ struct MainView: View {
             .navigationTitle("Diary")
             .navigationSubtitle(mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.inlineLarge)
+            .safeAreaPadding(.top)
             .toolbar {
                 mainViewToolbar
             }

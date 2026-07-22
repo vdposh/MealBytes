@@ -28,12 +28,10 @@ struct MealHeaderView: View {
     
     var body: some View {
         Section {
-            foodItemsList
             addFood
+            foodItemsList
         } header: {
             headerContent
-        } footer: {
-            footerContent
         }
         .transaction { $0.animation = nil }
         .alert(
@@ -44,7 +42,7 @@ struct MealHeaderView: View {
         )
     }
     
-    // MARK: - Meal Header
+    // MARK: - Add Food
     @ViewBuilder
     private var addFood: some View {
         let isExpanded = mainViewModel.isExpanded(for: mealType)
@@ -71,7 +69,6 @@ struct MealHeaderView: View {
     private var addText: some View {
         Text("Add Food")
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.trailing, 50)
             .overlay(alignment: .trailing) {
                 if mainViewModel.hasItems(for: mealType) {
                     Menu {
@@ -150,13 +147,29 @@ struct MealHeaderView: View {
                 mainViewModel.expandedSections[mealType]?.toggle()
             }
         } label: {
-            HStack {
-                MealTypeText(
-                    mealType: mealType,
-                    title: title,
-                    font: .title3,
-                    fontWeight: .semibold
-                )
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading) {
+                    MealTypeText(
+                        mealType: mealType,
+                        title: title,
+                        font: .title3,
+                        fontWeight: .semibold
+                    )
+                    
+                    if mainViewModel.hasItems(for: mealType) {
+                        let nutrients = mainViewModel.totalNutrients(
+                            for: mealType
+                        )
+                        
+                        NutrientSummaryRow(
+                            mainViewModel: mainViewModel,
+                            calories: calories,
+                            fat: nutrients.fat,
+                            carbs: nutrients.carbs,
+                            protein: nutrients.protein
+                        )
+                    }
+                }
                 
                 if mainViewModel.hasItems(for: mealType) {
                     Image(systemName: "chevron.right")
@@ -182,25 +195,6 @@ struct MealHeaderView: View {
         .disabled(!mainViewModel.hasItems(for: mealType))
         .listRowInsets(.all, 0)
         .buttonStyle(ButtonStyleInvisible())
-    }
-    
-    @ViewBuilder
-    private var footerContent: some View {
-        if mainViewModel.hasItems(for: mealType) {
-            let nutrients = mainViewModel.totalNutrients(for: mealType)
-            
-            NutrientSummaryRow(
-                mainViewModel: mainViewModel,
-                calories: calories,
-                fat: nutrients.fat,
-                carbs: nutrients.carbs,
-                protein: nutrients.protein
-            )
-            .fontWeight(.medium)
-            .padding(.bottom)
-        } else {
-            EmptyView()
-        }
     }
 }
 
