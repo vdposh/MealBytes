@@ -38,11 +38,17 @@ struct MainView: View {
     private var mainViewContentBody: some View {
         Form {
             goalsSection
-            mealSections
-            detailedInformationSection
+            mealSection
+            nutrientTotalsButtonView
         }
         .sheet(item: $selectedMealItemForMove) { item in
             MoveMealSheet(mainViewModel: mainViewModel, mealItem: item)
+        }
+        .sheet(isPresented: $mainViewModel.showNutrientTotals) {
+            NutrientTotalsSheet(
+                isPresented: $mainViewModel.showNutrientTotals,
+                nutrients: mainViewModel.filteredNutrientValues
+            )
         }
         .navigationDestination(
             item: $mainViewModel.selectedMealType
@@ -61,7 +67,7 @@ struct MainView: View {
         GoalsSection(mainViewModel: mainViewModel)
     }
     
-    private var mealSections: some View {
+    private var mealSection: some View {
         ForEach(MealType.allCases, id: \.self) { mealType in
             MealSectionView(
                 selectedMealItemForMove: $selectedMealItemForMove,
@@ -71,26 +77,21 @@ struct MainView: View {
         }
     }
     
-    private var detailedInformationSection: some View {
-        if mainViewModel.hasMealItems {
-            NutrientValueSection(
-                nutrients: mainViewModel.filteredNutrientValues,
-                isExpandable: $mainViewModel.isExpanded,
-                macroDistribution: mainViewModel
-                    .macroDistribution(from: mainViewModel.nutrientSummaries),
-                intake: mainViewModel
-                    .canDisplayIntake() ? mainViewModel.currentIntake : nil,
-                intakePercentage: mainViewModel.canDisplayIntake()
-                ? mainViewModel.totalIntakePercentage()
-                : nil
-            )
-        } else {
-            NutrientValueSection(
-                nutrients: NutrientValueProvider().placeholderMacros(),
-                isExpandable: nil,
-                emptyMealItems: true
-            )
+    private var nutrientTotalsButtonView: some View {
+        Button {
+            mainViewModel.showNutrientTotals = true
+        } label: {
+            Text("Nutrient Totals")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .overlay(alignment: .leading) {
+                    Image(systemName: "text.rectangle.page")
+                        .imageScale(.large)
+                        .fontWeight(.semibold)
+                    
+                }
         }
+        .listRowBackground(Color.accent.opacity(0.1))
     }
     
     @ToolbarContentBuilder

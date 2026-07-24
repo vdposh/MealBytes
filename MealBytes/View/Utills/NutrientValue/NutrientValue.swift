@@ -29,14 +29,10 @@ struct NutrientValue: Identifiable {
     }
     
     var formattedValue: String {
-        if type == .calories {
-            return value.asWhole()
-        } else {
-            return value.asDecimal(unit: unit.description(for: value))
-        }
+        value.asWhole(unit: unit.unitDescription(for: value))
     }
     
-    var formattedValueOrDash: String {
-        value == 0 ? "-" : formattedValue
+    var displayTitle: String {
+        [.fat, .carbohydrate].contains(type) ? type.longTitle : type.title
     }
 }

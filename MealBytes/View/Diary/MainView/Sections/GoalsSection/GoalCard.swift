@@ -18,7 +18,7 @@ struct GoalCard: View {
                 .fill(Color(.secondarySystemGroupedBackground))
             
             HStack {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
                     Text(title)
                         .font(.callout)
                         .fontWeight(.semibold)

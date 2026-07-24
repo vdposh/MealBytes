@@ -322,7 +322,7 @@ final class FoodViewModel: ObservableObject {
         if serving.isMetricMeasurement {
             if description == "g" {
                 let unit = UnitNutrients(rawValue: "g") ?? .g
-                return unit.description(for: 0, full: true)
+                return unit.unitDescription(for: 0, full: true)
             }
             return description
         }
@@ -415,11 +415,12 @@ final class FoodViewModel: ObservableObject {
         }
         
         if serving.measurementDescription.lowercased() == "g" {
-            return UnitNutrients.g.description(for: scaledAmount, full: true)
+            return UnitNutrients.g
+                .unitDescription(for: scaledAmount, full: true)
         }
         
         return scaledAmount
-            .asDecimal(unit: unit.description(for: scaledAmount))
+            .asDecimal(unit: unit.unitDescription(for: scaledAmount))
     }
     
     // MARK: - Keyboard

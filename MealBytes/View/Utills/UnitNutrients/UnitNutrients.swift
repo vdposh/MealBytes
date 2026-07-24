@@ -12,10 +12,11 @@ enum UnitNutrients: String {
     case kcal
     case g
     case mg
+    case mcg
     case ml
     case oz
     
-    func description(for value: Double, full: Bool = false) -> String {
+    func unitDescription(for value: Double, full: Bool = false) -> String {
         let isSingular = abs(value) == 1
         switch self {
         case .empty:
@@ -26,6 +27,8 @@ enum UnitNutrients: String {
             return full ? "gram" + (isSingular ? "" : "s") : "g"
         case .mg:
             return full ? "milligram" + (isSingular ? "" : "s") : "mg"
+        case .mcg:
+            return full ? "microgram" + (isSingular ? "" : "s") : "mcg"
         case .ml:
             return full ? "milliliter" + (isSingular ? "" : "s") : "ml"
         case .oz:

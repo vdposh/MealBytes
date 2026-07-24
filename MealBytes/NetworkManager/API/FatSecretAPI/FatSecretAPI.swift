@@ -16,7 +16,7 @@ extension FatSecretAPI: TargetType {
     var path: String {
         switch self {
         case .searchFoods: "/foods/search/v1"
-        case .getFoodDetails: "/food/v4"
+        case .getFoodDetails: "/food/v5"
         }
     }
     

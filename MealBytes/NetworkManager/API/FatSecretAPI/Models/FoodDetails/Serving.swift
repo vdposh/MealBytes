@@ -8,17 +8,22 @@
 import SwiftUI
 
 struct Serving: Decodable, Hashable {
+    let calories: Double
     let fat: Double
     let saturatedFat: Double
-    let monounsaturatedFat: Double
+    let transFat: Double
     let polyunsaturatedFat: Double
-    let carbohydrate: Double
-    let sugar: Double
-    let fiber: Double
-    let protein: Double
-    let calories: Double
-    let sodium: Double
+    let monounsaturatedFat: Double
     let cholesterol: Double
+    let sodium: Double
+    let carbohydrate: Double
+    let fiber: Double
+    let sugar: Double
+    let addedSugars: Double
+    let protein: Double
+    let vitaminD: Double
+    let calcium: Double
+    let iron: Double
     let potassium: Double
     let measurementDescription: String
     let metricServingAmount: Double
@@ -53,17 +58,22 @@ struct Serving: Decodable, Hashable {
             return Double(stringValue) ?? 0
         }
         
+        calories = decodeDouble(forKey: .calories)
         fat = decodeDouble(forKey: .fat)
         saturatedFat = decodeDouble(forKey: .saturatedFat)
-        monounsaturatedFat = decodeDouble(forKey: .monounsaturatedFat)
+        transFat = decodeDouble(forKey: .transFat)
         polyunsaturatedFat = decodeDouble(forKey: .polyunsaturatedFat)
-        carbohydrate = decodeDouble(forKey: .carbohydrate)
-        sugar = decodeDouble(forKey: .sugar)
-        fiber = decodeDouble(forKey: .fiber)
-        protein = decodeDouble(forKey: .protein)
-        calories = decodeDouble(forKey: .calories)
-        sodium = decodeDouble(forKey: .sodium)
+        monounsaturatedFat = decodeDouble(forKey: .monounsaturatedFat)
         cholesterol = decodeDouble(forKey: .cholesterol)
+        sodium = decodeDouble(forKey: .sodium)
+        carbohydrate = decodeDouble(forKey: .carbohydrate)
+        fiber = decodeDouble(forKey: .fiber)
+        sugar = decodeDouble(forKey: .sugar)
+        addedSugars = decodeDouble(forKey: .addedSugars)
+        protein = decodeDouble(forKey: .protein)
+        vitaminD = decodeDouble(forKey: .vitaminD)
+        calcium = decodeDouble(forKey: .calcium)
+        iron = decodeDouble(forKey: .iron)
         potassium = decodeDouble(forKey: .potassium)
         
         metricServingAmount = decodeDouble(forKey: .metricServingAmount)
@@ -72,21 +82,26 @@ struct Serving: Decodable, Hashable {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case fat,
-             saturatedFat = "saturated_fat",
-             monounsaturatedFat = "monounsaturated_fat",
-             polyunsaturatedFat = "polyunsaturated_fat",
-             carbohydrate,
-             sugar,
-             fiber,
-             protein,
-             calories,
-             sodium,
-             cholesterol,
-             potassium,
-             measurementDescription = "measurement_description",
-             metricServingAmount = "metric_serving_amount",
-             metricServingUnit = "metric_serving_unit"
+        case calories
+        case fat
+        case saturatedFat = "saturated_fat"
+        case transFat = "trans_fat"
+        case polyunsaturatedFat = "polyunsaturated_fat"
+        case monounsaturatedFat = "monounsaturated_fat"
+        case cholesterol
+        case sodium
+        case carbohydrate
+        case fiber
+        case sugar
+        case addedSugars = "added_sugars"
+        case protein
+        case vitaminD = "vitamin_d"
+        case calcium
+        case iron
+        case potassium
+        case measurementDescription = "measurement_description"
+        case metricServingAmount = "metric_serving_amount"
+        case metricServingUnit = "metric_serving_unit"
     }
     
     private enum MeasurementType: String {

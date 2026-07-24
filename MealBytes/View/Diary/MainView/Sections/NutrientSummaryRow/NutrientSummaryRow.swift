@@ -30,12 +30,12 @@ struct NutrientSummaryRow: View {
     }
     
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             if let calories {
                 NutrientLabel(
                     image: "flame.fill",
                     value: calories,
-                    fontImage: .system(size: 13)
+                    fontImage: .system(size: 12)
                 )
             }
             

@@ -95,7 +95,7 @@ struct FoodView: View {
                 Form {
                     servingSizeSection
                     nutrientActionSection
-                    detailedInformationSection
+                    nutritionFactsSection
                 }
                 .listSectionSpacing(15)
             }
@@ -263,17 +263,15 @@ struct FoodView: View {
         .listRowSeparator(.hidden)
     }
     
-    private var detailedInformationSection: some View {
-        NutrientValueSection(
-            nutrients: foodViewModel.nutrientValues,
-            isExpandable: nil,
-            intakePercentage: foodViewModel.mainViewModel.canDisplayIntake()
-            ? foodViewModel.mainViewModel.intakePercentage(
-                for: foodViewModel.nutrientValues
-                    .first(where: { $0.type == .calories })?.value ?? 0
+    private var nutritionFactsSection: some View {
+        Section {
+            NutrientValueSection(
+                nutrients: foodViewModel.nutrientValues,
+                isFoodView: true
             )
-            : nil
-        )
+        } header: {
+            Text("Nutrition Facts")
+        }
     }
     
     private var navigationTitleText: String {

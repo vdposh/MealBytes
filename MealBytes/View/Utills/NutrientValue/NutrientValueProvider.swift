@@ -13,18 +13,23 @@ struct NutrientValueProvider {
             let value: Double?
             switch type {
             case .calories: value = serving.calories
-            case .servingSize: value = serving.metricServingAmount
             case .fat: value = serving.fat
             case .saturatedFat: value = serving.saturatedFat
-            case .monounsaturatedFat: value = serving.monounsaturatedFat
+            case .transFat: value = serving.transFat
             case .polyunsaturatedFat: value = serving.polyunsaturatedFat
-            case .carbohydrate: value = serving.carbohydrate
-            case .sugar: value = serving.sugar
-            case .fiber: value = serving.fiber
-            case .protein: value = serving.protein
-            case .potassium: value = serving.potassium
-            case .sodium: value = serving.sodium
+            case .monounsaturatedFat: value = serving.monounsaturatedFat
             case .cholesterol: value = serving.cholesterol
+            case .sodium: value = serving.sodium
+            case .carbohydrate: value = serving.carbohydrate
+            case .fiber: value = serving.fiber
+            case .sugar: value = serving.sugar
+            case .addedSugars: value = serving.addedSugars
+            case .protein: value = serving.protein
+            case .vitaminD: value = serving.vitaminD
+            case .calcium: value = serving.calcium
+            case .iron: value = serving.iron
+            case .potassium: value = serving.potassium
+            case .servingSize: value = serving.metricServingAmount
             }
             
             let unit = UnitNutrients(
@@ -56,17 +61,6 @@ struct NutrientValueProvider {
                     unit: unit
                 )
             }
-    }
-    
-    func placeholderMacros() -> [NutrientValue] {
-        [.calories, .fat, .carbohydrate, .protein].map { type in
-            NutrientValue(
-                type: type,
-                value: nil,
-                isSubValue: false,
-                unit: .empty
-            )
-        }
     }
 }
 

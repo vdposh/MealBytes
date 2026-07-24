@@ -20,7 +20,7 @@ struct NutrientLabel: View {
     
     var body: some View {
         if let image {
-            HStack(spacing: 2.5) {
+            HStack(spacing: 4) {
                 Image(systemName: image)
                     .font(fontImage)
                     .symbolRenderingMode(.hierarchical)

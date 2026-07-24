@@ -52,6 +52,7 @@ final class MainViewModel: ObservableObject {
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
+    @Published var showNutrientTotals: Bool = false
     @Published var showClearDayAlert: Bool = false
     @Published var showClearMealTypeAlert: Bool = false
     @Published var isExpanded: Bool = false
@@ -522,14 +523,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Filtered Nutrients
     var filteredNutrientValues: [NutrientValue] {
-        let all = NutrientValueProvider()
-            .fromSummary(nutrientSummaries)
-        
-        return isExpanded
-        ? all
-        : all.filter {
-            [.calories, .fat, .protein, .carbohydrate].contains($0.type)
-        }
+        NutrientValueProvider().fromSummary(nutrientSummaries)
     }
     
     // MARK: - Format Serving Size

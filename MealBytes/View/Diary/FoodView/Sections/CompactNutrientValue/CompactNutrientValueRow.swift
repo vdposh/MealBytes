@@ -13,10 +13,14 @@ struct CompactNutrientValueRow: View {
     
     var body: some View {
         VStack {
-            Text(nutrient.type.alternativeTitle)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundStyle(.secondary)
+            Text(
+                nutrient.type == .fat
+                ? nutrient.type.title
+                : nutrient.type.alternativeTitle
+            )
+            .font(.subheadline)
+            .fontWeight(.medium)
+            .foregroundStyle(.secondary)
             
             Text(nutrient.formattedCompactNutrientValue)
                 .fontWeight(.medium)

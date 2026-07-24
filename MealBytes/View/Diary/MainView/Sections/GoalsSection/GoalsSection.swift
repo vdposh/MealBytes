@@ -37,35 +37,40 @@ struct GoalsSection: View {
     private var calorieCard: some View {
         GoalCard(
             title: NutrientType.calories.title,
-            value: mainViewModel.totalCalories().asWhole(unit: "cal"),
+            value: mainViewModel
+                .totalCalories()
+                .asWhole(unit: NutrientType.calories.unit),
             progress: mainViewModel
                 .canDisplayIntake() ? mainViewModel.intakeProgress : nil
         )
     }
     
     private var fatCard: some View {
-        let nutrients = mainViewModel.totalNutrients()
         return GoalCard(
             title: NutrientType.fat.title,
-            value: nutrients.fat.asWhole(unit: "g"),
+            value: mainViewModel
+                .totalNutrients().fat
+                .asWhole(unit: NutrientType.fat.unit),
             progress: nil
         )
     }
     
     private var carbsCard: some View {
-        let nutrients = mainViewModel.totalNutrients()
         return GoalCard(
             title: NutrientType.carbohydrate.alternativeTitle,
-            value: nutrients.carbs.asWhole(unit: "g"),
+            value: mainViewModel
+                .totalNutrients().carbs
+                .asWhole(unit: NutrientType.carbohydrate.unit),
             progress: nil
         )
     }
     
     private var proteinCard: some View {
-        let nutrients = mainViewModel.totalNutrients()
         return GoalCard(
             title: NutrientType.protein.title,
-            value: nutrients.protein.asWhole(unit: "g"),
+            value: mainViewModel
+                .totalNutrients().protein
+                .asWhole(unit: NutrientType.protein.unit),
             progress: nil
         )
     }
