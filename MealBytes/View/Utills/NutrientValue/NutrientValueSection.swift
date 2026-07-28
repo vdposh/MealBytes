@@ -21,6 +21,7 @@ struct NutrientValueSection: View {
             ) && !isFoodView
             let isNutrientTotalsCalories = nutrient.type == .calories &&
             !isFoodView
+            let isLastElement = index == nutrients.count - 1 && isFoodView
             
             VStack(spacing: 0) {
                 nutrientRow(for: nutrient)
@@ -30,11 +31,11 @@ struct NutrientValueSection: View {
                 if isNutrientTotals {
                     Rectangle()
                         .frame(height: 4)
-                        .foregroundStyle(Color(.systemGray5))
+                        .foregroundStyle(Color(.systemGray3))
                 }
             }
             .listRowSeparator(
-                isNutrientTotals ? .hidden : .visible,
+                isNutrientTotals || isLastElement ? .hidden : .visible,
                 edges: .bottom
             )
             

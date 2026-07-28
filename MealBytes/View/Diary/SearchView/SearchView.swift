@@ -144,7 +144,7 @@ struct SearchView: View {
                         : "bookmark"
                     )
                 }
-                .tint(.customOrangeSwipe)
+                .tint(.accent)
             }
         }
     }

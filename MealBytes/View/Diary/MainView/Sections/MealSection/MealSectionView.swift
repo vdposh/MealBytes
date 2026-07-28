@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MealSectionView: View {
-    @Binding var selectedMealItemForMove: MealItem?
     @ObservedObject var mainViewModel: MainViewModel
     
     let mealType: MealType
@@ -17,7 +16,6 @@ struct MealSectionView: View {
         let nutrients = mainViewModel.totalNutrients(for: mealType)
         
         MealHeaderView(
-            selectedMealItemForMove: $selectedMealItemForMove,
             mainViewModel: mainViewModel,
             mealType: mealType,
             title: mealType.rawValue,

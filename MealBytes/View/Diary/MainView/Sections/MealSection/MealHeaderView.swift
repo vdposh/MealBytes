@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MealHeaderView: View {
-    @Binding var selectedMealItemForMove: MealItem?
     @ObservedObject var mainViewModel: MainViewModel
     
     let mealType: MealType
@@ -126,14 +125,6 @@ struct MealHeaderView: View {
                     } label: {
                         Image(systemName: "trash")
                     }
-                    .tint(.customRed)
-                    
-                    Button {
-                        selectedMealItemForMove = item
-                    } label: {
-                        Image(systemName: "fork.knife")
-                    }
-                    .tint(.accent)
                 }
             }
         }

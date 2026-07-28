@@ -9,7 +9,6 @@ import SwiftUI
 import FirebaseCore
 
 struct MainView: View {
-    @State private var selectedMealItemForMove: MealItem?
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
@@ -41,9 +40,6 @@ struct MainView: View {
             mealSection
             nutrientTotalsButtonView
         }
-        .sheet(item: $selectedMealItemForMove) { item in
-            MoveMealSheet(mainViewModel: mainViewModel, mealItem: item)
-        }
         .sheet(isPresented: $mainViewModel.showNutrientTotals) {
             NutrientTotalsSheet(
                 isPresented: $mainViewModel.showNutrientTotals,
@@ -70,7 +66,6 @@ struct MainView: View {
     private var mealSection: some View {
         ForEach(MealType.allCases, id: \.self) { mealType in
             MealSectionView(
-                selectedMealItemForMove: $selectedMealItemForMove,
                 mainViewModel: mainViewModel,
                 mealType: mealType
             )
@@ -91,7 +86,7 @@ struct MainView: View {
                     
                 }
         }
-        .listRowBackground(Color.accent.opacity(0.1))
+        .listRowBackground(Color.accent.opacity(0.2))
     }
     
     @ToolbarContentBuilder

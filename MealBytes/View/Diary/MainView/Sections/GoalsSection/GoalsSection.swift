@@ -17,6 +17,7 @@ struct GoalsSection: View {
                     calorieCard
                     fatCard
                 }
+                
                 HStack(spacing: 10) {
                     carbsCard
                     proteinCard
