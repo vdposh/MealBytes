@@ -8,24 +8,47 @@
 import SwiftUI
 
 struct NutrientTotalsSheet: View {
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     let nutrients: [NutrientValue]
+    let hasMealItems: Bool
     
     var body: some View {
         NavigationStack {
-            Form {
-                NutrientValueSection(nutrients: nutrients)
-            }
-            .navigationTitle("Nutrient Totals")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(role: .cancel) {
-                        isPresented = false
+            if hasMealItems {
+                Form {
+                    NutrientValueSection(nutrients: nutrients)
+                }
+                .environment(\.defaultMinListRowHeight, 42)
+                .navigationTitle("Nutrient Totals")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(role: .cancel) {
+                            dismiss()
+                        }
+                    }
+                }
+            } else {
+                ContentUnavailableView {
+                    Label {
+                        Text("Nothing logged yet")
+                    } icon: {
+                        Image(systemName: "text.rectangle.page")
+                    }
+                } description: {
+                    Text("Add some food to view nutrient totals.")
+                }
+                .listRowBackground(Color.clear)
+                .navigationTitle("Nutrient Totals")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(role: .cancel) {
+                            dismiss()
+                        }
                     }
                 }
             }
-            .environment(\.defaultMinListRowHeight, 42)
         }
     }
 }

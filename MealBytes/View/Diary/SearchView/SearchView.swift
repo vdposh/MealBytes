@@ -137,12 +137,21 @@ struct SearchView: View {
                             .toggleBookmarkSearchView(for: food)
                     }
                 } label: {
-                    Image(
-                        systemName: searchViewModel
-                            .isBookmarkedSearchView(food)
-                        ? "bookmark.slash"
-                        : "bookmark"
-                    )
+                    Label {
+                        Text(
+                            searchViewModel
+                                .isBookmarkedSearchView(food)
+                            ? "Remove bookmark"
+                            : "Add bookmark"
+                        )
+                    } icon: {
+                        Image(
+                            systemName: searchViewModel
+                                .isBookmarkedSearchView(food)
+                            ? "bookmark.slash"
+                            : "bookmark"
+                        )
+                    }
                 }
                 .tint(.accent)
             }
@@ -179,10 +188,7 @@ struct SearchView: View {
     
     private var searchableModifier: some View {
         return EmptyView()
-            .searchable(
-                text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always)
-            )
+            .searchable(text: $searchViewModel.query)
             .disabled(searchViewModel.isEditModeActive)
     }
     

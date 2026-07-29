@@ -122,8 +122,6 @@ struct MealHeaderView: View {
                             with: item.id,
                             for: mealType
                         )
-                    } label: {
-                        Image(systemName: "trash")
                     }
                 }
             }

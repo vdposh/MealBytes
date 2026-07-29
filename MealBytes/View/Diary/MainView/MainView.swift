@@ -42,8 +42,8 @@ struct MainView: View {
         }
         .sheet(isPresented: $mainViewModel.showNutrientTotals) {
             NutrientTotalsSheet(
-                isPresented: $mainViewModel.showNutrientTotals,
-                nutrients: mainViewModel.filteredNutrientValues
+                nutrients: mainViewModel.filteredNutrientValues,
+                hasMealItems: mainViewModel.hasMealItems
             )
         }
         .navigationDestination(
