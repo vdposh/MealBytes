@@ -13,18 +13,18 @@ struct FoodDetailView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
-//        HStack(spacing: 15) {
-//            if !isEditing {
-//                ZStack {
-//                    if searchViewModel.isBookmarkedSearchView(food) {
-//                        Image(systemName: "bookmark.fill")
-//                            .imageScale(.small)
-//                            .foregroundStyle(.accent)
-//                            .symbolColorRenderingMode(.gradient)
-//                    }
-//                }
-//                .frame(width: 5)
-//            }
+        HStack(spacing: 15) {
+            if !isEditing {
+                ZStack {
+                    if searchViewModel.isBookmarkedSearchView(food) {
+                        Image(systemName: "bookmark.fill")
+                            .imageScale(.small)
+                            .foregroundStyle(.accent)
+                            .symbolColorRenderingMode(.gradient)
+                    }
+                }
+                .frame(width: 5)
+            }
             
             if let nutrients = food.parsedNutrients {
                 FoodItemView(
@@ -36,8 +36,7 @@ struct FoodDetailView: View {
                     protein: nutrients.protein
                 )
             }
-//        }
-//        .padding(.vertical, 4)
+        }
     }
 }
 

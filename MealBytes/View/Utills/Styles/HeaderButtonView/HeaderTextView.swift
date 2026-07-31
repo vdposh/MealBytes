@@ -1,5 +1,5 @@
 //
-//  MealTypeText.swift
+//  HeaderTextView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 06.05.2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MealTypeText: View {
+struct HeaderTextView: View {
     let mealType: MealType
     var title: String?
     

@@ -131,53 +131,19 @@ struct MealHeaderView: View {
     // MARK: - Header
     @ViewBuilder
     private var headerContent: some View {
-        Button {
-            withAnimation {
-                mainViewModel.expandedSections[mealType]?.toggle()
-            }
-        } label: {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading) {
-                    MealTypeText(mealType: mealType, title: title)
-                    
-                    if mainViewModel.hasItems(for: mealType) {
-                        let nutrients = mainViewModel.totalNutrients(
-                            for: mealType
-                        )
-                        
-                        NutrientSummaryView(
-                            calories: calories,
-                            fat: nutrients.fat,
-                            carbs: nutrients.carbs,
-                            protein: nutrients.protein
-                        )
-                    }
-                }
-                
-                if mainViewModel.hasItems(for: mealType) {
-                    Image(systemName: "chevron.right")
-                        .font(.footnote)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.accent)
-                        .rotationEffect(
-                            .degrees(
-                                mainViewModel
-                                    .isExpanded(for: mealType) ? 90 : 0
-                            )
-                        )
-                        .animation(
-                            .default,
-                            value: mainViewModel.isExpanded(for: mealType)
-                        )
-                }
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
+        HeaderButtonView(
+            mealType: mealType,
+            title: title,
+            calories: calories,
+            fat: fat,
+            carbs: carbohydrate,
+            protein: protein,
+            hasItems: mainViewModel.hasItems(for: mealType),
+            isExpanded: mainViewModel.isExpanded(for: mealType),
+            showNutrients: true
+        ) {
+            mainViewModel.expandedSections[mealType]?.toggle()
         }
-        .disabled(!mainViewModel.hasItems(for: mealType))
-        .listRowInsets(.all, 0)
-        .buttonStyle(ButtonStyleInvisible())
     }
 }
 

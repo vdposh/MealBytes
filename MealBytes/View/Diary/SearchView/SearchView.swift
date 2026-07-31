@@ -173,7 +173,11 @@ struct SearchView: View {
                         )
                     }
                 }
-                .tint(.accent)
+                .tint(
+                    searchViewModel.isBookmarkedSearchView(food)
+                    ? (searchViewModel.query.isEmpty ? .red : .accent)
+                    : .accent
+                )
             }
         }
     }

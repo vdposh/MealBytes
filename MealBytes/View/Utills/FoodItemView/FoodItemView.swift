@@ -14,6 +14,7 @@ struct FoodItemView: View {
     let fat: Double
     let carbs: Double
     let protein: Double
+    let isBookmarked: Bool
     
     init(
         foodName: String,
@@ -21,7 +22,8 @@ struct FoodItemView: View {
         calories: Double? = nil,
         fat: Double,
         carbs: Double,
-        protein: Double
+        protein: Double,
+        isBookmarked: Bool = false
     ) {
         self.foodName = foodName
         self.formattedText = formattedText
@@ -29,13 +31,16 @@ struct FoodItemView: View {
         self.fat = fat
         self.carbs = carbs
         self.protein = protein
+        self.isBookmarked = isBookmarked
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(foodName)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+            HStack(spacing: 4) {
+                Text(foodName)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+            }
             
             Text(formattedText)
                 .font(.subheadline)
