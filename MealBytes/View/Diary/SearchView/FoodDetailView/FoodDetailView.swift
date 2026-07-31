@@ -13,30 +13,31 @@ struct FoodDetailView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     
     var body: some View {
-        HStack(spacing: 15) {
-            if !isEditing {
-                ZStack {
-                    if searchViewModel.isBookmarkedSearchView(food) {
-                        Image(systemName: "bookmark.fill")
-                            .imageScale(.small)
-                            .foregroundStyle(.accent)
-                            .symbolColorRenderingMode(.gradient)
-                    }
-                }
-                .frame(width: 5)
-            }
+//        HStack(spacing: 15) {
+//            if !isEditing {
+//                ZStack {
+//                    if searchViewModel.isBookmarkedSearchView(food) {
+//                        Image(systemName: "bookmark.fill")
+//                            .imageScale(.small)
+//                            .foregroundStyle(.accent)
+//                            .symbolColorRenderingMode(.gradient)
+//                    }
+//                }
+//                .frame(width: 5)
+//            }
             
-            VStack(alignment: .leading, spacing: 8) {
-                Text(food.searchFoodName)
-                
-                if let parsedDescription = food.parsedDescription {
-                    Text(parsedDescription)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+            if let nutrients = food.parsedNutrients {
+                FoodItemView(
+                    foodName: food.searchFoodName,
+                    formattedText: nutrients.description,
+                    calories: nutrients.calories,
+                    fat: nutrients.fat,
+                    carbs: nutrients.carbs,
+                    protein: nutrients.protein
+                )
             }
-        }
-        .padding(.vertical, 4)
+//        }
+//        .padding(.vertical, 4)
     }
 }
 

@@ -42,9 +42,14 @@ struct Food: Codable, Identifiable, Hashable {
         )
     }
     
-    var parsedDescription: String? {
-        FoodDescriptionFormatter
-            .normalizedDescription(from: searchFoodDescription)
+    var parsedNutrients: (
+        description: String,
+        calories: Double,
+        fat: Double,
+        carbs: Double,
+        protein: Double)? {
+            FoodDescriptionFormatter
+                .normalizedDescription(from: searchFoodDescription)
     }
     
     private enum CodingKeys: String, CodingKey {

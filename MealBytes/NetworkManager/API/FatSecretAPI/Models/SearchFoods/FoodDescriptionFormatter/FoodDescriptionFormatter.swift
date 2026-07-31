@@ -8,64 +8,113 @@
 import SwiftUI
 
 struct FoodDescriptionFormatter {
-    static func normalizedDescription(from raw: String) -> String {
-        let components = raw.split(
-            separator: "|",
-            maxSplits: 1,
-            omittingEmptySubsequences: true
-        )
+    static func normalizedDescription(
+        from raw: String
+    ) -> (
+        description: String,
+        calories: Double,
+        fat: Double,
+        carbs: Double,
+        protein: Double
+    )? {
         
-        guard let firstPart = components.first else { return raw }
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        let trimmed = firstPart.trimmingCharacters(in: .whitespacesAndNewlines)
-        let spaced = trimmed.replacingOccurrences(
-            of: #"(?<=\d)(?=[a-zA-Z])"#,
-            with: " ",
-            options: .regularExpression
-        )
-        let gramRegex = try? NSRegularExpression(
-            pattern: #"(\d+(?:\.\d+)?)\s*g"#,
-            options: .caseInsensitive
-        )
-        let kcalRegex = try? NSRegularExpression(
-            pattern: #"(\d+(?:\.\d+)?)\s*kcal"#,
-            options: .caseInsensitive
-        )
+        var description = trimmed
+        description = description.replacingOccurrences(of: "Per ", with: "")
         
-        func extractDouble(
-            from match: NSTextCheckingResult?,
-            in string: String,
-            group: Int
-        ) -> Double? {
-            guard
-                let match = match,
-                let range = Range(match.range(at: group), in: string)
-            else { return nil }
+        if let range = description.range(of: " - ") {
+            description = String(description[..<range.lowerBound])
+        } else if let range = description.range(of: " | ") {
+            description = String(description[..<range.lowerBound])
+        }
+        
+        description = description.trimmingCharacters(in: .whitespaces)
+        
+        let hasGramsInPer: Bool = {
+            let lowercased = trimmed.lowercased()
+            guard let perRange = lowercased.range(of: "per ") else {
+                return false
+            }
+            let afterPer = String(lowercased[perRange.upperBound...])
             
-            return Double(string[range])
+            let digits = "0123456789."
+            var numberString = ""
+            var foundDigit = false
+            
+            for char in afterPer {
+                if digits.contains(char) {
+                    numberString.append(char)
+                    foundDigit = true
+                } else if foundDigit {
+                    break
+                }
+            }
+            
+            guard let _ = Double(numberString) else { return false }
+            
+            let afterNumber = afterPer.replacingOccurrences(
+                of: numberString,
+                with: ""
+            )
+            let trimmedAfterNumber = afterNumber.trimmingCharacters(
+                in: .whitespaces
+            )
+            
+            return trimmedAfterNumber.hasPrefix("g")
+        }()
+        
+        func extractValue(for key: String, in text: String) -> Double {
+            let lowercased = text.lowercased()
+            let searchKey = key.lowercased()
+            
+            guard let range = lowercased.range(of: searchKey) else {
+                return 0
+            }
+            
+            let afterKey = String(text[range.upperBound...])
+            
+            let digits = "0123456789."
+            var numberString = ""
+            var foundDigit = false
+            
+            for char in afterKey {
+                if digits.contains(char) {
+                    numberString.append(char)
+                    foundDigit = true
+                } else if foundDigit {
+                    break
+                }
+            }
+            
+            return Double(numberString) ?? 0
         }
         
-        let gramMatch = gramRegex?.firstMatch(
-            in: spaced,
-            range: NSRange(spaced.startIndex..., in: spaced)
-        )
-        let kcalMatch = kcalRegex?.firstMatch(
-            in: spaced,
-            range: NSRange(spaced.startIndex..., in: spaced)
-        )
+        let kcal = extractValue(for: "Calories", in: trimmed)
+        let grams = extractValue(for: "Per", in: trimmed)
+        let fat = extractValue(for: "Fat", in: trimmed)
+        let carbs = extractValue(for: "Carbs", in: trimmed)
+        let protein = extractValue(for: "Protein", in: trimmed)
         
-        guard
-            let grams = extractDouble(from: gramMatch, in: spaced, group: 1),
-            let kcal = extractDouble(from: kcalMatch, in: spaced, group: 1),
-            grams > 0
-        else {
-            return spaced
+        if hasGramsInPer && grams > 0 {
+            let kcalPer100 = kcal / grams * 100
+            let fatPer100 = fat / grams * 100
+            let carbsPer100 = carbs / grams * 100
+            let proteinPer100 = protein / grams * 100
+            
+            return (
+                "100 g",
+                kcalPer100,
+                fatPer100,
+                carbsPer100,
+                proteinPer100
+            )
         }
         
-        let kcalPerServing = (kcal / grams * 100)
-        let formattedKcal = kcalPerServing.asWhole()
-        let kcalLabel = kcalPerServing == 1 ? "calorie" : "calories"
-        
-        return "Per 100 grams - \(formattedKcal) \(kcalLabel)"
+        return (description, kcal, fat, carbs, protein)
     }
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

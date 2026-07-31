@@ -145,8 +145,7 @@ struct MealHeaderView: View {
                             for: mealType
                         )
                         
-                        NutrientSummaryRow(
-                            mainViewModel: mainViewModel,
+                        NutrientSummaryView(
                             calories: calories,
                             fat: nutrients.fat,
                             carbs: nutrients.carbs,

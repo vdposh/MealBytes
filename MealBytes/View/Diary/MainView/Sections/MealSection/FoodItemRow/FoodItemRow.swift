@@ -37,23 +37,14 @@ struct FoodItemRow: View {
                 originalMealItemId: mealItem.id
             )
         } label: {
-            VStack(alignment: .leading) {
-                Text(mealItem.foodName)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                Text(mainViewModel.formattedMealText(for: mealItem))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                
-                NutrientSummaryRow(
-                    mainViewModel: mainViewModel,
-                    calories: mealItem.caloriesValue,
-                    fat: mealItem.fatValue,
-                    carbs: mealItem.carbsValue,
-                    protein: mealItem.proteinValue
-                )
-            }
+            FoodItemView(
+                foodName: mealItem.foodName,
+                formattedText: mainViewModel.formattedMealText(for: mealItem),
+                calories: mealItem.caloriesValue,
+                fat: mealItem.fatValue,
+                carbs: mealItem.carbsValue,
+                protein: mealItem.proteinValue
+            )
         }
     }
     

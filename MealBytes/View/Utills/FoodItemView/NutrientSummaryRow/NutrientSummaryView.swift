@@ -7,22 +7,18 @@
 
 import SwiftUI
 
-struct NutrientSummaryRow: View {
-    @ObservedObject var mainViewModel: MainViewModel
-    
+struct NutrientSummaryView: View {
     let calories: Double?
     let fat: Double
     let carbs: Double
     let protein: Double
     
     init(
-        mainViewModel: MainViewModel,
         calories: Double? = nil,
         fat: Double,
         carbs: Double,
         protein: Double
     ) {
-        self.mainViewModel = mainViewModel
         self.calories = calories
         self.fat = fat
         self.carbs = carbs

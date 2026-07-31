@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct NutrientLabel: View {
-    var label: String? = nil
     var image: String? = nil
     var value: Double = 0
     var fontImage: Font = .subheadline
@@ -31,11 +30,6 @@ struct NutrientLabel: View {
                     .fontWeight(.medium)
                     .foregroundStyle(color)
             }
-        } else if let label {
-            Text("\(label) \(formattedValue) g")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .padding(.trailing, 5)
         }
     }
 }
