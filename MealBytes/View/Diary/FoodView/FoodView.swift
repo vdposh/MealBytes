@@ -49,7 +49,6 @@ struct FoodView: View {
         foodViewContentBody
             .navigationTitle(navigationTitleText)
             .toolbarTitleDisplayMode(.inline)
-            .navigationSubtitle(foodViewModel.mainViewModel.formattedDate())
             .safeAreaInset(edge: .bottom) {
                 if amountFocused {
                     KeyboardToolbarView(
@@ -59,6 +58,10 @@ struct FoodView: View {
                         }
                     )
                 }
+            }
+            .background {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
             }
             .onChange(of: mealType) {
                 foodViewModel.mealType = mealType
@@ -79,6 +82,7 @@ struct FoodView: View {
             switch foodViewModel.viewState {
             case .loading:
                 LoadingView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
             case .error(let error):
                 contentUnavailableView(

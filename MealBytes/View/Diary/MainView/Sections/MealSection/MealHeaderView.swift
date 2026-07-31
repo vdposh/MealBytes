@@ -138,12 +138,7 @@ struct MealHeaderView: View {
         } label: {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading) {
-                    MealTypeText(
-                        mealType: mealType,
-                        title: title,
-                        font: .title3,
-                        fontWeight: .semibold
-                    )
+                    MealTypeText(mealType: mealType, title: title)
                     
                     if mainViewModel.hasItems(for: mealType) {
                         let nutrients = mainViewModel.totalNutrients(

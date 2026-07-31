@@ -30,3 +30,7 @@ struct LoadingView: View {
         }
     }
 }
+
+#Preview {
+    PreviewContentView.contentView
+}

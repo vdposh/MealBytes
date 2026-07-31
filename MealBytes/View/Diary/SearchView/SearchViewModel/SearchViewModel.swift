@@ -25,6 +25,7 @@ final class SearchViewModel: ObservableObject {
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
     @Published var editingState: EditingState = .inactive
+    @Published var headerText: String = "Bookmarks"
     @Published var query: String = "" {
         didSet {
             if query.isEmpty {
@@ -47,6 +48,7 @@ final class SearchViewModel: ObservableObject {
     
     private var currentTask: Task<Void, Never>?
     private var currentSearchTask: Task<Void, Never>?
+    private var headerUpdateWorkItem: DispatchWorkItem?
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
@@ -177,6 +179,22 @@ final class SearchViewModel: ObservableObject {
                     self.isLoadingBookmarks = false
                 }
             }
+        }
+    }
+    
+    func updateHeader(isEmpty: Bool) {
+        headerUpdateWorkItem?.cancel()
+        
+        let work = DispatchWorkItem { [weak self] in
+            self?.headerText = isEmpty ? "Bookmarks" : "Results"
+        }
+        headerUpdateWorkItem = work
+        
+        if isEmpty {
+            work.perform()
+        } else {
+            DispatchQueue.main
+                .asyncAfter(deadline: .now() + 0.3, execute: work)
         }
     }
     

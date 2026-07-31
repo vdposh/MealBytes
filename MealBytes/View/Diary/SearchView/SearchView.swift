@@ -1,3 +1,4 @@
+
 //
 //  SearchView.swift
 //  MealBytes
@@ -24,8 +25,11 @@ struct SearchView: View {
     var body: some View {
         searchViewContentBody
             .overlay(searchableModifier)
+            .searchable(
+                text: $searchViewModel.query,
+                placement: .navigationBarDrawer(displayMode: .always)
+            )
             .navigationTitle(mealType.rawValue)
-            .navigationSubtitle(searchViewModel.mainViewModel.formattedDate())
             .toolbarTitleDisplayMode(.large)
             .toolbar {
                 searchViewToolbar
@@ -34,6 +38,10 @@ struct SearchView: View {
                 searchViewModel.isEditModeActive ? .hidden : .visible,
                 for: .tabBar
             )
+            .background {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+            }
             .environment(\.editMode, $editModeState)
             .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
@@ -49,31 +57,41 @@ struct SearchView: View {
                     searchViewModel.uniqueId = UUID()
                 }
             }
+            .onChange(of: searchViewModel.query.isEmpty) {
+                searchViewModel
+                    .updateHeader(
+                        isEmpty: searchViewModel.query.isEmpty
+                    )
+            }
             .task {
                 await searchViewModel.loadBookmarksSearchView(for: mealType)
             }
     }
     
+    @ViewBuilder
     private var searchViewContentBody: some View {
-        ZStack {
-            if searchViewModel.contentState == .loading {
-                LoadingView()
-            } else if case .error(let error) = searchViewModel.contentState {
-                contentUnavailableView(for: error, mealType: mealType) {
-                    searchViewModel.performSearch(searchViewModel.query)
-                }
-            } else if searchViewModel.contentState == .empty {
-                contentUnavailableView(for: .noBookmarks, mealType: mealType) {
-                    searchViewModel.performSearch(searchViewModel.query)
-                }
+        switch searchViewModel.contentState {
+        case .loading:
+            LoadingView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+        case .error(let error):
+            contentUnavailableView(for: error, mealType: mealType) {
+                searchViewModel.performSearch(searchViewModel.query)
             }
             
+        case .empty:
+            contentUnavailableView(for: .noBookmarks, mealType: mealType) {
+                searchViewModel.performSearch(searchViewModel.query)
+            }
+            
+        case .results:
             List(
                 selection: searchViewModel.isEditModeActive
                 ? $searchViewModel.selectedItems
                 : .constant([])
             ) {
-                if searchViewModel.contentState == .results {
+                Section {
                     ForEach(
                         searchViewModel.foods,
                         id: \.searchFoodId
@@ -86,6 +104,7 @@ struct SearchView: View {
                             fromOffsets: indices,
                             toOffset: newOffset
                         )
+                        
                         Task {
                             await searchViewModel.saveBookmarkOrder()
                         }
@@ -95,10 +114,11 @@ struct SearchView: View {
                         pageButton(direction: .next)
                         pageButton(direction: .previous)
                     }
+                } header: {
+                    Text(searchViewModel.headerText)
                 }
             }
-            .animation(nil, value: searchViewModel.editingState)
-            .listStyle(.plain)
+            .transaction { $0.animation = nil }
             .scrollDismissesKeyboard(.immediately)
             .disabled(searchViewModel.showRemoveDialog)
         }
@@ -186,10 +206,13 @@ struct SearchView: View {
         }
     }
     
+    @ViewBuilder
     private var searchableModifier: some View {
-        return EmptyView()
-            .searchable(text: $searchViewModel.query)
-            .disabled(searchViewModel.isEditModeActive)
+        if searchViewModel.isEditModeActive {
+            EmptyView()
+                .searchable(text: $searchViewModel.query)
+                .disabled(searchViewModel.isEditModeActive)
+        }
     }
     
     @ToolbarContentBuilder
