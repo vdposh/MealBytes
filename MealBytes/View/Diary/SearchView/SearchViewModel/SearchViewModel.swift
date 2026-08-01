@@ -25,7 +25,7 @@ final class SearchViewModel: ObservableObject {
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
     @Published var editingState: EditingState = .inactive
-    @Published var headerText: String = "Bookmarks"
+    @Published var debouncedQuery: String = ""
     @Published var query: String = "" {
         didSet {
             if query.isEmpty {
@@ -48,7 +48,6 @@ final class SearchViewModel: ObservableObject {
     
     private var currentTask: Task<Void, Never>?
     private var currentSearchTask: Task<Void, Never>?
-    private var headerUpdateWorkItem: DispatchWorkItem?
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
@@ -66,11 +65,13 @@ final class SearchViewModel: ObservableObject {
         $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
-            .filter { !$0.isEmpty }
             .sink { [weak self] query in
-                guard let self else { return }
-                self.currentPage = 0
-                self.performSearch(query)
+                self?.debouncedQuery = query
+                
+                if !query.isEmpty {
+                    self?.currentPage = 0
+                    self?.performSearch(query)
+                }
             }
             .store(in: &cancellables)
     }
@@ -131,6 +132,7 @@ final class SearchViewModel: ObservableObject {
         foods = favoriteFoods
         appError = nil
         isLoading = false
+        debouncedQuery = ""
     }
     
     // MARK: - Load Bookmarks Data
@@ -179,22 +181,6 @@ final class SearchViewModel: ObservableObject {
                     self.isLoadingBookmarks = false
                 }
             }
-        }
-    }
-    
-    func updateHeader(isEmpty: Bool) {
-        headerUpdateWorkItem?.cancel()
-        
-        let work = DispatchWorkItem { [weak self] in
-            self?.headerText = isEmpty ? "Bookmarks" : "Results"
-        }
-        headerUpdateWorkItem = work
-        
-        if isEmpty {
-            work.perform()
-        } else {
-            DispatchQueue.main
-                .asyncAfter(deadline: .now() + 0.3, execute: work)
         }
     }
     
@@ -290,13 +276,15 @@ final class SearchViewModel: ObservableObject {
         }
         
         await MainActor.run {
-            self.favoriteFoods = updatedFavorites
-            self.bookmarkedFoods = updatedBookmarkedFoods
-            
-            if query.isEmpty {
-                self.foods = updatedFavorites
-            } else {
-                self.foods = self.foods
+            withAnimation {
+                self.favoriteFoods = updatedFavorites
+                self.bookmarkedFoods = updatedBookmarkedFoods
+                
+                if query.isEmpty {
+                    self.foods = updatedFavorites
+                } else {
+                    self.foods = self.foods
+                }
             }
         }
         
@@ -318,14 +306,6 @@ final class SearchViewModel: ObservableObject {
                 self.appError = .network
             }
         }
-    }
-    
-    func bookmarkButtonRole(for food: Food) -> ButtonRole? {
-        let isBookmarked = isBookmarkedSearchView(food)
-        let isShowingBookmarks = query.isEmpty
-        return isBookmarked && isShowingBookmarks
-        ? .destructive
-        : nil
     }
     
     // MARK: - Bookmark Management
