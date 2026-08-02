@@ -314,6 +314,37 @@ final class SearchViewModel: ObservableObject {
         && !removalBookmarks.contains(food.searchFoodId)
     }
     
+    func moveBookmarks(
+        from indices: IndexSet,
+        to newOffset: Int,
+        in filteredBookmarks: [Food]
+    ) {
+        let itemsToMove = indices.map { filteredBookmarks[$0] }
+        let idsToMove = Set(itemsToMove.map { $0.searchFoodId })
+        
+        var updatedFavorites = favoriteFoods
+        updatedFavorites.removeAll { idsToMove.contains($0.searchFoodId) }
+        
+        let insertionIndex = newOffset < filteredBookmarks.count
+        ? updatedFavorites
+            .firstIndex(
+                where: { $0.searchFoodId == filteredBookmarks[newOffset]
+                        .searchFoodId
+                }) ?? updatedFavorites.count
+        : updatedFavorites.count
+        
+        updatedFavorites.insert(contentsOf: itemsToMove, at: insertionIndex)
+        favoriteFoods = updatedFavorites
+        
+        if query.isEmpty {
+            foods = updatedFavorites
+        }
+        
+        Task {
+            await saveBookmarkOrder()
+        }
+    }
+    
     // MARK: - Pagination
     enum PageDirection {
         case next

@@ -97,7 +97,7 @@ struct SearchView: View {
                                 .contains(query.lowercased())
                         }
                     }
-                
+
                 if !filteredBookmarks.isEmpty {
                     Section {
                         ForEach(
@@ -108,17 +108,17 @@ struct SearchView: View {
                                 .moveDisabled(!searchViewModel.isEditModeActive)
                         }
                         .onMove { indices, newOffset in
-                            searchViewModel.favoriteFoods
-                                .move(fromOffsets: indices, toOffset: newOffset)
-                            
-                            Task {
-                                await searchViewModel.saveBookmarkOrder()
-                            }
+                            searchViewModel.moveBookmarks(
+                                from: indices,
+                                to: newOffset,
+                                in: filteredBookmarks
+                            )
                         }
                     } header: {
                         Text("Bookmarks")
                     }
                 }
+                
                 // MARK: - Results Section
                 if !searchViewModel.debouncedQuery.isEmpty {
                     let filteredResults = searchViewModel
