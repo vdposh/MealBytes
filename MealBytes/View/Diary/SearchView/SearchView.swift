@@ -29,6 +29,7 @@ struct SearchView: View {
                 placement: .navigationBarDrawer(displayMode: .always)
             )
             .navigationTitle(mealType.rawValue)
+            .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .toolbarTitleDisplayMode(.large)
             .toolbar {
                 searchViewToolbar
@@ -42,7 +43,6 @@ struct SearchView: View {
                     .ignoresSafeArea()
             }
             .environment(\.editMode, $editModeState)
-            .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
             .onChange(of: mealType) {
                 searchViewModel.loadingBookmarks()
                 

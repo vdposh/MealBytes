@@ -11,10 +11,10 @@ struct LoginLogoView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(.clear)
+                Color.clear
                     .ignoresSafeArea()
                 
-                gradientMaskedImage(width: geometry.size.width * 0.3)
+                gradientMaskedImage(width: geometry.size.width * 0.25)
             }
         }
     }
