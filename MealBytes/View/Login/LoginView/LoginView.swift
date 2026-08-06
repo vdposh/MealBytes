@@ -30,7 +30,7 @@ struct LoginView: View {
                     text: $loginViewModel.password
                 )
             } footer: {
-                VStack(spacing: 20) {
+                VStack {
                     ActionButtonView(
                         title: "Login",
                         action: {
@@ -40,9 +40,10 @@ struct LoginView: View {
                         },
                         isEnabled: loginViewModel.isLoginEnabled()
                     )
+                    .padding(.top)
                     
-                    VStack(spacing: 10) {
-                        HStack(spacing: 5) {
+                    VStack {
+                        HStack(spacing: 4) {
                             Text("Don't have a MealBytes account?")
                             
                             NavigationLink("Sign up") {
@@ -50,8 +51,9 @@ struct LoginView: View {
                             }
                             .fontWeight(.semibold)
                         }
+                        .padding(.vertical, 8)
                         
-                        HStack(spacing: 5) {
+                        HStack(spacing: 4) {
                             Text("Forgot the password?")
                             
                             NavigationLink("Reset") {
@@ -61,8 +63,9 @@ struct LoginView: View {
                         }
                     }
                     .font(.footnote)
+                    .padding(.horizontal)
                 }
-                .padding(.vertical)
+                .listRowInsets(.horizontal, 0)
             }
         }
     }

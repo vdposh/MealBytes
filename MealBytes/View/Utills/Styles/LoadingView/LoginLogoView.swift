@@ -8,18 +8,33 @@
 import SwiftUI
 
 struct LoginLogoView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.clear
+                if colorScheme == .light {
+                    LinearGradient(
+                        colors: backgroundLightGradientColors,
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                     .ignoresSafeArea()
+                } else {
+                    Color.clear
+                        .ignoresSafeArea()
+                }
                 
-                gradientMaskedImage(width: geometry.size.width * 0.25)
+                gradientMaskedImage(width: geometry.size.width * 0.28)
             }
         }
     }
     
-    private var gradientColors: [Color] {
+    private var backgroundLightGradientColors: [Color] {
+        [Color("customWhiteLight"), Color("customWhiteDark")]
+    }
+    
+    private var logoGradientColors: [Color] {
         [Color("customGreenLight"), Color("customGreenDark")]
     }
     
@@ -30,7 +45,7 @@ struct LoginLogoView: View {
             .frame(width: width)
             .overlay(
                 LinearGradient(
-                    colors: gradientColors,
+                    colors: logoGradientColors,
                     startPoint: .top,
                     endPoint: .bottom
                 )

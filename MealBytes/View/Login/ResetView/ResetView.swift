@@ -26,12 +26,15 @@ struct ResetView: View {
                     text: $resetViewModel.email
                 )
             } footer: {
-                VStack(spacing: 20) {
+                VStack {
                     resetStateContent
                     
                     Text("Enter the email used during registration. A reset link will be sent to this email with instructions on how to create a new password and regain access to your account.")
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                 }
-                .padding(.vertical)
+                .padding(.top)
+                .listRowInsets(.horizontal, 0)
             }
         }
     }

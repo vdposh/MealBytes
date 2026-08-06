@@ -36,12 +36,15 @@ struct RegisterView: View {
                     placeholder: "Confirm Password"
                 )
             } footer: {
-                VStack(spacing: 20) {
+                VStack {
                     registerStateContent
                     
                     Text("To register, provide a valid email address and create a password that is at least 6 characters long. Once done, you'll receive a verification email.")
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                 }
-                .padding(.vertical)
+                .padding(.top)
+                .listRowInsets(.horizontal, 0)
             }
         }
     }
