@@ -12,6 +12,7 @@ struct MacronutrientFieldView: View {
     let binding: Binding<String>
     let focus: FocusState<MacronutrientsFocus?>.Binding
     let focusCase: MacronutrientsFocus
+    
     @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
     
     var body: some View {

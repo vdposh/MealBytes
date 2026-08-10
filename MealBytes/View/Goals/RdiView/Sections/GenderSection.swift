@@ -11,36 +11,51 @@ struct GenderSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Picker(
-            "Gender",
-            selection: $rdiViewModel.selectedGender
-        ) {
-            if rdiViewModel.selectedGender == .notSelected {
-                Text("Not Selected").tag(Gender.notSelected)
-            }
-            
-            ForEach(
-                Gender.allCases.filter { $0 != .notSelected },
-                id: \.self
-            ) { gender in
-                Text(gender.rawValue).tag(gender)
+        NavigationLink {
+            GenderSelectionView(selectedGender: $rdiViewModel.selectedGender)
+        } label: {
+            LabeledContent {
+                Text(rdiViewModel.selectedGender.rawValue)
+            } label: {
+                Text("Gender")
             }
         }
-        .foregroundStyle(rdiViewModel.selectedGender.selectedColor)
+    }
+}
+
+struct GenderSelectionView: View {
+    @Binding var selectedGender: Gender
+    
+    var body: some View {
+        Form {
+            ForEach(
+                Gender.allCases.filter { $0 != .notSelected
+                },
+                id: \.self) { gender in
+                    Button {
+                        selectedGender = gender
+                    } label: {
+                        Text(gender.rawValue)
+                            .foregroundStyle(Color.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.trailing, 32)
+                            .overlay(alignment: .trailing) {
+                                if selectedGender == gender {
+                                    Image(systemName: "checkmark")
+                                        .font(.headline)
+                                }
+                            }
+                    }
+                }
+        }
+        .navigationTitle("Gender")
     }
 }
 
 enum Gender: String, CaseIterable {
-    case notSelected = "Not selected"
+    case notSelected = ""
     case male = "Male"
     case female = "Female"
-    
-    var selectedColor: Color {
-        switch self {
-        case .notSelected: .customRed
-        case .male, .female: .primary
-        }
-    }
 }
 
 #Preview {

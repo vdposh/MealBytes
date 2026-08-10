@@ -8,24 +8,19 @@
 import SwiftUI
 
 struct AgeSection: View {
-    @FocusState var focus: RdiFocus?
+    let focus: FocusState<Bool>.Binding
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            ServingTextFieldView(
-                text: $rdiViewModel.age,
-                keyboardType: .numberPad,
-                inputMode: .integer,
-                maxIntegerDigits: 3
-            )
-            .focused($focus, equals: .age)
-        } header: {
-            Text("Age")
-                .foregroundStyle(
-                    rdiViewModel.fieldTitleColor(for: rdiViewModel.age)
-                )
-        }
+        ServingTextFieldView(
+            text: $rdiViewModel.age,
+            stackText: "Age",
+            useStackTrailing: true,
+            keyboardType: .numberPad,
+            inputMode: .integer,
+            maxIntegerDigits: 3
+        )
+        .focused(focus)
     }
 }
 

@@ -54,7 +54,7 @@ struct DailyIntakeSectionView: View {
                 .labelIconToTitleSpacing(10)
             }
         } footer: {
-            Text("Daily intake can be set by entering the required number of calories or calculated using macronutrient values such as fats, carbohydrates, and proteins.")
+            Text("Calculated using macronutrient values such as fats, carbohydrates, and proteins.")
         }
     }
 }

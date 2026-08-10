@@ -8,33 +8,25 @@
 import SwiftUI
 
 struct HeightSection: View {
-    @FocusState var focus: RdiFocus?
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            ServingTextFieldView(
-                text: $rdiViewModel.height,
-                maxIntegerDigits: 3
+        NavigationLink {
+            MeasurementSelectionView(
+                value: $rdiViewModel.height,
+                selectedUnit: $rdiViewModel.selectedHeightUnit,
+                title: "Height",
+                maxIntegerDigits: 3,
+                normalizeAction: rdiViewModel.normalizeHeight
             )
-            .focused($focus, equals: .height)
-            
-            Picker(
-                "Unit",
-                selection: $rdiViewModel.selectedHeightUnit
-            ) {
-                ForEach(
-                    HeightUnit.allCases,
-                    id: \.self
-                ) { unit in
-                    Text(unit.rawValue).tag(unit)
+        } label: {
+            LabeledContent {
+                if !rdiViewModel.height.isEmpty {
+                    Text("\(rdiViewModel.height) \(rdiViewModel.selectedHeightUnit.rawValue)")
                 }
+            } label: {
+                Text("Height")
             }
-        } header: {
-            Text("Height")
-                .foregroundStyle(
-                    rdiViewModel.fieldTitleColor(for: rdiViewModel.height)
-                )
         }
     }
 }
@@ -42,10 +34,6 @@ struct HeightSection: View {
 enum HeightUnit: String, CaseIterable {
     case cm = "cm"
     case inches = "inches"
-    
-    var selectedColor: Color {
-        .primary
-    }
 }
 
 #Preview {

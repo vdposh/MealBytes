@@ -305,46 +305,21 @@ final class RdiViewModel: ObservableObject {
         return .primary
     }
     
-    func fieldTitleColor(for field: String) -> Color {
-        let isAge = field == age
-        
-        if isAge {
-            return field.isValidNumericInput(in: 1...120) ?
-                .secondary : .customRed
-        } else {
-            return field.isValidNumericInput() ? .secondary : .customRed
-        }
-    }
-    
     // MARK: - Keyboard
-    func normalizeInputs() {
-        age = age.trimmedLeadingZeros
-        weight = weight.trimmedLeadingZeros
-        height = height.trimmedLeadingZeros
+    func normalizeAge() {
+        if let value = age.doubleValue, value >= 1 && value <= 120 {
+            age = age.trimmedLeadingZeros
+        } else {
+            age = ""
+        }
     }
     
-    // MARK: - Focus
-    func handleRdiFocusChange(from previous: RdiFocus?) {
-        normalizeInputs()
-        
-        if let old = previous {
-            switch old {
-            case .age:
-                if age.isValidNumericInput(in: 1...120) {
-                    age = age.trimmedLeadingZeros
-                }
-                
-            case .weight:
-                if weight.isValidNumericInput() {
-                    weight = weight.trimmedLeadingZeros
-                }
-                
-            case .height:
-                if height.isValidNumericInput() {
-                    height = height.trimmedLeadingZeros
-                }
-            }
-        }
+    func normalizeWeight() {
+        weight = weight.trimmedLeadingZeros
+    }
+    
+    func normalizeHeight() {
+        height = height.trimmedLeadingZeros
     }
 }
 

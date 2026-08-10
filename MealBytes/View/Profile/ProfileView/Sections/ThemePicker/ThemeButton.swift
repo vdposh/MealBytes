@@ -16,21 +16,21 @@ struct ThemeButton: View {
     
     var body: some View {
         Button(action: action) {
-            HStack {
-                Text(text)
-                    .foregroundStyle(Color.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.headline)
-                        .foregroundStyle(
-                            isSelected && themeManager.selectedTheme != .system
-                            ? .accent
-                            : .secondary.opacity(0.7)
-                        )
+            Text(text)
+                .foregroundStyle(Color.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing, 32)
+                .overlay(alignment: .trailing) {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.headline)
+                            .foregroundStyle(
+                                isSelected && themeManager.selectedTheme != .system
+                                ? .accent
+                                : Color(.systemGray4)
+                            )
+                    }
                 }
-            }
         }
     }
 }

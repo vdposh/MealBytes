@@ -8,10 +8,8 @@
 import SwiftUI
 
 struct RdiView: View {
-    @FocusState private var rdiFocused: RdiFocus?
+    @FocusState private var focus: Bool
     @Environment(\.dismiss) private var dismiss
-    
-    private let rdiOrder: [RdiFocus] = [.age, .weight, .height]
     
     @ObservedObject var rdiViewModel: RdiViewModel
     
@@ -23,40 +21,28 @@ struct RdiView: View {
                 rdiViewToolbar
             }
             .safeAreaInset(edge: .bottom) {
-                if rdiFocused != nil {
-                    buildKeyboardToolbar(
-                        current: rdiFocused,
-                        ordered: rdiOrder,
-                        normalize: rdiViewModel.normalizeInputs,
-                        set: { rdiFocused = $0 }
+                if focus {
+                    KeyboardToolbarView(
+                        done: {
+                            focus = false
+                            rdiViewModel.normalizeAge()
+                        }
                     )
                 }
             }
             .alert(isPresented: $rdiViewModel.showAlert) {
                 rdiViewAlert
             }
-            .onChange(of: rdiFocused) {
-                rdiViewModel.handleRdiFocusChange(from: rdiFocused)
-            }
     }
     
     private var rdiViewContentBody: some View {
         Form {
             OverviewRdiSection(rdiViewModel: rdiViewModel)
+            AgeSection(focus: $focus, rdiViewModel: rdiViewModel)
             GenderSection(rdiViewModel: rdiViewModel)
             ActivitySection(rdiViewModel: rdiViewModel)
-            AgeSection(
-                focus: _rdiFocused,
-                rdiViewModel: rdiViewModel
-            )
-            WeightSection(
-                focus: _rdiFocused,
-                rdiViewModel: rdiViewModel
-            )
-            HeightSection(
-                focus: _rdiFocused,
-                rdiViewModel: rdiViewModel
-            )
+            WeightSection(rdiViewModel: rdiViewModel)
+            HeightSection(rdiViewModel: rdiViewModel)
         }
     }
     
@@ -72,8 +58,8 @@ struct RdiView: View {
                     dismiss()
                 }
                 
-                rdiFocused = nil
-                rdiViewModel.normalizeInputs()
+                focus = false
+                rdiViewModel.normalizeAge()
             }
         }
     }
@@ -87,12 +73,6 @@ struct RdiView: View {
             }
         )
     }
-}
-
-enum RdiFocus: Hashable {
-    case age
-    case height
-    case weight
 }
 
 #Preview {

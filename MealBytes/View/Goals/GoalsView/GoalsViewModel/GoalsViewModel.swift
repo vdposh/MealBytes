@@ -12,6 +12,7 @@ protocol GoalsViewModelProtocol {
 }
 
 final class GoalsViewModel: ObservableObject {
+    @Published var selectedIntakeSource: IntakeSource = .rdi
     @Published var uniqueId = UUID()
     @Published var isDataLoaded: Bool = false
     @Published var isLoading: Bool = false

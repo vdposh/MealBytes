@@ -8,34 +8,25 @@
 import SwiftUI
 
 struct WeightSection: View {
-    @FocusState var focus: RdiFocus?
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        Section {
-            ServingTextFieldView(
-                text: $rdiViewModel.weight,
-                maxIntegerDigits: 3
+        NavigationLink {
+            MeasurementSelectionView(
+                value: $rdiViewModel.weight,
+                selectedUnit: $rdiViewModel.selectedWeightUnit,
+                title: "Weight",
+                maxIntegerDigits: 3,
+                normalizeAction: rdiViewModel.normalizeWeight
             )
-            .focused($focus, equals: .weight)
-            
-            Picker(
-                "Unit",
-                selection: $rdiViewModel.selectedWeightUnit
-            ) {
-                ForEach(
-                    WeightUnit.allCases,
-                    id: \.self
-                ) { unit in
-                    Text(unit.rawValue).tag(unit)
+        } label: {
+            LabeledContent {
+                if !rdiViewModel.weight.isEmpty {
+                    Text("\(rdiViewModel.weight) \(rdiViewModel.selectedWeightUnit.rawValue)")
                 }
+            } label: {
+                Text("Weight")
             }
-            .foregroundStyle(rdiViewModel.selectedWeightUnit.selectedColor)
-        } header: {
-            Text("Weight")
-                .foregroundStyle(
-                    rdiViewModel.fieldTitleColor(for: rdiViewModel.weight)
-                )
         }
     }
 }
@@ -43,10 +34,6 @@ struct WeightSection: View {
 enum WeightUnit: String, CaseIterable {
     case kg = "kg"
     case lbs = "lbs"
-    
-    var selectedColor: Color {
-        .primary
-    }
 }
 
 #Preview {
