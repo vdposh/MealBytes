@@ -11,6 +11,7 @@ struct GoalCard: View {
     let title: String
     let value: String
     let progress: Double?
+    var color: Color = .customCalories
     
     var body: some View {
         ZStack(alignment: .leading) {
@@ -33,7 +34,7 @@ struct GoalCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if let progress = progress {
-                    ActivityRingView(progress: progress)
+                    ActivityRingView(progress: progress, mainColor: color)
                 }
             }
             .padding(.horizontal)

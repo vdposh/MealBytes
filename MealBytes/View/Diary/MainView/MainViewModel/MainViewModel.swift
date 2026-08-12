@@ -49,6 +49,9 @@ final class MainViewModel: ObservableObject {
     @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
+    @Published var macroFat: String = ""
+    @Published var macroCarbs: String = ""
+    @Published var macroProtein: String = ""
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
@@ -85,8 +88,32 @@ final class MainViewModel: ObservableObject {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let currentIntakeTask: () = loadCurrentIntakeMainView()
         async let displayIntakeTask: () = loadDisplayIntakeMainView()
+        async let macroTask: () = loadMacrosMainView()
         
-        _ = await (mealItemsTask, currentIntakeTask, displayIntakeTask)
+        _ = await (
+            mealItemsTask,
+            currentIntakeTask,
+            displayIntakeTask,
+            macroTask
+        )
+    }
+
+    private func loadMacrosMainView() async {
+        do {
+            let dailyIntakeData = try await firestore
+                .loadDailyIntakeFirestore()
+            await MainActor.run {
+                self.macroFat = dailyIntakeData.fat
+                self.macroCarbs = dailyIntakeData.carbohydrate
+                self.macroProtein = dailyIntakeData.protein
+            }
+        } catch {
+            await MainActor.run {
+                self.macroFat = ""
+                self.macroCarbs = ""
+                self.macroProtein = ""
+            }
+        }
     }
     
     // MARK: - Load Meal Item
@@ -381,6 +408,50 @@ final class MainViewModel: ObservableObject {
                     }
                 }
             }
+    }
+    
+    func getMacroTargets() -> (fat: Double, carbs: Double, protein: Double)? {
+        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
+            return nil
+        }
+        
+        switch intakeSource {
+        case "rdiView":
+            let fatTarget = (intakeValue * 0.30) / 9
+            let carbsTarget = (intakeValue * 0.50) / 4
+            let proteinTarget = (intakeValue * 0.20) / 4
+            return (fatTarget, carbsTarget, proteinTarget)
+            
+        case "dailyIntakeView":
+            guard let fat = Double(macroFat),
+                  let carbs = Double(macroCarbs),
+                  let protein = Double(macroProtein) else {
+                return nil
+            }
+            return (fat, carbs, protein)
+            
+        default:
+            return nil
+        }
+    }
+    
+    func macroProgress(for type: NutrientType) -> Double? {
+        guard let targets = getMacroTargets() else { return nil }
+        let current = totalNutrients()
+        
+        switch type {
+        case .fat:
+            guard targets.fat > 0 else { return 0 }
+            return min(current.fat / targets.fat, 1)
+        case .carbohydrate:
+            guard targets.carbs > 0 else { return 0 }
+            return min(current.carbs / targets.carbs, 1)
+        case .protein:
+            guard targets.protein > 0 else { return 0 }
+            return min(current.protein / targets.protein, 1)
+        default:
+            return nil
+        }
     }
     
     // MARK: - Calculation (Calories)

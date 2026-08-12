@@ -13,15 +13,15 @@ struct ActivityRingView: View {
     var lineWidth: CGFloat = 6
     
     private var startColor: Color {
-        mainColor.lighter(by: 40)
-    }
-    
-    private var middleColor: Color {
         mainColor.lighter(by: 10)
     }
     
+    private var middleColor: Color {
+        mainColor.lighter(by: 5)
+    }
+    
     private var backgroundColor: Color {
-        mainColor.opacity(0.1)
+        mainColor.opacity(0.2)
     }
     
     private func overlapRotation() -> Angle {

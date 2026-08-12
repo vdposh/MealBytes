@@ -14,7 +14,6 @@ struct GoalsView: View {
         Form {
             DailyIntakeSectionView(goalsViewModel: goalsViewModel)
             RdiSectionView(goalsViewModel: goalsViewModel)
-            DisclaimerButtonSection()
             
             Section {
                 ForEach(
@@ -25,7 +24,7 @@ struct GoalsView: View {
                         goalsViewModel.selectedIntakeSource = source
                     } label: {
                         VStack(alignment: .leading) {
-                            Text(source.title)
+                            Text(source.rawValue)
                                 .foregroundStyle(Color.primary)
                             
                             Text(source.description)
@@ -43,6 +42,8 @@ struct GoalsView: View {
                     }
                 }
             }
+            
+            DisclaimerButtonSection()
         }
         .id(goalsViewModel.uniqueId)
         .navigationTitle("Goals")
@@ -54,17 +55,9 @@ struct GoalsView: View {
 }
 
 enum IntakeSource: String, CaseIterable {
-    case rdi = "RDI"
+    case rdi = "Personal"
     case macros = "Macros"
     case custom = "Custom"
-    
-    var title: String {
-        switch self {
-        case .rdi: return "Personal"
-        case .macros: return "Macros"
-        case .custom: return "Custom"
-        }
-    }
     
     var description: String {
         switch self {

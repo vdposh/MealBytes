@@ -32,6 +32,10 @@ final class RdiViewModel: ObservableObject {
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyRdi: Bool = false
     
+    var proteinPercentage: Double = 0.30
+    var fatPercentage: Double = 0.20
+    var carbsPercentage: Double = 0.50
+    
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
     private var cancellables = Set<AnyCancellable>()
@@ -209,6 +213,26 @@ final class RdiViewModel: ObservableObject {
         }
         
         self.calculatedRdi = (max(1, bmr * activityFactor)).asWhole()
+    }
+    
+    var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
+        guard let calories = calculatedRdi.doubleValue, calories > 0 else {
+            return nil
+        }
+        
+        let proteinGrams = (calories * proteinPercentage) / 4
+        let fatGrams = (calories * fatPercentage) / 9
+        let carbsGrams = (calories * carbsPercentage) / 4
+        
+        return (proteinGrams, fatGrams, carbsGrams)
+    }
+    
+    var macroDescription: String {
+        guard let macros = macroNutrients else {
+            return "Fill in the data"
+        }
+        
+        return "P: \(macros.protein.asWhole())g, F: \(macros.fat.asWhole())g, C: \(macros.carbs.asWhole())g"
     }
     
     // MARK: - Input Validation
