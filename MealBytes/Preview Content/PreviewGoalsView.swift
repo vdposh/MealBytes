@@ -13,10 +13,14 @@ struct PreviewGoalsView {
         let dailyIntakeViewModel = DailyIntakeViewModel(
             mainViewModel: mainViewModel)
         let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+        let customIntakeViewModel = CustomIntakeViewModel(
+            mainViewModel: mainViewModel
+        )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
             dailyIntakeViewModel: dailyIntakeViewModel,
-            rdiViewModel: rdiViewModel
+            rdiViewModel: rdiViewModel,
+            customIntakeViewModel: customIntakeViewModel
         )
         
         return GoalsView(goalsViewModel: goalsViewModel)

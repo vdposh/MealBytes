@@ -14,34 +14,35 @@ struct GoalsView: View {
         Form {
             DailyIntakeSectionView(goalsViewModel: goalsViewModel)
             RdiSectionView(goalsViewModel: goalsViewModel)
+            CustomIntakeSectionView(goalsViewModel: goalsViewModel)
             
-            Section {
-                ForEach(
-                    IntakeSource.allCases,
-                    id: \.self
-                ) { source in
-                    Button {
-                        goalsViewModel.selectedIntakeSource = source
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(source.rawValue)
-                                .foregroundStyle(Color.primary)
-                            
-                            Text(source.description)
-                                .font(.caption)
-                                .foregroundStyle(Color.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 32)
-                        .overlay(alignment: .leading) {
-                            if goalsViewModel.selectedIntakeSource == source {
-                                Image(systemName: "checkmark")
-                                    .font(.headline)
-                            }
-                        }
-                    }
-                }
-            }
+//            Section {
+//                ForEach(
+//                    IntakeSource.allCases,
+//                    id: \.self
+//                ) { source in
+//                    Button {
+//                        goalsViewModel.selectedIntakeSource = source
+//                    } label: {
+//                        VStack(alignment: .leading) {
+//                            Text(source.rawValue)
+//                                .foregroundStyle(Color.primary)
+//                            
+//                            Text(source.description)
+//                                .font(.caption)
+//                                .foregroundStyle(Color.secondary)
+//                        }
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .padding(.leading, 32)
+//                        .overlay(alignment: .leading) {
+//                            if goalsViewModel.selectedIntakeSource == source {
+//                                Image(systemName: "checkmark")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
             
             DisclaimerButtonSection()
         }

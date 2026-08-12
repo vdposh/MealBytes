@@ -20,15 +20,18 @@ final class GoalsViewModel: ObservableObject {
     private let mainViewModel: MainViewModelProtocol
     let dailyIntakeViewModel: DailyIntakeViewModelProtocol
     let rdiViewModel: RdiViewModelProtocol
+    let customIntakeViewModel: CustomIntakeViewModelProtocol
     
     init(
         mainViewModel: MainViewModelProtocol,
         dailyIntakeViewModel: DailyIntakeViewModelProtocol,
-        rdiViewModel: RdiViewModelProtocol
+        rdiViewModel: RdiViewModelProtocol,
+        customIntakeViewModel: CustomIntakeViewModelProtocol
     ) {
         self.mainViewModel = mainViewModel
         self.dailyIntakeViewModel = dailyIntakeViewModel
         self.rdiViewModel = rdiViewModel
+        self.customIntakeViewModel = customIntakeViewModel
     }
     
     // MARK: - Load Goals Data
@@ -72,6 +75,9 @@ final class GoalsViewModel: ObservableObject {
         switch source {
         case .rdiView: text = rdiViewModel.rdiText
         case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText
+        case .customView: text = customIntakeViewModel.calories.isEmpty 
+            ? "Not set"
+            : "\(customIntakeViewModel.calories) cal"
         }
         
         return IntakeDisplayState(
@@ -90,6 +96,9 @@ final class GoalsViewModel: ObservableObject {
         case .dailyIntakeView:
             return currentIntakeSource == source &&
             dailyIntakeViewModel.dailyIntakeText != "Fill in the data"
+        case .customView:
+            return currentIntakeSource == source &&
+            customIntakeViewModel.calories.isValidNumericInput()
         }
     }
     
@@ -100,6 +109,7 @@ final class GoalsViewModel: ObservableObject {
     enum IntakeSourceType: String {
         case rdiView
         case dailyIntakeView
+        case customView
     }
 }
 

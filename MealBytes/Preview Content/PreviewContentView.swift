@@ -17,10 +17,14 @@ struct PreviewContentView {
         let rdiViewModel: RdiViewModelProtocol = RdiViewModel(
             mainViewModel: mainViewModel
         )
+        let customIntakeViewModel = CustomIntakeViewModel(
+            mainViewModel: mainViewModel
+        )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
             dailyIntakeViewModel: dailyIntakeViewModel,
-            rdiViewModel: rdiViewModel
+            rdiViewModel: rdiViewModel,
+            customIntakeViewModel: customIntakeViewModel
         )
         let loginViewModel = LoginViewModel(
             mainViewModel: mainViewModel,
