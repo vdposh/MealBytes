@@ -279,19 +279,6 @@ final class DailyIntakeViewModel: ObservableObject {
         return isValid ? .secondary : .customRed
     }
     
-    func macronutrientTitleColor() -> Color {
-        validateInputs() == nil ? .secondary : .customRed
-    }
-    
-    func unitDescription(for value: String) -> String {
-        guard let doubleValue = value.doubleValue,
-              Int(doubleValue) == 1 else {
-            return "grams"
-        }
-        
-        return "gram"
-    }
-    
     // MARK: - Keyboard
     func normalizeInputs() {
         calories = calories.trimmedLeadingZeros

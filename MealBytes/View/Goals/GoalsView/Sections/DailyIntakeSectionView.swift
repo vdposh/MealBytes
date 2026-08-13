@@ -30,7 +30,7 @@ struct DailyIntakeSectionView: View {
                                 .fontWeight(dailyIntakeState.weight)
                         } label: {
                             Label {
-                                Text("Daily Intake")
+                                Text(IntakeSource.macros.rawValue)
                             } icon: {
                                 Image(systemName: dailyIntakeState.icon)
                                     .foregroundStyle(.accent)
@@ -45,7 +45,7 @@ struct DailyIntakeSectionView: View {
                     LoadingView(showLabel: true)
                 } label: {
                     Label {
-                        Text("Daily Intake")
+                        Text(IntakeSource.macros.rawValue)
                     } icon: {
                         Image(systemName: "person")
                             .foregroundStyle(.accent)
@@ -54,7 +54,7 @@ struct DailyIntakeSectionView: View {
                 .labelIconToTitleSpacing(10)
             }
         } footer: {
-            Text("Calculated using macronutrient values such as fats, carbohydrates, and proteins.")
+            Text(IntakeSource.macros.description)
         }
     }
 }

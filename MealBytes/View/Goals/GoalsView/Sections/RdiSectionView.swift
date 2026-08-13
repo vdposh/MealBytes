@@ -28,7 +28,7 @@ struct RdiSectionView: View {
                                 .fontWeight(rdiState.weight)
                         } label: {
                             Label {
-                                Text("RDI")
+                                Text(IntakeSource.personal.rawValue)
                             } icon: {
                                 Image(systemName: rdiState.icon)
                                     .foregroundStyle(.accent)
@@ -43,7 +43,7 @@ struct RdiSectionView: View {
                     LoadingView(showLabel: true)
                 } label: {
                     Label {
-                        Text("RDI")
+                        Text(IntakeSource.personal.rawValue)
                     } icon: {
                         Image(systemName: "person")
                             .foregroundStyle(.accent)
@@ -52,7 +52,7 @@ struct RdiSectionView: View {
                 .labelIconToTitleSpacing(10)
             }
         } footer: {
-            Text("MealBytes calculates the Recommended Daily Intake (RDI) to provide a daily calorie target tailored to help achieve the desired weight.")
+            Text(IntakeSource.personal.description)
         }
     }
 }

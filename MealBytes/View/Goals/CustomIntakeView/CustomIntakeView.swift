@@ -18,29 +18,27 @@ struct CustomIntakeView: View {
             Section {
                 ServingTextFieldView(
                     text: $customIntakeViewModel.calories,
+                    stackText: "Calories",
+                    useStackTrailing: true,
                     keyboardType: .numberPad,
                     inputMode: .integer,
                     maxIntegerDigits: 5
                 )
                 .focused($focus)
-            } header: {
-                Text("Calories")
-                    .foregroundStyle(
-                        customIntakeViewModel.calories.isValidNumericInput()
-                        ? .secondary
-                        : Color.customRed
-                    )
             } footer: {
-                Text("Enter your daily calorie intake directly.")
+                Text(IntakeSource.custom.description)
             }
         }
-        .navigationTitle("Custom Intake")
+        .navigationTitle(IntakeSource.custom.rawValue)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button(role: .confirm) {
                     if customIntakeViewModel.isValid {
-                        customIntakeViewModel.saveCustomIntake()
+                        Task {
+                            await customIntakeViewModel.saveCustomIntake()
+                        }
+                        
                         dismiss()
                     }
                     

@@ -24,6 +24,7 @@ protocol FirebaseFirestoreProtocol {
     )
     func loadDailyIntakeFirestore() async throws -> DailyIntake
     func loadRdiFirestore() async throws -> RdiData
+    func loadCustomIntakeFirestore() async throws -> CustomIntake
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake
     func loadDisplayIntakeFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
@@ -38,6 +39,7 @@ protocol FirebaseFirestoreProtocol {
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
     func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
+    func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
     func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
@@ -336,6 +338,36 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document("RdiView")
         
         try documentReference.setData(from: rdiData)
+    }
+    
+    // MARK: - Load CustomIntake
+    func loadCustomIntakeFirestore() async throws -> CustomIntake {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let documentReference = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("GoalsView")
+            .document("CustomIntake")
+        
+        return try await documentReference.getDocument(as: CustomIntake.self)
+    }
+    
+    // MARK: - Save CustomIntake
+    func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let documentReference = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("GoalsView")
+            .document("CustomIntake")
+        
+        try documentReference.setData(from: customIntake)
     }
     
     // MARK: - Load Intake

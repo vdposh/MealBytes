@@ -19,9 +19,7 @@ struct MacronutrientFieldView: View {
         ServingTextFieldView(
             text: binding,
             stackText: title,
-            trailingUnit: dailyIntakeViewModel
-                .unitDescription(for: binding.wrappedValue),
-            useStack: true,
+            useStackTrailing: true,
             keyboardType: .numberPad,
             inputMode: .integer,
             maxIntegerDigits: 3

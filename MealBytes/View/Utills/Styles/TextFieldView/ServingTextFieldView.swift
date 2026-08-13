@@ -60,6 +60,7 @@ struct ServingTextFieldView: View {
                 HStack {
                     Text(stackText)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     field
                         .containerRelativeFrame(.horizontal) {
                             length,
@@ -70,6 +71,7 @@ struct ServingTextFieldView: View {
                 HStack {
                     Text(stackText)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     field
                         .multilineTextAlignment(.trailing)
                 }

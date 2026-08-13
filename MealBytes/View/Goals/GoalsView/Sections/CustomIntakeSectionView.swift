@@ -25,12 +25,12 @@ struct CustomIntakeSectionView: View {
                         )
                         
                         LabeledContent {
-                            Text(customIntakeViewModel.text)
+                            Text(customIntakeViewModel.customIntakeText)
                                 .foregroundStyle(customIntakeState.color)
                                 .fontWeight(customIntakeState.weight)
                         } label: {
                             Label {
-                                Text("Custom Intake")
+                                Text(IntakeSource.custom.rawValue)
                             } icon: {
                                 Image(systemName: customIntakeState.icon)
                                     .foregroundStyle(.accent)
@@ -45,16 +45,16 @@ struct CustomIntakeSectionView: View {
                     LoadingView(showLabel: true)
                 } label: {
                     Label {
-                        Text("Custom Intake")
+                        Text(IntakeSource.custom.rawValue)
                     } icon: {
-                        Image(systemName: "pencil")
+                        Image(systemName: "person")
                             .foregroundStyle(.accent)
                     }
                 }
                 .labelIconToTitleSpacing(10)
             }
         } footer: {
-            Text("Set daily intake by entering calories directly.")
+            Text(IntakeSource.custom.description)
         }
     }
 }

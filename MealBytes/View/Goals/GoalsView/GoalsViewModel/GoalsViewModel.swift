@@ -12,7 +12,7 @@ protocol GoalsViewModelProtocol {
 }
 
 final class GoalsViewModel: ObservableObject {
-    @Published var selectedIntakeSource: IntakeSource = .rdi
+    @Published var selectedIntakeSource: IntakeSource = .personal
     @Published var uniqueId = UUID()
     @Published var isDataLoaded: Bool = false
     @Published var isLoading: Bool = false
@@ -47,8 +47,10 @@ final class GoalsViewModel: ObservableObject {
         async let rdiTask: () = rdiViewModel.loadRdiView()
         async let dailyIntakeTask: () = dailyIntakeViewModel
             .loadDailyIntakeView()
+        async let customIntakeTask: () = customIntakeViewModel
+            .loadCustomIntake()
         
-        _ = await (rdiTask, dailyIntakeTask)
+        _ = await (rdiTask, dailyIntakeTask, customIntakeTask)
         
         await MainActor.run {
             conditionallyClearGoalsView()
@@ -60,11 +62,13 @@ final class GoalsViewModel: ObservableObject {
     func conditionallyClearGoalsView() {
         dailyIntakeViewModel.conditionallyClearDailyIntake()
         rdiViewModel.conditionallyClearRdi()
+        customIntakeViewModel.conditionallyClearCustomIntake()
     }
     
     func clearGoalsView() {
         dailyIntakeViewModel.clearDailyIntake()
         rdiViewModel.clearRdi()
+        customIntakeViewModel.clearCustomIntake()
     }
     
     // MARK: - Text
@@ -75,9 +79,7 @@ final class GoalsViewModel: ObservableObject {
         switch source {
         case .rdiView: text = rdiViewModel.rdiText
         case .dailyIntakeView: text = dailyIntakeViewModel.dailyIntakeText
-        case .customView: text = customIntakeViewModel.calories.isEmpty 
-            ? "Not set"
-            : "\(customIntakeViewModel.calories) cal"
+        case .customView: text = customIntakeViewModel.customIntakeText
         }
         
         return IntakeDisplayState(
@@ -98,7 +100,7 @@ final class GoalsViewModel: ObservableObject {
             dailyIntakeViewModel.dailyIntakeText != "Fill in the data"
         case .customView:
             return currentIntakeSource == source &&
-            customIntakeViewModel.calories.isValidNumericInput()
+            customIntakeViewModel.customIntakeText != "Fill in the data"
         }
     }
     

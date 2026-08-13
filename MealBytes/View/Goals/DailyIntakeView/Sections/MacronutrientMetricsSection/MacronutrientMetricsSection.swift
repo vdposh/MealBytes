@@ -37,13 +37,8 @@ struct MacronutrientMetricsSection: View {
                     focusCase: .protein,
                     dailyIntakeViewModel: dailyIntakeViewModel
                 )
-            } header: {
-                Text("Macronutrients")
-                    .foregroundStyle(
-                        dailyIntakeViewModel.macronutrientTitleColor()
-                    )
             } footer: {
-                Text("Enter values for macronutrients. These inputs will be used to precisely calculate daily calorie intake.")
+                Text("Enter macronutrient values. This data will be used to calculate calories and track your goals.")
             }
         }
     }

@@ -8,17 +8,19 @@
 import SwiftUI
 
 protocol CustomIntakeViewModelProtocol {
-    var calories: String { get set }
-    var isValid: Bool { get }
+    var customIntakeText: String { get }
     
     func loadCustomIntake() async
-    func saveCustomIntake()
-    func normalizeCalories()
+    func saveCustomIntake() async
+    func conditionallyClearCustomIntake()
+    func clearCustomIntake()
 }
 
 final class CustomIntakeViewModel: ObservableObject {
-    @Published var calories: String = ""
     @Published var appError: AppError?
+    @Published var calories: String = ""
+    @Published var didSaveSuccessfully: Bool = false
+    @Published var didLoadNonEmptyCustomIntake: Bool = false
     
     private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
@@ -27,30 +29,60 @@ final class CustomIntakeViewModel: ObservableObject {
         self.mainViewModel = mainViewModel
     }
     
-    // MARK: - Load
+    // MARK: - Load CustomIntake Data
     func loadCustomIntake() async {
-        await MainActor.run {
-            calories = mainViewModel.intake
+        do {
+            let data = try await firestore.loadCustomIntakeFirestore()
+            await MainActor.run {
+                calories = data.calories
+                didLoadNonEmptyCustomIntake = !data.calories.isEmpty
+            }
+        } catch {
+            await MainActor.run {
+                appError = .decoding
+            }
         }
     }
     
-    // MARK: - Save
-    func saveCustomIntake() {
+    func conditionallyClearCustomIntake() {
+        if !didSaveSuccessfully && !didLoadNonEmptyCustomIntake {
+            clearCustomIntake()
+        }
+        
+        didSaveSuccessfully = false
+        didLoadNonEmptyCustomIntake = false
+    }
+    
+    func clearCustomIntake() {
+        calories = ""
+    }
+    
+    // MARK: - Save CustomIntake Data
+    func saveCustomIntake() async {
         guard isValid else { return }
         
-        Task {
+        let data = CustomIntake(calories: calories)
+        
+        do {
+            try await firestore.saveCustomIntakeFirestore(data)
+            
             await MainActor.run {
                 mainViewModel.updateIntake(to: calories)
+                didSaveSuccessfully = true
             }
             
             await mainViewModel.saveCurrentIntakeMainView(source: "customView")
+        } catch {
+            await MainActor.run {
+                appError = .decoding
+            }
         }
     }
     
     // MARK: - Text
-    var text: String {
+    func text(for calories: String) -> String {
         guard let caloriesValue = calories.doubleValue,
-                caloriesValue > 0 else {
+              caloriesValue > 0 else {
             return "Fill in the data"
         }
         
@@ -59,6 +91,10 @@ final class CustomIntakeViewModel: ObservableObject {
         return caloriesValue == 1
         ? "\(formattedValue) calorie"
         : "\(formattedValue) calories"
+    }
+    
+    var customIntakeText: String {
+        text(for: calories)
     }
     
     // MARK: - Keyboard
@@ -72,3 +108,7 @@ final class CustomIntakeViewModel: ObservableObject {
 }
 
 extension CustomIntakeViewModel: CustomIntakeViewModelProtocol {}
+
+#Preview {
+    PreviewContentView.contentView
+}

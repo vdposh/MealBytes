@@ -16,35 +16,33 @@ struct GoalsView: View {
             RdiSectionView(goalsViewModel: goalsViewModel)
             CustomIntakeSectionView(goalsViewModel: goalsViewModel)
             
-//            Section {
-//                ForEach(
-//                    IntakeSource.allCases,
-//                    id: \.self
-//                ) { source in
-//                    Button {
-//                        goalsViewModel.selectedIntakeSource = source
-//                    } label: {
-//                        VStack(alignment: .leading) {
-//                            Text(source.rawValue)
-//                                .foregroundStyle(Color.primary)
-//                            
-//                            Text(source.description)
-//                                .font(.caption)
-//                                .foregroundStyle(Color.secondary)
-//                        }
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                        .padding(.leading, 32)
-//                        .overlay(alignment: .leading) {
-//                            if goalsViewModel.selectedIntakeSource == source {
-//                                Image(systemName: "checkmark")
-//                                    .font(.headline)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-            
-            DisclaimerButtonSection()
+            Section {
+                ForEach(
+                    IntakeSource.allCases,
+                    id: \.self
+                ) { source in
+                    Button {
+                        goalsViewModel.selectedIntakeSource = source
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(source.rawValue)
+                                .foregroundStyle(Color.primary)
+                            
+                            Text(source.description)
+                                .font(.caption)
+                                .foregroundStyle(Color.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 32)
+                        .overlay(alignment: .leading) {
+                            if goalsViewModel.selectedIntakeSource == source {
+                                Image(systemName: "checkmark")
+                                    .font(.headline)
+                            }
+                        }
+                    }
+                }
+            }
         }
         .id(goalsViewModel.uniqueId)
         .navigationTitle("Goals")
@@ -56,14 +54,14 @@ struct GoalsView: View {
 }
 
 enum IntakeSource: String, CaseIterable {
-    case rdi = "Personal"
+    case personal = "Personal"
     case macros = "Macros"
     case custom = "Custom"
     
     var description: String {
         switch self {
-        case .rdi:
-            return "Based on unique factors"
+        case .personal:
+            return "Set goal based on body parameters"
         case .macros:
             return "Calculated from macronutrients"
         case .custom:
