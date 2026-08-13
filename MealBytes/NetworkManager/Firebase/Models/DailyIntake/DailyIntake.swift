@@ -12,5 +12,4 @@ struct DailyIntake: Codable {
     var fat: String
     var carbohydrate: String
     var protein: String
-    var macronutrientMetrics: Bool
 }

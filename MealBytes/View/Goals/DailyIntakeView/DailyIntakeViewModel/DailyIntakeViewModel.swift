@@ -27,11 +27,6 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyIntake: Bool = false
-    @Published var toggleOn: Bool = false {
-        didSet {
-            handleToggleChange()
-        }
-    }
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
@@ -55,7 +50,6 @@ final class DailyIntakeViewModel: ObservableObject {
             let hasAnyData = !dailyIntakeData.calories.isEmpty
             
             await MainActor.run {
-                toggleOn = dailyIntakeData.macronutrientMetrics
                 calories = dailyIntakeData.calories
                 fat = dailyIntakeData.fat
                 carbohydrate = dailyIntakeData.carbohydrate
@@ -83,7 +77,6 @@ final class DailyIntakeViewModel: ObservableObject {
         fat = ""
         carbohydrate = ""
         protein = ""
-        toggleOn = false
     }
     
     // MARK: - Save DailyIntake Data
@@ -93,8 +86,7 @@ final class DailyIntakeViewModel: ObservableObject {
             calories: trimmedCalories,
             fat: fat.trimmedLeadingZeros,
             carbohydrate: carbohydrate.trimmedLeadingZeros,
-            protein: protein.trimmedLeadingZeros,
-            macronutrientMetrics: toggleOn
+            protein: protein.trimmedLeadingZeros
         )
         
         do {
@@ -126,18 +118,6 @@ final class DailyIntakeViewModel: ObservableObject {
                 )
             }
             .store(in: &cancellables)
-        
-        $toggleOn
-            .sink { [weak self] isToggleOn in
-                if isToggleOn {
-                    self?.calculateCalories(
-                        fat: self?.fat ?? "",
-                        carbohydrate: self?.carbohydrate ?? "",
-                        protein: self?.protein ?? ""
-                    )
-                }
-            }
-            .store(in: &cancellables)
     }
     
     private func calculateCalories(
@@ -145,7 +125,6 @@ final class DailyIntakeViewModel: ObservableObject {
         carbohydrate: String,
         protein: String
     ) {
-        guard toggleOn else { return }
         
         let fatValue = fat.doubleValue ?? 0
         let carbValue = carbohydrate.doubleValue ?? 0
@@ -170,22 +149,16 @@ final class DailyIntakeViewModel: ObservableObject {
     func validateInputs() -> String? {
         var invalidFields: [String] = []
         
-        if !toggleOn {
-            if !calories.isValidNumericInput() {
-                invalidFields.append("Calorie")
-            }
-        } else {
-            if !fat.isValidNumericInput() {
-                invalidFields.append("Fat")
-            }
-            
-            if !carbohydrate.isValidNumericInput() {
-                invalidFields.append("Carbohydrate")
-            }
-            
-            if !protein.isValidNumericInput() {
-                invalidFields.append("Protein")
-            }
+        if !fat.isValidNumericInput() {
+            invalidFields.append("Fat")
+        }
+        
+        if !carbohydrate.isValidNumericInput() {
+            invalidFields.append("Carbohydrate")
+        }
+        
+        if !protein.isValidNumericInput() {
+            invalidFields.append("Protein")
         }
         
         guard !invalidFields.isEmpty else { return nil }
@@ -217,32 +190,12 @@ final class DailyIntakeViewModel: ObservableObject {
         return true
     }
     
-    private func handleToggleChange() {
-        normalizeInputs()
-        
-        if toggleOn {
-            calculateCalories(
-                fat: fat,
-                carbohydrate: carbohydrate,
-                protein: protein
-            )
-        } else if calories.isEmpty {
-            calories = ""
-        }
-    }
-    
     // MARK: - Text
     func text(for calculatedIntake: String) -> String {
         let sanitized = calculatedIntake.doubleValue
         
         guard let intakeValue = sanitized, intakeValue > 0 else {
             return "Fill in the data"
-        }
-        
-        if !toggleOn {
-            guard calories.isValidNumericInput() else {
-                return "Fill in the data"
-            }
         }
         
         if validateInputs() != nil {
@@ -262,21 +215,6 @@ final class DailyIntakeViewModel: ObservableObject {
     
     var displayCalories: String {
         (calories.doubleValue ?? 0).asWhole()
-    }
-    
-    // MARK: - UI Helper
-    func titleColor(
-        for value: String,
-        isCalorie: Bool = false
-    ) -> Color {
-        let isValid = value.isValidNumericInput()
-        let isValidInput = validateInputs() == nil
-        
-        if isCalorie && toggleOn {
-            return isValidInput ? .primary : .secondary.opacity(0.5)
-        }
-        
-        return isValid ? .secondary : .customRed
     }
     
     // MARK: - Keyboard
