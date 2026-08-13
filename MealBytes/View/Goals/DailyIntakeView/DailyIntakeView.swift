@@ -22,7 +22,7 @@ struct DailyIntakeView: View {
     
     var body: some View {
         dailyIntakeViewContentBody
-            .navigationTitle("Daily Intake")
+            .navigationTitle(IntakeSource.macros.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 dailyIntakeViewToolbar
@@ -38,9 +38,6 @@ struct DailyIntakeView: View {
                     )
                 }
             }
-            .alert(isPresented: $dailyIntakeViewModel.showAlert) {
-                dailyIntakeViewAlert
-            }
             .onChange(of: macronutrientsFocused) {
                 handleFocusLoss(macronutrientsFocused)
             }
@@ -48,7 +45,9 @@ struct DailyIntakeView: View {
     
     private var dailyIntakeViewContentBody: some View {
         Form {
-            CalorieMetricsSection(dailyIntakeViewModel: dailyIntakeViewModel)
+            OverviewDailyIntakeSection(
+                dailyIntakeViewModel: dailyIntakeViewModel
+            )
             MacronutrientMetricsSection(
                 focus: _macronutrientsFocused,
                 dailyIntakeViewModel: dailyIntakeViewModel
@@ -60,29 +59,17 @@ struct DailyIntakeView: View {
     private var dailyIntakeViewToolbar: some ToolbarContent {
         ToolbarItem {
             Button(role: .confirm) {
-                if dailyIntakeViewModel.handleDailyIntakeSave() {
-                    Task {
-                        await dailyIntakeViewModel.saveDailyIntakeView()
-                    }
-                    
-                    dismiss()
+                Task {
+                    await dailyIntakeViewModel.saveDailyIntakeView()
                 }
                 
                 caloriesFocused = false
                 macronutrientsFocused = nil
                 dailyIntakeViewModel.normalizeInputs()
+                dismiss()
             }
+            .disabled(!dailyIntakeViewModel.isValid)
         }
-    }
-    
-    private var dailyIntakeViewAlert: Alert {
-        Alert(
-            title: Text("Error"),
-            message: Text(dailyIntakeViewModel.alertMessage),
-            dismissButton: .default(Text("OK")) {
-                dailyIntakeViewModel.showAlert = false
-            }
-        )
     }
     
     private func handleFocusLoss(_ focus: MacronutrientsFocus?) {

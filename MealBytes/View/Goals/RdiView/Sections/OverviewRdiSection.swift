@@ -12,14 +12,38 @@ struct OverviewRdiSection: View {
     
     var body: some View {
         Section {
-            Text(rdiViewModel.text(for: rdiViewModel.calculatedRdi))
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(
-                    rdiViewModel.color(for: rdiViewModel.calculatedRdi)
-                )
+            HStack {
+                if rdiViewModel.isValid {
+                    Text("Calories")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                Text(rdiViewModel.rdiText)
+            }
+            
+            if let macros = rdiViewModel.macroNutrients {
+                HStack {
+                    Text("Fat")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(macros.fat.asWhole())
+                }
+                
+                HStack {
+                    Text("Carbohydrate")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(macros.carbs.asWhole())
+                }
+                
+                HStack {
+                    Text("Protein")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(macros.protein.asWhole())
+                }
+            }
         }
-        .listRowBackground(Color.clear)
     }
 }
 

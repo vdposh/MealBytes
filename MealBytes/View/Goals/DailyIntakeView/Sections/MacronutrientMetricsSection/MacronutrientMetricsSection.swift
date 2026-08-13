@@ -37,7 +37,7 @@ struct MacronutrientMetricsSection: View {
                 dailyIntakeViewModel: dailyIntakeViewModel
             )
         } footer: {
-            Text("Enter macronutrient values. This data will be used to calculate calories and track your goals.")
+            Text("Enter macronutrient values in grams. This data will be used to calculate calories and track your goals.")
         }
     }
 }

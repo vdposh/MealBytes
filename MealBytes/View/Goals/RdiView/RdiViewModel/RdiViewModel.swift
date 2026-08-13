@@ -27,8 +27,6 @@ final class RdiViewModel: ObservableObject {
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
     @Published var calculatedRdi: String = ""
-    @Published var alertMessage: String = ""
-    @Published var showAlert: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyRdi: Bool = false
     
@@ -176,7 +174,7 @@ final class RdiViewModel: ObservableObject {
         weightUnit: WeightUnit,
         heightUnit: HeightUnit
     ) {
-        guard isInputValidForCalculation,
+        guard isValid,
               gender != .notSelected,
               activity != .notSelected else {
             calculatedRdi = ""
@@ -227,75 +225,7 @@ final class RdiViewModel: ObservableObject {
         return (proteinGrams, fatGrams, carbsGrams)
     }
     
-    var macroDescription: String {
-        guard let macros = macroNutrients else {
-            return "Fill in the data"
-        }
-        
-        return "P: \(macros.protein.asWhole())g, F: \(macros.fat.asWhole())g, C: \(macros.carbs.asWhole())g"
-    }
-    
-    // MARK: - Input Validation
-    private func validateInputs() -> String? {
-        var invalidFields: [String] = []
-        var missingSelections: [String] = []
-        
-        if !age.isValidNumericInput(in: 1...120) {
-            invalidFields.append("Age")
-        }
-        
-        if !weight.isValidNumericInput() {
-            invalidFields.append("Weight")
-        }
-        
-        if !height.isValidNumericInput() {
-            invalidFields.append("Height")
-        }
-        
-        if selectedGender == .notSelected {
-            missingSelections.append("Gender")
-        }
-        
-        if selectedActivity == .notSelected {
-            missingSelections.append("Activity Level")
-        }
-        
-        var messages: [String] = []
-        
-        if !invalidFields.isEmpty {
-            messages.append("Enter a valid \(formatList(invalidFields)).")
-        }
-        
-        if !missingSelections.isEmpty {
-            messages.append("Select \(formatList(missingSelections)).")
-        }
-        
-        return messages.isEmpty ? nil : messages.joined(separator: "\n")
-    }
-    
-    private func formatList(_ items: [String]) -> String {
-        switch items.count {
-        case 0: return ""
-        case 1: return items[0]
-        case 2: return items.joined(separator: " and ")
-        default:
-            let allExceptLast = items.dropLast().joined(separator: ", ")
-            
-            return "\(allExceptLast) and \(items.last ?? "")"
-        }
-    }
-    
-    func handleRdiSave() -> Bool {
-        if let errors = validateInputs() {
-            alertMessage = errors
-            showAlert = true
-            return false
-        }
-        
-        return true
-    }
-    
-    private var isInputValidForCalculation: Bool {
+    var isValid: Bool {
         age.isValidNumericInput(in: 1...120) &&
         weight.isValidNumericInput() &&
         height.isValidNumericInput()
@@ -305,7 +235,7 @@ final class RdiViewModel: ObservableObject {
     func text(for calculatedRdi: String) -> String {
         guard let rdiValue = calculatedRdi.doubleValue,
               rdiValue > 0,
-              isInputValidForCalculation else {
+              isValid else {
             return "Fill in the data"
         }
         
@@ -320,19 +250,16 @@ final class RdiViewModel: ObservableObject {
         text(for: calculatedRdi)
     }
     
-    func color(for calculatedRdi: String) -> Color {
-        guard !calculatedRdi.isEmpty,
-              isInputValidForCalculation else {
-            return .secondary.opacity(0.5)
-        }
-        
-        return .primary
-    }
-    
     // MARK: - Keyboard
     func normalizeAge() {
-        if let value = age.doubleValue, value >= 1 && value <= 120 {
-            age = age.trimmedLeadingZeros
+        if let value = age.doubleValue {
+            if value >= 1 && value <= 120 {
+                age = age.trimmedLeadingZeros
+            } else if value > 120 {
+                age = "120"
+            } else {
+                age = ""
+            }
         } else {
             age = ""
         }

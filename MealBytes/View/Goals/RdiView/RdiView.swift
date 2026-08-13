@@ -15,7 +15,7 @@ struct RdiView: View {
     
     var body: some View {
         rdiViewContentBody
-            .navigationTitle("RDI")
+            .navigationTitle(IntakeSource.personal.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 rdiViewToolbar
@@ -29,9 +29,6 @@ struct RdiView: View {
                         }
                     )
                 }
-            }
-            .alert(isPresented: $rdiViewModel.showAlert) {
-                rdiViewAlert
             }
     }
     
@@ -50,28 +47,16 @@ struct RdiView: View {
     private var rdiViewToolbar: some ToolbarContent {
         ToolbarItem {
             Button(role: .confirm) {
-                if rdiViewModel.handleRdiSave() {
-                    Task {
-                        await rdiViewModel.saveRdiView()
-                    }
-                    
-                    dismiss()
+                Task {
+                    await rdiViewModel.saveRdiView()
                 }
                 
                 focus = false
                 rdiViewModel.normalizeAge()
+                dismiss()
             }
+            .disabled(!rdiViewModel.isValid)
         }
-    }
-    
-    private var rdiViewAlert: Alert {
-        Alert(
-            title: Text("Error"),
-            message: Text(rdiViewModel.alertMessage),
-            dismissButton: .default(Text("OK")) {
-                rdiViewModel.showAlert = false
-            }
-        )
     }
 }
 

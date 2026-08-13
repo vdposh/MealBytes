@@ -23,8 +23,6 @@ final class DailyIntakeViewModel: ObservableObject {
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
-    @Published var alertMessage: String = ""
-    @Published var showAlert: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyIntake: Bool = false
     
@@ -145,64 +143,28 @@ final class DailyIntakeViewModel: ObservableObject {
         : "0"
     }
     
-    // MARK: - Input Validation
-    func validateInputs() -> String? {
-        var invalidFields: [String] = []
-        
-        if !fat.isValidNumericInput() {
-            invalidFields.append("Fat")
-        }
-        
-        if !carbohydrate.isValidNumericInput() {
-            invalidFields.append("Carbohydrate")
-        }
-        
-        if !protein.isValidNumericInput() {
-            invalidFields.append("Protein")
-        }
-        
-        guard !invalidFields.isEmpty else { return nil }
-        
-        let fieldList = formatList(invalidFields)
-        
-        return "Enter a valid \(fieldList) value."
-    }
-    
-    private func formatList(_ items: [String]) -> String {
-        switch items.count {
-        case 0: return ""
-        case 1: return items[0]
-        case 2: return items.joined(separator: " and ")
-        default:
-            let allExceptLast = items.dropLast().joined(separator: ", ")
-            
-            return "\(allExceptLast) and \(items.last ?? "")"
-        }
-    }
-    
-    func handleDailyIntakeSave() -> Bool {
-        if let errors = validateInputs() {
-            alertMessage = errors
-            showAlert = true
-            return false
-        }
-        
-        return true
+    var isValid: Bool {
+        fat.isValidNumericInput() &&
+        carbohydrate.isValidNumericInput() &&
+        protein.isValidNumericInput()
     }
     
     // MARK: - Text
-    func text(for calculatedIntake: String) -> String {
-        let sanitized = calculatedIntake.doubleValue
-        
-        guard let intakeValue = sanitized, intakeValue > 0 else {
+    func text(for calculatedIntake: String, useUnit: Bool = true) -> String {
+        guard isValid else {
             return "Fill in the data"
         }
         
-        if validateInputs() != nil {
+        guard let intakeValue = calculatedIntake.doubleValue,
+              intakeValue > 0 else {
             return "Fill in the data"
         }
         
         let formattedValue = intakeValue.asWhole()
+        
+        guard useUnit else {
+            return formattedValue
+        }
         
         return intakeValue == 1
         ? "\(formattedValue) calorie"
@@ -211,10 +173,6 @@ final class DailyIntakeViewModel: ObservableObject {
     
     var dailyIntakeText: String {
         text(for: calories)
-    }
-    
-    var displayCalories: String {
-        (calories.doubleValue ?? 0).asWhole()
     }
     
     // MARK: - Keyboard

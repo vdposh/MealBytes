@@ -45,6 +45,7 @@ struct CustomIntakeView: View {
                     focus = false
                     customIntakeViewModel.normalizeCalories()
                 }
+                .disabled(!customIntakeViewModel.isValid)
             }
         }
         .safeAreaInset(edge: .bottom) {
