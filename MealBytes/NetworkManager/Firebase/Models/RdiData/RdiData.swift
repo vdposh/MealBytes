@@ -16,4 +16,5 @@ struct RdiData: Codable {
     let selectedWeightUnit: String
     let height: String
     let selectedHeightUnit: String
+    let selectedWeightGoal: String
 }

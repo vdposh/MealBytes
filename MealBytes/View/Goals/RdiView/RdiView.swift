@@ -40,6 +40,7 @@ struct RdiView: View {
             ActivitySection(rdiViewModel: rdiViewModel)
             WeightSection(rdiViewModel: rdiViewModel)
             HeightSection(rdiViewModel: rdiViewModel)
+            WeightGoalSelection(rdiViewModel: rdiViewModel)
         }
     }
     

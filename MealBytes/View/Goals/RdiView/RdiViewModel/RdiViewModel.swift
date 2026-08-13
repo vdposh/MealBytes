@@ -26,6 +26,7 @@ final class RdiViewModel: ObservableObject {
     @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
+    @Published var selectedWeightGoal: WeightGoal = .notSelected
     @Published var calculatedRdi: String = ""
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyRdi: Bool = false
@@ -71,6 +72,9 @@ final class RdiViewModel: ObservableObject {
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: rdiData.selectedHeightUnit
                 ) ?? .cm
+                self.selectedWeightGoal = WeightGoal(
+                    rawValue: rdiData.selectedWeightGoal
+                ) ?? .notSelected
                 self.didLoadNonEmptyRdi = hasAnyData
             }
         } catch {
@@ -112,7 +116,8 @@ final class RdiViewModel: ObservableObject {
             weight: String(weight.doubleValue ?? 0),
             selectedWeightUnit: selectedWeightUnit.rawValue,
             height: String(height.doubleValue ?? 0),
-            selectedHeightUnit: selectedHeightUnit.rawValue
+            selectedHeightUnit: selectedHeightUnit.rawValue,
+            selectedWeightGoal: selectedWeightGoal.rawValue
         )
         
         do {
@@ -134,23 +139,20 @@ final class RdiViewModel: ObservableObject {
     // MARK: - Calculation
     private func setupBindingsRdiView() {
         Publishers.CombineLatest(
-            Publishers.CombineLatest($age, $weight),
-            Publishers.CombineLatest($height, $selectedGender)
-        )
-        .combineLatest(
             Publishers.CombineLatest(
-                $selectedActivity,
-                Publishers.CombineLatest(
-                    $selectedWeightUnit,
-                    $selectedHeightUnit
-                )
+                Publishers.CombineLatest($age, $weight),
+                Publishers.CombineLatest($height, $selectedGender)
+            ),
+            Publishers.CombineLatest(
+                Publishers
+                    .CombineLatest($selectedActivity, $selectedWeightUnit),
+                Publishers
+                    .CombineLatest($selectedHeightUnit, $selectedWeightGoal)
             )
         )
         .sink { [weak self] combined1, combined2 in
-            let (age, weight) = combined1.0
-            let (height, gender) = combined1.1
-            let (activity, units) = combined2
-            let (weightUnit, heightUnit) = units
+            let ((age, weight), (height, gender)) = combined1
+            let ((activity, weightUnit), (heightUnit, weightGoal)) = combined2
             
             self?.recalculateRdi(
                 age: age,
@@ -159,7 +161,8 @@ final class RdiViewModel: ObservableObject {
                 gender: gender,
                 activity: activity,
                 weightUnit: weightUnit,
-                heightUnit: heightUnit
+                heightUnit: heightUnit,
+                weightGoal: weightGoal
             )
         }
         .store(in: &cancellables)
@@ -172,11 +175,13 @@ final class RdiViewModel: ObservableObject {
         gender: Gender,
         activity: Activity,
         weightUnit: WeightUnit,
-        heightUnit: HeightUnit
+        heightUnit: HeightUnit,
+        weightGoal: WeightGoal
     ) {
         guard isValid,
               gender != .notSelected,
-              activity != .notSelected else {
+              activity != .notSelected,
+              weightGoal != .notSelected else {
             calculatedRdi = ""
             return
         }
@@ -184,12 +189,9 @@ final class RdiViewModel: ObservableObject {
         let ageValue = age.doubleValue ?? 0
         let weightValue = weight.doubleValue ?? 0
         let heightValue = height.doubleValue ?? 0
-        let weightInKg = weightUnit == .lbs
-        ? weightValue * 0.453592
-        : weightValue
-        let heightInCm = heightUnit == .inches
-        ? heightValue * 2.54
-        : heightValue
+        let weightInKg = weightUnit == .lbs ? weightValue * 0.453592 : weightValue
+        let heightInCm = heightUnit == .inches ? heightValue * 2.54 : heightValue
+        
         let bmr: Double
         let activityFactor: Double
         
@@ -210,7 +212,21 @@ final class RdiViewModel: ObservableObject {
         case .notSelected: return
         }
         
-        self.calculatedRdi = (max(1, bmr * activityFactor)).asWhole()
+        let tdee = bmr * activityFactor
+        
+        let adjustedCalories: Double
+        switch weightGoal {
+        case .lose:
+            adjustedCalories = tdee * 0.85
+        case .maintain:
+            adjustedCalories = tdee
+        case .gain:
+            adjustedCalories = tdee * 1.15
+        case .notSelected:
+            adjustedCalories = tdee
+        }
+        
+        calculatedRdi = max(1, adjustedCalories).asWhole()
     }
     
     var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {

@@ -18,7 +18,13 @@ struct OverviewDailyIntakeSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Text(dailyIntakeViewModel.dailyIntakeText)
+                Text(
+                    dailyIntakeViewModel
+                        .text(
+                            for: dailyIntakeViewModel.calories,
+                            useUnit: false
+                        )
+                )
             }
         }
     }
