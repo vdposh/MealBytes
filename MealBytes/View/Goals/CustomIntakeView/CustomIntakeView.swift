@@ -8,10 +8,17 @@
 import SwiftUI
 
 struct CustomIntakeView: View {
-    @FocusState private var focus: Bool
+    @FocusState private var focus: CustomIntakeFocus?
     @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var customIntakeViewModel: CustomIntakeViewModel
+    
+    private let focusOrder: [CustomIntakeFocus] = [
+        .calories,
+        .fat,
+        .carbohydrate,
+        .protein
+    ]
     
     var body: some View {
         Form {
@@ -24,9 +31,37 @@ struct CustomIntakeView: View {
                     inputMode: .integer,
                     maxIntegerDigits: 5
                 )
-                .focused($focus)
-            } footer: {
-                Text(IntakeSource.custom.description)
+                .focused($focus, equals: .calories)
+                
+                ServingTextFieldView(
+                    text: $customIntakeViewModel.fat,
+                    stackText: "Fat",
+                    useStackTrailing: true,
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    maxIntegerDigits: 3
+                )
+                .focused($focus, equals: .fat)
+                
+                ServingTextFieldView(
+                    text: $customIntakeViewModel.carbohydrate,
+                    stackText: "Carbohydrate",
+                    useStackTrailing: true,
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    maxIntegerDigits: 3
+                )
+                .focused($focus, equals: .carbohydrate)
+                
+                ServingTextFieldView(
+                    text: $customIntakeViewModel.protein,
+                    stackText: "Protein",
+                    useStackTrailing: true,
+                    keyboardType: .numberPad,
+                    inputMode: .integer,
+                    maxIntegerDigits: 3
+                )
+                .focused($focus, equals: .protein)
             }
         }
         .navigationTitle(IntakeSource.custom.rawValue)
@@ -42,23 +77,30 @@ struct CustomIntakeView: View {
                         dismiss()
                     }
                     
-                    focus = false
-                    customIntakeViewModel.normalizeCalories()
+                    focus = nil
+                    customIntakeViewModel.normalizeInputs()
                 }
                 .disabled(!customIntakeViewModel.isValid)
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if focus {
-                KeyboardToolbarView(
-                    done: {
-                        focus = false
-                        customIntakeViewModel.normalizeCalories()
-                    }
+            if focus != nil {
+                buildKeyboardToolbar(
+                    current: focus,
+                    ordered: focusOrder,
+                    normalize: customIntakeViewModel.normalizeInputs,
+                    set: { focus = $0 }
                 )
             }
         }
     }
+}
+
+enum CustomIntakeFocus: Hashable {
+    case calories
+    case fat
+    case carbohydrate
+    case protein
 }
 
 #Preview {

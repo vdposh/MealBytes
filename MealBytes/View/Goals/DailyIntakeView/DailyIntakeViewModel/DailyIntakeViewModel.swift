@@ -45,14 +45,13 @@ final class DailyIntakeViewModel: ObservableObject {
         do {
             let dailyIntakeData = try await firestore
                 .loadDailyIntakeFirestore()
-            let hasAnyData = !dailyIntakeData.calories.isEmpty
             
             await MainActor.run {
                 calories = dailyIntakeData.calories
                 fat = dailyIntakeData.fat
                 carbohydrate = dailyIntakeData.carbohydrate
                 protein = dailyIntakeData.protein
-                didLoadNonEmptyIntake = hasAnyData
+                didLoadNonEmptyIntake = !dailyIntakeData.calories.isEmpty
             }
         } catch {
             await MainActor.run {

@@ -248,7 +248,7 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Text
-    func text(for calculatedRdi: String) -> String {
+    func text(for calculatedRdi: String, useUnit: Bool = true) -> String {
         guard let rdiValue = calculatedRdi.doubleValue,
               rdiValue > 0,
               isValid else {
@@ -256,6 +256,10 @@ final class RdiViewModel: ObservableObject {
         }
         
         let formattedValue = rdiValue.asWhole()
+        
+        guard useUnit else {
+            return formattedValue
+        }
         
         return rdiValue == 1
         ? "\(formattedValue) calorie"

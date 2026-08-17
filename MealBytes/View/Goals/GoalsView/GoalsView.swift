@@ -12,8 +12,8 @@ struct GoalsView: View {
     
     var body: some View {
         Form {
-            DailyIntakeSectionView(goalsViewModel: goalsViewModel)
             RdiSectionView(goalsViewModel: goalsViewModel)
+            DailyIntakeSectionView(goalsViewModel: goalsViewModel)
             CustomIntakeSectionView(goalsViewModel: goalsViewModel)
             
 //            Section {
@@ -44,7 +44,6 @@ struct GoalsView: View {
 //                }
 //            }
         }
-        .id(goalsViewModel.uniqueId)
         .navigationTitle("Goals")
         .navigationBarTitleDisplayMode(.inline)
         .task {

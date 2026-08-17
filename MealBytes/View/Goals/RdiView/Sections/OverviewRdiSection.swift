@@ -18,7 +18,10 @@ struct OverviewRdiSection: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Text(rdiViewModel.calculatedRdi)
+                Text(
+                    rdiViewModel
+                        .text(for: rdiViewModel.calculatedRdi, useUnit: false)
+                )
             }
             
             if let macros = rdiViewModel.macroNutrients {

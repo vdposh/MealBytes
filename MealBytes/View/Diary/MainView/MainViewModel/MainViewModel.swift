@@ -97,21 +97,37 @@ final class MainViewModel: ObservableObject {
             macroTask
         )
     }
-
+    
     private func loadMacrosMainView() async {
-        do {
-            let dailyIntakeData = try await firestore
-                .loadDailyIntakeFirestore()
-            await MainActor.run {
-                self.macroFat = dailyIntakeData.fat
-                self.macroCarbs = dailyIntakeData.carbohydrate
-                self.macroProtein = dailyIntakeData.protein
+        if intakeSource == "customView" {
+            do {
+                let customData = try await firestore.loadCustomIntakeFirestore()
+                await MainActor.run {
+                    updateMacros(
+                        fat: customData.fat,
+                        carbohydrate: customData.carbohydrate,
+                        protein: customData.protein
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    appError = .decoding
+                }
             }
-        } catch {
-            await MainActor.run {
-                self.macroFat = ""
-                self.macroCarbs = ""
-                self.macroProtein = ""
+        } else {
+            do {
+                let dailyIntakeData = try await firestore.loadDailyIntakeFirestore()
+                await MainActor.run {
+                    updateMacros(
+                        fat: dailyIntakeData.fat,
+                        carbohydrate: dailyIntakeData.carbohydrate,
+                        protein: dailyIntakeData.protein
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    appError = .decoding
+                }
             }
         }
     }
@@ -430,6 +446,14 @@ final class MainViewModel: ObservableObject {
             }
             return (fat, carbs, protein)
             
+        case "customView":
+            guard let fat = Double(macroFat),
+                  let carbs = Double(macroCarbs),
+                  let protein = Double(macroProtein) else {
+                return nil
+            }
+            return (fat, carbs, protein)
+            
         default:
             return nil
         }
@@ -672,6 +696,7 @@ final class MainViewModel: ObservableObject {
         selectedMealType = nil
         
         updateIntake(to: "")
+        updateMacros(fat: "", carbohydrate: "", protein: "")
         expandAllSections()
         resetDateToToday()
         setDisplayIntake(true)
@@ -832,6 +857,12 @@ extension MainViewModel: MainViewModelProtocol {
     
     func updateIntake(to value: String) {
         intake = (Double(value) ?? 0).asWhole(grouping: false)
+    }
+    
+    func updateMacros(fat: String, carbohydrate: String, protein: String) {
+        self.macroFat = fat
+        self.macroCarbs = carbohydrate
+        self.macroProtein = protein
     }
 }
 

@@ -9,4 +9,7 @@ import SwiftUI
 
 struct CustomIntake: Codable {
     let calories: String
+    let fat: String
+    let carbohydrate: String
+    let protein: String
 }
