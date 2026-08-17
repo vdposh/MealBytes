@@ -42,33 +42,46 @@ struct GoalsSection: View {
                 .totalCalories()
                 .asWhole(unit: NutrientType.calories.unit),
             progress: mainViewModel
-                .canDisplayIntake() ? mainViewModel.intakeProgress : nil
+                .canDisplayIntake() ? mainViewModel
+                .calorieProgress() : nil
         )
     }
     
     private var fatCard: some View {
         return GoalCard(
             title: NutrientType.fat.title,
-            value: mainViewModel.totalNutrients().fat.asWhole(unit: NutrientType.fat.unit),
-            progress: mainViewModel.canDisplayIntake() ? mainViewModel.macroProgress(for: .fat) : nil,
+            value: mainViewModel
+                .totalNutrients().fat
+                .asWhole(unit: NutrientType.fat.unit),
+            progress: mainViewModel
+                .canDisplayIntake() ? mainViewModel
+                .macroProgress(for: .fat) : nil,
             color: .customFat
         )
     }
-
+    
     private var carbsCard: some View {
         return GoalCard(
             title: NutrientType.carbohydrate.alternativeTitle,
-            value: mainViewModel.totalNutrients().carbs.asWhole(unit: NutrientType.carbohydrate.unit),
-            progress: mainViewModel.canDisplayIntake() ? mainViewModel.macroProgress(for: .carbohydrate) : nil,
+            value: mainViewModel
+                .totalNutrients().carbs
+                .asWhole(unit: NutrientType.carbohydrate.unit),
+            progress: mainViewModel
+                .canDisplayIntake() ? mainViewModel
+                .macroProgress(for: .carbohydrate) : nil,
             color: .customCarbs
         )
     }
-
+    
     private var proteinCard: some View {
         return GoalCard(
             title: NutrientType.protein.title,
-            value: mainViewModel.totalNutrients().protein.asWhole(unit: NutrientType.protein.unit),
-            progress: mainViewModel.canDisplayIntake() ? mainViewModel.macroProgress(for: .protein) : nil,
+            value: mainViewModel
+                .totalNutrients().protein
+                .asWhole(unit: NutrientType.protein.unit),
+            progress: mainViewModel
+                .canDisplayIntake() ? mainViewModel
+                .macroProgress(for: .protein) : nil,
             color: .customProtein
         )
     }

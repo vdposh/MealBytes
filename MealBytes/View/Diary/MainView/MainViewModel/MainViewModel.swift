@@ -46,7 +46,6 @@ final class MainViewModel: ObservableObject {
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
     @Published var mealTypeToClear: MealType?
-    @Published var intakeProgress: Double = 0.0
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var macroFat: String = ""
@@ -143,7 +142,7 @@ final class MainViewModel: ObservableObject {
                     by: { $0.mealType }
                 )
                 
-                updateProgress()
+                recalculateNutrients(for: date)
             }
         } catch {
             await MainActor.run {
@@ -161,7 +160,7 @@ final class MainViewModel: ObservableObject {
         mealItems[mealType, default: []].append(item)
         expandedSections[mealType] = true
         
-        updateProgress()
+        recalculateNutrients(for: date)
     }
     
     // MARK: - Update Meal Item
@@ -180,7 +179,7 @@ final class MainViewModel: ObservableObject {
             mealItems[mealType]?[index] = updatedItem
         }
         
-        updateProgress()
+        recalculateNutrients(for: date)
     }
     
     // MARK: - Move Meal Item
@@ -229,7 +228,7 @@ final class MainViewModel: ObservableObject {
             newMealItems[mealType]?.removeAll { $0.id == id }
             mealItems = newMealItems
             
-            updateProgress()
+            recalculateNutrients(for: date)
         }
         
         Task {
@@ -256,7 +255,7 @@ final class MainViewModel: ObservableObject {
                 }
             }
             
-            updateProgress()
+            recalculateNutrients(for: date)
         }
         
         Task {
@@ -281,7 +280,7 @@ final class MainViewModel: ObservableObject {
                 !calendar.isDate($0.date, inSameDayAs: dateToClear)
             }
             
-            updateProgress()
+            recalculateNutrients(for: date)
         }
         
         Task {
@@ -396,21 +395,6 @@ final class MainViewModel: ObservableObject {
         return min(max(calories / intakeValue, 0), 1)
     }
     
-    private func updateProgress() {
-        let calories = summariesForCaloriesSection()[.calories] ?? 0.0
-        updateIntakeProgress(calories: calories)
-        recalculateNutrients(for: date)
-    }
-    
-    private func updateIntakeProgress(calories: Double) {
-        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
-            intakeProgress = 0.0
-            return
-        }
-        
-        intakeProgress = calories / intakeValue
-    }
-    
     func summariesForCaloriesSection() -> [NutrientType: Double] {
         mealItems.values.reduce(
             into: [NutrientType: Double]()) { result, items in
@@ -424,6 +408,15 @@ final class MainViewModel: ObservableObject {
                     }
                 }
             }
+    }
+    
+    func calorieProgress() -> Double? {
+        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
+            return nil
+        }
+        let calories = totalCalories()
+        guard intakeValue > 0 else { return 0 }
+        return min(calories / intakeValue, 1)
     }
     
     func getMacroTargets() -> (fat: Double, carbs: Double, protein: Double)? {
@@ -669,7 +662,6 @@ final class MainViewModel: ObservableObject {
         guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
         
         recalculateNutrients(for: newDate)
-        updateProgress()
         expandAllSections()
         isExpanded = false
     }
@@ -695,8 +687,11 @@ final class MainViewModel: ObservableObject {
     func resetMainState() {
         selectedMealType = nil
         
-        updateIntake(to: "")
-        updateMacros(fat: "", carbohydrate: "", protein: "")
+        intake = ""
+        macroFat = ""
+        macroCarbs = ""
+        macroProtein = ""
+        
         expandAllSections()
         resetDateToToday()
         setDisplayIntake(true)
