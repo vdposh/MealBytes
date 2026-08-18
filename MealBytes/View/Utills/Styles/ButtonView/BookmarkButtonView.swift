@@ -19,13 +19,13 @@ struct BookmarkButtonView: View {
                 Circle()
                     .fill(
                         isFilled ? Color.accent : Color.secondary.opacity(0.2))
-                    .frame(width: 50, height: 50)
+                    .frame(width: 34, height: 34)
                 
                 Image(systemName: isFilled ? "bookmark.slash" : "bookmark")
                     .resizable()
                     .scaledToFit()
                     .fontWeight(isFilled ? .regular : .medium)
-                    .frame(width: 25, height: 25)
+                    .frame(width: 20, height: 20)
                     .foregroundStyle(isFilled ? .white : .accent)
                     .symbolColorRenderingMode(.gradient)
             }

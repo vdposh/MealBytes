@@ -414,7 +414,7 @@ final class MainViewModel: ObservableObject {
         }
         let calories = totalCalories()
         guard intakeValue > 0 else { return 0 }
-        return min(calories / intakeValue, 1)
+        return calories / intakeValue
     }
     
     func getMacroTargets() -> (fat: Double, carbs: Double, protein: Double)? {
@@ -457,13 +457,13 @@ final class MainViewModel: ObservableObject {
         switch type {
         case .fat:
             guard targets.fat > 0 else { return 0 }
-            return min(current.fat / targets.fat, 1)
+            return current.fat / targets.fat
         case .carbohydrate:
             guard targets.carbs > 0 else { return 0 }
-            return min(current.carbs / targets.carbs, 1)
+            return current.carbs / targets.carbs
         case .protein:
             guard targets.protein > 0 else { return 0 }
-            return min(current.protein / targets.protein, 1)
+            return current.protein / targets.protein
         default:
             return nil
         }

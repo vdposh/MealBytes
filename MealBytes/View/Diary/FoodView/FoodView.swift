@@ -47,8 +47,11 @@ struct FoodView: View {
     
     var body: some View {
         foodViewContentBody
-            .navigationTitle(navigationTitleText)
+            .navigationTitle(foodViewModel.navigationTitleText)
             .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                foodViewToolbar
+            }
             .safeAreaInset(edge: .bottom) {
                 if amountFocused {
                     KeyboardToolbarView(
@@ -77,35 +80,54 @@ struct FoodView: View {
             }
     }
     
+    @ViewBuilder
     private var foodViewContentBody: some View {
-        ZStack {
-            switch foodViewModel.viewState {
-            case .loading:
-                LoadingView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-            case .error(let error):
-                contentUnavailableView(
-                    for: error,
-                    mealType: foodViewModel.mealType
-                ) {
-                    Task {
-                        foodViewModel.appError = nil
-                        await foodViewModel.fetchFoodDetails()
-                    }
+        switch foodViewModel.viewState {
+        case .loading:
+            LoadingView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+        case .error(let error):
+            contentUnavailableView(
+                for: error,
+                mealType: foodViewModel.mealType
+            ) {
+                Task {
+                    foodViewModel.appError = nil
+                    await foodViewModel.fetchFoodDetails()
                 }
-                
-            case .loaded:
-                Form {
-                    servingSizeSection
-                    nutrientActionSection
-                    nutritionFactsSection
-                }
-                .listSectionSpacing(15)
+            }
+            
+        case .loaded:
+            Form {
+                titleSection
+                servingSizeSection
+                nutritionFactsSection
+            }
+            .listSectionSpacing(20)
+        }
+    }
+    
+    private var titleSection: some View {
+        Section {
+            if let serving = foodViewModel.selectedServing {
+                FoodItemView(
+                    foodName: foodViewModel.food.searchFoodName,
+                    formattedText: foodViewModel
+                        .formattedMealText(
+                            for: serving,
+                            amount: foodViewModel.amount
+                        ),
+                    calories: serving.calories,
+                    fat: serving.fat,
+                    carbs: serving.carbohydrate,
+                    protein: serving.protein
+                )
             }
         }
     }
     
+    @ViewBuilder
     private var servingSizeSection: some View {
         Section {
             ServingTextFieldView(
@@ -144,127 +166,26 @@ struct FoodView: View {
                     foodViewModel.normalizeAmount()
                 }
             }
-            
-            if isEditingMealItem {
-                Label {
-                    Picker("Meal type", selection: $mealType) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Text(meal.rawValue)
-                                .tag(meal)
-                        }
-                    }
-                } icon: {
-                    Image(systemName: "fork.knife")
-                        .foregroundStyle(.customGray)
-                        .symbolColorRenderingMode(.gradient)
-                }
-                .onChange(of: mealType) {
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
-                }
-            }
-        } header: {
-            Text(foodViewModel.food.searchFoodName)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundStyle(Color.primary)
-                .listRowInsets(
-                    EdgeInsets(top: 20, leading: 16, bottom: 16, trailing: 16)
-                )
         }
-    }
-    
-    private var nutrientActionSection: some View {
+        
         Section {
-            if isEditingMealItem {
-                HStack(spacing: 10) {
-                    ActionButtonView(
-                        title: "Remove",
-                        action: {
-                            foodViewModel.deleteMealItemFoodView()
-                            dismiss()
-                        },
-                        color: .customRed
-                    )
-                    
-                    ActionButtonView(
-                        title: "Save",
-                        action: {
-                            Task {
-                                await foodViewModel
-                                    .updateMealItemFoodView(
-                                        for: foodViewModel.mainViewModel.date
-                                    )
-                                dismiss()
-                            }
-                        },
-                        isEnabled: foodViewModel.canAddFood
-                    )
-                }
-            } else {
-                HStack(spacing: 10) {
-                    ActionButtonView(
-                        title: "Add",
-                        action: {
-                            Task {
-                                await foodViewModel.addMealItemFoodView(
-                                    in: foodViewModel.mealType,
-                                    for: foodViewModel.mainViewModel.date
-                                )
-                                dismiss()
-                            }
-                        },
-                        isEnabled: foodViewModel.canAddFood
-                    )
-                    
-                    BookmarkButtonView(
-                        action: {
-                            Task {
-                                await foodViewModel.toggleBookmarkFoodView()
-                            }
-                            
-                            if !foodViewModel.isBookmarkFilled {
-                                amountFocused = false
-                                foodViewModel.normalizeAmount()
-                            }
-                        },
-                        isFilled: foodViewModel.isBookmarkFilled
-                    )
-                }
-            }
-            
-            HStack {
-                ForEach(
-                    Array(foodViewModel.compactNutrientDetails.enumerated()),
-                    id: \.element.id
-                ) { index, nutrient in
-                    let intakePercentageText = foodViewModel
-                        .mainViewModel.canDisplayIntake()
-                    ? foodViewModel.mainViewModel
-                        .intakePercentage(for: nutrient.value)
-                    : nil
-                    
-                    CompactNutrientValueRow(
-                        nutrient: nutrient,
-                        intakePercentage: nutrient.type == .calories
-                        ? intakePercentageText
-                        : nil
-                    )
-                    
-                    if index < foodViewModel.compactNutrientDetails.count - 1 {
-                        Rectangle()
-                            .fill(Color.secondary.opacity(0.2))
-                            .frame(width: 1, height: 50)
+            Label {
+                Picker("Meal type", selection: $mealType) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Text(meal.rawValue)
+                            .tag(meal)
                     }
                 }
+            } icon: {
+                Image(systemName: "fork.knife")
+                    .foregroundStyle(.customGray)
+                    .symbolColorRenderingMode(.gradient)
             }
-            .padding(.top, 8)
+            .onChange(of: mealType) {
+                amountFocused = false
+                foodViewModel.normalizeAmount()
+            }
         }
-        .padding(.vertical, 8)
-        .listRowInsets(.vertical, 0)
-        .listSectionMargins(.horizontal, 0)
-        .listRowBackground(Color.clear)
-        .listRowSeparator(.hidden)
     }
     
     private var nutritionFactsSection: some View {
@@ -278,10 +199,61 @@ struct FoodView: View {
         }
     }
     
-    private var navigationTitleText: String {
-        isEditingMealItem
-        ? "Edit in Diary"
-        : "Add to \(foodViewModel.mealType.rawValue)"
+    @ToolbarContentBuilder
+    private var foodViewToolbar: some ToolbarContent {
+        if isEditingMealItem {
+            ToolbarItem(placement: .confirmationAction) {
+                Button(role: .confirm) {
+                    Task {
+                        await foodViewModel
+                            .updateMealItemFoodView(
+                                for: foodViewModel.mainViewModel.date
+                            )
+                        
+                        dismiss()
+                    }
+                }
+                .disabled(!foodViewModel.canAddFood)
+            }
+        } else {
+            ToolbarItem(placement: .confirmationAction) {
+                Button(role: .confirm) {
+                    Task {
+                        await foodViewModel.addMealItemFoodView(
+                            in: foodViewModel.mealType,
+                            for: foodViewModel.mainViewModel.date
+                        )
+                        
+                        dismiss()
+                    }
+                } label: {
+                    Text("Add")
+                        .fontWeight(.medium)
+                }
+                .disabled(!foodViewModel.canAddFood)
+            }
+        }
+        
+        ToolbarItem(placement: .bottomBar) {
+            Button {
+                Task {
+                    await foodViewModel.toggleBookmarkFoodView()
+                }
+                
+                if !foodViewModel.isBookmarkFilled {
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                }
+            } label: {
+                Image(
+                    systemName: foodViewModel.isBookmarkFilled
+                    ? "bookmark.slash"
+                    : "bookmark"
+                )
+            }
+        }
+        
+        ToolbarSpacer(.flexible, placement: .bottomBar)
     }
 }
 

@@ -290,8 +290,6 @@ struct SearchView: View {
             }
             .sharedBackgroundVisibility(.hidden)
             
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            
             ToolbarItem(placement: .bottomBar) {
                 Button(role: .destructive) {
                     searchViewModel.showRemoveDialog = true
@@ -331,6 +329,8 @@ struct SearchView: View {
                     }
                 }
             }
+            
+            ToolbarSpacer(.flexible, placement: .bottomBar)
             
         case .inactive:
             ToolbarItem(placement: .topBarTrailing) {

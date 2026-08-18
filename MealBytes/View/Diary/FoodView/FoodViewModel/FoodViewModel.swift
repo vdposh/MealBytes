@@ -253,14 +253,6 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Delete Food Item
-    func deleteMealItemFoodView() {
-        mainViewModel.deleteMealItemMainView(
-            with: originalMealItemId,
-            for: originalMealType
-        )
-    }
-    
     // MARK: - Bookmark Management
     func toggleBookmarkFoodView() async {
         await MainActor.run {
@@ -342,6 +334,30 @@ final class FoodViewModel: ObservableObject {
         return description
     }
     
+    func formattedMealText(for serving: Serving, amount: String) -> String {
+        let formattedAmount = amount
+        let measurement = serving.measurementDescription
+        let servingSize = serving.metricServingAmount
+        
+        let amountValue = Double(formattedAmount) ?? 0
+        let totalSize = servingSize * amountValue
+        let formattedTotalSize = totalSize.asDecimal()
+        
+        if measurement == "g" || measurement == "ml" {
+            if formattedAmount.isEmpty {
+                return measurement == "g" ? "grams" : "milliliters"
+            }
+            
+            return "\(formattedAmount) \(serving.metricServingUnit)"
+        }
+        
+        if formattedAmount.isEmpty {
+            return "\(measurement) (\(servingSize.asDecimal()) \(serving.metricServingUnit))"
+        }
+        
+        return "\(formattedAmount) \(measurement) (\(formattedTotalSize) \(serving.metricServingUnit))"
+    }
+    
     // MARK: - Button States
     var canAddFood: Bool {
         amount.isValidNumericInput()
@@ -372,20 +388,6 @@ final class FoodViewModel: ObservableObject {
         } else {
             return amount
         }
-    }
-    
-    var compactNutrientDetails: [CompactNutrientValue] {
-        guard let selectedServing else { return [] }
-        
-        return CompactNutrientValueProvider()
-            .getCompactNutrientDetails(from: selectedServing)
-            .map { detail in
-                CompactNutrientValue(
-                    type: detail.type,
-                    value: detail.value * calculateSelectedAmountValue(),
-                    serving: detail.serving
-                )
-            }
     }
     
     var nutrientValues: [NutrientValue] {
@@ -444,6 +446,12 @@ final class FoodViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
+    var navigationTitleText: String {
+        isEditingMealItem
+        ? "Edit in Diary"
+        : "Add to \(mealType.rawValue)"
+    }
+    
     var viewState: FoodViewState {
         if let error = appError {
             return .error(error)
