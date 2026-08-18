@@ -25,6 +25,7 @@ protocol MainViewModelProtocol {
     func deleteMealItemMainView(with id: UUID, for: MealType)
     func intakePercentage(for calories: Double) -> String
     func updateIntake(to value: String)
+    func updateMacros(fat: String, carbohydrate: String, protein: String)
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool)
     func setDisplayIntake(_ value: Bool)
     func canDisplayIntake() -> Bool
@@ -85,50 +86,14 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Main Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
-        async let currentIntakeTask: () = loadCurrentIntakeMainView()
+        async let macroTask: () = loadIntakeMainView()
         async let displayIntakeTask: () = loadDisplayIntakeMainView()
-        async let macroTask: () = loadMacrosMainView()
         
         _ = await (
             mealItemsTask,
-            currentIntakeTask,
             displayIntakeTask,
             macroTask
         )
-    }
-    
-    private func loadMacrosMainView() async {
-        if intakeSource == "customView" {
-            do {
-                let customData = try await firestore.loadCustomIntakeFirestore()
-                await MainActor.run {
-                    updateMacros(
-                        fat: customData.fat,
-                        carbohydrate: customData.carbohydrate,
-                        protein: customData.protein
-                    )
-                }
-            } catch {
-                await MainActor.run {
-                    appError = .decoding
-                }
-            }
-        } else {
-            do {
-                let dailyIntakeData = try await firestore.loadDailyIntakeFirestore()
-                await MainActor.run {
-                    updateMacros(
-                        fat: dailyIntakeData.fat,
-                        carbohydrate: dailyIntakeData.carbohydrate,
-                        protein: dailyIntakeData.protein
-                    )
-                }
-            } catch {
-                await MainActor.run {
-                    appError = .decoding
-                }
-            }
-        }
     }
     
     // MARK: - Load Meal Item
@@ -296,8 +261,41 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Load Current Intake
-    private func loadCurrentIntakeMainView() async {
+    // MARK: - Load Intake
+    private func loadIntakeMainView() async {
+        if intakeSource == "customView" {
+            do {
+                let customData = try await firestore
+                    .loadCustomIntakeFirestore()
+                await MainActor.run {
+                    updateMacros(
+                        fat: customData.fat,
+                        carbohydrate: customData.carbohydrate,
+                        protein: customData.protein
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    appError = .decoding
+                }
+            }
+        } else {
+            do {
+                let dailyIntakeData = try await firestore.loadDailyIntakeFirestore()
+                await MainActor.run {
+                    updateMacros(
+                        fat: dailyIntakeData.fat,
+                        carbohydrate: dailyIntakeData.carbohydrate,
+                        protein: dailyIntakeData.protein
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    appError = .decoding
+                }
+            }
+        }
+        
         do {
             let fetchedData = try await firestore.loadCurrentIntakeFirestore()
             

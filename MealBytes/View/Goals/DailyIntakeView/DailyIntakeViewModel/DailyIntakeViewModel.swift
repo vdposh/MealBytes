@@ -91,6 +91,12 @@ final class DailyIntakeViewModel: ObservableObject {
             
             await MainActor.run {
                 mainViewModel.updateIntake(to: trimmedCalories)
+                mainViewModel
+                    .updateMacros(
+                        fat: fat.trimmedLeadingZeros,
+                        carbohydrate: carbohydrate.trimmedLeadingZeros,
+                        protein: protein.trimmedLeadingZeros
+                    )
                 didSaveSuccessfully = true
             }
             
