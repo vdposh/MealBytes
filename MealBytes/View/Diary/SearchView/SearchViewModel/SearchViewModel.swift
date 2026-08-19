@@ -20,6 +20,7 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var removalBookmarks: Set<Int> = []
+    @Published var bookmarkMetadataDict: [Int: BookmarkMetadata] = [:]
     @Published var selectedItems = Set<Food.ID>()
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
@@ -158,11 +159,26 @@ final class SearchViewModel: ObservableObject {
                 
                 let bookmarked = Set(favorites.map { $0.searchFoodId })
                 
+                var metadataDict: [Int: BookmarkMetadata] = [:]
+                for food in favorites {
+                    if let metadata = try? await firestore
+                        .loadBookmarkMetadata(
+                            for: food.searchFoodId,
+                            foodName: food.searchFoodName,
+                            mealType: mealType
+                        ) {
+                        metadataDict[food.searchFoodId] = metadata
+                    }
+                }
+                
+                let safeMetadataDict = metadataDict
+                
                 await MainActor.run {
                     guard !Task.isCancelled else { return }
                     
                     self.favoriteFoods = favorites
                     self.bookmarkedFoods = bookmarked
+                    self.bookmarkMetadataDict = safeMetadataDict
                     
                     if query.isEmpty {
                         self.foods = favorites

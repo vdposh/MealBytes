@@ -13,4 +13,9 @@ struct BookmarkMetadata: Codable {
     let mealType: MealType
     let amount: String
     let servingDescription: String
+    let calories: Double
+    let fat: Double
+    let carbs: Double
+    let protein: Double
+    let formattedText: String
 }

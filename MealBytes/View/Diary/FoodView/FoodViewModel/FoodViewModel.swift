@@ -164,13 +164,23 @@ final class FoodViewModel: ObservableObject {
             try await firestore.addMealItemFirestore(newItem)
             
             if isBookmarkFilled {
+                let adjusted = getAdjustedNutrients()
+
                 let metadata = BookmarkMetadata(
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType,
-                    amount:  String(amount.doubleValue ?? 0),
+                    amount: amount,
                     servingDescription: selectedServing?
-                        .measurementDescription ?? ""
+                        .measurementDescription ?? "",
+                    calories: adjusted.calories,
+                    fat: adjusted.fat,
+                    carbs: adjusted.carbs,
+                    protein: adjusted.protein,
+                    formattedText: formattedMealText(
+                        for: selectedServing!,
+                        amount: amount
+                    )
                 )
                 
                 try await firestore.saveBookmarkMetadata(
@@ -246,6 +256,29 @@ final class FoodViewModel: ObservableObject {
                 
                 try await firestore.updateMealItemFirestore(updatedMealItem)
             }
+            
+            if isBookmarkFilled {
+                let adjusted = getAdjustedNutrients()
+                
+                let metadata = BookmarkMetadata(
+                    foodId: food.searchFoodId,
+                    foodName: food.searchFoodName,
+                    mealType: mealType,
+                    amount: amount,
+                    servingDescription: selectedServing.measurementDescription,
+                    calories: adjusted.calories,
+                    fat: adjusted.fat,
+                    carbs: adjusted.carbs,
+                    protein: adjusted.protein,
+                    formattedText: formattedMealText(
+                        for: selectedServing,
+                        amount: amount
+                    )
+                )
+                
+                try await firestore
+                    .saveBookmarkMetadata(metadata, for: mealType)
+            }
         } catch {
             await MainActor.run {
                 appError = .network
@@ -264,12 +297,22 @@ final class FoodViewModel: ObservableObject {
         guard isBookmarkFilled,
               let selectedServing else { return }
         
+        let adjusted = getAdjustedNutrients()
+        
         let metadata = BookmarkMetadata(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             mealType: mealType,
             amount: amount,
-            servingDescription: selectedServing.measurementDescription
+            servingDescription: selectedServing.measurementDescription,
+            calories: adjusted.calories,
+            fat: adjusted.fat,
+            carbs: adjusted.carbs,
+            protein: adjusted.protein,
+            formattedText: formattedMealText(
+                for: selectedServing,
+                amount: amount
+            )
         )
         
         do {
@@ -423,6 +466,33 @@ final class FoodViewModel: ObservableObject {
         
         return scaledAmount
             .asDecimal(unit: unit.unitDescription(for: scaledAmount))
+    }
+    
+    func getAdjustedNutrients() -> (
+        calories: Double,
+        fat: Double,
+        carbs: Double,
+        protein: Double
+    ) {
+        guard selectedServing != nil else {
+            return (0, 0, 0, 0)
+        }
+        
+        let nutrients = nutrientValues
+        let calories = nutrients.first(
+            where: { $0.type == .calories
+            })?.value ?? 0
+        let fat = nutrients.first(
+            where: { $0.type == .fat
+            })?.value ?? 0
+        let carbs = nutrients.first(
+            where: { $0.type == .carbohydrate
+            })?.value ?? 0
+        let protein = nutrients.first(
+            where: { $0.type == .protein
+            })?.value ?? 0
+        
+        return (calories, fat, carbs, protein)
     }
     
     // MARK: - Keyboard

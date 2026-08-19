@@ -156,7 +156,11 @@ struct SearchView: View {
     @ViewBuilder
     private func foodRow(for food: Food) -> some View {
         if searchViewModel.isEditModeActive {
-            FoodDetailView(food: food)
+            FoodDetailView(
+                food: food,
+                bookmarkMetadata: searchViewModel
+                    .bookmarkMetadataDict[food.searchFoodId]
+            )
         } else {
             NavigationLink {
                 FoodView(
@@ -169,7 +173,11 @@ struct SearchView: View {
                     isEditingMealItem: false
                 )
             } label: {
-                FoodDetailView(food: food)
+                FoodDetailView(
+                    food: food,
+                    bookmarkMetadata: searchViewModel
+                        .bookmarkMetadataDict[food.searchFoodId]
+                )
             }
             .swipeActions {
                 Button(

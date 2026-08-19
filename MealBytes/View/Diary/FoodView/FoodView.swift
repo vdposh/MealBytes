@@ -111,6 +111,20 @@ struct FoodView: View {
     private var titleSection: some View {
         Section {
             if let serving = foodViewModel.selectedServing {
+                let nutrients = foodViewModel.nutrientValues
+                let calories = nutrients.first(
+                    where: { $0.type == .calories
+                    })?.value ?? 0
+                let fat = nutrients.first(
+                    where: { $0.type == .fat
+                    })?.value ?? 0
+                let carbs = nutrients.first(
+                    where: { $0.type == .carbohydrate
+                    })?.value ?? 0
+                let protein = nutrients.first(
+                    where: { $0.type == .protein
+                    })?.value ?? 0
+                
                 FoodItemView(
                     foodName: foodViewModel.food.searchFoodName,
                     formattedText: foodViewModel
@@ -118,10 +132,10 @@ struct FoodView: View {
                             for: serving,
                             amount: foodViewModel.amount
                         ),
-                    calories: serving.calories,
-                    fat: serving.fat,
-                    carbs: serving.carbohydrate,
-                    protein: serving.protein
+                    calories: calories,
+                    fat: fat,
+                    carbs: carbs,
+                    protein: protein
                 )
             }
         }

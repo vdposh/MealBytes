@@ -9,9 +9,19 @@ import SwiftUI
 
 struct FoodDetailView: View {
     let food: Food
+    var bookmarkMetadata: BookmarkMetadata? = nil
     
     var body: some View {
-        if let nutrients = food.parsedNutrients {
+        if let metadata = bookmarkMetadata {
+            FoodItemView(
+                foodName: food.searchFoodName,
+                formattedText: metadata.formattedText,
+                calories: metadata.calories,
+                fat: metadata.fat,
+                carbs: metadata.carbs,
+                protein: metadata.protein
+            )
+        } else if let nutrients = food.parsedNutrients {
             FoodItemView(
                 foodName: food.searchFoodName,
                 formattedText: nutrients.description,
