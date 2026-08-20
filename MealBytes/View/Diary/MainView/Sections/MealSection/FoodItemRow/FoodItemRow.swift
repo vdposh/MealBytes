@@ -13,29 +13,8 @@ struct FoodItemRow: View {
     @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
-        foodItemContent
-            .contextMenu {
-                foodItemContextMenu
-            }
-    }
-    
-    private var foodItemContent: some View {
-        NavigationLink {
-            FoodView(
-                mealType: mealItem.mealType,
-                food: Food(
-                    searchFoodId: mealItem.foodId,
-                    searchFoodName: mealItem.foodName,
-                    searchFoodDescription: ""
-                ),
-                searchViewModel: mainViewModel.searchViewModel,
-                mainViewModel: mainViewModel,
-                amount: mealItem.amount.asDecimal(grouping: false),
-                measurementDescription: mealItem.measurementDescription,
-                isEditingMealItem: true,
-                originalCreatedAt: mealItem.createdAt,
-                originalMealItemId: mealItem.id
-            )
+        Button {
+            mainViewModel.selectedFoodItem = mealItem
         } label: {
             FoodItemView(
                 foodName: mealItem.foodName,
@@ -45,6 +24,9 @@ struct FoodItemRow: View {
                 carbs: mealItem.carbsValue,
                 protein: mealItem.proteinValue
             )
+        }
+        .contextMenu {
+            foodItemContextMenu
         }
     }
     

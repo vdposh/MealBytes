@@ -39,7 +39,7 @@ final class FoodViewModel: ObservableObject {
     
     private let fatSecretManager: FatSecretManagerProtocol = FatSecretManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
-    private let searchViewModel: SearchViewModelProtocol
+    private var searchViewModel: SearchViewModelProtocol
     let mainViewModel: MainViewModelProtocol
     
     init(
@@ -72,56 +72,62 @@ final class FoodViewModel: ObservableObject {
         
         await searchViewModel.loadBookmarksSearchView(for: mealType)
         
-        self.isBookmarkFilled = searchViewModel.isBookmarkedSearchView(food)
-        
         do {
             let fetchedFoodDetail = try await fatSecretManager
                 .fetchFoodDetails(foodId: food.searchFoodId)
             
             self.foodDetail = fetchedFoodDetail
             
-            switch fetchedFoodDetail.servings.serving.first(
-                where: {
-                    $0.measurementDescription == initialMeasurementDescription
-                }
-            ) {
-            case let matchingServing?:
-                self.selectedServing = matchingServing
-            default:
-                self.selectedServing = fetchedFoodDetail.servings.serving.first
+            let metadata = searchViewModel
+                .bookmarkMetadataDict[food.searchFoodId]
+            let servingDescription = metadata?.servingDescription
+            ?? initialMeasurementDescription
+            
+            if let metadata = metadata,
+               let value = Double(metadata.amount) {
+                amount = value.asDecimal(grouping: false)
             }
             
-            if !isEditingMealItem {
+            if let serving = fetchedFoodDetail.servings.serving.first(
+                where: { $0.measurementDescription == servingDescription }
+            ) {
+                selectedServing = serving
+            } else {
+                selectedServing = fetchedFoodDetail.servings.serving.first
+            }
+            
+            if !isEditingMealItem && metadata == nil {
                 setAmount(for: selectedServing)
             }
             
-            if isBookmarkFilled, !isEditingMealItem {
-                if let metadata = try await firestore.loadBookmarkMetadata(
+            if isBookmarkFilled, !isEditingMealItem,
+               let firestoreMetadata = try await firestore
+                .loadBookmarkMetadata(
                     for: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType
                 ) {
-                    let value = Double(metadata.amount) ?? 0
-                    amount = value.asDecimal(grouping: false)
-                    
+                if firestoreMetadata.amount != amount ||
+                    firestoreMetadata.servingDescription !=
+                    selectedServing?.measurementDescription {
+                    if let value = Double(firestoreMetadata.amount) {
+                        amount = value.asDecimal(grouping: false)
+                    }
                     if let serving = fetchedFoodDetail.servings.serving.first(
                         where: {
-                            $0.measurementDescription == metadata
-                                .servingDescription
+                            $0.measurementDescription ==
+                            firestoreMetadata.servingDescription
                         }
                     ) {
                         selectedServing = serving
                     }
                 }
             }
-        } catch {
-            switch error {
-            case let appError as AppError:
-                self.appError = appError
-            default:
-                self.appError = .networkRefresh
-            }
             
+            self.isBookmarkFilled = searchViewModel
+                .isBookmarkedSearchView(food)
+        } catch {
+            self.appError = error as? AppError ?? .networkRefresh
             isError = true
         }
         
@@ -165,7 +171,7 @@ final class FoodViewModel: ObservableObject {
             
             if isBookmarkFilled {
                 let adjusted = getAdjustedNutrients()
-
+                
                 let metadata = BookmarkMetadata(
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
@@ -187,6 +193,9 @@ final class FoodViewModel: ObservableObject {
                     metadata,
                     for: mealType
                 )
+                
+                searchViewModel
+                    .bookmarkMetadataDict[food.searchFoodId] = metadata
             }
         } catch {
             await MainActor.run {
@@ -194,7 +203,7 @@ final class FoodViewModel: ObservableObject {
             }
         }
         
-        mainViewModel.triggerFoodAlert()
+        searchViewModel.triggerFoodAlert()
     }
     
     // MARK: - Update Food Item
@@ -238,7 +247,8 @@ final class FoodViewModel: ObservableObject {
                 await MainActor.run {
                     mainViewModel.deleteMealItemMainView(
                         with: originalMealItemId,
-                        for: originalMealType
+                        for: originalMealType,
+                        animated: false
                     )
                 }
                 
@@ -256,34 +266,20 @@ final class FoodViewModel: ObservableObject {
                 
                 try await firestore.updateMealItemFirestore(updatedMealItem)
             }
-            
-            if isBookmarkFilled {
-                let adjusted = getAdjustedNutrients()
-                
-                let metadata = BookmarkMetadata(
-                    foodId: food.searchFoodId,
-                    foodName: food.searchFoodName,
-                    mealType: mealType,
-                    amount: amount,
-                    servingDescription: selectedServing.measurementDescription,
-                    calories: adjusted.calories,
-                    fat: adjusted.fat,
-                    carbs: adjusted.carbs,
-                    protein: adjusted.protein,
-                    formattedText: formattedMealText(
-                        for: selectedServing,
-                        amount: amount
-                    )
-                )
-                
-                try await firestore
-                    .saveBookmarkMetadata(metadata, for: mealType)
-            }
         } catch {
             await MainActor.run {
                 appError = .network
             }
         }
+    }
+    
+    // MARK: - Delete Food Item
+    func deleteMealItemFoodView() {
+        mainViewModel.deleteMealItemMainView(
+            with: originalMealItemId,
+            for: originalMealType,
+            animated: false
+        )
     }
     
     // MARK: - Bookmark Management
@@ -317,6 +313,11 @@ final class FoodViewModel: ObservableObject {
         
         do {
             try await firestore.saveBookmarkMetadata(metadata, for: mealType)
+            
+            await MainActor.run {
+                searchViewModel
+                    .bookmarkMetadataDict[food.searchFoodId] = metadata
+            }
         } catch {
             await MainActor.run {
                 appError = .network
@@ -517,9 +518,7 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - UI Helper
     var navigationTitleText: String {
-        isEditingMealItem
-        ? "Edit in Diary"
-        : "Add to \(mealType.rawValue)"
+        isEditingMealItem ? "Edit in Diary" : "Add to Diary"
     }
     
     var viewState: FoodViewState {
@@ -532,10 +531,27 @@ final class FoodViewModel: ObservableObject {
         }
     }
     
+    var shouldShowToolbar: Bool {
+        if case .error = viewState {
+            return false
+        }
+        
+        return true
+    }
+    
+    var viewMode: FoodViewMode {
+        isEditingMealItem ? .fromMainView : .fromSearchView
+    }
+    
     enum FoodViewState {
         case loading
         case error(AppError)
         case loaded
+    }
+    
+    enum FoodViewMode {
+        case fromSearchView
+        case fromMainView
     }
 }
 

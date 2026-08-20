@@ -10,6 +10,8 @@ import SwiftUI
 struct SearchView: View {
     @State private var mealType: MealType
     @State private var editModeState: EditMode = .inactive
+    @Environment(\.isSearching) private var isSearching
+    @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var searchViewModel: SearchViewModel
     
@@ -23,26 +25,25 @@ struct SearchView: View {
     
     var body: some View {
         searchViewContentBody
-            .overlay(searchableModifier)
-            .searchable(
-                text: $searchViewModel.query,
-                placement: .navigationBarDrawer(displayMode: .always)
-            )
+            .searchable(text: $searchViewModel.query)
             .navigationTitle(mealType.rawValue)
-            .navigationBarBackButtonHidden(searchViewModel.isEditModeActive)
-            .toolbarTitleDisplayMode(.large)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbarTitleMenu {
+                Picker("Meal type", selection: $mealType) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Text(meal.rawValue)
+                            .tag(meal)
+                    }
+                }
+            }
             .toolbar {
                 searchViewToolbar
             }
-            .toolbarVisibility(
-                searchViewModel.isEditModeActive ? .hidden : .visible,
-                for: .tabBar
-            )
+            .environment(\.editMode, $editModeState)
             .background {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
             }
-            .environment(\.editMode, $editModeState)
             .onChange(of: mealType) {
                 searchViewModel.loadingBookmarks()
                 
@@ -50,14 +51,6 @@ struct SearchView: View {
                     await searchViewModel
                         .loadBookmarksSearchView(for: mealType)
                 }
-            }
-            .onChange(of: searchViewModel.selectedItems) {
-                withAnimation {
-                    searchViewModel.uniqueId = UUID()
-                }
-            }
-            .task {
-                await searchViewModel.loadBookmarksSearchView(for: mealType)
             }
     }
     
@@ -97,7 +90,7 @@ struct SearchView: View {
                                 .contains(query.lowercased())
                         }
                     }
-
+                
                 if !filteredBookmarks.isEmpty {
                     Section {
                         ForEach(
@@ -148,6 +141,15 @@ struct SearchView: View {
             .animation(nil, value: searchViewModel.foods)
             .animation(nil, value: searchViewModel.editingState)
             .scrollDismissesKeyboard(.immediately)
+            .overlay {
+                FoodAddedAlertView(
+                    isVisible: $searchViewModel.isFoodAddedAlertVisible
+                )
+                .animation(
+                    .bouncy(duration: 0.3),
+                    value: searchViewModel.isFoodAddedAlertVisible
+                )
+            }
             .disabled(searchViewModel.showRemoveDialog)
         }
     }
@@ -244,16 +246,6 @@ struct SearchView: View {
         }
     }
     
-    // MARK: - Searchable Modifier
-    @ViewBuilder
-    private var searchableModifier: some View {
-        if searchViewModel.isEditModeActive {
-            EmptyView()
-                .searchable(text: $searchViewModel.query)
-                .disabled(searchViewModel.isEditModeActive)
-        }
-    }
-    
     // MARK: - Toolbar
     @ToolbarContentBuilder
     private var searchViewToolbar: some ToolbarContent {
@@ -306,8 +298,8 @@ struct SearchView: View {
                 }
                 .transaction { $0.animation = nil }
                 .disabled(
-                    !searchViewModel.isEditModeActive
-                    || searchViewModel.selectedItems.isEmpty
+                    !searchViewModel.isEditModeActive ||
+                    searchViewModel.selectedItems.isEmpty
                 )
                 .confirmationDialog(
                     searchViewModel.removeDialogMessage,
@@ -341,31 +333,28 @@ struct SearchView: View {
             ToolbarSpacer(.flexible, placement: .bottomBar)
             
         case .inactive:
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Picker("Meal type", selection: $mealType) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Text(meal.rawValue)
-                                .tag(meal)
-                        }
-                    }
-                    
-                    if searchViewModel.canEditMealType {
-                        Button {
-                            searchViewModel.editingState = .active
-                            
-                            withAnimation {
-                                editModeState = .active
-                            }
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                            Text("Reorder and clean up")
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
+//            ToolbarItem(placement: .topBarTrailing) {
+//                if searchViewModel.canEditMealType {
+//                    Button {
+//                        withAnimation {
+//                            searchViewModel.editingState = .active
+//                        }
+//
+//                        editModeState = .active
+//                    } label: {
+//                        Label("Edit", systemImage: "pencil")
+//                        Text("Reorder and clean up")
+//                    }
+//                }
+//            }
+            
+            ToolbarItem(placement: .cancellationAction) {
+                Button(role: .close) {
+                    dismiss()
                 }
             }
+            
+            DefaultToolbarItem(kind: .search, placement: .bottomBar)
         }
     }
 }

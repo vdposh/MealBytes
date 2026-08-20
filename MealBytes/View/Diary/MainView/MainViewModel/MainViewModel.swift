@@ -19,10 +19,9 @@ protocol MainViewModelProtocol {
     func saveCurrentIntakeMainView(source: String) async
     func saveDisplayIntakeMainView(_ newValue: Bool) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
-    func triggerFoodAlert()
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
-    func deleteMealItemMainView(with id: UUID, for: MealType)
+    func deleteMealItemMainView(with id: UUID, for: MealType, animated: Bool)
     func intakePercentage(for calories: Double) -> String
     func updateIntake(to value: String)
     func updateMacros(fat: String, carbohydrate: String, protein: String)
@@ -46,14 +45,13 @@ final class MainViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
+    @Published var selectedFoodItem: MealItem?
     @Published var mealTypeToClear: MealType?
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
     @Published var macroFat: String = ""
     @Published var macroCarbs: String = ""
     @Published var macroProtein: String = ""
-    @Published var isFoodAddedAlertVisible: Bool = false
-    @Published var isAlertInProgress: Bool = false
     @Published var showDatePicker: Bool = false
     @Published var showNutrientTotals: Bool = false
     @Published var showClearDayAlert: Bool = false
@@ -185,15 +183,27 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Delete Meal Item
-    func deleteMealItemMainView(with id: UUID, for mealType: MealType) {
+    func deleteMealItemMainView(
+        with id: UUID,
+        for mealType: MealType,
+        animated: Bool = true
+    ) {
         let itemToDelete = mealItems[mealType]?.first(where: { $0.id == id })
         
-        withAnimation {
-            var newMealItems = mealItems
+        let update = {
+            var newMealItems = self.mealItems
             newMealItems[mealType]?.removeAll { $0.id == id }
-            mealItems = newMealItems
+            self.mealItems = newMealItems
             
-            recalculateNutrients(for: date)
+            self.recalculateNutrients(for: self.date)
+        }
+        
+        if animated {
+            withAnimation {
+                update()
+            }
+        } else {
+            update()
         }
         
         Task {
@@ -722,26 +732,6 @@ final class MainViewModel: ObservableObject {
         }
         
         return date.formatted(date: .long, time: .omitted)
-    }
-    
-    func triggerFoodAlert() {
-        Task { @MainActor in
-            guard !isAlertInProgress else {
-                try? await Task.sleep(for: .seconds(0.3))
-                triggerFoodAlert()
-                return
-            }
-            
-            isAlertInProgress = true
-            
-            isFoodAddedAlertVisible = true
-            
-            try? await Task.sleep(for: .seconds(1.5))
-            isFoodAddedAlertVisible = false
-            
-            try? await Task.sleep(for: .seconds(0.3))
-            isAlertInProgress = false
-        }
     }
     
     // MARK: - UI Helper

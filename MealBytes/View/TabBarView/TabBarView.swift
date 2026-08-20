@@ -35,15 +35,6 @@ struct TabBarView: View {
             }
         }
         .disabled(profileViewModel.isLoading)
-        .overlay {
-            FoodAddedAlertView(
-                isVisible: $mainViewModel.isFoodAddedAlertVisible
-            )
-            .animation(
-                .bouncy(duration: 0.3),
-                value: mainViewModel.isFoodAddedAlertVisible
-            )
-        }
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             loginErrorAlert
         }

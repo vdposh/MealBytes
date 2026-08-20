@@ -13,13 +13,15 @@ protocol SearchViewModelProtocol {
     func loadBookmarksSearchView(for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
     func loadingBookmarks()
+    func triggerFoodAlert()
+    
+    var bookmarkMetadataDict: [Int: BookmarkMetadata] { get set }
 }
 
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
-    @Published var removalBookmarks: Set<Int> = []
     @Published var bookmarkMetadataDict: [Int: BookmarkMetadata] = [:]
     @Published var selectedItems = Set<Food.ID>()
     @Published var appError: AppError?
@@ -38,6 +40,8 @@ final class SearchViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isLoadingBookmarks: Bool = false
     @Published var showRemoveDialog: Bool = false
+    @Published var isFoodAddedAlertVisible: Bool = false
+    @Published var isAlertInProgress: Bool = false
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -326,8 +330,7 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Bookmark Management
     func isBookmarkedSearchView(_ food: Food) -> Bool {
-        bookmarkedFoods.contains(food.searchFoodId)
-        && !removalBookmarks.contains(food.searchFoodId)
+        return bookmarkedFoods.contains(food.searchFoodId)
     }
     
     func moveBookmarks(
@@ -388,6 +391,28 @@ final class SearchViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
+    func triggerFoodAlert() {
+        Task { @MainActor in
+            guard !isAlertInProgress else {
+                try? await Task.sleep(for: .seconds(0.3))
+                triggerFoodAlert()
+                return
+            }
+            
+            isAlertInProgress = true
+            
+            try? await Task.sleep(for: .seconds(0.25))
+            
+            isFoodAddedAlertVisible = true
+            
+            try? await Task.sleep(for: .seconds(1.5))
+            isFoodAddedAlertVisible = false
+            
+            try? await Task.sleep(for: .seconds(0.3))
+            isAlertInProgress = false
+        }
+    }
+    
     var contentState: SearchContentState {
         if isLoadingBookmarks || isLoading {
             .loading

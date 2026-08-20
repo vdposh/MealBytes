@@ -40,11 +40,12 @@ struct FoodItemView: View {
                 Text(foodName)
                     .font(.subheadline)
                     .fontWeight(.semibold)
+                    .foregroundStyle(Color.primary)
             }
             
             Text(formattedText)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
             
             NutrientSummaryView(
                 calories: calories,

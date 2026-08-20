@@ -46,14 +46,33 @@ struct MainView: View {
                 hasMealItems: mainViewModel.hasMealItems
             )
         }
-        .navigationDestination(
-            item: $mainViewModel.selectedMealType
-        ) { mealType in
+        .sheet(item: $mainViewModel.selectedMealType) { mealType in
             if let searchViewModel = mainViewModel
                 .searchViewModel as? SearchViewModel {
-                SearchView(
-                    searchViewModel: searchViewModel,
-                    mealType: mealType
+                NavigationStack {
+                    SearchView(
+                        searchViewModel: searchViewModel,
+                        mealType: mealType
+                    )
+                }
+            }
+        }
+        .sheet(item: $mainViewModel.selectedFoodItem) { mealItem in
+            NavigationStack {
+                FoodView(
+                    mealType: mealItem.mealType,
+                    food: Food(
+                        searchFoodId: mealItem.foodId,
+                        searchFoodName: mealItem.foodName,
+                        searchFoodDescription: ""
+                    ),
+                    searchViewModel: mainViewModel.searchViewModel,
+                    mainViewModel: mainViewModel,
+                    amount: mealItem.amount.asDecimal(grouping: false),
+                    measurementDescription: mealItem.measurementDescription,
+                    isEditingMealItem: true,
+                    originalCreatedAt: mealItem.createdAt,
+                    originalMealItemId: mealItem.id
                 )
             }
         }

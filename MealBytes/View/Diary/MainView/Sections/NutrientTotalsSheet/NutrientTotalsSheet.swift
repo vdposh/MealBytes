@@ -38,7 +38,6 @@ struct NutrientTotalsSheet: View {
                 } description: {
                     Text("Add some food to view nutrient totals.")
                 }
-                .listRowBackground(Color.clear)
                 .navigationTitle("Nutrient Totals")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -47,6 +46,10 @@ struct NutrientTotalsSheet: View {
                             dismiss()
                         }
                     }
+                }
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
                 }
             }
         }

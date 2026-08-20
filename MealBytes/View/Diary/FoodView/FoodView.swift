@@ -215,59 +215,76 @@ struct FoodView: View {
     
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
-        if isEditingMealItem {
-            ToolbarItem(placement: .confirmationAction) {
-                Button(role: .confirm) {
-                    Task {
-                        await foodViewModel
-                            .updateMealItemFoodView(
+        switch foodViewModel.viewMode {
+        case .fromSearchView:
+            if !foodViewModel.isLoading && foodViewModel.shouldShowToolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(role: .confirm) {
+                        Task {
+                            await foodViewModel.addMealItemFoodView(
+                                in: foodViewModel.mealType,
                                 for: foodViewModel.mainViewModel.date
                             )
-                        
-                        dismiss()
+                            
+                            dismiss()
+                        }
+                    } label: {
+                        Text("Add")
+                            .fontWeight(.medium)
                     }
-                }
-                .disabled(!foodViewModel.canAddFood)
-            }
-        } else {
-            ToolbarItem(placement: .confirmationAction) {
-                Button(role: .confirm) {
-                    Task {
-                        await foodViewModel.addMealItemFoodView(
-                            in: foodViewModel.mealType,
-                            for: foodViewModel.mainViewModel.date
-                        )
-                        
-                        dismiss()
-                    }
-                } label: {
-                    Text("Add")
-                        .fontWeight(.medium)
-                }
-                .disabled(!foodViewModel.canAddFood)
-            }
-        }
-        
-        ToolbarItem(placement: .bottomBar) {
-            Button {
-                Task {
-                    await foodViewModel.toggleBookmarkFoodView()
+                    .disabled(!foodViewModel.canAddFood)
                 }
                 
-                if !foodViewModel.isBookmarkFilled {
-                    amountFocused = false
-                    foodViewModel.normalizeAmount()
+                ToolbarItem(placement: .bottomBar) {
+                    Button {
+                        Task {
+                            await foodViewModel.toggleBookmarkFoodView()
+                        }
+                    } label: {
+                        Image(
+                            systemName: foodViewModel.isBookmarkFilled
+                            ? "bookmark.slash"
+                            : "bookmark"
+                        )
+                    }
                 }
-            } label: {
-                Image(
-                    systemName: foodViewModel.isBookmarkFilled
-                    ? "bookmark.slash"
-                    : "bookmark"
-                )
+                
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            }
+            
+        case .fromMainView:
+            if !foodViewModel.isLoading && foodViewModel.shouldShowToolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(role: .confirm) {
+                        Task {
+                            await foodViewModel.updateMealItemFoodView(
+                                for: foodViewModel.mainViewModel.date
+                            )
+                            
+                            dismiss()
+                        }
+                    }
+                    .disabled(!foodViewModel.canAddFood)
+                }
+                
+                ToolbarItem(placement: .bottomBar) {
+                    Button(role: .destructive) {
+                        foodViewModel.deleteMealItemFoodView()
+                        dismiss()
+                    }
+                }
+                
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            }
+            
+            if !foodViewModel.shouldShowToolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .close) {
+                        dismiss()
+                    }
+                }
             }
         }
-        
-        ToolbarSpacer(.flexible, placement: .bottomBar)
     }
 }
 

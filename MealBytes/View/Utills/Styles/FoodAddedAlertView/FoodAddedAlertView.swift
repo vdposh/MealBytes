@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FoodAddedAlertView: View {
     @Binding var isVisible: Bool
-    @State private var symbolEffect = true
     
     var body: some View {
         Label {
@@ -18,7 +17,6 @@ struct FoodAddedAlertView: View {
                 .font(.subheadline)
         } icon: {
             Image(systemName: "text.badge.plus")
-                .symbolEffect(.drawOn, isActive: symbolEffect)
                 .symbolColorRenderingMode(.gradient)
         }
         .foregroundStyle(.secondary)
@@ -34,15 +32,6 @@ struct FoodAddedAlertView: View {
         .opacity(isVisible ? 1 : 0)
         .allowsHitTesting(false)
         .ignoresSafeArea()
-        .onChange(of: isVisible) {
-            if isVisible {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    symbolEffect = false
-                }
-            } else {
-                symbolEffect = true
-            }
-        }
     }
 }
 
