@@ -91,9 +91,7 @@ struct HeaderButtonView: View {
                 
                 if isEdit {
                     Button {
-                        withAnimation {
-                            action()
-                        }
+                        action()
                     } label: {
                         Text("Edit")
                             .fontWeight(.regular)

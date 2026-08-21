@@ -23,9 +23,7 @@ struct NutrientTotalsSheet: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button(role: .cancel) {
-                            dismiss()
-                        }
+                        closeButton
                     }
                 }
             } else {
@@ -42,9 +40,7 @@ struct NutrientTotalsSheet: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button(role: .cancel) {
-                            dismiss()
-                        }
+                        closeButton
                     }
                 }
                 .background {
@@ -52,6 +48,15 @@ struct NutrientTotalsSheet: View {
                         .ignoresSafeArea()
                 }
             }
+        }
+    }
+    
+    private var closeButton: some View {
+        Button(role: .close) {
+            dismiss()
+        } label: {
+            Text("Close")
+                .fontWeight(.medium)
         }
     }
 }

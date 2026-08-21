@@ -46,7 +46,7 @@ struct RdiView: View {
     
     @ToolbarContentBuilder
     private var rdiViewToolbar: some ToolbarContent {
-        ToolbarItem {
+        ToolbarItem(placement: .confirmationAction) {
             Button(role: .confirm) {
                 Task {
                     await rdiViewModel.saveRdiView()

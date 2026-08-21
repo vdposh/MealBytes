@@ -230,7 +230,7 @@ struct FoodView: View {
                         }
                     } label: {
                         Text("Add")
-                            .fontWeight(.medium)
+                            .fontWeight(.semibold)
                     }
                     .disabled(!foodViewModel.canAddFood)
                 }
@@ -281,6 +281,9 @@ struct FoodView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .close) {
                         dismiss()
+                    } label: {
+                        Text("Close")
+                            .fontWeight(.medium)
                     }
                 }
             }

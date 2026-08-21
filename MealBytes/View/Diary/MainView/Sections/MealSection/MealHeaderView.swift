@@ -21,8 +21,9 @@ struct MealHeaderView: View {
     
     private var formattedFoodList: String {
         let items = mainViewModel.filteredItems(for: mealType)
-        let foodNames = items.map { $0.foodName }
-        return formatter.format(foodNames: foodNames)
+        let uniqueFoodNames = items.map { $0.foodName }.uniqueOrdered()
+        
+        return formatter.format(foodNames: uniqueFoodNames)
     }
     
     var body: some View {

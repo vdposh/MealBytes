@@ -57,7 +57,7 @@ struct DailyIntakeView: View {
     
     @ToolbarContentBuilder
     private var dailyIntakeViewToolbar: some ToolbarContent {
-        ToolbarItem {
+        ToolbarItem(placement: .confirmationAction) {
             Button(role: .confirm) {
                 Task {
                     await dailyIntakeViewModel.saveDailyIntakeView()

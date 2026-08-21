@@ -194,8 +194,10 @@ final class FoodViewModel: ObservableObject {
                     for: mealType
                 )
                 
-                searchViewModel
-                    .bookmarkMetadataDict[food.searchFoodId] = metadata
+                await MainActor.run {
+                    searchViewModel
+                        .bookmarkMetadataDict[food.searchFoodId] = metadata
+                }
             }
         } catch {
             await MainActor.run {

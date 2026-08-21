@@ -68,6 +68,14 @@ struct FoodListFormatter {
     }
 }
 
+extension Sequence where Element: Hashable {
+    func uniqueOrdered() -> [Element] {
+        var seen = Set<Element>()
+        return filter { seen.insert($0).inserted }
+    }
+}
+
+
 #Preview {
     PreviewContentView.contentView
 }
