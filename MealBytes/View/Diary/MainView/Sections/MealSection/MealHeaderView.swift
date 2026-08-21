@@ -108,21 +108,37 @@ struct MealHeaderView: View {
     @ViewBuilder
     private var foodItemsList: some View {
         if mainViewModel.isExpanded(for: mealType) {
-            ForEach(
-                mainViewModel.filteredItems(for: mealType),
-                id: \.id
-            ) { item in
+            let items = mainViewModel.filteredItems(for: mealType)
+            
+            ForEach(items.indices, id: \.self) { index in
+                let item = items[index]
+                let mealText = mainViewModel.formattedMealText(for: item)
+                
                 FoodItemRow(
                     mealItem: item,
                     mealType: mealType,
-                    mainViewModel: mainViewModel
+                    formattedText: mealText,
+                    onSelect: {
+                        mainViewModel.selectedFoodItem = item
+                    },
+                    onMove: { newMealType in
+                        mainViewModel.moveMealItem(item, to: newMealType)
+                    },
+                    onDelete: {
+                        mainViewModel
+                            .deleteMealItemMainView(
+                                with: item.id,
+                                for: mealType
+                            )
+                    }
                 )
                 .swipeActions {
                     Button(role: .destructive) {
-                        mainViewModel.deleteMealItemMainView(
-                            with: item.id,
-                            for: mealType
-                        )
+                        mainViewModel
+                            .deleteMealItemMainView(
+                                with: item.id,
+                                for: mealType
+                            )
                     }
                 }
             }

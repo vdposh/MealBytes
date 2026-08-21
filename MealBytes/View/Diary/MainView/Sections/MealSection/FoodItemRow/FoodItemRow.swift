@@ -10,15 +10,18 @@ import SwiftUI
 struct FoodItemRow: View {
     let mealItem: MealItem
     let mealType: MealType
-    @ObservedObject var mainViewModel: MainViewModel
+    let formattedText: String
+    let onSelect: () -> Void
+    let onMove: (MealType) -> Void
+    let onDelete: () -> Void
     
     var body: some View {
         Button {
-            mainViewModel.selectedFoodItem = mealItem
+            onSelect()
         } label: {
             FoodItemView(
                 foodName: mealItem.foodName,
-                formattedText: mainViewModel.formattedMealText(for: mealItem),
+                formattedText: formattedText,
                 calories: mealItem.caloriesValue,
                 fat: mealItem.fatValue,
                 carbs: mealItem.carbsValue,
@@ -35,9 +38,7 @@ struct FoodItemRow: View {
         Menu {
             Picker("Meal type", selection: Binding(
                 get: { mealItem.mealType },
-                set: { newMealType in
-                    mainViewModel.moveMealItem(mealItem, to: newMealType)
-                }
+                set: { onMove($0) }
             )) {
                 ForEach(MealType.allCases, id: \.self) { mealType in
                     Text(mealType.rawValue).tag(mealType)
@@ -49,10 +50,7 @@ struct FoodItemRow: View {
         
         Divider()
         
-        Button(role: .destructive) {
-            mainViewModel
-                .deleteMealItemMainView(with: mealItem.id, for: mealType)
-        } label: {
+        Button(role: .destructive, action: onDelete) {
             Label("Delete", systemImage: "trash")
         }
     }

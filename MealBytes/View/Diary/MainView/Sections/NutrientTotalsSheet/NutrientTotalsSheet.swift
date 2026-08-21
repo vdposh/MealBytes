@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NutrientTotalsSheet: View {
     @Environment(\.dismiss) private var dismiss
+    
     let nutrients: [NutrientValue]
     let hasMealItems: Bool
     
