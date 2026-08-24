@@ -39,7 +39,7 @@ struct MeasurementSelectionView<
         .navigationTitle(title)
         .safeAreaInset(edge: .bottom) {
             if focus {
-                KeyboardToolbarView(
+                DirectionToolbarView(
                     done: {
                         focus = false
                         normalizeAction()

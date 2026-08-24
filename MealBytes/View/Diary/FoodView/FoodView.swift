@@ -52,15 +52,8 @@ struct FoodView: View {
             .toolbar {
                 foodViewToolbar
             }
-            .safeAreaInset(edge: .bottom) {
-                if amountFocused {
-                    KeyboardToolbarView(
-                        done: {
-                            amountFocused = false
-                            foodViewModel.normalizeAmount()
-                        }
-                    )
-                }
+            .safeAreaBar(edge: .bottom) {
+                foodViewSafeArea
             }
             .background {
                 Color(.systemGroupedBackground)
@@ -234,22 +227,6 @@ struct FoodView: View {
                     }
                     .disabled(!foodViewModel.canAddFood)
                 }
-                
-                ToolbarItem(placement: .bottomBar) {
-                    Button {
-                        Task {
-                            await foodViewModel.toggleBookmarkFoodView()
-                        }
-                    } label: {
-                        Image(
-                            systemName: foodViewModel.isBookmarkFilled
-                            ? "bookmark.slash"
-                            : "bookmark"
-                        )
-                    }
-                }
-                
-                ToolbarSpacer(.flexible, placement: .bottomBar)
             }
             
         case .fromMainView:
@@ -266,15 +243,6 @@ struct FoodView: View {
                     }
                     .disabled(!foodViewModel.canAddFood)
                 }
-                
-                ToolbarItem(placement: .bottomBar) {
-                    Button(role: .destructive) {
-                        foodViewModel.deleteMealItemFoodView()
-                        dismiss()
-                    }
-                }
-                
-                ToolbarSpacer(.flexible, placement: .bottomBar)
             }
             
             if !foodViewModel.shouldShowToolbar {
@@ -287,6 +255,51 @@ struct FoodView: View {
                     }
                 }
             }
+        }
+    }
+    
+    private var foodViewSafeArea: some View {
+        HStack {
+            if !foodViewModel.isLoading && foodViewModel.shouldShowToolbar {
+                switch foodViewModel.viewMode {
+                case .fromSearchView:
+                    ToolbarButtonView(
+                        icon: foodViewModel.isBookmarkFilled
+                        ? "bookmark.slash"
+                        : "bookmark",
+                        action: {
+                            Task {
+                                await foodViewModel.toggleBookmarkFoodView()
+                            }
+                            amountFocused = false
+                            foodViewModel.normalizeAmount()
+                        },
+                        amountFocused: amountFocused
+                    )
+                    
+                case .fromMainView:
+                    ToolbarButtonView(
+                        icon: "trash",
+                        action: {
+                            foodViewModel.deleteMealItemFoodView()
+                            dismiss()
+                        },
+                        amountFocused: amountFocused
+                    )
+                }
+            }
+            
+            ToolbarButtonView(
+                icon: "checkmark",
+                action: {
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                },
+                alignment: .center,
+                amountFocused: amountFocused
+            )
+            .opacity(amountFocused ? 1 : 0)
+            .allowsHitTesting(amountFocused)
         }
     }
 }

@@ -11,9 +11,15 @@ import Combine
 protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
+    func loadBookmarks() async
+    func updateBookmarkMetadata(
+        _ metadata: BookmarkMetadata,
+        for mealType: MealType
+    )
+    func displayBookmarks(for mealType: MealType)
     func isBookmarkedSearchView(_ food: Food) -> Bool
-    func loadingBookmarks()
     func triggerFoodAlert()
+    func resetQuery()
     
     var bookmarkMetadataDict: [Int: BookmarkMetadata] { get set }
 }
@@ -38,10 +44,13 @@ final class SearchViewModel: ObservableObject {
     }
     @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
-    @Published var isLoadingBookmarks: Bool = false
     @Published var showRemoveDialog: Bool = false
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
+    
+    private var bookmarksByType: [MealType: [Food]] = [:]
+    private var bookmarkedIdsByType: [MealType: Set<Int>] = [:]
+    private var metadataByType: [MealType: [Int: BookmarkMetadata]] = [:]
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -142,70 +151,58 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Load Bookmarks Data
     func loadBookmarksSearchView(for mealType: MealType) async {
-        currentTask?.cancel()
+        guard firebaseAuth.currentUserExists() else { return }
         
-        currentTask = Task {
-            guard firebaseAuth.currentUserExists() else { return }
+        do {
+            let favorites = try await firestore.loadBookmarksFirestore(
+                for: mealType
+            )
+            let bookmarked = Set(favorites.map { $0.searchFoodId })
+            
+            let metadataDict = try await firestore.loadAllBookmarkMetadata(
+                favorites,
+                for: mealType
+            )
             
             await MainActor.run {
-                if query.isEmpty {
-                    isLoading = true
-                    query = ""
+                bookmarksByType[mealType] = favorites
+                bookmarkedIdsByType[mealType] = bookmarked
+                metadataByType[mealType] = metadataDict
+                
+                if selectedMealType == mealType {
+                    displayBookmarks(for: mealType)
                 }
             }
-            
-            do {
-                let favorites = try await firestore.loadBookmarksFirestore(
-                    for: mealType
-                )
-                
-                guard !Task.isCancelled else { return }
-                
-                let bookmarked = Set(favorites.map { $0.searchFoodId })
-                
-                var metadataDict: [Int: BookmarkMetadata] = [:]
-                for food in favorites {
-                    if let metadata = try? await firestore
-                        .loadBookmarkMetadata(
-                            for: food.searchFoodId,
-                            foodName: food.searchFoodName,
-                            mealType: mealType
-                        ) {
-                        metadataDict[food.searchFoodId] = metadata
-                    }
-                }
-                
-                let safeMetadataDict = metadataDict
-                
-                await MainActor.run {
-                    guard !Task.isCancelled else { return }
-                    
-                    self.favoriteFoods = favorites
-                    self.bookmarkedFoods = bookmarked
-                    self.bookmarkMetadataDict = safeMetadataDict
-                    
-                    if query.isEmpty {
-                        self.foods = favorites
-                    }
-                    
-                    self.isLoading = false
-                    self.isLoadingBookmarks = false
-                    self.appError = nil
-                    self.selectedMealType = mealType
-                }
-            } catch {
-                guard !Task.isCancelled else { return }
-                
-                await MainActor.run {
-                    self.isLoading = false
-                    self.isLoadingBookmarks = false
+        } catch {
+            await MainActor.run {
+                appError = .network
+            }
+        }
+    }
+    
+    func displayBookmarks(for mealType: MealType) {
+        favoriteFoods = bookmarksByType[mealType] ?? []
+        bookmarkedFoods = bookmarkedIdsByType[mealType] ?? []
+        bookmarkMetadataDict = metadataByType[mealType] ?? [:]
+        selectedMealType = mealType
+        isLoading = false
+        
+        if query.isEmpty {
+            foods = favoriteFoods
+        }
+    }
+    
+    func loadBookmarks() async {
+        await withTaskGroup(of: Void.self) { group in
+            for mealType in MealType.allCases {
+                group.addTask {
+                    await self.loadBookmarksSearchView(for: mealType)
                 }
             }
         }
     }
     
-    func loadingBookmarks() {
-        isLoadingBookmarks = true
+    func resetQuery() {
         query = ""
     }
     
@@ -231,31 +228,37 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Remove Bookmarks
     func removeBookmarks(for ids: Set<Food.ID>) async {
+        let originalFavoriteFoods = favoriteFoods
+        let originalBookmarkedFoods = bookmarkedFoods
         let foodsToRemove = favoriteFoods.filter {
             ids.contains($0.searchFoodId)
         }
-        let updatedFavorites = favoriteFoods.filter {
-            !ids.contains($0.searchFoodId)
-        }
-        let updatedBookmarkedFoods = bookmarkedFoods.subtracting(ids)
         
         await MainActor.run {
             withAnimation {
-                self.favoriteFoods = updatedFavorites
-                self.bookmarkedFoods = updatedBookmarkedFoods
+                favoriteFoods.removeAll { ids.contains($0.searchFoodId) }
+                bookmarkedFoods.subtract(ids)
+                
+                var updatedMetadata = metadataByType[selectedMealType] ?? [:]
+                for id in ids {
+                    updatedMetadata.removeValue(forKey: id)
+                }
+                metadataByType[selectedMealType] = updatedMetadata
+                
+                bookmarksByType[selectedMealType] = favoriteFoods
+                bookmarkedIdsByType[selectedMealType] = bookmarkedFoods
                 
                 if query.isEmpty {
-                    self.foods = updatedFavorites
+                    foods = favoriteFoods
                 }
             }
         }
         
         do {
             try await firestore.addBookmarkFirestore(
-                updatedFavorites,
+                favoriteFoods,
                 for: selectedMealType
             )
-            
             for food in foodsToRemove {
                 try await firestore.deleteBookmarkMetadata(
                     for: food.searchFoodId,
@@ -265,7 +268,15 @@ final class SearchViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.appError = .network
+                favoriteFoods = originalFavoriteFoods
+                bookmarkedFoods = originalBookmarkedFoods
+                bookmarksByType[selectedMealType] = originalFavoriteFoods
+                bookmarkedIdsByType[selectedMealType] = originalBookmarkedFoods
+                
+                if query.isEmpty {
+                    foods = favoriteFoods
+                }
+                appError = .network
             }
         }
     }
@@ -273,44 +284,39 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
-        let updatedBookmarkedFoods: Set<Int>
         
-        if isAdding {
-            updatedBookmarkedFoods = bookmarkedFoods
-                .union([food.searchFoodId])
-        } else {
-            updatedBookmarkedFoods = bookmarkedFoods
-                .subtracting([food.searchFoodId])
-        }
-        
-        let updatedFavorites: [Food]
-        
-        if isAdding {
-            if !favoriteFoods.contains(food) {
-                updatedFavorites = favoriteFoods + [food]
-            } else {
-                updatedFavorites = favoriteFoods
-            }
-        } else {
-            updatedFavorites = favoriteFoods.filter { $0 != food }
-        }
+        let originalFavoriteFoods = favoriteFoods
+        let originalBookmarkedFoods = bookmarkedFoods
         
         await MainActor.run {
             withAnimation {
-                self.favoriteFoods = updatedFavorites
-                self.bookmarkedFoods = updatedBookmarkedFoods
+                if isAdding {
+                    favoriteFoods.append(food)
+                    bookmarkedFoods.insert(food.searchFoodId)
+                } else {
+                    favoriteFoods
+                        .removeAll { $0.searchFoodId == food.searchFoodId }
+                    bookmarkedFoods.remove(food.searchFoodId)
+                    bookmarkMetadataDict.removeValue(forKey: food.searchFoodId)
+                    
+                    var updatedMetadata = metadataByType[selectedMealType] ??
+                    [:]
+                    updatedMetadata.removeValue(forKey: food.searchFoodId)
+                    metadataByType[selectedMealType] = updatedMetadata
+                }
+                
+                bookmarksByType[selectedMealType] = favoriteFoods
+                bookmarkedIdsByType[selectedMealType] = bookmarkedFoods
                 
                 if query.isEmpty {
-                    self.foods = updatedFavorites
-                } else {
-                    self.foods = self.foods
+                    foods = favoriteFoods
                 }
             }
         }
         
         do {
             try await firestore.addBookmarkFirestore(
-                updatedFavorites,
+                favoriteFoods,
                 for: selectedMealType
             )
             
@@ -323,9 +329,28 @@ final class SearchViewModel: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                self.appError = .network
+                favoriteFoods = originalFavoriteFoods
+                bookmarkedFoods = originalBookmarkedFoods
+                bookmarksByType[selectedMealType] = originalFavoriteFoods
+                bookmarkedIdsByType[selectedMealType] = originalBookmarkedFoods
+                
+                if query.isEmpty {
+                    foods = favoriteFoods
+                }
+                appError = .network
             }
         }
+    }
+    
+    func updateBookmarkMetadata(
+        _ metadata: BookmarkMetadata,
+        for mealType: MealType
+    ) {
+        bookmarkMetadataDict[metadata.foodId] = metadata
+        
+        var updatedMetadata = metadataByType[mealType] ?? [:]
+        updatedMetadata[metadata.foodId] = metadata
+        metadataByType[mealType] = updatedMetadata
     }
     
     // MARK: - Bookmark Management
@@ -414,7 +439,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     var contentState: SearchContentState {
-        if isLoadingBookmarks || isLoading {
+        if isLoading {
             .loading
         } else if let error = appError {
             .error(error)
@@ -452,7 +477,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     var canEditMealType: Bool {
-        return !isLoadingBookmarks && !isLoading && !foods.isEmpty
+        return !isLoading && !foods.isEmpty
     }
     
     var isEditModeActive: Bool {

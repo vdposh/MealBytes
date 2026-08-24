@@ -48,19 +48,13 @@ struct SearchView: View {
                 .ignoresSafeArea()
         }
         .onDisappear {
-            withAnimation {
-                searchViewModel.editingState = .inactive
-                editModeState = .inactive
-            }
+            searchViewModel.editingState = .inactive
+            editModeState = .inactive
+            
             searchViewModel.selectedItems.removeAll()
         }
         .onChange(of: mealType) {
-            searchViewModel.loadingBookmarks()
-            
-            Task {
-                await searchViewModel
-                    .loadBookmarksSearchView(for: mealType)
-            }
+            searchViewModel.displayBookmarks(for: mealType)
             
             withAnimation {
                 searchViewModel.editingState = .inactive
@@ -68,6 +62,7 @@ struct SearchView: View {
             
             searchViewModel.selectedItems.removeAll()
             editModeState = .inactive
+            searchViewModel.resetQuery()
         }
     }
     
@@ -93,7 +88,8 @@ struct SearchView: View {
                     Button("Select all") {
                         withAnimation {
                             searchViewModel.selectedItems = Set(
-                                searchViewModel.favoriteFoods.map { $0.searchFoodId }
+                                searchViewModel.favoriteFoods
+                                    .map { $0.searchFoodId }
                             )
                         }
                     }

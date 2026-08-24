@@ -86,11 +86,13 @@ final class MainViewModel: ObservableObject {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let macroTask: () = loadIntakeMainView()
         async let displayIntakeTask: () = loadDisplayIntakeMainView()
+        async let bookmarksTask: () = searchViewModel.loadBookmarks()
         
         _ = await (
             mealItemsTask,
             displayIntakeTask,
-            macroTask
+            macroTask,
+            bookmarksTask
         )
     }
     
@@ -748,11 +750,8 @@ final class MainViewModel: ObservableObject {
     
     func navigateToSearch(for mealType: MealType) {
         selectedMealType = mealType
-        searchViewModel.loadingBookmarks()
-        
-        Task {
-            await searchViewModel.loadBookmarksSearchView(for: mealType)
-        }
+        searchViewModel.displayBookmarks(for: mealType)
+        searchViewModel.resetQuery()
     }
     
     func clearDayAlert(for date: Date) -> Alert {

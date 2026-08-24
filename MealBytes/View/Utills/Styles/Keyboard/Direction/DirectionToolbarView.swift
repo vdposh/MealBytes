@@ -1,5 +1,5 @@
 //
-//  KeyboardToolbarView.swift
+//  DirectionToolbarView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 19/09/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct KeyboardToolbarView: View {
+struct DirectionToolbarView: View {
     var showArrows: Bool = false
     var canMoveUp: Bool = false
     var canMoveDown: Bool = false
@@ -18,20 +18,20 @@ struct KeyboardToolbarView: View {
     var body: some View {
         HStack(spacing: 30) {
             if showArrows {
-                ToolbarIconButton(
+                DirectionIconButton(
                     systemImage: "chevron.up",
                     isActive: canMoveUp,
                     action: moveUp
                 )
                 
-                ToolbarIconButton(
+                DirectionIconButton(
                     systemImage: "chevron.down",
                     isActive: canMoveDown,
                     action: moveDown
                 )
             }
             
-            ToolbarIconButton(
+            DirectionIconButton(
                 systemImage: "checkmark",
                 isActive: true,
                 action: done

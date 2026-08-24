@@ -100,26 +100,27 @@ final class FoodViewModel: ObservableObject {
                 setAmount(for: selectedServing)
             }
             
-            if isBookmarkFilled, !isEditingMealItem,
-               let firestoreMetadata = try await firestore
-                .loadBookmarkMetadata(
-                    for: food.searchFoodId,
-                    foodName: food.searchFoodName,
-                    mealType: mealType
-                ) {
-                if firestoreMetadata.amount != amount ||
-                    firestoreMetadata.servingDescription !=
-                    selectedServing?.measurementDescription {
-                    if let value = Double(firestoreMetadata.amount) {
-                        amount = value.asDecimal(grouping: false)
-                    }
-                    if let serving = fetchedFoodDetail.servings.serving.first(
-                        where: {
-                            $0.measurementDescription ==
-                            firestoreMetadata.servingDescription
+            if isBookmarkFilled, !isEditingMealItem {
+                let allMetadata = try await firestore.loadAllBookmarkMetadata(
+                    [food],
+                    for: mealType
+                )
+                if let firestoreMetadata = allMetadata[food.searchFoodId] {
+                    if firestoreMetadata.amount != amount ||
+                        firestoreMetadata.servingDescription !=
+                        selectedServing?.measurementDescription {
+                        if let value = Double(firestoreMetadata.amount) {
+                            amount = value.asDecimal(grouping: false)
                         }
-                    ) {
-                        selectedServing = serving
+                        if let serving = fetchedFoodDetail
+                            .servings.serving.first(
+                                where: {
+                                    $0.measurementDescription ==
+                                    firestoreMetadata.servingDescription
+                                }
+                            ) {
+                            selectedServing = serving
+                        }
                     }
                 }
             }
@@ -196,7 +197,7 @@ final class FoodViewModel: ObservableObject {
                 
                 await MainActor.run {
                     searchViewModel
-                        .bookmarkMetadataDict[food.searchFoodId] = metadata
+                        .updateBookmarkMetadata(metadata, for: mealType)
                 }
             }
         } catch {
@@ -312,6 +313,10 @@ final class FoodViewModel: ObservableObject {
                 amount: amount
             )
         )
+        
+        await MainActor.run {
+            searchViewModel.updateBookmarkMetadata(metadata, for: mealType)
+        }
         
         do {
             try await firestore.saveBookmarkMetadata(metadata, for: mealType)

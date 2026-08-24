@@ -128,6 +128,12 @@ struct SearchViewContent: View {
                 )
             }
             .disabled(searchViewModel.showRemoveDialog)
+            .onChange(of: searchViewModel.selectedItems) {
+                withAnimation {
+                    searchViewModel.selectedItems = searchViewModel
+                        .selectedItems
+                }
+            }
         }
     }
     

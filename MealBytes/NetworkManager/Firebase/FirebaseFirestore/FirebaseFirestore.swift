@@ -13,11 +13,10 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
-    func loadBookmarkMetadata(
-        for foodId: Int,
-        foodName: String,
-        mealType: MealType
-    ) async throws -> BookmarkMetadata?
+    func loadAllBookmarkMetadata(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws -> [Int: BookmarkMetadata]
     func loadLoginDataFirestore() async throws -> (
         email: String,
         isLoggedIn: Bool
@@ -210,29 +209,34 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Load Bookmark Metadata
-    func loadBookmarkMetadata(
-        for foodId: Int,
-        foodName: String,
-        mealType: MealType
-    ) async throws -> BookmarkMetadata? {
+    func loadAllBookmarkMetadata(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws -> [Int: BookmarkMetadata] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
         
-        let documentId = "\(foodId)"
-
+        guard !foods.isEmpty else { return [:] }
+        
+        let foodIds = foods.map { $0.searchFoodId }
+        
         let snapshot = try await firestore
             .collection("Users")
             .document(uid)
             .collection("SearchView")
             .document(mealType.rawValue.lowercased())
             .collection("metadata")
-            .document(documentId)
-            .getDocument()
+            .whereField("foodId", in: foodIds)
+            .getDocuments()
         
-        guard snapshot.exists else { return nil }
-        
-        return try snapshot.data(as: BookmarkMetadata.self)
+        var dict: [Int: BookmarkMetadata] = [:]
+        for document in snapshot.documents {
+            if let metadata = try? document.data(as: BookmarkMetadata.self) {
+                dict[metadata.foodId] = metadata
+            }
+        }
+        return dict
     }
     
     // MARK: - Save Bookmark Metadata

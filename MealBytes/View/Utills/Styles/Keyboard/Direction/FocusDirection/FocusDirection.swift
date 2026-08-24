@@ -50,8 +50,8 @@ func buildKeyboardToolbar<T: Equatable>(
     normalize: @escaping () -> Void,
     set: @escaping (T?) -> Void,
     extraDone: (() -> Void)? = nil
-) -> KeyboardToolbarView {
-    KeyboardToolbarView(
+) -> DirectionToolbarView {
+    DirectionToolbarView(
         showArrows: current != nil,
         canMoveUp: canMoveFocus(
             direction: .up,
