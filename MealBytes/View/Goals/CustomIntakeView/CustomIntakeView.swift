@@ -67,7 +67,7 @@ struct CustomIntakeView: View {
         .navigationTitle(IntakeSource.custom.rawValue)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
+            ToolbarItem {
                 Button(role: .confirm) {
                     if customIntakeViewModel.isValid {
                         Task {

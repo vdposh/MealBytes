@@ -26,15 +26,18 @@ struct FoodAddedAlertView: View {
         .glassEffect(.clear)
         .clipShape(Capsule())
         .containerRelativeFrame(.vertical) { height, _ in
-            height * 0.45
+            height * 0.3
         }
         .frame(maxHeight: .infinity, alignment: .bottom)
         .opacity(isVisible ? 1 : 0)
         .allowsHitTesting(false)
-        .ignoresSafeArea()
     }
 }
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewSearchView.searchView
 }

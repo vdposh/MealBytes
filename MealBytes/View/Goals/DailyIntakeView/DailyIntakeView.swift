@@ -9,7 +9,6 @@ import SwiftUI
 
 struct DailyIntakeView: View {
     @FocusState private var macronutrientsFocused: MacronutrientsFocus?
-    @FocusState private var caloriesFocused: Bool
     @Environment(\.dismiss) private var dismiss
     
     private let macroOrder: [MacronutrientsFocus] = [
@@ -28,13 +27,12 @@ struct DailyIntakeView: View {
                 dailyIntakeViewToolbar
             }
             .safeAreaInset(edge: .bottom) {
-                if caloriesFocused || macronutrientsFocused != nil {
+                if macronutrientsFocused != nil {
                     buildKeyboardToolbar(
                         current: macronutrientsFocused,
                         ordered: macroOrder,
                         normalize: dailyIntakeViewModel.normalizeInputs,
-                        set: { macronutrientsFocused = $0 },
-                        extraDone: { caloriesFocused = false }
+                        set: { macronutrientsFocused = $0 }
                     )
                 }
             }
@@ -57,13 +55,12 @@ struct DailyIntakeView: View {
     
     @ToolbarContentBuilder
     private var dailyIntakeViewToolbar: some ToolbarContent {
-        ToolbarItem(placement: .confirmationAction) {
+        ToolbarItem {
             Button(role: .confirm) {
                 Task {
                     await dailyIntakeViewModel.saveDailyIntakeView()
                 }
                 
-                caloriesFocused = false
                 macronutrientsFocused = nil
                 dailyIntakeViewModel.normalizeInputs()
                 dismiss()

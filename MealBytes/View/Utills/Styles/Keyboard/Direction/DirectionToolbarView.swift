@@ -23,12 +23,14 @@ struct DirectionToolbarView: View {
                     isActive: canMoveUp,
                     action: moveUp
                 )
+                .transaction { $0.animation = nil }
                 
                 DirectionIconButton(
                     systemImage: "chevron.down",
                     isActive: canMoveDown,
                     action: moveDown
                 )
+                .transaction { $0.animation = nil }
             }
             
             DirectionIconButton(
@@ -51,5 +53,5 @@ struct DirectionToolbarView: View {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewRdiView.rdiView
 }

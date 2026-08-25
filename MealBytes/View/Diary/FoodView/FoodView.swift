@@ -211,7 +211,7 @@ struct FoodView: View {
         switch foodViewModel.viewMode {
         case .fromSearchView:
             if !foodViewModel.isLoading && foodViewModel.shouldShowToolbar {
-                ToolbarItem(placement: .confirmationAction) {
+                ToolbarItem {
                     Button(role: .confirm) {
                         Task {
                             await foodViewModel.addMealItemFoodView(
@@ -231,7 +231,7 @@ struct FoodView: View {
             
         case .fromMainView:
             if !foodViewModel.isLoading && foodViewModel.shouldShowToolbar {
-                ToolbarItem(placement: .confirmationAction) {
+                ToolbarItem {
                     Button(role: .confirm) {
                         Task {
                             await foodViewModel.updateMealItemFoodView(
@@ -274,7 +274,7 @@ struct FoodView: View {
                             amountFocused = false
                             foodViewModel.normalizeAmount()
                         },
-                        amountFocused: amountFocused
+                        focused: amountFocused
                     )
                     
                 case .fromMainView:
@@ -284,7 +284,7 @@ struct FoodView: View {
                             foodViewModel.deleteMealItemFoodView()
                             dismiss()
                         },
-                        amountFocused: amountFocused
+                        focused: amountFocused
                     )
                 }
             }
@@ -296,7 +296,7 @@ struct FoodView: View {
                     foodViewModel.normalizeAmount()
                 },
                 alignment: .center,
-                amountFocused: amountFocused
+                focused: amountFocused
             )
             .opacity(amountFocused ? 1 : 0)
             .allowsHitTesting(amountFocused)

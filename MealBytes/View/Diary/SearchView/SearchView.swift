@@ -71,7 +71,7 @@ struct SearchView: View {
     private var searchViewToolbar: some ToolbarContent {
         switch searchViewModel.editingState {
         case .active:
-            ToolbarItem(placement: .confirmationAction) {
+            ToolbarItem {
                 Button(role: .confirm) {
                     withAnimation {
                         searchViewModel.editingState = .inactive

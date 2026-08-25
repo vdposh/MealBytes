@@ -11,7 +11,7 @@ struct ToolbarButtonView: View {
     let icon: String
     let action: () -> Void
     var alignment: Alignment = .leading
-    var amountFocused: Bool = false
+    var focused: Bool = false
     
     var body: some View {
         Button {
@@ -27,9 +27,9 @@ struct ToolbarButtonView: View {
             maxWidth: alignment == .center ? nil : .infinity,
             alignment: alignment
         )
-        .padding(.horizontal, amountFocused ? 16 : 30)
-        .padding(.bottom, amountFocused ? 10 : -10)
-        .animation(.default, value: amountFocused)
+        .padding(.horizontal, focused ? 16 : 30)
+        .padding(.bottom, focused ? 10 : -10)
+        .animation(.default, value: focused)
     }
 }
 
