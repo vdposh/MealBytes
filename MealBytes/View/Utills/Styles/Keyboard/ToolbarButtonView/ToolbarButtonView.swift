@@ -27,8 +27,8 @@ struct ToolbarButtonView: View {
             maxWidth: alignment == .center ? nil : .infinity,
             alignment: alignment
         )
-        .padding(.horizontal, focused ? 16 : 30)
-        .padding(.bottom, focused ? 10 : -10)
+        .padding(.horizontal, focused ? 16 : 28)
+        .padding(.bottom, focused ? 8 : -8)
         .animation(.default, value: focused)
     }
 }

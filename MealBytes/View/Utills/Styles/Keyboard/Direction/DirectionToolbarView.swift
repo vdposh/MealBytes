@@ -53,5 +53,5 @@ struct DirectionToolbarView: View {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewDailyIntakeView.dailyIntakeView
 }
