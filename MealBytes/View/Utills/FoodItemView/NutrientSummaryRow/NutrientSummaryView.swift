@@ -26,11 +26,10 @@ struct NutrientSummaryView: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             NutrientLabel(
                 image: "flame.fill",
-                value: calories,
-                fontImage: .footnote
+                value: calories
             )
             
             NutrientLabel(

@@ -58,10 +58,10 @@ struct SearchView: View {
             
             withAnimation {
                 searchViewModel.editingState = .inactive
+                editModeState = .inactive
             }
             
             searchViewModel.selectedItems.removeAll()
-            editModeState = .inactive
             searchViewModel.resetQuery()
         }
     }

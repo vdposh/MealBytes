@@ -10,7 +10,6 @@ import SwiftUI
 struct NutrientLabel: View {
     var image: String? = nil
     var value: Double = 0
-    var fontImage: Font = .subheadline
     var color: Color = .customCalories
     
     var formattedValue: String {
@@ -19,17 +18,13 @@ struct NutrientLabel: View {
     
     var body: some View {
         if let image {
-            HStack(spacing: 4) {
+            HStack(spacing: 3) {
                 Image(systemName: image)
-                    .font(fontImage)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(color)
-                
                 Text(formattedValue)
-                    .font(.footnote)
                     .fontWeight(.medium)
-                    .foregroundStyle(color)
             }
+            .font(.footnote)
+            .foregroundStyle(color)
         }
     }
 }
