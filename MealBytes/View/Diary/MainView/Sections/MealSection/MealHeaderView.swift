@@ -110,14 +110,11 @@ struct MealHeaderView: View {
         if mainViewModel.isExpanded(for: mealType) {
             let items = mainViewModel.filteredItems(for: mealType)
             
-            ForEach(items.indices, id: \.self) { index in
-                let item = items[index]
-                let mealText = mainViewModel.formattedMealText(for: item)
-                
+            ForEach(items, id: \.id) { item in
                 FoodItemRow(
                     mealItem: item,
                     mealType: mealType,
-                    formattedText: mealText,
+                    formattedText: mainViewModel.formattedMealText(for: item),
                     onSelect: {
                         mainViewModel.selectedFoodItem = item
                     },

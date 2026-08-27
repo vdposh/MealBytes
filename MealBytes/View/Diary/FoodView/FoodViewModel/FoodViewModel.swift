@@ -525,7 +525,7 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - UI Helper
     var navigationTitleText: String {
-        isEditingMealItem ? "Edit in Diary" : "Add to Diary"
+        isEditingMealItem ? "Edit Entry" : "\(mealType.rawValue) Entry"
     }
     
     var viewState: FoodViewState {

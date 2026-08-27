@@ -10,7 +10,7 @@ import SwiftUI
 struct FoodItemView: View {
     let foodName: String
     let formattedText: String
-    let calories: Double?
+    let calories: Double
     let fat: Double
     let carbs: Double
     let protein: Double
@@ -19,7 +19,7 @@ struct FoodItemView: View {
     init(
         foodName: String,
         formattedText: String,
-        calories: Double? = nil,
+        calories: Double,
         fat: Double,
         carbs: Double,
         protein: Double,

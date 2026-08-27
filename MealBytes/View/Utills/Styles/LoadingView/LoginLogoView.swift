@@ -31,11 +31,11 @@ struct LoginLogoView: View {
     }
     
     private var backgroundLightGradientColors: [Color] {
-        [Color("customWhiteLight"), Color("customWhiteDark")]
+        [Color(.systemBackground), Color(.systemGroupedBackground)]
     }
     
     private var logoGradientColors: [Color] {
-        [Color("customGreenLight"), Color("customGreenDark")]
+        [Color(.customGreenLight), Color(.customGreenDark)]
     }
     
     private func gradientMaskedImage(width: CGFloat) -> some View {

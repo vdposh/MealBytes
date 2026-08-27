@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct NutrientSummaryView: View {
-    let calories: Double?
+    let calories: Double
     let fat: Double
     let carbs: Double
     let protein: Double
     
     init(
-        calories: Double? = nil,
+        calories: Double,
         fat: Double,
         carbs: Double,
         protein: Double
@@ -27,13 +27,11 @@ struct NutrientSummaryView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            if let calories {
-                NutrientLabel(
-                    image: "flame.fill",
-                    value: calories,
-                    fontImage: .system(size: 12)
-                )
-            }
+            NutrientLabel(
+                image: "flame.fill",
+                value: calories,
+                fontImage: .footnote
+            )
             
             NutrientLabel(
                 image: "f.circle.fill",

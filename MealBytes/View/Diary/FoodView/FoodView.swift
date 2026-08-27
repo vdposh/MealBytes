@@ -97,6 +97,7 @@ struct FoodView: View {
                 servingSizeSection
                 nutritionFactsSection
             }
+            .environment(\.defaultMinListRowHeight, 46)
             .listSectionSpacing(20)
         }
     }
@@ -175,22 +176,24 @@ struct FoodView: View {
             }
         }
         
-        Section {
-            Label {
-                Picker("Meal type", selection: $mealType) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Text(meal.rawValue)
-                            .tag(meal)
+        if isEditingMealItem {
+            Section {
+                Label {
+                    Picker("Meal type", selection: $mealType) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Text(meal.rawValue)
+                                .tag(meal)
+                        }
                     }
+                } icon: {
+                    Image(systemName: "fork.knife")
+                        .foregroundStyle(.customGray)
+                        .symbolColorRenderingMode(.gradient)
                 }
-            } icon: {
-                Image(systemName: "fork.knife")
-                    .foregroundStyle(.customGray)
-                    .symbolColorRenderingMode(.gradient)
-            }
-            .onChange(of: mealType) {
-                amountFocused = false
-                foodViewModel.normalizeAmount()
+                .onChange(of: mealType) {
+                    amountFocused = false
+                    foodViewModel.normalizeAmount()
+                }
             }
         }
     }
