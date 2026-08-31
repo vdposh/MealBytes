@@ -42,6 +42,9 @@ struct SearchView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
         }
+        .onChange(of: mealType) {
+            searchViewModel.displayBookmarks(for: mealType)
+        }
         .onDisappear {
             resetEditingState()
         }
@@ -55,11 +58,7 @@ struct SearchView: View {
                     .tag(meal)
             }
         }
-        .onChange(of: mealType) {
-            searchViewModel.displayBookmarks(for: mealType)
-            searchViewModel.resetQuery()
-            resetEditingState()
-        }
+        .disabled(searchViewModel.isEditModeActive)
     }
     
     @ToolbarContentBuilder
