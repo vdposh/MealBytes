@@ -32,12 +32,7 @@ struct SearchView: View {
         .navigationTitle(mealType.rawValue)
         .toolbarTitleDisplayMode(.inline)
         .toolbarTitleMenu {
-            Picker("Meal type", selection: $mealType) {
-                ForEach(MealType.allCases, id: \.self) { meal in
-                    Text(meal.rawValue)
-                        .tag(meal)
-                }
-            }
+            mealTypePicker
         }
         .toolbar {
             searchViewToolbar
@@ -47,38 +42,35 @@ struct SearchView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
         }
-        .onDisappear {
-            searchViewModel.editingState = .inactive
-            editModeState = .inactive
-            
-            searchViewModel.selectedItems.removeAll()
-        }
         .onChange(of: mealType) {
             searchViewModel.displayBookmarks(for: mealType)
-            
-            withAnimation {
-                searchViewModel.editingState = .inactive
-                editModeState = .inactive
-            }
-            
-            searchViewModel.selectedItems.removeAll()
             searchViewModel.resetQuery()
+        }
+        .onDisappear {
+            resetEditingState()
         }
     }
     
     // MARK: - Toolbar
+    private var mealTypePicker: some View {
+        Picker("Meal type", selection: $mealType) {
+            ForEach(MealType.allCases, id: \.self) { meal in
+                Text(meal.rawValue)
+                    .tag(meal)
+            }
+        }
+        .onChange(of: mealType) {
+            resetEditingState()
+        }
+    }
+    
     @ToolbarContentBuilder
     private var searchViewToolbar: some ToolbarContent {
         switch searchViewModel.editingState {
         case .active:
             ToolbarItem {
                 Button(role: .confirm) {
-                    withAnimation {
-                        searchViewModel.editingState = .inactive
-                    }
-                    
-                    searchViewModel.selectedItems.removeAll()
-                    editModeState = .inactive
+                    resetEditingState()
                 }
             }
             
@@ -136,12 +128,7 @@ struct SearchView: View {
                             idRemove.contains($0.searchFoodId)
                         }
                         
-                        withAnimation {
-                            searchViewModel.editingState = .inactive
-                        }
-                        
-                        searchViewModel.selectedItems.removeAll()
-                        editModeState = .inactive
+                        resetEditingState()
                         
                         Task {
                             await searchViewModel
@@ -165,6 +152,15 @@ struct SearchView: View {
             
             DefaultToolbarItem(kind: .search, placement: .bottomBar)
         }
+    }
+    
+    private func resetEditingState() {
+        withAnimation {
+            searchViewModel.editingState = .inactive
+        }
+        
+        searchViewModel.selectedItems.removeAll()
+        editModeState = .inactive
     }
 }
 
