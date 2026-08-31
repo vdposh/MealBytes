@@ -42,10 +42,6 @@ struct SearchView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
         }
-        .onChange(of: mealType) {
-            searchViewModel.displayBookmarks(for: mealType)
-            searchViewModel.resetQuery()
-        }
         .onDisappear {
             resetEditingState()
         }
@@ -60,6 +56,8 @@ struct SearchView: View {
             }
         }
         .onChange(of: mealType) {
+            searchViewModel.displayBookmarks(for: mealType)
+            searchViewModel.resetQuery()
             resetEditingState()
         }
     }
