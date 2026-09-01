@@ -13,10 +13,10 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
-    func loadAllBookmarkMetadata(
+    func loadAllFoodMetadata(
         _ foods: [Food],
         for mealType: MealType
-    ) async throws -> [Int: BookmarkMetadata]
+    ) async throws -> [Int: FoodMetadata]
     func loadLoginDataFirestore() async throws -> (
         email: String,
         isLoggedIn: Bool
@@ -31,8 +31,8 @@ protocol FirebaseFirestoreProtocol {
         _ foods: [Food],
         for mealType: MealType
     ) async throws
-    func saveBookmarkMetadata(
-        _ metadata: BookmarkMetadata,
+    func saveFoodMetadata(
+        _ metadata: FoodMetadata,
         for mealType: MealType
     ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
@@ -45,7 +45,7 @@ protocol FirebaseFirestoreProtocol {
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemsFirestore(on date: Date) async throws
     func deleteLoginDataFirestore() async throws
-    func deleteBookmarkMetadata(
+    func deleteFoodMetadata(
         for foodId: Int,
         foodName: String,
         mealType: MealType
@@ -212,11 +212,11 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         )
     }
     
-    // MARK: - Load Bookmark Metadata
-    func loadAllBookmarkMetadata(
+    // MARK: - Load Metadata
+    func loadAllFoodMetadata(
         _ foods: [Food],
         for mealType: MealType
-    ) async throws -> [Int: BookmarkMetadata] {
+    ) async throws -> [Int: FoodMetadata] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -234,18 +234,18 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .whereField("foodId", in: foodIds)
             .getDocuments()
         
-        var dict: [Int: BookmarkMetadata] = [:]
+        var dict: [Int: FoodMetadata] = [:]
         for document in snapshot.documents {
-            if let metadata = try? document.data(as: BookmarkMetadata.self) {
+            if let metadata = try? document.data(as: FoodMetadata.self) {
                 dict[metadata.foodId] = metadata
             }
         }
         return dict
     }
     
-    // MARK: - Save Bookmark Metadata
-    func saveBookmarkMetadata(
-        _ metadata: BookmarkMetadata,
+    // MARK: - Save Metadata
+    func saveFoodMetadata(
+        _ metadata: FoodMetadata,
         for mealType: MealType
     ) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -265,8 +265,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try path.setData(from: metadata, merge: true)
     }
     
-    // MARK: - Delete Bookmark Metadata
-    func deleteBookmarkMetadata(
+    // MARK: - Delete Metadata
+    func deleteFoodMetadata(
         for foodId: Int,
         foodName: String,
         mealType: MealType

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FoodDetailView: View {
     let food: Food
-    var bookmarkMetadata: BookmarkMetadata? = nil
+    var bookmarkMetadata: FoodMetadata? = nil
     
     var body: some View {
         if let metadata = bookmarkMetadata {

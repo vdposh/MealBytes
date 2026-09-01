@@ -1,5 +1,5 @@
 //
-//  BookmarkMetadata.swift
+//  FoodMetadata.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 30/10/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BookmarkMetadata: Codable {
+struct FoodMetadata: Codable {
     let foodId: Int
     let foodName: String
     let mealType: MealType

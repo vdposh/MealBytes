@@ -13,7 +13,7 @@ protocol SearchViewModelProtocol {
     func loadBookmarksSearchView(for mealType: MealType) async
     func loadBookmarks() async
     func updateBookmarkMetadata(
-        _ metadata: BookmarkMetadata,
+        _ metadata: FoodMetadata,
         for mealType: MealType
     )
     func displayBookmarks(for mealType: MealType)
@@ -22,7 +22,7 @@ protocol SearchViewModelProtocol {
     func triggerFoodAlert()
     func resetQuery()
     
-    var bookmarkMetadataDict: [Int: BookmarkMetadata] { get set }
+    var foodMetadataDict: [Int: FoodMetadata] { get set }
 }
 
 final class SearchViewModel: ObservableObject {
@@ -30,7 +30,7 @@ final class SearchViewModel: ObservableObject {
     @Published var favoriteFoods: [Food] = []
     @Published var historyFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
-    @Published var bookmarkMetadataDict: [Int: BookmarkMetadata] = [:]
+    @Published var foodMetadataDict: [Int: FoodMetadata] = [:]
     @Published var selectedItems = Set<Food.ID>()
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
@@ -52,7 +52,7 @@ final class SearchViewModel: ObservableObject {
     
     private var bookmarksByType: [MealType: [Food]] = [:]
     private var bookmarkedIdsByType: [MealType: Set<Int>] = [:]
-    private var metadataByType: [MealType: [Int: BookmarkMetadata]] = [:]
+    private var metadataByType: [MealType: [Int: FoodMetadata]] = [:]
     
     private var historyByType: [MealType: [Food]] = [:]
     private let maxHistoryCount = 10
@@ -164,7 +164,7 @@ final class SearchViewModel: ObservableObject {
             )
             let bookmarked = Set(favorites.map { $0.searchFoodId })
             
-            let metadataDict = try await firestore.loadAllBookmarkMetadata(
+            let metadataDict = try await firestore.loadAllFoodMetadata(
                 favorites,
                 for: mealType
             )
@@ -188,7 +188,7 @@ final class SearchViewModel: ObservableObject {
     func displayBookmarks(for mealType: MealType) {
         favoriteFoods = bookmarksByType[mealType] ?? []
         bookmarkedFoods = bookmarkedIdsByType[mealType] ?? []
-        bookmarkMetadataDict = metadataByType[mealType] ?? [:]
+        foodMetadataDict = metadataByType[mealType] ?? [:]
         
         let allHistory = historyByType[mealType] ?? []
         historyFoods = allHistory.filter { food in
@@ -271,7 +271,7 @@ final class SearchViewModel: ObservableObject {
                 for: selectedMealType
             )
             for food in foodsToRemove {
-                try await firestore.deleteBookmarkMetadata(
+                try await firestore.deleteFoodMetadata(
                     for: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: selectedMealType
@@ -317,7 +317,7 @@ final class SearchViewModel: ObservableObject {
                     favoriteFoods
                         .removeAll { $0.searchFoodId == food.searchFoodId }
                     bookmarkedFoods.remove(food.searchFoodId)
-                    bookmarkMetadataDict.removeValue(forKey: food.searchFoodId)
+                    foodMetadataDict.removeValue(forKey: food.searchFoodId)
                     
                     var updatedMetadata = metadataByType[mealType] ?? [:]
                     updatedMetadata.removeValue(forKey: food.searchFoodId)
@@ -340,7 +340,7 @@ final class SearchViewModel: ObservableObject {
             )
             
             if !isAdding {
-                try await firestore.deleteBookmarkMetadata(
+                try await firestore.deleteFoodMetadata(
                     for: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType
@@ -362,10 +362,10 @@ final class SearchViewModel: ObservableObject {
     }
     
     func updateBookmarkMetadata(
-        _ metadata: BookmarkMetadata,
+        _ metadata: FoodMetadata,
         for mealType: MealType
     ) {
-        bookmarkMetadataDict[metadata.foodId] = metadata
+        foodMetadataDict[metadata.foodId] = metadata
         
         var updatedMetadata = metadataByType[mealType] ?? [:]
         updatedMetadata[metadata.foodId] = metadata

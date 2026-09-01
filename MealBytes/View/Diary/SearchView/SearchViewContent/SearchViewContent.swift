@@ -161,7 +161,7 @@ struct SearchViewContent: View {
             FoodDetailView(
                 food: food,
                 bookmarkMetadata: searchViewModel
-                    .bookmarkMetadataDict[food.searchFoodId]
+                    .foodMetadataDict[food.searchFoodId]
             )
         } else {
             NavigationLink {
@@ -178,7 +178,7 @@ struct SearchViewContent: View {
                 FoodDetailView(
                     food: food,
                     bookmarkMetadata: searchViewModel
-                        .bookmarkMetadataDict[food.searchFoodId]
+                        .foodMetadataDict[food.searchFoodId]
                 )
             }
             .swipeActions {

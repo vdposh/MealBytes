@@ -79,7 +79,7 @@ final class FoodViewModel: ObservableObject {
             self.foodDetail = fetchedFoodDetail
             
             let metadata = searchViewModel
-                .bookmarkMetadataDict[food.searchFoodId]
+                .foodMetadataDict[food.searchFoodId]
             let servingDescription = metadata?.servingDescription
             ?? initialMeasurementDescription
             
@@ -101,7 +101,7 @@ final class FoodViewModel: ObservableObject {
             }
             
             if isBookmarkFilled, !isEditingMealItem {
-                let allMetadata = try await firestore.loadAllBookmarkMetadata(
+                let allMetadata = try await firestore.loadAllFoodMetadata(
                     [food],
                     for: mealType
                 )
@@ -175,7 +175,7 @@ final class FoodViewModel: ObservableObject {
             if let selectedServing {
                 let adjusted = getAdjustedNutrients()
                 
-                let metadata = BookmarkMetadata(
+                let metadata = FoodMetadata(
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType,
@@ -192,7 +192,7 @@ final class FoodViewModel: ObservableObject {
                 )
                 
                 try await firestore
-                    .saveBookmarkMetadata(metadata, for: mealType)
+                    .saveFoodMetadata(metadata, for: mealType)
                 
                 await MainActor.run {
                     searchViewModel
@@ -298,7 +298,7 @@ final class FoodViewModel: ObservableObject {
         
         let adjusted = getAdjustedNutrients()
         
-        let metadata = BookmarkMetadata(
+        let metadata = FoodMetadata(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             mealType: mealType,
@@ -319,11 +319,11 @@ final class FoodViewModel: ObservableObject {
         }
         
         do {
-            try await firestore.saveBookmarkMetadata(metadata, for: mealType)
+            try await firestore.saveFoodMetadata(metadata, for: mealType)
             
             await MainActor.run {
                 searchViewModel
-                    .bookmarkMetadataDict[food.searchFoodId] = metadata
+                    .foodMetadataDict[food.searchFoodId] = metadata
             }
         } catch {
             await MainActor.run {
