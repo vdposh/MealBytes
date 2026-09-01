@@ -172,7 +172,7 @@ final class FoodViewModel: ObservableObject {
             
             await searchViewModel.addToHistory(food, for: mealType)
             
-            if isBookmarkFilled {
+            if let selectedServing {
                 let adjusted = getAdjustedNutrients()
                 
                 let metadata = BookmarkMetadata(
@@ -180,28 +180,26 @@ final class FoodViewModel: ObservableObject {
                     foodName: food.searchFoodName,
                     mealType: mealType,
                     amount: amount,
-                    servingDescription: selectedServing?
-                        .measurementDescription ?? "",
+                    servingDescription: selectedServing.measurementDescription,
                     calories: adjusted.calories,
                     fat: adjusted.fat,
                     carbs: adjusted.carbs,
                     protein: adjusted.protein,
                     formattedText: formattedMealText(
-                        for: selectedServing!,
+                        for: selectedServing,
                         amount: amount
                     )
                 )
                 
-                try await firestore.saveBookmarkMetadata(
-                    metadata,
-                    for: mealType
-                )
+                try await firestore
+                    .saveBookmarkMetadata(metadata, for: mealType)
                 
                 await MainActor.run {
                     searchViewModel
                         .updateBookmarkMetadata(metadata, for: mealType)
                 }
             }
+            
         } catch {
             await MainActor.run {
                 appError = .network
