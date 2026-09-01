@@ -208,6 +208,7 @@ final class SearchViewModel: ObservableObject {
             for mealType in MealType.allCases {
                 group.addTask {
                     await self.loadBookmarksSearchView(for: mealType)
+                    await self.loadHistory(for: mealType)
                 }
             }
         }
@@ -408,6 +409,50 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Load History Data
+    func loadHistory(for mealType: MealType) async {
+        do {
+            let history = try await firestore.loadHistoryFirestore(
+                for: mealType
+            )
+            
+            var newMetadata: [Int: FoodMetadata] = [:]
+            
+            if !history.isEmpty {
+                let metadataDict = try await firestore.loadAllFoodMetadata(
+                    history,
+                    for: mealType
+                )
+                var updatedMetadata = metadataByType[mealType] ?? [:]
+                
+                for (key, value) in metadataDict {
+                    updatedMetadata[key] = value
+                }
+                
+                newMetadata = updatedMetadata
+            }
+            
+            let historyCopy = history
+            let metadataCopy = newMetadata
+            
+            await MainActor.run {
+                historyByType[mealType] = historyCopy
+                
+                if !history.isEmpty {
+                    metadataByType[mealType] = metadataCopy
+                }
+                
+                if selectedMealType == mealType {
+                    displayBookmarks(for: mealType)
+                }
+            }
+        } catch {
+            await MainActor.run {
+                appError = .network
+            }
+        }
+    }
+    
     // MARK: - Add to History
     func addToHistory(_ food: Food, for mealType: MealType) async {
         let isBookmarked = bookmarkedFoods.contains(food.searchFoodId)
@@ -432,6 +477,16 @@ final class SearchViewModel: ObservableObject {
             
             await MainActor.run {
                 historyFoods = historyCopy
+            }
+        }
+        
+        Task {
+            do {
+                try await firestore.addHistoryFirestore(history, for: mealType)
+            } catch {
+                await MainActor.run {
+                    appError = .network
+                }
             }
         }
     }

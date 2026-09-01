@@ -13,6 +13,7 @@ import FirebaseAuth
 protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
+    func loadHistoryFirestore(for mealType: MealType) async throws -> [Food]
     func loadAllFoodMetadata(
         _ foods: [Food],
         for mealType: MealType
@@ -28,6 +29,10 @@ protocol FirebaseFirestoreProtocol {
     func loadDisplayIntakeFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
     func addBookmarkFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws
+    func addHistoryFirestore(
         _ foods: [Food],
         for mealType: MealType
     ) async throws
@@ -156,8 +161,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await batch.commit()
     }
     
-    // MARK: - Load Bookmarks
-    func loadBookmarksFirestore(
+    // MARK: - Load Foods SearchView
+    private func loadFoodsFromFirestore(
+        from collectionPath: String,
         for mealType: MealType
     ) async throws -> [Food] {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -168,7 +174,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document("Bookmarks")
+            .document(collectionPath)
             .collection(mealType.rawValue.lowercased())
             .document("items")
             .getDocument()
@@ -188,9 +194,24 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         }
     }
     
-    // MARK: - Add Bookmarks
-    func addBookmarkFirestore(
+    // MARK: - Load Bookmarks
+    func loadBookmarksFirestore(
+        for mealType: MealType
+    ) async throws -> [Food] {
+        try await loadFoodsFromFirestore(from: "Bookmarks", for: mealType)
+    }
+    
+    // MARK: - Load History
+    func loadHistoryFirestore(
+        for mealType: MealType
+    ) async throws -> [Food] {
+        try await loadFoodsFromFirestore(from: "History", for: mealType)
+    }
+    
+    // MARK: - Save Foods SearchView
+    private func saveFoodsToFirestore(
         _ foods: [Food],
+        to collectionPath: String,
         for mealType: MealType
     ) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -202,7 +223,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document("Bookmarks")
+            .document(collectionPath)
             .collection(mealType.rawValue.lowercased())
             .document("items")
         
@@ -210,6 +231,22 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             ["items": encodedFoods],
             merge: true
         )
+    }
+    
+    // MARK: - Add Bookmarks
+    func addBookmarkFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws {
+        try await saveFoodsToFirestore(foods, to: "Bookmarks", for: mealType)
+    }
+    
+    // MARK: - Add History
+    func addHistoryFirestore(
+        _ foods: [Food],
+        for mealType: MealType
+    ) async throws {
+        try await saveFoodsToFirestore(foods, to: "History", for: mealType)
     }
     
     // MARK: - Load Metadata
