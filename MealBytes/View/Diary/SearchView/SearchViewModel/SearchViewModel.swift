@@ -12,7 +12,7 @@ protocol SearchViewModelProtocol {
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
     func loadBookmarks() async
-    func updateBookmarkMetadata(
+    func updateMetadata(
         _ metadata: FoodMetadata,
         for mealType: MealType
     )
@@ -361,7 +361,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    func updateBookmarkMetadata(
+    func updateMetadata(
         _ metadata: FoodMetadata,
         for mealType: MealType
     ) {

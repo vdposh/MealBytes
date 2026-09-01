@@ -9,10 +9,10 @@ import SwiftUI
 
 struct FoodDetailView: View {
     let food: Food
-    var bookmarkMetadata: FoodMetadata? = nil
+    var foodMetadata: FoodMetadata? = nil
     
     var body: some View {
-        if let metadata = bookmarkMetadata {
+        if let metadata = foodMetadata {
             FoodItemView(
                 foodName: food.searchFoodName,
                 formattedText: metadata.formattedText,

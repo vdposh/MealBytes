@@ -196,7 +196,7 @@ final class FoodViewModel: ObservableObject {
                 
                 await MainActor.run {
                     searchViewModel
-                        .updateBookmarkMetadata(metadata, for: mealType)
+                        .updateMetadata(metadata, for: mealType)
                 }
             }
             
@@ -315,7 +315,7 @@ final class FoodViewModel: ObservableObject {
         )
         
         await MainActor.run {
-            searchViewModel.updateBookmarkMetadata(metadata, for: mealType)
+            searchViewModel.updateMetadata(metadata, for: mealType)
         }
         
         do {

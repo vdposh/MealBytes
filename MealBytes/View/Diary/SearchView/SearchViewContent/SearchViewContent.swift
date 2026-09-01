@@ -160,7 +160,7 @@ struct SearchViewContent: View {
         if searchViewModel.isEditModeActive {
             FoodDetailView(
                 food: food,
-                bookmarkMetadata: searchViewModel
+                foodMetadata: searchViewModel
                     .foodMetadataDict[food.searchFoodId]
             )
         } else {
@@ -177,7 +177,7 @@ struct SearchViewContent: View {
             } label: {
                 FoodDetailView(
                     food: food,
-                    bookmarkMetadata: searchViewModel
+                    foodMetadata: searchViewModel
                         .foodMetadataDict[food.searchFoodId]
                 )
             }
