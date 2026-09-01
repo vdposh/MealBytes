@@ -17,6 +17,7 @@ protocol SearchViewModelProtocol {
         for mealType: MealType
     )
     func displayBookmarks(for mealType: MealType)
+    func addToHistory(_ food: Food, for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
     func triggerFoodAlert()
     func resetQuery()
@@ -27,6 +28,7 @@ protocol SearchViewModelProtocol {
 final class SearchViewModel: ObservableObject {
     @Published var foods: [Food] = []
     @Published var favoriteFoods: [Food] = []
+    @Published var historyFoods: [Food] = []
     @Published var bookmarkedFoods: Set<Int> = []
     @Published var bookmarkMetadataDict: [Int: BookmarkMetadata] = [:]
     @Published var selectedItems = Set<Food.ID>()
@@ -51,6 +53,9 @@ final class SearchViewModel: ObservableObject {
     private var bookmarksByType: [MealType: [Food]] = [:]
     private var bookmarkedIdsByType: [MealType: Set<Int>] = [:]
     private var metadataByType: [MealType: [Int: BookmarkMetadata]] = [:]
+    
+    private var historyByType: [MealType: [Food]] = [:]
+    private let maxHistoryCount = 10
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -184,6 +189,12 @@ final class SearchViewModel: ObservableObject {
         favoriteFoods = bookmarksByType[mealType] ?? []
         bookmarkedFoods = bookmarkedIdsByType[mealType] ?? []
         bookmarkMetadataDict = metadataByType[mealType] ?? [:]
+        
+        let allHistory = historyByType[mealType] ?? []
+        historyFoods = allHistory.filter { food in
+            !bookmarkedFoods.contains(food.searchFoodId)
+        }
+        
         selectedMealType = mealType
         isLoading = false
         
@@ -284,6 +295,7 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Toggle Bookmark
     func toggleBookmarkSearchView(for food: Food) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
+        let mealType = selectedMealType
         
         let originalFavoriteFoods = favoriteFoods
         let originalBookmarkedFoods = bookmarkedFoods
@@ -293,20 +305,27 @@ final class SearchViewModel: ObservableObject {
                 if isAdding {
                     favoriteFoods.append(food)
                     bookmarkedFoods.insert(food.searchFoodId)
+                    
+                    var history = historyByType[mealType] ?? []
+                    history.removeAll { $0.searchFoodId == food.searchFoodId }
+                    historyByType[mealType] = history
+                    
+                    if selectedMealType == mealType {
+                        historyFoods = history
+                    }
                 } else {
                     favoriteFoods
                         .removeAll { $0.searchFoodId == food.searchFoodId }
                     bookmarkedFoods.remove(food.searchFoodId)
                     bookmarkMetadataDict.removeValue(forKey: food.searchFoodId)
                     
-                    var updatedMetadata = metadataByType[selectedMealType] ??
-                    [:]
+                    var updatedMetadata = metadataByType[mealType] ?? [:]
                     updatedMetadata.removeValue(forKey: food.searchFoodId)
-                    metadataByType[selectedMealType] = updatedMetadata
+                    metadataByType[mealType] = updatedMetadata
                 }
                 
-                bookmarksByType[selectedMealType] = favoriteFoods
-                bookmarkedIdsByType[selectedMealType] = bookmarkedFoods
+                bookmarksByType[mealType] = favoriteFoods
+                bookmarkedIdsByType[mealType] = bookmarkedFoods
                 
                 if query.isEmpty {
                     foods = favoriteFoods
@@ -317,22 +336,22 @@ final class SearchViewModel: ObservableObject {
         do {
             try await firestore.addBookmarkFirestore(
                 favoriteFoods,
-                for: selectedMealType
+                for: mealType
             )
             
             if !isAdding {
                 try await firestore.deleteBookmarkMetadata(
                     for: food.searchFoodId,
                     foodName: food.searchFoodName,
-                    mealType: selectedMealType
+                    mealType: mealType
                 )
             }
         } catch {
             await MainActor.run {
                 favoriteFoods = originalFavoriteFoods
                 bookmarkedFoods = originalBookmarkedFoods
-                bookmarksByType[selectedMealType] = originalFavoriteFoods
-                bookmarkedIdsByType[selectedMealType] = originalBookmarkedFoods
+                bookmarksByType[mealType] = originalFavoriteFoods
+                bookmarkedIdsByType[mealType] = originalBookmarkedFoods
                 
                 if query.isEmpty {
                     foods = favoriteFoods
@@ -386,6 +405,34 @@ final class SearchViewModel: ObservableObject {
         
         Task {
             await saveBookmarkOrder()
+        }
+    }
+    
+    // MARK: - Add to History
+    func addToHistory(_ food: Food, for mealType: MealType) async {
+        let isBookmarked = bookmarkedFoods.contains(food.searchFoodId)
+        
+        if isBookmarked {
+            return
+        }
+        
+        var history = historyByType[mealType] ?? []
+        
+        history.removeAll { $0.searchFoodId == food.searchFoodId }
+        history.insert(food, at: 0)
+        
+        if history.count > maxHistoryCount {
+            history = Array(history.prefix(maxHistoryCount))
+        }
+        
+        historyByType[mealType] = history
+        
+        if selectedMealType == mealType {
+            let historyCopy = history
+            
+            await MainActor.run {
+                historyFoods = historyCopy
+            }
         }
     }
     
@@ -443,7 +490,7 @@ final class SearchViewModel: ObservableObject {
             .loading
         } else if let error = appError {
             .error(error)
-        } else if foods.isEmpty {
+        } else if foods.isEmpty && historyFoods.isEmpty {
             .empty
         } else {
             .results

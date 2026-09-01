@@ -170,6 +170,8 @@ final class FoodViewModel: ObservableObject {
         do {
             try await firestore.addMealItemFirestore(newItem)
             
+            await searchViewModel.addToHistory(food, for: mealType)
+            
             if isBookmarkFilled {
                 let adjusted = getAdjustedNutrients()
                 

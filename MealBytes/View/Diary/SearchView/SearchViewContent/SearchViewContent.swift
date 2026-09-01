@@ -87,6 +87,23 @@ struct SearchViewContent: View {
                                 }
                         }
                     }
+                    .animation(nil, value: searchViewModel.foods)
+                }
+                
+                // MARK: - History Section
+                if !searchViewModel.historyFoods.isEmpty &&
+                    searchViewModel.debouncedQuery.isEmpty &&
+                    !searchViewModel.isEditModeActive {
+                    Section {
+                        ForEach(
+                            searchViewModel.historyFoods,
+                            id: \.searchFoodId
+                        ) { food in
+                            foodRow(for: food)
+                        }
+                    } header: {
+                        Text("Recent")
+                    }
                 }
                 
                 // MARK: - Results Section
@@ -112,11 +129,11 @@ struct SearchViewContent: View {
                         } header: {
                             Text("Results")
                         }
+                        .animation(nil, value: searchViewModel.foods)
                     }
                 }
             }
             .animation(nil, value: searchViewModel.editingState)
-            .animation(nil, value: searchViewModel.foods)
             .scrollDismissesKeyboard(.immediately)
             .overlay {
                 FoodAddedAlertView(
