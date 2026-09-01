@@ -168,7 +168,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document(mealType.rawValue.lowercased())
+            .document("Bookmarks")
+            .collection(mealType.rawValue.lowercased())
+            .document("items")
             .getDocument()
         
         guard let data = snapshot.data(),
@@ -200,7 +202,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document(mealType.rawValue.lowercased())
+            .document("Bookmarks")
+            .collection(mealType.rawValue.lowercased())
+            .document("items")
         
         try await documentReference.setData(
             ["items": encodedFoods],
@@ -225,8 +229,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document(mealType.rawValue.lowercased())
-            .collection("metadata")
+            .document("Metadata")
+            .collection(mealType.rawValue.lowercased())
             .whereField("foodId", in: foodIds)
             .getDocuments()
         
@@ -254,8 +258,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document(mealType.rawValue.lowercased())
-            .collection("metadata")
+            .document("Metadata")
+            .collection(mealType.rawValue.lowercased())
             .document(documentId)
         
         try path.setData(from: metadata, merge: true)
@@ -277,8 +281,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("SearchView")
-            .document(mealType.rawValue.lowercased())
-            .collection("metadata")
+            .document("Metadata")
+            .collection(mealType.rawValue.lowercased())
             .document(documentId)
         
         try await path.delete()
