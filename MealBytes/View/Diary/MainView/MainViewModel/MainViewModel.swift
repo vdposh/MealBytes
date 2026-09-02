@@ -86,7 +86,7 @@ final class MainViewModel: ObservableObject {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let macroTask: () = loadIntakeMainView()
         async let displayIntakeTask: () = loadDisplayIntakeMainView()
-        async let bookmarksTask: () = searchViewModel.loadBookmarks()
+        async let bookmarksTask: () = searchViewModel.loadSearchViewData()
         
         _ = await (
             mealItemsTask,
@@ -750,7 +750,7 @@ final class MainViewModel: ObservableObject {
     
     func navigateToSearch(for mealType: MealType) {
         selectedMealType = mealType
-        searchViewModel.displayBookmarks(for: mealType)
+        searchViewModel.displaySearchViewData(for: mealType)
         searchViewModel.resetQuery()
     }
     

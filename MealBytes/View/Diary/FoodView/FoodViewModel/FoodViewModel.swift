@@ -78,10 +78,9 @@ final class FoodViewModel: ObservableObject {
             
             self.foodDetail = fetchedFoodDetail
             
-            let metadata = searchViewModel
-                .foodMetadataDict[food.searchFoodId]
-            let servingDescription = metadata?.servingDescription
-            ?? initialMeasurementDescription
+            let metadata = searchViewModel.foodMetadataDict[food.searchFoodId]
+            let servingDescription = metadata?
+                .servingDescription ?? initialMeasurementDescription
             
             if let metadata = metadata,
                let value = Double(metadata.amount) {
@@ -98,31 +97,6 @@ final class FoodViewModel: ObservableObject {
             
             if !isEditingMealItem && metadata == nil {
                 setAmount(for: selectedServing)
-            }
-            
-            if isBookmarkFilled, !isEditingMealItem {
-                let allMetadata = try await firestore.loadAllFoodMetadata(
-                    [food],
-                    for: mealType
-                )
-                if let firestoreMetadata = allMetadata[food.searchFoodId] {
-                    if firestoreMetadata.amount != amount ||
-                        firestoreMetadata.servingDescription !=
-                        selectedServing?.measurementDescription {
-                        if let value = Double(firestoreMetadata.amount) {
-                            amount = value.asDecimal(grouping: false)
-                        }
-                        if let serving = fetchedFoodDetail
-                            .servings.serving.first(
-                                where: {
-                                    $0.measurementDescription ==
-                                    firestoreMetadata.servingDescription
-                                }
-                            ) {
-                            selectedServing = serving
-                        }
-                    }
-                }
             }
             
             self.isBookmarkFilled = searchViewModel

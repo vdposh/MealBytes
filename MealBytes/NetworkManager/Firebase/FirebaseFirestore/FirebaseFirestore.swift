@@ -14,8 +14,7 @@ protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
     func loadHistoryFirestore(for mealType: MealType) async throws -> [Food]
-    func loadAllFoodMetadata(
-        _ foods: [Food],
+    func loadFoodMetadata(
         for mealType: MealType
     ) async throws -> [Int: FoodMetadata]
     func loadLoginDataFirestore() async throws -> (
@@ -249,18 +248,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await saveFoodsToFirestore(foods, to: "History", for: mealType)
     }
     
-    // MARK: - Load Metadata
-    func loadAllFoodMetadata(
-        _ foods: [Food],
+    // MARK: - Load Metadata for MealType
+    func loadFoodMetadata(
         for mealType: MealType
     ) async throws -> [Int: FoodMetadata] {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
-        
-        guard !foods.isEmpty else { return [:] }
-        
-        let foodIds = foods.map { $0.searchFoodId }
         
         let snapshot = try await firestore
             .collection("Users")
@@ -268,7 +262,6 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("SearchView")
             .document("Metadata")
             .collection(mealType.rawValue.lowercased())
-            .whereField("foodId", in: foodIds)
             .getDocuments()
         
         var dict: [Int: FoodMetadata] = [:]

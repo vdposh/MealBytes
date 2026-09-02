@@ -43,7 +43,7 @@ struct SearchView: View {
                 .ignoresSafeArea()
         }
         .onChange(of: mealType) {
-            searchViewModel.displayBookmarks(for: mealType)
+            searchViewModel.displaySearchViewData(for: mealType)
         }
         .onDisappear {
             resetEditingState()

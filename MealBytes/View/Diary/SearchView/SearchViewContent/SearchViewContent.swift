@@ -230,12 +230,16 @@ struct SearchViewContent: View {
                 case .next:
                     HStack {
                         Image(systemName: "chevron.right")
+                            .font(.footnote)
+                        
                         Text("Next Page")
                     }
                     
                 case .previous:
                     HStack {
                         Image(systemName: "chevron.left")
+                            .font(.footnote)
+                        
                         Text("Previous Page")
                     }
                 }
