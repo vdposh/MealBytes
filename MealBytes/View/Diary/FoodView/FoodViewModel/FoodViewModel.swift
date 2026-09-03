@@ -368,19 +368,42 @@ final class FoodViewModel: ObservableObject {
         let totalSize = servingSize * amountValue
         let formattedTotalSize = totalSize.asDecimal()
         
-        if measurement == "g" || measurement == "ml" {
-            if formattedAmount.isEmpty {
-                return measurement == "g" ? "grams" : "milliliters"
+        if formattedAmount.isEmpty || amountValue == 0 {
+            if measurement == "g" {
+                return "grams"
+            } else if measurement == "ml" {
+                return "milliliters"
             }
-            
-            return "\(formattedAmount) \(serving.metricServingUnit)"
+            return measurement
         }
         
-        if formattedAmount.isEmpty {
-            return "\(measurement) (\(servingSize.asDecimal()) \(serving.metricServingUnit))"
+        let displayMeasurement: String
+        if measurement == "g" {
+            displayMeasurement = "g"
+        } else if measurement == "ml" {
+            displayMeasurement = "ml"
+        } else {
+            displayMeasurement = measurement.pluralized(for: amountValue)
         }
         
-        return "\(formattedAmount) \(measurement) (\(formattedTotalSize) \(serving.metricServingUnit))"
+        let unit: String
+        if measurement == "g" {
+            unit = "g"
+        } else if measurement == "ml" {
+            unit = "ml"
+        } else {
+            unit = serving.metricServingUnit
+        }
+        
+        if servingSize == 0 {
+            return "\(formattedAmount) \(displayMeasurement)"
+        }
+        
+        if measurement == "g" || measurement == "ml" {
+            return "\(formattedAmount) \(unit)"
+        }
+        
+        return "\(formattedAmount) \(displayMeasurement) (\(formattedTotalSize) \(unit))"
     }
     
     // MARK: - Button States
