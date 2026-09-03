@@ -78,29 +78,43 @@ final class FoodViewModel: ObservableObject {
             
             self.foodDetail = fetchedFoodDetail
             
-            let metadata = searchViewModel.foodMetadataDict[food.searchFoodId]
-            let servingDescription = metadata?
-                .servingDescription ?? initialMeasurementDescription
-            
-            if let metadata = metadata,
-               let value = Double(metadata.amount) {
-                amount = value.asDecimal(grouping: false)
-            }
-            
-            if let serving = fetchedFoodDetail.servings.serving.first(
-                where: { $0.measurementDescription == servingDescription }
-            ) {
-                selectedServing = serving
+            if isEditingMealItem {
+                let servingDescription = initialMeasurementDescription
+                
+                if let serving = fetchedFoodDetail.servings.serving.first(
+                    where: { $0.measurementDescription == servingDescription }
+                ) {
+                    selectedServing = serving
+                } else {
+                    selectedServing = fetchedFoodDetail.servings.serving.first
+                }
             } else {
-                selectedServing = fetchedFoodDetail.servings.serving.first
-            }
-            
-            if !isEditingMealItem && metadata == nil {
-                setAmount(for: selectedServing)
+                let metadata = searchViewModel
+                    .foodMetadataDict[food.searchFoodId]
+                let servingDescription = metadata?
+                    .servingDescription ?? initialMeasurementDescription
+                
+                if let metadata = metadata,
+                   let value = Double(metadata.amount) {
+                    amount = value.asDecimal(grouping: false)
+                }
+                
+                if let serving = fetchedFoodDetail.servings.serving.first(
+                    where: { $0.measurementDescription == servingDescription }
+                ) {
+                    selectedServing = serving
+                } else {
+                    selectedServing = fetchedFoodDetail.servings.serving.first
+                }
+                
+                if metadata == nil {
+                    setAmount(for: selectedServing)
+                }
             }
             
             self.isBookmarkFilled = searchViewModel
                 .isBookmarkedSearchView(food)
+            
         } catch {
             self.appError = error as? AppError ?? .networkRefresh
             isError = true
