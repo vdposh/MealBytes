@@ -55,7 +55,7 @@ final class SearchViewModel: ObservableObject {
     private var metadataByType: [MealType: [Int: FoodMetadata]] = [:]
     
     private var historyByType: [MealType: [Food]] = [:]
-    private let maxHistoryCount = 3
+    private let maxHistoryCount = 15
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -247,9 +247,8 @@ final class SearchViewModel: ObservableObject {
         foodMetadataDict = metadataByType[mealType] ?? [:]
         
         let allHistory = historyByType[mealType] ?? []
-        historyFoods = allHistory.filter { food in
-            !bookmarkedFoods.contains(food.searchFoodId)
-        }
+        historyFoods = allHistory
+            .filter { !bookmarkedFoods.contains($0.searchFoodId) }
         
         selectedMealType = mealType
         isLoading = false
@@ -288,6 +287,10 @@ final class SearchViewModel: ObservableObject {
         let originalFavoriteFoods = favoriteFoods
         let originalBookmarkedFoods = bookmarkedFoods
         
+        let foodsToRemove = favoriteFoods.filter {
+            ids.contains($0.searchFoodId)
+        }
+        
         await MainActor.run {
             withAnimation {
                 favoriteFoods.removeAll { ids.contains($0.searchFoodId) }
@@ -300,6 +303,15 @@ final class SearchViewModel: ObservableObject {
                 if query.isEmpty {
                     foods = favoriteFoods
                 }
+            }
+        }
+        
+        await MainActor.run {
+            for food in foodsToRemove {
+                deleteMetadataIfNotInHistory(
+                    for: food,
+                    mealType: selectedMealType
+                )
             }
         }
         
@@ -341,6 +353,7 @@ final class SearchViewModel: ObservableObject {
                     favoriteFoods
                         .removeAll { $0.searchFoodId == food.searchFoodId }
                     bookmarkedFoods.remove(food.searchFoodId)
+                    deleteMetadataIfNotInHistory(for: food, mealType: mealType)
                 }
                 
                 bookmarksByType[mealType] = favoriteFoods
@@ -355,10 +368,8 @@ final class SearchViewModel: ObservableObject {
         }
         
         do {
-            try await firestore.addBookmarkFirestore(
-                favoriteFoods,
-                for: mealType
-            )
+            try await firestore
+                .addBookmarkFirestore(favoriteFoods, for: mealType)
         } catch {
             await MainActor.run {
                 favoriteFoods = originalFavoriteFoods
@@ -374,6 +385,37 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Delete Metadata If Not In History
+    private func deleteMetadataIfNotInHistory(
+        for food: Food,
+        mealType: MealType
+    ) {
+        let history = historyByType[mealType] ?? []
+        let isInHistory = history.contains {
+            $0.searchFoodId == food.searchFoodId
+        }
+        
+        if !isInHistory {
+            foodMetadataDict.removeValue(forKey: food.searchFoodId)
+            metadataByType[mealType]?.removeValue(forKey: food.searchFoodId)
+            
+            Task {
+                do {
+                    try await firestore.deleteFoodMetadata(
+                        for: food.searchFoodId,
+                        foodName: food.searchFoodName,
+                        mealType: mealType
+                    )
+                } catch {
+                    await MainActor.run {
+                        appError = .network
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Update Metadata
     func updateMetadata(
         _ metadata: FoodMetadata,
         for mealType: MealType
@@ -423,12 +465,6 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Add to History
     func addToHistory(_ food: Food, for mealType: MealType) async {
-//        let isBookmarked = bookmarkedFoods.contains(food.searchFoodId)
-//        
-//        if isBookmarked {
-//            return
-//        }
-        
         var history = historyByType[mealType] ?? []
         
         history.removeAll { $0.searchFoodId == food.searchFoodId }
@@ -443,25 +479,23 @@ final class SearchViewModel: ObservableObject {
         
         historyByType[mealType] = history
         
-        for removedFood in removedFoods {
-            if !bookmarkedFoods.contains(removedFood.searchFoodId) {
-                Task {
-                    try? await firestore.deleteFoodMetadata(
-                        for: removedFood.searchFoodId,
-                        foodName: removedFood.searchFoodName,
+        let removedFoodsCopy = removedFoods
+        let historyCopy = history
+        
+        await MainActor.run {
+            for removedFood in removedFoodsCopy {
+                if !bookmarkedFoods.contains(removedFood.searchFoodId) {
+                    deleteMetadataIfNotInHistory(
+                        for: removedFood,
                         mealType: mealType
                     )
                 }
             }
-        }
-        
-        let historyCopy = history
-        
-        await MainActor.run {
+            
             if selectedMealType == mealType {
                 historyFoods = historyCopy
+                    .filter { !bookmarkedFoods.contains($0.searchFoodId) }
             }
-            
             displaySearchViewData(for: mealType)
         }
         
