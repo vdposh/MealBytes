@@ -418,7 +418,8 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Button States
     var canAddFood: Bool {
-        amount.isValidNumericInput()
+        let normalized = amount.trimmedLeadingZeros
+        return normalized.isValidNumericInput()
     }
     
     // MARK: - Nutrient Calculation
