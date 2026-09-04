@@ -624,35 +624,44 @@ final class MainViewModel: ObservableObject {
         NutrientValueProvider().fromSummary(nutrientSummaries)
     }
     
-    // MARK: - Format Serving Size
     func formattedMealText(for mealItem: MealItem) -> String {
         let formattedAmount = mealItem.amount.asDecimal()
-        let measurement = formattedMeasurement(for: mealItem)
-            .pluralized(for: mealItem.amount)
+        let measurement = mealItem.measurementDescription
+        let servingSize = mealItem.nutrients[.servingSize] ?? 0
+        let amountValue = mealItem.amount
         
-        let servingSize = formattedServingSize(for: mealItem)
+        if formattedAmount.isEmpty || amountValue == 0 {
+            if measurement == "g" {
+                return "grams"
+            } else if measurement == "ml" {
+                return "milliliters"
+            }
+            return measurement
+        }
         
-        if servingSize.isEmpty || servingSize == "0" {
-            return "\(formattedAmount) \(measurement)"
+        let displayMeasurement: String
+        if measurement == "g" {
+            displayMeasurement = "g"
+        } else if measurement == "ml" {
+            displayMeasurement = "ml"
+        } else if measurement.starts(with: "serving") {
+            displayMeasurement = amountValue == 1 ? "serving" : "servings"
+        } else {
+            displayMeasurement = measurement.pluralized(for: amountValue)
+        }
+        
+        let unit = mealItem.portionUnit
+        
+        if servingSize == 0 {
+            return "\(formattedAmount) \(displayMeasurement)"
         }
         
         if measurement == "g" || measurement == "ml" {
-            return "\(servingSize) \(mealItem.portionUnit)"
+            return "\(formattedAmount) \(unit)"
         }
         
-        return "\(formattedAmount) \(measurement) (\(servingSize) \(mealItem.portionUnit))"
-    }
-    
-    private func formattedServingSize(for mealItem: MealItem) -> String {
-        return (mealItem.nutrients[.servingSize] ?? 0).asDecimal()
-    }
-    
-    private func formattedMeasurement(for mealItem: MealItem) -> String {
-        if mealItem.measurementDescription.starts(with: "serving (") {
-            return "serving"
-        } else {
-            return mealItem.measurementDescription
-        }
+        let totalSize = servingSize * amountValue
+        return "\(formattedAmount) \(displayMeasurement) (\(totalSize.asDecimal()) \(unit))"
     }
     
     // MARK: - Date

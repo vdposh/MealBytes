@@ -143,7 +143,9 @@ final class FoodViewModel: ObservableObject {
         let newItem = MealItem(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
-            portionUnit: selectedServing?.metricServingUnit ?? "",
+            portionUnit: selectedServing?.measurementDescription == "ml"
+            ? "ml"
+            : selectedServing?.metricServingUnit ?? "",
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
@@ -214,7 +216,9 @@ final class FoodViewModel: ObservableObject {
             id: originalMealItemId,
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
-            portionUnit: selectedServing.metricServingUnit,
+            portionUnit: selectedServing.measurementDescription == "ml"
+            ? "ml"
+            : selectedServing.metricServingUnit,
             nutrients: roundedNutrients,
             measurementDescription: selectedServing.measurementDescription,
             amount: amount.doubleValue ?? 0,
