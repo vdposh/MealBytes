@@ -381,16 +381,11 @@ final class FoodViewModel: ObservableObject {
         let formattedAmount = amount
         let measurement = serving.measurementDescription
         let servingSize = serving.metricServingAmount
-        
         let amountValue = Double(formattedAmount) ?? 0
-        let totalSize = servingSize * amountValue
-        let formattedTotalSize = totalSize.asDecimal()
         
         if formattedAmount.isEmpty || amountValue == 0 {
             if measurement == "g" {
                 return "grams"
-            } else if measurement == "ml" {
-                return "milliliters"
             }
             return measurement
         }
@@ -400,6 +395,8 @@ final class FoodViewModel: ObservableObject {
             displayMeasurement = "g"
         } else if measurement == "ml" {
             displayMeasurement = "ml"
+        } else if measurement.starts(with: "serving") {
+            displayMeasurement = amountValue == 1 ? "serving" : "servings"
         } else {
             displayMeasurement = measurement.pluralized(for: amountValue)
         }
@@ -421,7 +418,8 @@ final class FoodViewModel: ObservableObject {
             return "\(formattedAmount) \(unit)"
         }
         
-        return "\(formattedAmount) \(displayMeasurement) (\(formattedTotalSize) \(unit))"
+        let totalSize = servingSize * amountValue
+        return "\(formattedAmount) \(displayMeasurement) (\(totalSize.asDecimal()) \(unit))"
     }
     
     // MARK: - Button States

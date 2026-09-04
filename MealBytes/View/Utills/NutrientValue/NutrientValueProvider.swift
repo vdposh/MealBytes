@@ -33,7 +33,7 @@ struct NutrientValueProvider {
             }
             
             let unit = UnitNutrients(
-                rawValue: type.unit(for: serving)
+                rawValue: type.baseUnit
             ) ?? .empty
             
             return NutrientValue(

@@ -202,6 +202,13 @@ struct FoodView: View {
         Section {
             NutrientValueSection(
                 nutrients: foodViewModel.nutrientValues,
+                servingFormattedText: foodViewModel.selectedServing.map {
+                    foodViewModel
+                        .formattedMealText(
+                            for: $0,
+                            amount: foodViewModel.amount
+                        )
+                },
                 isFoodView: true
             )
         } header: {

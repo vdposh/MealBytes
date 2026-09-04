@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NutrientValueSection: View {
     let nutrients: [NutrientValue]
+    var servingFormattedText: String? = nil
     var isFoodView: Bool = false
     
     var body: some View {
@@ -25,7 +26,7 @@ struct NutrientValueSection: View {
             
             VStack(spacing: 0) {
                 nutrientRow(for: nutrient)
-                    .padding(.vertical, isNutrientTotals ? 10 : 0)
+                    .padding(.vertical, 10)
                     .padding(.top, isNutrientTotalsCalories ? 6 : 0)
                 
                 if isNutrientTotals {
@@ -50,7 +51,6 @@ struct NutrientValueSection: View {
                 .padding(.top, 4)
             }
         }
-        .lineLimit(1)
         .transaction { $0.animation = nil }
         .listRowInsets(.vertical, 0)
         
@@ -68,8 +68,14 @@ struct NutrientValueSection: View {
         let isNutritionFacts = isFoodView || isCalories || isServingSize
         
         HStack {
-            HStack(spacing: 4) {
-                if isAddedSugars {
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                if isServingSize {
+                    Text(nutrient.displayTitle)
+                    
+                    Text(servingFormattedText ?? "")
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.leading, 8)
+                } else if isAddedSugars {
                     Text("Includes \(nutrient.formattedValue) Added Sugars")
                         .frame(
                             maxWidth: isNutritionFacts ? .infinity : nil,
@@ -101,6 +107,7 @@ struct NutrientValueSection: View {
                 Text((nutrient.value / dailyValue).asPercentage())
             }
         }
+        .lineLimit(isServingSize ? nil : 1)
         .font(isFoodView ? nil : (isCalories ? .title2 : nil))
         .padding(.leading, nutrient.type.leadingPadding)
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }

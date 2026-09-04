@@ -112,14 +112,14 @@ enum NutrientType: String, Identifiable, CaseIterable {
                 .sugar,
                 .addedSugars,
                 .fiber,
-                .protein: "g"
+                .protein,
+                .servingSize: "g"
         case .potassium,
                 .sodium,
                 .cholesterol,
                 .calcium,
                 .iron: "mg"
         case .vitaminD: "mcg"
-        case .servingSize: "g"
         }
     }
     
@@ -134,18 +134,6 @@ enum NutrientType: String, Identifiable, CaseIterable {
                 .fiber:
             16
         default: 0
-        }
-    }
-    
-    func unit(for serving: Serving) -> String {
-        switch self {
-        case .servingSize:
-            if serving.metricServingUnit.isEmpty {
-                return "ml"
-            } else {
-                return serving.metricServingUnit
-            }
-        default: return baseUnit
         }
     }
     

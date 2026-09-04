@@ -633,8 +633,6 @@ final class MainViewModel: ObservableObject {
         if formattedAmount.isEmpty || amountValue == 0 {
             if measurement == "g" {
                 return "grams"
-            } else if measurement == "ml" {
-                return "milliliters"
             }
             return measurement
         }
