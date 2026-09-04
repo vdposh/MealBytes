@@ -100,9 +100,9 @@ enum NutrientType: String, Identifiable, CaseIterable {
         }
     }
     
-    var baseUnit: String {
+    var unitType: UnitNutrients {
         switch self {
-        case .calories: "kcal"
+        case .calories: .kcal
         case .fat,
                 .saturatedFat,
                 .transFat,
@@ -113,13 +113,10 @@ enum NutrientType: String, Identifiable, CaseIterable {
                 .addedSugars,
                 .fiber,
                 .protein,
-                .servingSize: "g"
-        case .potassium,
-                .sodium,
-                .cholesterol,
-                .calcium,
-                .iron: "mg"
-        case .vitaminD: "mcg"
+                .servingSize:
+                .g
+        case .potassium, .sodium, .cholesterol, .calcium, .iron: .mg
+        case .vitaminD: .mcg
         }
     }
     
@@ -135,10 +132,6 @@ enum NutrientType: String, Identifiable, CaseIterable {
             16
         default: 0
         }
-    }
-    
-    var unit: String {
-        baseUnit
     }
 }
 

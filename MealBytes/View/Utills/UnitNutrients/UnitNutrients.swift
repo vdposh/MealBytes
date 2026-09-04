@@ -14,7 +14,6 @@ enum UnitNutrients: String {
     case mg
     case mcg
     case ml
-    case oz
     
     func unitDescription(for value: Double, full: Bool = false) -> String {
         let isSingular = abs(value) == 1
@@ -31,8 +30,6 @@ enum UnitNutrients: String {
             return full ? "microgram" + (isSingular ? "" : "s") : "mcg"
         case .ml:
             return full ? "milliliter" + (isSingular ? "" : "s") : "ml"
-        case .oz:
-            return full ? "ounce" + (isSingular ? "" : "s") : "oz"
         }
     }
 }

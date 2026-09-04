@@ -14,7 +14,6 @@ final class FoodViewModel: ObservableObject {
     @Published var amount: String = ""
     @Published var originalAmount: String = ""
     @Published var appError: AppError?
-    @Published var unit: MeasurementUnit = .grams
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
@@ -327,8 +326,6 @@ final class FoodViewModel: ObservableObject {
     // MARK: - Serving Selection and Amount Setting
     func updateServing(_ serving: Serving) {
         self.selectedServing = serving
-        self.unit = serving.measurementUnit
-        
         setAmount(for: serving)
     }
     
@@ -355,11 +352,8 @@ final class FoodViewModel: ObservableObject {
         var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
-            if description == "g" {
-                let unit = UnitNutrients(rawValue: "g") ?? .g
-                return unit.unitDescription(for: 0, full: true)
-            }
-            return description
+            let unit = UnitNutrients(rawValue: metricUnit) ?? .empty
+            return unit.unitDescription(for: 0, full: true)
         }
         
         if description.hasPrefix("serving"),
@@ -478,11 +472,6 @@ final class FoodViewModel: ObservableObject {
         
         if scaledAmount.isZero {
             return ""
-        }
-        
-        if serving.measurementDescription.lowercased() == "g" {
-            return UnitNutrients.g
-                .unitDescription(for: scaledAmount, full: true)
         }
         
         return scaledAmount

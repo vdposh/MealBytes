@@ -40,7 +40,7 @@ struct GoalsSection: View {
             title: NutrientType.calories.title,
             value: mainViewModel
                 .totalCalories()
-                .asWhole(unit: NutrientType.calories.unit),
+                .asWhole(unit: NutrientType.calories.unitType.rawValue),
             progress: mainViewModel
                 .canDisplayIntake() ? mainViewModel
                 .calorieProgress() : nil
@@ -48,11 +48,11 @@ struct GoalsSection: View {
     }
     
     private var fatCard: some View {
-        return GoalCard(
+        GoalCard(
             title: NutrientType.fat.title,
             value: mainViewModel
                 .totalNutrients().fat
-                .asWhole(unit: NutrientType.fat.unit),
+                .asWhole(unit: NutrientType.fat.unitType.rawValue),
             progress: mainViewModel
                 .canDisplayIntake() ? mainViewModel
                 .macroProgress(for: .fat) : nil,
@@ -61,11 +61,11 @@ struct GoalsSection: View {
     }
     
     private var carbsCard: some View {
-        return GoalCard(
+        GoalCard(
             title: NutrientType.carbohydrate.alternativeTitle,
             value: mainViewModel
                 .totalNutrients().carbs
-                .asWhole(unit: NutrientType.carbohydrate.unit),
+                .asWhole(unit: NutrientType.carbohydrate.unitType.rawValue),
             progress: mainViewModel
                 .canDisplayIntake() ? mainViewModel
                 .macroProgress(for: .carbohydrate) : nil,
@@ -74,11 +74,11 @@ struct GoalsSection: View {
     }
     
     private var proteinCard: some View {
-        return GoalCard(
+        GoalCard(
             title: NutrientType.protein.title,
             value: mainViewModel
                 .totalNutrients().protein
-                .asWhole(unit: NutrientType.protein.unit),
+                .asWhole(unit: NutrientType.protein.unitType.rawValue),
             progress: mainViewModel
                 .canDisplayIntake() ? mainViewModel
                 .macroProgress(for: .protein) : nil,

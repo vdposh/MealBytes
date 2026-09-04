@@ -29,19 +29,10 @@ struct Serving: Decodable, Hashable {
     let metricServingAmount: Double
     let metricServingUnit: String
     
-    var measurementUnit: MeasurementUnit {
-        if isMetricMeasurement {
-            return .grams
-        } else {
-            return .servings
-        }
-    }
-    
     var isMetricMeasurement: Bool {
-        [
-            MeasurementType.grams.description,
-            MeasurementType.milliliters.description
-        ].contains(measurementDescription)
+        [UnitNutrients.g.rawValue, UnitNutrients.ml.rawValue].contains(
+            measurementDescription
+        )
     }
     
     init(from decoder: Decoder) throws {
@@ -103,25 +94,6 @@ struct Serving: Decodable, Hashable {
         case metricServingAmount = "metric_serving_amount"
         case metricServingUnit = "metric_serving_unit"
     }
-    
-    private enum MeasurementType: String {
-        case grams
-        case milliliters
-        
-        var description: String {
-            switch self {
-            case .grams: "g"
-            case .milliliters: "ml"
-            }
-        }
-    }
-}
-
-enum MeasurementUnit: String, CaseIterable, Identifiable {
-    case servings = "Servings"
-    case grams = "Grams"
-    
-    var id: String { self.rawValue }
 }
 
 #Preview {

@@ -670,7 +670,7 @@ final class MainViewModel: ObservableObject {
             )
         } else {
             return date.formatted(
-                .dateTime.weekday(.wide).day().month(.wide).year()
+                .dateTime.weekday(.abbreviated).day().month(.wide).year()
             )
         }
     }

@@ -27,7 +27,7 @@ struct NutrientValueSection: View {
             VStack(spacing: 0) {
                 nutrientRow(for: nutrient)
                     .padding(.vertical, 10)
-                    .padding(.top, isNutrientTotalsCalories ? 6 : 0)
+                    .padding(.top, isNutrientTotalsCalories ? 4 : 0)
                 
                 if isNutrientTotals {
                     Rectangle()
