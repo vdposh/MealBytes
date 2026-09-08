@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ButtonStyleInvisible: ButtonStyle {
+struct InvisibleButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .opacity(1)

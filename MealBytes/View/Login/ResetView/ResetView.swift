@@ -12,8 +12,11 @@ struct ResetView: View {
     
     var body: some View {
         resetViewContentBody
-            .navigationTitle("Reset Password")
+            .navigationTitle("Forgot Password")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                resetViewToolbar
+            }
             .alert(isPresented: $resetViewModel.showAlert) {
                 resetViewModel.getAlert()
             }
@@ -26,41 +29,29 @@ struct ResetView: View {
                     text: $resetViewModel.email
                 )
             } footer: {
-                VStack {
-                    resetStateContent
-                    
-                    Text("Enter the email used during registration. A reset link will be sent to this email with instructions on how to create a new password and regain access to your account.")
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                }
-                .padding(.top)
-                .listRowInsets(.horizontal, 0)
+                Text("Enter email to request a password reset link.")
             }
         }
     }
     
-    @ViewBuilder
-    private var resetStateContent: some View {
-        switch resetViewModel.resetState {
-        case .loading:
-            LoadingView(showFrame: true)
-            
-        case .emailSent:
-            Text("A reset link has been sent to the email \(Text(resetViewModel.sentEmail).fontWeight(.semibold))")
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-            
-        case .ready:
-            ActionButtonView(
-                title: "Send reset link on email",
-                action: {
+    @ToolbarContentBuilder
+    private var resetViewToolbar: some ToolbarContent {
+        ToolbarItem {
+            switch resetViewModel.resetState {
+            case .loading:
+                ProgressView()
+                
+            case .emailSent:
+                EmptyView()
+                
+            case .ready:
+                Button(role: .confirm) {
                     Task {
                         await resetViewModel.resetPassword()
                     }
-                },
-                isEnabled: resetViewModel.isResetEnabled()
-            )
+                }
+                .disabled(!resetViewModel.isResetEnabled())
+            }
         }
     }
 }
@@ -70,7 +61,9 @@ struct ResetView: View {
 }
 
 #Preview {
-    ResetView()
+    NavigationStack {
+        ResetView()
+    }
 }
 
 #Preview {

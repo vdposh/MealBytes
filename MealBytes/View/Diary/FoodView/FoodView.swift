@@ -77,7 +77,7 @@ struct FoodView: View {
     private var foodViewContentBody: some View {
         switch foodViewModel.viewState {
         case .loading:
-            LoadingView()
+            ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         case .error(let error):

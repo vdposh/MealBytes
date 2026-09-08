@@ -42,7 +42,7 @@ struct DailyIntakeSectionView: View {
                 }
             } else {
                 LabeledContent {
-                    LoadingView(showLabel: true)
+                    LoadingView()
                 } label: {
                     Label {
                         Text(IntakeSource.macros.rawValue)

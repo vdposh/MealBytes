@@ -14,6 +14,9 @@ struct LoginView: View {
         loginViewContentBody
             .navigationTitle("Sign in")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                loginViewToolbar
+            }
             .alert(isPresented: $loginViewModel.showAlert) {
                 loginViewModel.getLoginErrorAlert()
             }
@@ -29,44 +32,32 @@ struct LoginView: View {
                 SecureFieldView(
                     text: $loginViewModel.password
                 )
-            } footer: {
-                VStack {
-                    ActionButtonView(
-                        title: "Login",
-                        action: {
-                            Task {
-                                await loginViewModel.signIn()
-                            }
-                        },
-                        isEnabled: loginViewModel.isLoginEnabled()
-                    )
-                    .padding(.top)
-                    
-                    VStack {
-                        HStack(spacing: 4) {
-                            Text("Don't have a MealBytes account?")
-                            
-                            NavigationLink("Sign up") {
-                                RegisterView()
-                            }
-                            .fontWeight(.semibold)
-                        }
-                        .padding(.vertical, 8)
-                        
-                        HStack(spacing: 4) {
-                            Text("Forgot the password?")
-                            
-                            NavigationLink("Reset") {
-                                ResetView()
-                            }
-                            .fontWeight(.semibold)
-                        }
-                    }
-                    .font(.footnote)
-                    .padding(.horizontal)
-                }
-                .listRowInsets(.horizontal, 0)
             }
+            
+            Section {
+                NavigationLink("Create Account") {
+                    RegisterView()
+                }
+                
+                NavigationLink("Forgot Password") {
+                    ResetView()
+                }
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var loginViewToolbar: some ToolbarContent {
+        ToolbarItem {
+            Button(role: .confirm) {
+                Task {
+                    await loginViewModel.signIn()
+                }
+            } label: {
+                Text("Login")
+                    .fontWeight(.semibold)
+            }
+            .disabled(!loginViewModel.isLoginEnabled())
         }
     }
 }

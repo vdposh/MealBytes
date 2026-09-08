@@ -31,7 +31,7 @@ struct ProfileView: View {
             IntakeToggleSection(profileViewModel: profileViewModel)
             ThemePickerSection()
             PasswordSection(profileViewModel: profileViewModel)
-            SignOutSection(profileViewModel: profileViewModel)
+            SignOutAndDeleteSection(profileViewModel: profileViewModel)
         }
         .id(profileViewModel.uniqueId)
     }

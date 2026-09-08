@@ -40,7 +40,7 @@ struct RdiSectionView: View {
                 }
             } else {
                 LabeledContent {
-                    LoadingView(showLabel: true)
+                    LoadingView()
                 } label: {
                     Label {
                         Text(IntakeSource.personal.rawValue)

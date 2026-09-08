@@ -67,12 +67,12 @@ final class LoginViewModel: ObservableObject {
                     self.email = email
                     self.isLoggedIn = isLoggedIn
                     self.error = .offlineMode
-                    self.showErrorAlert = true
+                    showErrorAlert = true
                 }
             } catch {
                 await MainActor.run {
                     self.error = .sessionExpired
-                    self.showErrorAlert = true
+                    showErrorAlert = true
                 }
             }
         }
@@ -92,8 +92,8 @@ final class LoginViewModel: ObservableObject {
             
             if !user.isEmailVerified {
                 await MainActor.run {
-                    self.error = .userNotVerified
-                    self.isSignIn = false
+                    error = .userNotVerified
+                    isSignIn = false
                     
                     updateAlertState()
                 }
@@ -109,7 +109,7 @@ final class LoginViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.error = .networkError
-                    self.isSignIn = false
+                    isSignIn = false
                     
                     updateAlertState()
                 }
@@ -120,8 +120,8 @@ final class LoginViewModel: ObservableObject {
             await mainViewModel.loadMainData()
             
             await MainActor.run {
-                self.error = nil
-                self.isSignIn = false
+                error = nil
+                isSignIn = false
                 
                 isLoggedIn = true
                 showErrorAlert = false
@@ -131,7 +131,7 @@ final class LoginViewModel: ObservableObject {
         } catch {
             await MainActor.run {
                 self.error = handleLoginError(error as NSError)
-                self.isSignIn = false
+                isSignIn = false
                 
                 updateAlertState()
             }

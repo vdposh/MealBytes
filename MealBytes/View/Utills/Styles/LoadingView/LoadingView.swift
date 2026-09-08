@@ -8,29 +8,22 @@
 import SwiftUI
 
 struct LoadingView: View {
-    var showLabel: Bool = false
-    var showFrame: Bool = false
-    
     var body: some View {
-        let progressView = HStack {
+        HStack {
             ProgressView()
             
-            if showLabel {
-                Text("Loading...")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        
-        if showFrame {
-            progressView
-                .frame(height: 50)
-                .frame(maxWidth: .infinity, alignment: .center)
-        } else {
-            progressView
+            Text("Loading...")
+                .foregroundStyle(.secondary)
         }
     }
 }
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    NavigationStack {
+        ResetView()
+    }
 }

@@ -82,7 +82,7 @@ struct HeaderButtonView: View {
                 .contentShape(Rectangle())
             }
             .listRowInsets(.all, 0)
-            .buttonStyle(ButtonStyleInvisible())
+            .buttonStyle(InvisibleButtonStyle())
         } else {
             HStack {
                 HeaderTextView(mealType: mealType, title: title)

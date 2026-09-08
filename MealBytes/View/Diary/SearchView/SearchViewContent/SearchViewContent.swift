@@ -18,7 +18,7 @@ struct SearchViewContent: View {
     var body: some View {
         switch searchViewModel.contentState {
         case .loading:
-            LoadingView()
+            ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         case .error(let error):

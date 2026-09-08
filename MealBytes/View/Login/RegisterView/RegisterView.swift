@@ -14,6 +14,9 @@ struct RegisterView: View {
         registerViewContentBody
             .navigationTitle("Create account")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                registerViewToolbar
+            }
             .alert(isPresented: $registerViewModel.showAlert) {
                 registerViewModel.getAlert()
             }
@@ -36,40 +39,43 @@ struct RegisterView: View {
                     placeholder: "Confirm Password"
                 )
             } footer: {
-                VStack {
-                    registerStateContent
-                    
-                    Text("To register, provide a valid email address and create a password that is at least 6 characters long. Once done, you'll receive a verification email.")
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                }
-                .padding(.top)
-                .listRowInsets(.horizontal, 0)
+                Text("Enter email and create a password. A verification email will be sent.")
             }
         }
     }
     
-    @ViewBuilder
-    private var registerStateContent: some View {
-        switch registerViewModel.registerState {
-        case .loading:
-            LoadingView(showFrame: true)
-            
-        case .resend:
-            if registerViewModel.showResendOptions {
-                ResendEmailView(registerViewModel: registerViewModel)
-            }
-            
-        case .register:
-            ActionButtonView(
-                title: "Register",
-                action: {
+    @ToolbarContentBuilder
+    private var registerViewToolbar: some ToolbarContent {
+        ToolbarItem {
+            switch registerViewModel.registerState {
+            case .loading:
+                ProgressView()
+                
+            case .resend:
+                if registerViewModel.isResendEnabled {
+                    Button(role: .confirm) {
+                        Task {
+                            await registerViewModel.resendEmailVerification()
+                        }
+                    } label: {
+                        Text("Resend")
+                            .fontWeight(.medium)
+                    }
+                    .disabled(registerViewModel.isRegisterLoading)
+                } else {
+                    Text(registerViewModel.timerText)
+                        .fontWeight(.medium)
+                        .frame(width: 65)
+                }
+                
+            case .register:
+                Button(role: .confirm) {
                     Task {
                         await registerViewModel.signUp()
                     }
-                },
-                isEnabled: registerViewModel.isRegisterEnabled()
-            )
+                }
+                .disabled(!registerViewModel.isRegisterEnabled())
+            }
         }
     }
 }
@@ -79,7 +85,9 @@ struct RegisterView: View {
 }
 
 #Preview {
-    RegisterView()
+    NavigationStack {
+        RegisterView()
+    }
 }
 
 #Preview {

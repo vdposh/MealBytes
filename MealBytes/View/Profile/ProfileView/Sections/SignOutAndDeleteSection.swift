@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SignOutSection: View {
+struct SignOutAndDeleteSection: View {
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
@@ -21,7 +21,7 @@ struct SignOutSection: View {
         
         Section {
             if profileViewModel.isDeletingAccount {
-                LoadingView(showLabel: true)
+                LoadingView()
             } else {
                 Button("Delete Account") {
                     profileViewModel.prepareAlert(for: .deleteAccount)

@@ -33,6 +33,7 @@ final class ResetViewModel: ObservableObject {
                 isEmailSent = true
                 sentEmail = email
             }
+            
             await handleResetResult(success: true, error: nil)
         } catch {
             await handleResetResult(
@@ -42,7 +43,9 @@ final class ResetViewModel: ObservableObject {
         }
         
         await MainActor.run {
-            isLoading = false
+            withAnimation {
+                isLoading = false
+            }
         }
     }
     
@@ -64,7 +67,7 @@ final class ResetViewModel: ObservableObject {
         if success {
             return Alert(
                 title: Text("Done"),
-                message: Text("A reset link for the password has been sent to the email."),
+                message: Text("Password reset link sent to email."),
                 dismissButton: .default(Text("OK"))
             )
         } else {

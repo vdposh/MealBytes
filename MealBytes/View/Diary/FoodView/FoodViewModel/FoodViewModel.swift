@@ -352,8 +352,12 @@ final class FoodViewModel: ObservableObject {
         var description = serving.measurementDescription
         
         if serving.isMetricMeasurement {
-            let unit = UnitNutrients(rawValue: metricUnit) ?? .empty
-            return unit.unitDescription(for: 0, full: true)
+            if description == "g" {
+                return UnitNutrients.g.unitDescription(for: 0, full: true)
+            } else if description == "ml" {
+                return UnitNutrients.ml.unitDescription(for: 0)
+            }
+            return description
         }
         
         if description.hasPrefix("serving"),

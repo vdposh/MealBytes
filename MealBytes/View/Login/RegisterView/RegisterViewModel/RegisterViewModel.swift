@@ -32,13 +32,15 @@ final class RegisterViewModel: ObservableObject {
     // MARK: - Sign Up
     func signUp() async {
         await MainActor.run {
-            self.isRegisterLoading = true
+            isRegisterLoading = true
         }
         
         guard password == confirmPassword else {
             await handleSignUpResult(success: false, error: .passwordMismatch)
             await MainActor.run {
-                self.isRegisterLoading = false
+                withAnimation {
+                    isRegisterLoading = false
+                }
             }
             
             return
@@ -52,7 +54,7 @@ final class RegisterViewModel: ObservableObject {
             
             await handleSignUpResult(success: true)
             await MainActor.run {
-                self.showResendOptions = true
+                showResendOptions = true
             }
             await startResendTimer()
         } catch {
@@ -62,7 +64,9 @@ final class RegisterViewModel: ObservableObject {
         }
         
         await MainActor.run {
-            self.isRegisterLoading = false
+            withAnimation {
+                isRegisterLoading = false
+            }
         }
     }
     
@@ -71,7 +75,7 @@ final class RegisterViewModel: ObservableObject {
         guard isResendEnabled else { return }
         
         await MainActor.run {
-            self.isRegisterLoading = true
+            isRegisterLoading = true
         }
         
         do {
@@ -87,16 +91,18 @@ final class RegisterViewModel: ObservableObject {
         }
         
         await MainActor.run {
-            self.isRegisterLoading = false
+            withAnimation {
+                isRegisterLoading = false
+            }
         }
     }
     
     // MARK: - Timer for Resend
     private func startResendTimer() async {
         await MainActor.run {
-            self.isResendEnabled = false
-            self.remainingSeconds = 60
-            self.updateTimerText()
+            isResendEnabled = false
+            remainingSeconds = 60
+            updateTimerText()
         }
         
         timerSubscription?.cancel()
@@ -115,7 +121,10 @@ final class RegisterViewModel: ObservableObject {
             
             if self.remainingSeconds <= 0 {
                 self.timerSubscription?.cancel()
-                self.isResendEnabled = true
+                
+                withAnimation {
+                    self.isResendEnabled = true
+                }
             }
         }
     }
@@ -125,10 +134,6 @@ final class RegisterViewModel: ObservableObject {
         let seconds = remainingSeconds % 60
         
         timerText = String(format: "%02d:%02d", minutes, seconds)
-    }
-    
-    func resendButtonColor() -> Color {
-        return isResendEnabled ? .accent : .secondary
     }
     
     // MARK: - Alert
@@ -142,7 +147,7 @@ final class RegisterViewModel: ObservableObject {
         } else {
             return Alert(
                 title: Text("Done"),
-                message: Text("A confirmation email has been sent to \(email)"),
+                message: Text("A confirmation email has been sent"),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -154,7 +159,7 @@ final class RegisterViewModel: ObservableObject {
     ) async {
         await MainActor.run {
             self.error = error
-            self.showAlert = true
+            showAlert = true
         }
     }
     

@@ -14,7 +14,7 @@ struct PasswordSection: View {
     var body: some View {
         Section {
             if profileViewModel.isPasswordChanging {
-                LoadingView(showLabel: true)
+                LoadingView()
             } else {
                 Button("Change Password") {
                     profileViewModel.prepareAlert(for: .changePassword)
