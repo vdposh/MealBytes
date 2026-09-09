@@ -16,8 +16,10 @@ struct PasswordSection: View {
             if profileViewModel.isPasswordChanging {
                 LoadingView()
             } else {
-                Button("Change Password") {
+                Button(role: .confirm) {
                     profileViewModel.prepareAlert(for: .changePassword)
+                } label: {
+                    Text("Change Password")
                 }
             }
         }

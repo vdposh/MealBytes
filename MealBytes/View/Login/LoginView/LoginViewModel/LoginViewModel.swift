@@ -70,9 +70,11 @@ final class LoginViewModel: ObservableObject {
                     showErrorAlert = true
                 }
             } catch {
-                await MainActor.run {
-                    self.error = .sessionExpired
-                    showErrorAlert = true
+                if firebaseAuth.currentUserExists() {
+                    await MainActor.run {
+                        self.error = .sessionExpired
+                        showErrorAlert = true
+                    }
                 }
             }
         }
@@ -84,6 +86,14 @@ final class LoginViewModel: ObservableObject {
             isSignIn = true
         }
         
+        defer {
+            Task { @MainActor in
+                withAnimation {
+                    isSignIn = false
+                }
+            }
+        }
+        
         do {
             let user = try await firebaseAuth.signInAuth(
                 email: email,
@@ -93,11 +103,8 @@ final class LoginViewModel: ObservableObject {
             if !user.isEmailVerified {
                 await MainActor.run {
                     error = .userNotVerified
-                    isSignIn = false
-                    
                     updateAlertState()
                 }
-                
                 return
             }
             
@@ -109,11 +116,8 @@ final class LoginViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.error = .networkError
-                    isSignIn = false
-                    
                     updateAlertState()
                 }
-                
                 return
             }
             
@@ -121,18 +125,13 @@ final class LoginViewModel: ObservableObject {
             
             await MainActor.run {
                 error = nil
-                isSignIn = false
-                
                 isLoggedIn = true
                 showErrorAlert = false
-                
                 updateAlertState()
             }
         } catch {
             await MainActor.run {
                 self.error = handleLoginError(error as NSError)
-                isSignIn = false
-                
                 updateAlertState()
             }
         }
@@ -140,7 +139,6 @@ final class LoginViewModel: ObservableObject {
     
     var loginState: LoginState {
         switch true {
-        case isSignIn: return .signingIn
         case isLoading: return .loadingLogo
         case isLoggedIn: return .loggedIn
         default: return .notLoggedIn
@@ -251,7 +249,6 @@ final class LoginViewModel: ObservableObject {
 
 enum LoginState {
     case loadingLogo
-    case signingIn
     case loggedIn
     case notLoggedIn
 }

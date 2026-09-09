@@ -35,14 +35,16 @@ final class RegisterViewModel: ObservableObject {
             isRegisterLoading = true
         }
         
-        guard password == confirmPassword else {
-            await handleSignUpResult(success: false, error: .passwordMismatch)
-            await MainActor.run {
+        defer {
+            Task { @MainActor in
                 withAnimation {
                     isRegisterLoading = false
                 }
             }
-            
+        }
+        
+        guard password == confirmPassword else {
+            await handleSignUpResult(success: false, error: .passwordMismatch)
             return
         }
         
@@ -59,14 +61,7 @@ final class RegisterViewModel: ObservableObject {
             await startResendTimer()
         } catch {
             let authError = handleRegisterError(error as NSError)
-            
             await handleSignUpResult(success: false, error: authError)
-        }
-        
-        await MainActor.run {
-            withAnimation {
-                isRegisterLoading = false
-            }
         }
     }
     

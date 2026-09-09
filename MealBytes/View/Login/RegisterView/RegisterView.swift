@@ -25,10 +25,8 @@ struct RegisterView: View {
     private var registerViewContentBody: some View {
         Form {
             Section {
-                LoginTextFieldView(
-                    text: $registerViewModel.email
-                )
-                .textContentType(.emailAddress)
+                LoginTextFieldView(text: $registerViewModel.email)
+                    .textContentType(.emailAddress)
                 
                 SecureFieldView(
                     text: $registerViewModel.password
@@ -59,12 +57,12 @@ struct RegisterView: View {
                         }
                     } label: {
                         Text("Resend")
-                            .fontWeight(.medium)
+                            .fontWeight(.semibold)
                     }
                     .disabled(registerViewModel.isRegisterLoading)
                 } else {
                     Text(registerViewModel.timerText)
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .frame(width: 65)
                 }
                 

@@ -17,9 +17,6 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             switch loginViewModel.loginState {
-            case .signingIn:
-                LoginLoadingView()
-                
             case .loadingLogo:
                 LoginLogoView()
                 

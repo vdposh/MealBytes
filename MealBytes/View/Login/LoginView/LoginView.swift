@@ -49,15 +49,19 @@ struct LoginView: View {
     @ToolbarContentBuilder
     private var loginViewToolbar: some ToolbarContent {
         ToolbarItem {
-            Button(role: .confirm) {
-                Task {
-                    await loginViewModel.signIn()
+            if loginViewModel.isSignIn {
+                ProgressView()
+            } else {
+                Button(role: .confirm) {
+                    Task {
+                        await loginViewModel.signIn()
+                    }
+                } label: {
+                    Text("Login")
+                        .fontWeight(.semibold)
                 }
-            } label: {
-                Text("Login")
-                    .fontWeight(.semibold)
+                .disabled(!loginViewModel.isLoginEnabled())
             }
-            .disabled(!loginViewModel.isLoginEnabled())
         }
     }
 }

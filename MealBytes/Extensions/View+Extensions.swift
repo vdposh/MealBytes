@@ -63,9 +63,12 @@ extension View {
         } actions: {
             switch error {
             case .networkRefresh:
-                Button("Try Again") {
+                Button {
                     action()
+                } label: {
+                    Text("Try Again")
                 }
+                .buttonStyle(.borderedProminent)
             default:
                 EmptyView()
             }

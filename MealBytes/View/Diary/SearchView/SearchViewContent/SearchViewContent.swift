@@ -104,6 +104,10 @@ struct SearchViewContent: View {
                     } header: {
                         Text("Recent")
                     }
+                    .selectionDisabled(
+                        !searchViewModel.isEditModeActive ||
+                        searchViewModel.isEditModeActive
+                    )
                 }
                 
                 // MARK: - Results Section

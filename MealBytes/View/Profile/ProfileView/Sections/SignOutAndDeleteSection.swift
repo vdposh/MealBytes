@@ -13,20 +13,20 @@ struct SignOutAndDeleteSection: View {
     
     var body: some View {
         Section {
-            Button("Sign Out") {
+            Button(role: .destructive) {
                 profileViewModel.prepareAlert(for: .signOut)
+            } label: {
+                Text("Sign Out")
             }
-            .foregroundStyle(.customRed)
-        }
-        
-        Section {
+            
             if profileViewModel.isDeletingAccount {
                 LoadingView()
             } else {
-                Button("Delete Account") {
+                Button(role: .destructive) {
                     profileViewModel.prepareAlert(for: .deleteAccount)
+                } label: {
+                    Text("Delete Account")
                 }
-                .foregroundStyle(.customRed)
             }
         }
     }
