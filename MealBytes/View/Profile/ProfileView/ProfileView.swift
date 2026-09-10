@@ -30,7 +30,7 @@ struct ProfileView: View {
             AccountInfoSection(profileViewModel: profileViewModel)
             IntakeToggleSection(profileViewModel: profileViewModel)
             ThemePickerSection()
-            PasswordSection(profileViewModel: profileViewModel)
+            PasswordSection()
             SignOutAndDeleteSection(profileViewModel: profileViewModel)
         }
         .id(profileViewModel.uniqueId)
@@ -53,41 +53,6 @@ struct ProfileView: View {
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
                     await profileViewModel.handleProfileAlertAction()
-                }
-            }
-            
-        case .changePassword:
-            if profileViewModel.alertContent?.isSuccess == true {
-                Button("OK") {
-                    profileViewModel.showAlert = false
-                }
-            } else {
-                SecureField(
-                    "Current Password",
-                    text: $profileViewModel.password
-                )
-                .textContentType(.password)
-                
-                SecureField(
-                    "New Password",
-                    text: $profileViewModel.newPassword
-                )
-                .textContentType(.newPassword)
-                
-                SecureField(
-                    "Confirm New Password",
-                    text: $profileViewModel.confirmPassword
-                )
-                .textContentType(.newPassword)
-                
-                Button("Cancel", role: .cancel) {
-                    profileViewModel.showAlert = false
-                }
-                
-                Button(profileViewModel.destructiveTitle) {
-                    Task {
-                        await profileViewModel.handleProfileAlertAction()
-                    }
                 }
             }
             

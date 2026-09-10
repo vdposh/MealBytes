@@ -10,13 +10,11 @@ import SwiftUI
 enum AlertTypeProfileView {
     case signOut
     case deleteAccount
-    case changePassword
     
     var title: String {
         switch self {
         case .signOut: return "Sign Out"
         case .deleteAccount: return "Delete Account"
-        case .changePassword: return "Change Password"
         }
     }
     
@@ -24,7 +22,6 @@ enum AlertTypeProfileView {
         switch self {
         case .signOut: return "Sign Out"
         case .deleteAccount: return "Delete Account"
-        case .changePassword: return "Update Password"
         }
     }
     
@@ -34,8 +31,6 @@ enum AlertTypeProfileView {
             return "Signing out will require signing in again to access the account."
         case .deleteAccount:
             return "Data and account details will be permanently erased. This action cannot be undone."
-        case .changePassword:
-            return "Provide the current password and a new password to update account credentials."
         }
     }
 }

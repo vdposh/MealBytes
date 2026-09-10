@@ -2,24 +2,21 @@
 //  PasswordSection.swift
 //  MealBytes
 //
-//  Created by Vlad Posherstnik on 19/07/2025.
+//  Created by Vlad Posherstnik on 09.09.2026.
 //
-
 
 import SwiftUI
 
 struct PasswordSection: View {
-    @ObservedObject var profileViewModel: ProfileViewModel
-    
     var body: some View {
         Section {
-            if profileViewModel.isPasswordChanging {
-                LoadingView()
-            } else {
-                Button(role: .confirm) {
-                    profileViewModel.prepareAlert(for: .changePassword)
+            NavigationLink {
+                PasswordView()
+            } label: {
+                LabeledContent {
+                    Text("••••••••")
                 } label: {
-                    Text("Change Password")
+                    Text("Password")
                 }
             }
         }

@@ -11,13 +11,9 @@ import FirebaseAuth
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var uniqueId = UUID()
-    @Published var password: String = ""
-    @Published var newPassword: String = ""
-    @Published var confirmPassword: String = ""
     @Published var alertContent: AlertContentProfile?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
-    @Published var isPasswordChanging: Bool = false
     @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
@@ -99,32 +95,8 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Change Password
-    private func changePassword(
-        currentPassword: String,
-        newPassword: String
-    ) async throws {
-        uniqueId = UUID()
-        
-        await MainActor.run {
-            isPasswordChanging = true
-        }
-        
-        try await firebaseAuth.changePasswordAuth(
-            currentPassword: currentPassword,
-            newPassword: newPassword
-        )
-        
-        await MainActor.run {
-            isPasswordChanging = false
-        }
-    }
-    
     // MARK: - Alert
     func prepareAlert(for type: AlertTypeProfileView) {
-        password = ""
-        newPassword = ""
-        confirmPassword = ""
         alertContent = AlertContentProfile(type: type)
         showAlert = true
     }
@@ -138,75 +110,15 @@ final class ProfileViewModel: ObservableObject {
             
         case .deleteAccount:
             await deleteAccount()
-            
-        case .changePassword:
-            if let validationError = validatePassword() {
-                await showOverrideMessage(
-                    validationError.message,
-                    for: .changePassword
-                )
-                
-                return
-            }
-            
-            do {
-                try await changePassword(
-                    currentPassword: password,
-                    newPassword: newPassword
-                )
-                
-                await showOverrideMessage(
-                    ProfileMessage.passwordUpdateSuccess.text,
-                    for: .changePassword,
-                    isSuccess: true
-                )
-            } catch {
-                await showOverrideMessage(
-                    ProfileMessage.passwordUpdateFailed.text,
-                    for: .changePassword
-                )
-            }
-        }
-    }
-    
-    private func validatePassword() -> PasswordError? {
-        if newPassword.count < 6 {
-            return .tooShort
-        }
-        
-        if newPassword != confirmPassword {
-            return .mismatch
-        }
-        
-        return nil
-    }
-    
-    private func showOverrideMessage(
-        _ message: String,
-        for type: AlertTypeProfileView,
-        isSuccess: Bool = false
-    ) async {
-        await MainActor.run {
-            alertContent = AlertContentProfile(
-                type: type,
-                overrideMessage: message,
-                isSuccess: isSuccess
-            )
-            showAlert = true
         }
     }
     
     // MARK: - Reset State
     private func resetProfileState() {
-        password = ""
-        newPassword = ""
-        confirmPassword = ""
-        
         alertContent = nil
         appError = nil
         
         showAlert = false
-        isPasswordChanging = false
         isDeletingAccount = false
         
         loginViewModel.resetLoginState()
@@ -226,7 +138,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     var isLoading: Bool {
-        isPasswordChanging || isDeletingAccount
+        isDeletingAccount
     }
 }
 

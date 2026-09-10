@@ -13,7 +13,7 @@ struct SignOutAndDeleteSection: View {
     
     var body: some View {
         Section {
-            Button(role: .destructive) {
+            Button(role: .close) {
                 profileViewModel.prepareAlert(for: .signOut)
             } label: {
                 Text("Sign Out")

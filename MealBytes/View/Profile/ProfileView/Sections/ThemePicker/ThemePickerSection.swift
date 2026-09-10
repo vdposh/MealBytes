@@ -22,8 +22,6 @@ struct ThemePickerSection: View {
                     Text("App Theme")
                 }
             }
-        } footer: {
-            Text("Customize app appearance.")
         }
     }
 }
