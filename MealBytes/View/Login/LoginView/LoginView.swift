@@ -48,7 +48,7 @@ struct LoginView: View {
     
     @ToolbarContentBuilder
     private var loginViewToolbar: some ToolbarContent {
-        ToolbarItem {
+        ToolbarItem(placement: .confirmationAction) {
             if loginViewModel.isSignIn {
                 ProgressView()
             } else {

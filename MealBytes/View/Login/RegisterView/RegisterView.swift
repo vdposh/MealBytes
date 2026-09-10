@@ -44,7 +44,7 @@ struct RegisterView: View {
     
     @ToolbarContentBuilder
     private var registerViewToolbar: some ToolbarContent {
-        ToolbarItem {
+        ToolbarItem(placement: .confirmationAction) {
             switch registerViewModel.registerState {
             case .loading:
                 ProgressView()

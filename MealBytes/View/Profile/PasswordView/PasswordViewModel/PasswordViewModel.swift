@@ -34,6 +34,12 @@ final class PasswordViewModel: ObservableObject {
         
         isLoading = true
         
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
+        
         do {
             try await firebaseAuth.changePasswordAuth(
                 currentPassword: currentPassword,
@@ -48,17 +54,10 @@ final class PasswordViewModel: ObservableObject {
         } catch {
             isSuccess = false
             alertTitle = "Error"
-            
-            if let authError = error as? AuthError {
-                alertMessage = authError.errorDescription ?? "Failed to update password."
-            } else {
-                alertMessage = "Failed to update password. Check current password and try again."
-            }
+            alertMessage = handlePasswordError(
+                error as NSError
+            ).errorDescription ?? "Failed to update password."
             showAlert = true
-        }
-        
-        withAnimation {
-            isLoading = false
         }
     }
     
@@ -72,6 +71,18 @@ final class PasswordViewModel: ObservableObject {
         }
         
         return nil
+    }
+    
+    private func handlePasswordError(_ nsError: NSError) -> AuthError {
+        if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
+            switch authErrorCode {
+            case .weakPassword: return .weakPassword
+            case .networkError: return .networkError
+            case .wrongPassword: return .incorrectCredentials
+            default: return .unknownError
+            }
+        }
+        return .unknownError
     }
     
     func resetPasswordState() {

@@ -18,7 +18,7 @@ protocol FirebaseAuthProtocol {
     func signOutAuth() throws
     func deleteAccountAuth() async throws
     func resendVerificationAuth() async throws
-    func changeEmailAuth(newEmail: String, password: String) async throws
+    func updateEmailAuth(newEmail: String) async throws
     func changePasswordAuth(
         currentPassword: String,
         newPassword: String
@@ -74,36 +74,26 @@ final class FirebaseAuth: FirebaseAuthProtocol {
         try await user.delete()
     }
     
-    // MARK: - Change Email
-    func changeEmailAuth(
-        newEmail: String,
-        password: String
-    ) async throws {
-        guard let user = Auth.auth().currentUser,
-              let currentEmail = user.email else {
+    // MARK: - Update Email
+    func updateEmailAuth(newEmail: String) async throws {
+        guard let user = Auth.auth().currentUser else {
             throw AuthError.userNotFound
         }
-        
-        let credential = EmailAuthProvider.credential(
-            withEmail: currentEmail,
-            password: password
-        )
-        
-        try await user.reauthenticate(with: credential)
         
         try await withCheckedThrowingContinuation { (
             continuation: CheckedContinuation<Void,
             Error>
         ) in
-            user.sendEmailVerification(
-                beforeUpdatingEmail: newEmail
-            ) { error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning: ())
+            user
+                .sendEmailVerification(
+                    beforeUpdatingEmail: newEmail
+                ) { error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(returning: ())
+                    }
                 }
-            }
         }
     }
     

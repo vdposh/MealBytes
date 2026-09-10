@@ -30,7 +30,7 @@ struct ProfileView: View {
             AccountInfoSection(profileViewModel: profileViewModel)
             IntakeToggleSection(profileViewModel: profileViewModel)
             ThemePickerSection()
-            PasswordSection()
+            EmailAndPasswordSection(email: $profileViewModel.email)
             SignOutAndDeleteSection(profileViewModel: profileViewModel)
         }
         .id(profileViewModel.uniqueId)

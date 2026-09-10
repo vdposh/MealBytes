@@ -36,7 +36,7 @@ struct ResetView: View {
     
     @ToolbarContentBuilder
     private var resetViewToolbar: some ToolbarContent {
-        ToolbarItem {
+        ToolbarItem(placement: .confirmationAction) {
             switch resetViewModel.resetState {
             case .loading:
                 ProgressView()

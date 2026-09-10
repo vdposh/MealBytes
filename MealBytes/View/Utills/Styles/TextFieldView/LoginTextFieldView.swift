@@ -11,27 +11,40 @@ struct LoginTextFieldView: View {
     @Binding var text: String
     @FocusState private var focus: Bool
     var placeholder: String = "Email"
+    var showLabel: Bool = true
     
     var body: some View {
-        Label {
+        content
+            .overlay(
+                Button {
+                    $focus.wrappedValue = true
+                } label: {
+                    Color.clear
+                }
+            )
+            .buttonStyle(.borderless)
+            .focused($focus)
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        if showLabel {
+            Label {
+                TextField(placeholder, text: $text)
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+            } icon: {
+                Image(systemName: "person.fill")
+                    .foregroundStyle(text.isEmpty ? .customGray : .accent)
+                    .symbolColorRenderingMode(.gradient)
+            }
+        } else {
             TextField(placeholder, text: $text)
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
-        } icon: {
-            Image(systemName: "person.fill")
-                .foregroundStyle(text.isEmpty ? .customGray : .accent)
-                .symbolColorRenderingMode(.gradient)
         }
-        .overlay(
-            Button {
-                $focus.wrappedValue = true
-            } label: {
-                Color.clear
-            }
-        )
-        .buttonStyle(.borderless)
-        .focused($focus)
     }
 }
 

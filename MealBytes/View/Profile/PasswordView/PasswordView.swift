@@ -36,7 +36,7 @@ struct PasswordView: View {
             }
             .disabled(passwordViewModel.isLoading)
         }
-        .navigationTitle("Change Password")
+        .navigationTitle("Password")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
