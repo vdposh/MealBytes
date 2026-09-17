@@ -25,7 +25,7 @@ struct ToolbarButtonView: View {
         } label: {
             Image(systemName: icon)
                 .font(.title2)
-                .padding(12)
+                .frame(width: 50, height: 50)
                 .foregroundStyle(Color.primary)
         }
         .glassEffect(.regular.interactive(), in: .circle)
@@ -34,7 +34,7 @@ struct ToolbarButtonView: View {
             alignment: alignment
         )
         .padding(.horizontal, horizontalPadding)
-        .padding(.bottom, focused ? 8 : 26)
+        .padding(.bottom, focused ? 10 : 26)
         .animation(.default, value: focused)
     }
 }

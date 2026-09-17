@@ -84,15 +84,14 @@ struct CustomIntakeView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if focus != nil {
-                buildKeyboardToolbar(
-                    current: focus,
-                    ordered: focusOrder,
-                    normalize: customIntakeViewModel.normalizeInputs,
-                    set: { focus = $0 }
-                )
-            }
+            buildKeyboardToolbar(
+                current: focus,
+                ordered: focusOrder,
+                normalize: customIntakeViewModel.normalizeInputs,
+                set: { focus = $0 }
+            )
         }
+        .ignoresSafeArea(edges: focus != nil ? [] : .bottom)
     }
 }
 

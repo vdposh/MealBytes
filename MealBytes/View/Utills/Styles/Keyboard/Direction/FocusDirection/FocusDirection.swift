@@ -52,6 +52,7 @@ func buildKeyboardToolbar<T: Equatable>(
     extraDone: (() -> Void)? = nil
 ) -> DirectionToolbarView {
     DirectionToolbarView(
+        focused: current != nil,
         showArrows: current != nil,
         canMoveUp: canMoveFocus(
             direction: .up,

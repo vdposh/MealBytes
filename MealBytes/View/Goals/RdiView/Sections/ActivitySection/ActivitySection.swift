@@ -12,7 +12,7 @@ struct ActivitySection: View {
     
     var body: some View {
         NavigationLink {
-            ActivitySelectionView(
+            ActivityView(
                 selectedActivity: $rdiViewModel.selectedActivity
             )
         } label: {

@@ -1,5 +1,5 @@
 //
-//  ActivitySelectionView.swift
+//  ActivityView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 07.08.2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ActivitySelectionView: View {
+struct ActivityView: View {
     @Binding var selectedActivity: Activity
     
     var body: some View {

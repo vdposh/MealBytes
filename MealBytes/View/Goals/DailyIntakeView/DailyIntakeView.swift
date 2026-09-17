@@ -27,15 +27,16 @@ struct DailyIntakeView: View {
                 dailyIntakeViewToolbar
             }
             .safeAreaInset(edge: .bottom) {
-                if macronutrientsFocused != nil {
-                    buildKeyboardToolbar(
-                        current: macronutrientsFocused,
-                        ordered: macroOrder,
-                        normalize: dailyIntakeViewModel.normalizeInputs,
-                        set: { macronutrientsFocused = $0 }
-                    )
-                }
+                buildKeyboardToolbar(
+                    current: macronutrientsFocused,
+                    ordered: macroOrder,
+                    normalize: dailyIntakeViewModel.normalizeInputs,
+                    set: { macronutrientsFocused = $0 }
+                )
             }
+            .ignoresSafeArea(
+                edges: macronutrientsFocused != nil ? [] : .bottom
+            )
             .onChange(of: macronutrientsFocused) {
                 handleFocusLoss(macronutrientsFocused)
             }

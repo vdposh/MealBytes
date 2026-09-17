@@ -1,29 +1,13 @@
 //
-//  GenderSection.swift
+//  GenderView.swift
 //  MealBytes
 //
-//  Created by Vlad Posherstnik on 13/06/2025.
+//  Created by Vlad Posherstnik on 17.09.2026.
 //
 
 import SwiftUI
 
-struct GenderSection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
-    
-    var body: some View {
-        NavigationLink {
-            GenderSelectionView(selectedGender: $rdiViewModel.selectedGender)
-        } label: {
-            LabeledContent {
-                Text(rdiViewModel.selectedGender.rawValue)
-            } label: {
-                Text("Gender")
-            }
-        }
-    }
-}
-
-struct GenderSelectionView: View {
+struct GenderView: View {
     @Binding var selectedGender: Gender
     
     var body: some View {

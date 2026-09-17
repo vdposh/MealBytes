@@ -21,21 +21,31 @@ struct RdiView: View {
                 rdiViewToolbar
             }
             .safeAreaInset(edge: .bottom) {
-                if focus {
-                    DirectionToolbarView(
-                        done: {
-                            focus = false
-                            rdiViewModel.normalizeAge()
-                        }
-                    )
-                }
+                DirectionToolbarView(
+                    focused: focus,
+                    done: {
+                        focus = false
+                        rdiViewModel.normalizeAge()
+                    }
+                )
             }
+            .ignoresSafeArea(edges: focus ? [] : .bottom)
     }
     
     private var rdiViewContentBody: some View {
         Form {
             OverviewRdiSection(rdiViewModel: rdiViewModel)
-            AgeSection(focus: $focus, rdiViewModel: rdiViewModel)
+            
+            ServingTextFieldView(
+                text: $rdiViewModel.age,
+                stackText: "Age",
+                useStackTrailing: true,
+                keyboardType: .numberPad,
+                inputMode: .integer,
+                maxIntegerDigits: 3
+            )
+            .focused($focus)
+            
             GenderSection(rdiViewModel: rdiViewModel)
             ActivitySection(rdiViewModel: rdiViewModel)
             WeightSection(rdiViewModel: rdiViewModel)

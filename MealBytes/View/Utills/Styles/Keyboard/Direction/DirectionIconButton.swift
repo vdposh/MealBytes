@@ -18,7 +18,7 @@ struct DirectionIconButton: View {
         } label: {
             Image(systemName: systemImage)
                 .font(.title2)
-                .padding(.vertical, 12)
+                .frame(width: 50, height: 50)
         }
         .foregroundStyle(isActive ? .primary: .quaternary)
         .disabled(!isActive)
