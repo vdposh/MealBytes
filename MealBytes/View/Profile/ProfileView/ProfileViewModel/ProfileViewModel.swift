@@ -35,6 +35,7 @@ final class ProfileViewModel: ObservableObject {
         guard let user = Auth.auth().currentUser else {
             await MainActor.run {
                 email = nil
+                signOut()
             }
             
             return

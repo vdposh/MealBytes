@@ -81,7 +81,12 @@ struct MealBytesApp: App {
                 if scenePhase == .active {
                     Task {
                         await loginViewModel.loadData()
-                        try await TokenManager.shared.fetchToken()
+                        
+                        if loginViewModel.isLoggedIn {
+                            await profileViewModel.loadProfileData()
+                        }
+                        
+                        try? await TokenManager.shared.fetchToken()
                     }
                 }
             }

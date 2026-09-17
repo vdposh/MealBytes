@@ -13,12 +13,13 @@ protocol FirebaseAuthProtocol {
     func refreshTokenAuth() async throws -> String
     func checkCurrentUserAuth() -> Bool
     func currentUserExists() -> Bool
+    func getCurrentUserEmail() -> String?
     func signUpAuth(email: String, password: String) async throws
     func resetPasswordAuth(email: String) async throws
     func signOutAuth() throws
     func deleteAccountAuth() async throws
     func resendVerificationAuth() async throws
-    func updateEmailAuth(newEmail: String) async throws
+    func updateEmailAuth(newEmail: String, password: String) async throws
     func changePasswordAuth(
         currentPassword: String,
         newPassword: String
@@ -75,18 +76,32 @@ final class FirebaseAuth: FirebaseAuthProtocol {
     }
     
     // MARK: - Update Email
-    func updateEmailAuth(newEmail: String) async throws {
-        guard let user = Auth.auth().currentUser else {
+    func updateEmailAuth(
+        newEmail: String,
+        password: String
+    ) async throws {
+        guard let user = Auth.auth().currentUser,
+              let currentEmail = user.email else {
             throw AuthError.userNotFound
         }
         
+        let cleanedEmail = newEmail
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        
+        let credential = EmailAuthProvider.credential(
+            withEmail: currentEmail,
+            password: password
+        )
+        
+        try await user.reauthenticate(with: credential)
+        
         try await withCheckedThrowingContinuation { (
-            continuation: CheckedContinuation<Void,
-            Error>
+            continuation: CheckedContinuation<Void, Error>
         ) in
             user
                 .sendEmailVerification(
-                    beforeUpdatingEmail: newEmail
+                    beforeUpdatingEmail: cleanedEmail
                 ) { error in
                     if let error {
                         continuation.resume(throwing: error)
@@ -145,5 +160,11 @@ final class FirebaseAuth: FirebaseAuthProtocol {
     
     func currentUserExists() -> Bool {
         Auth.auth().currentUser != nil
+    }
+    
+    func getCurrentUserEmail() -> String? {
+        Auth.auth().currentUser?.email?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
     }
 }

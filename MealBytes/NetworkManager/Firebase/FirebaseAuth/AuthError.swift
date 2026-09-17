@@ -15,6 +15,7 @@ enum AuthError: Error, Identifiable, LocalizedError {
     case invalidEmail
     case incorrectCredentials
     case emailAlreadyInUse
+    case sameEmail
     case userNotFound
     case userNotVerified
     case weakPassword
@@ -32,6 +33,8 @@ enum AuthError: Error, Identifiable, LocalizedError {
             "Incorrect email or password."
         case .emailAlreadyInUse:
             "The email address is already in use."
+        case .sameEmail:
+            "This is already your current email address."
         case .userNotFound:
             "No user found with the specified email address."
         case .userNotVerified:

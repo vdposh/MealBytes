@@ -92,20 +92,27 @@ struct MainView: View {
     }
     
     private var nutrientTotalsButtonView: some View {
-        Button {
-            mainViewModel.showNutrientTotals = true
-        } label: {
-            Text("Nutrient Totals")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .overlay(alignment: .leading) {
-                    Image(systemName: "text.rectangle.page")
-                        .imageScale(.large)
-                        .fontWeight(.semibold)
-                    
-                }
+        Section {
+            Button {
+                mainViewModel.showNutrientTotals = true
+            } label: {
+                Text("Nutrient Totals")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .overlay(alignment: .leading) {
+                        Image(systemName: "text.rectangle.page")
+                            .imageScale(.large)
+                            .fontWeight(.semibold)
+                        
+                    }
+            }
+            .padding()
+            .glassEffect(.regular.interactive())
         }
-        .listRowBackground(Color.accent.opacity(0.2))
+        .listRowInsets(.vertical, 0)
+        .listSectionMargins(.horizontal, 0)
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
     
     @ToolbarContentBuilder

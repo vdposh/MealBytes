@@ -14,51 +14,15 @@ struct ProfileView: View {
         profileViewContentBody
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
-            .alert(
-                profileViewModel.alertTitle,
-                isPresented: $profileViewModel.showAlert,
-                actions: { alertActions },
-                message: { Text(profileViewModel.alertMessage) }
-            )
-            .task {
-                await profileViewModel.loadProfileData()
-            }
     }
     
     private var profileViewContentBody: some View {
         Form {
-            AccountInfoSection(profileViewModel: profileViewModel)
-            IntakeToggleSection(profileViewModel: profileViewModel)
+            AccountSection(profileViewModel: profileViewModel)
             ThemePickerSection()
-            EmailAndPasswordSection(email: $profileViewModel.email)
-            SignOutAndDeleteSection(profileViewModel: profileViewModel)
+            IntakeToggleSection(profileViewModel: profileViewModel)
         }
         .id(profileViewModel.uniqueId)
-    }
-    
-    @ViewBuilder
-    private var alertActions: some View {
-        switch profileViewModel.alertContent?.type {
-        case .deleteAccount:
-            Button(profileViewModel.destructiveTitle, role: .destructive) {
-                Task {
-                    await profileViewModel.handleProfileAlertAction()
-                }
-            }
-            Button("Cancel", role: .cancel) {
-                profileViewModel.showAlert = false
-            }
-            
-        case .signOut:
-            Button(profileViewModel.destructiveTitle, role: .destructive) {
-                Task {
-                    await profileViewModel.handleProfileAlertAction()
-                }
-            }
-            
-        default:
-            EmptyView()
-        }
     }
 }
 

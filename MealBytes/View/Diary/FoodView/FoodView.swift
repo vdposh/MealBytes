@@ -52,9 +52,10 @@ struct FoodView: View {
             .toolbar {
                 foodViewToolbar
             }
-            .safeAreaBar(edge: .bottom) {
+            .safeAreaInset(edge: .bottom) {
                 foodViewSafeArea
             }
+            .ignoresSafeArea(edges: amountFocused ? [] : .bottom)
             .background {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()

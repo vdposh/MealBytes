@@ -41,14 +41,12 @@ struct NutrientValueSection: View {
             )
             
             if isNutrientTotalsCalories {
-                Picker(
-                    "",
-                    selection: .constant(1)
-                ) {
+                Picker("", selection: .constant(1)) {
                     Text("% Daily Value*").tag(1)
                 }
                 .tint(.accent)
-                .padding(.top, 4)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
             }
         }
         .transaction { $0.animation = nil }

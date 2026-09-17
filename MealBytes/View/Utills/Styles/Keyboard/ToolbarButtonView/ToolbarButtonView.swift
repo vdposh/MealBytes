@@ -13,6 +13,12 @@ struct ToolbarButtonView: View {
     var alignment: Alignment = .leading
     var focused: Bool = false
     
+    private var horizontalPadding: CGFloat {
+        let width = UIScreen.currentSize.width
+        let base: CGFloat = width < 420 ? 16 : (focused ? 20 : 16)
+        return focused ? base : base * 1.75
+    }
+    
     var body: some View {
         Button {
             action()
@@ -27,12 +33,16 @@ struct ToolbarButtonView: View {
             maxWidth: alignment == .center ? nil : .infinity,
             alignment: alignment
         )
-        .padding(.horizontal, focused ? 16 : 28)
-        .padding(.bottom, focused ? 8 : -8)
+        .padding(.horizontal, horizontalPadding)
+        .padding(.bottom, focused ? 8 : 26)
         .animation(.default, value: focused)
     }
 }
 
 #Preview {
     PreviewFoodView.foodView
+}
+
+#Preview {
+    PreviewContentView.contentView
 }

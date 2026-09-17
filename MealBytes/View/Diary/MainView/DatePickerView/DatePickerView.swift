@@ -25,7 +25,7 @@ struct DatePickerView: View {
             displayedComponents: .date
         )
         .datePickerStyle(.graphical)
-        .frame(width: 320)
+        .frame(width: 340)
         .padding(.horizontal)
         .padding(.vertical, 8)
         .presentationCompactAdaptation(.popover)

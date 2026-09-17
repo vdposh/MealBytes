@@ -18,15 +18,11 @@ struct EmailView: View {
     
     var body: some View {
         Form {
-            Section {
-                LoginTextFieldView(
-                    text: $emailViewModel.newEmail,
-                    placeholder: "New Email",
-                    showLabel: false
-                )
-            } footer: {
-                Text("Enter a new email. A verification link will be sent to confirm the change.")
-            }
+            LoginTextFieldView(
+                text: $emailViewModel.newEmail,
+                placeholder: "New Email",
+                showLabel: false
+            )
         }
         .navigationTitle("Email")
         .navigationBarTitleDisplayMode(.inline)
@@ -46,16 +42,48 @@ struct EmailView: View {
         }
         .alert(
             emailViewModel.alertTitle,
-            isPresented: $emailViewModel.showAlert,
+            isPresented: Binding(
+                get: { emailViewModel.alertType != nil },
+                set: { if !$0 { emailViewModel.alertType = nil } }
+            ),
             actions: {
-                Button("OK") {
-                    emailViewModel.showAlert = false
-                }
+                alertActions
             },
             message: {
                 Text(emailViewModel.alertMessage)
             }
         )
+    }
+    
+    @ViewBuilder
+    private var alertActions: some View {
+        switch emailViewModel.alertType {
+        case .password:
+            SecureField("Current Password", text: $emailViewModel.password)
+            
+            Button(role: .cancel) {
+                emailViewModel.password = ""
+                emailViewModel.alertType = nil
+            }
+            
+            Button(role: .confirm) {
+                Task {
+                    await emailViewModel.confirmChangeEmail()
+                }
+                
+                emailViewModel.password = ""
+            }
+            .keyboardShortcut(.defaultAction)
+            .disabled(emailViewModel.password.isEmpty)
+            
+        case .error, .success:
+            Button("OK") {
+                emailViewModel.alertType = nil
+            }
+            
+        case .none:
+            EmptyView()
+        }
     }
 }
 
