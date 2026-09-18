@@ -68,6 +68,7 @@ final class EmailViewModel: ObservableObject {
                 title: "Done",
                 message: "A verification link has been sent to email."
             )
+            password = ""
         } catch {
             let error = handleEmailError(error as NSError)
             alertType = .error(
@@ -104,6 +105,7 @@ final class EmailViewModel: ObservableObject {
         }
         return .unknownError
     }
+    
     // MARK: - Alert
     var alertTitle: String {
         switch alertType {

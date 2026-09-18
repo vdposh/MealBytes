@@ -70,8 +70,6 @@ struct EmailView: View {
                 Task {
                     await emailViewModel.confirmChangeEmail()
                 }
-                
-                emailViewModel.password = ""
             }
             .keyboardShortcut(.defaultAction)
             .disabled(emailViewModel.password.isEmpty)

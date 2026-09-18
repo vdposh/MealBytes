@@ -11,15 +11,17 @@ struct ActivitySection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
-        NavigationLink {
-            ActivityView(
-                selectedActivity: $rdiViewModel.selectedActivity
-            )
-        } label: {
-            LabeledContent {
-                Text(rdiViewModel.selectedActivity.rawValue)
+        Section {
+            NavigationLink {
+                ActivityView(
+                    selectedActivity: $rdiViewModel.selectedActivity
+                )
             } label: {
-                Text("Activity")
+                LabeledContent {
+                    Text(rdiViewModel.selectedActivity.rawValue)
+                } label: {
+                    Text("Activity")
+                }
             }
         }
     }

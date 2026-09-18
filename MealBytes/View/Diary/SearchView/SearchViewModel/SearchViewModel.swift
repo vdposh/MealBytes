@@ -9,6 +9,8 @@ import SwiftUI
 import Combine
 
 protocol SearchViewModelProtocol {
+    var foodMetadataDict: [Int: FoodMetadata] { get set }
+    
     func toggleBookmarkSearchView(for food: Food) async
     func loadBookmarksSearchView(for mealType: MealType) async
     func loadSearchViewData() async
@@ -21,8 +23,6 @@ protocol SearchViewModelProtocol {
     func isBookmarkedSearchView(_ food: Food) -> Bool
     func triggerFoodAlert()
     func resetQuery()
-    
-    var foodMetadataDict: [Int: FoodMetadata] { get set }
 }
 
 final class SearchViewModel: ObservableObject {

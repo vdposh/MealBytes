@@ -178,10 +178,7 @@ final class RdiViewModel: ObservableObject {
         heightUnit: HeightUnit,
         weightGoal: WeightGoal
     ) {
-        guard isValid,
-              gender != .notSelected,
-              activity != .notSelected,
-              weightGoal != .notSelected else {
+        guard isValid else {
             calculatedRdi = ""
             return
         }
@@ -244,7 +241,10 @@ final class RdiViewModel: ObservableObject {
     var isValid: Bool {
         age.isValidNumericInput(in: 1...120) &&
         weight.isValidNumericInput() &&
-        height.isValidNumericInput()
+        height.isValidNumericInput() &&
+        selectedGender != .notSelected &&
+        selectedActivity != .notSelected &&
+        selectedWeightGoal != .notSelected
     }
     
     // MARK: - Text
@@ -268,6 +268,22 @@ final class RdiViewModel: ObservableObject {
     
     var rdiText: String {
         text(for: calculatedRdi)
+    }
+    
+    var bodyProfileText: String {
+        let gender = selectedGender == .notSelected ? "" : selectedGender.rawValue
+        let age = age.isEmpty ? "" : formattedAge
+        
+        return [gender, age]
+            .filter { !$0.isEmpty }
+            .joined(separator: ", ")
+    }
+    
+    var formattedAge: String {
+        guard let age = Int(age) else {
+            return age
+        }
+        return "\(age) \(age == 1 ? "year" : "years")"
     }
     
     // MARK: - Keyboard

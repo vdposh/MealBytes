@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct RdiView: View {
-    @FocusState private var focus: Bool
     @Environment(\.dismiss) private var dismiss
-    
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
@@ -20,36 +18,15 @@ struct RdiView: View {
             .toolbar {
                 rdiViewToolbar
             }
-            .safeAreaInset(edge: .bottom) {
-                DirectionToolbarView(
-                    focused: focus,
-                    done: {
-                        focus = false
-                        rdiViewModel.normalizeAge()
-                    }
-                )
-            }
-            .ignoresSafeArea(edges: focus ? [] : .bottom)
     }
     
     private var rdiViewContentBody: some View {
         Form {
             OverviewRdiSection(rdiViewModel: rdiViewModel)
-            
-            ServingTextFieldView(
-                text: $rdiViewModel.age,
-                stackText: "Age",
-                useStackTrailing: true,
-                keyboardType: .numberPad,
-                inputMode: .integer,
-                maxIntegerDigits: 3
-            )
-            .focused($focus)
-            
-            GenderSection(rdiViewModel: rdiViewModel)
-            ActivitySection(rdiViewModel: rdiViewModel)
+            BodyProfileSection(rdiViewModel: rdiViewModel)
             WeightSection(rdiViewModel: rdiViewModel)
             HeightSection(rdiViewModel: rdiViewModel)
+            ActivitySection(rdiViewModel: rdiViewModel)
             WeightGoalSelection(rdiViewModel: rdiViewModel)
         }
     }
@@ -62,8 +39,6 @@ struct RdiView: View {
                     await rdiViewModel.saveRdiView()
                 }
                 
-                focus = false
-                rdiViewModel.normalizeAge()
                 dismiss()
             }
             .disabled(!rdiViewModel.isValid)

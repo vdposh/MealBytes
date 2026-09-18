@@ -1,23 +1,23 @@
 //
-//  GenderSection.swift
+//  BodyProfileSection.swift
 //  MealBytes
 //
-//  Created by Vlad Posherstnik on 13/06/2025.
+//  Created by Vlad Posherstnik on 27/03/2025.
 //
 
 import SwiftUI
 
-struct GenderSection: View {
+struct BodyProfileSection: View {
     @ObservedObject var rdiViewModel: RdiViewModel
     
     var body: some View {
         NavigationLink {
-            GenderView(selectedGender: $rdiViewModel.selectedGender)
+            BodyProfileView(rdiViewModel: rdiViewModel)
         } label: {
             LabeledContent {
-                Text(rdiViewModel.selectedGender.rawValue)
+                Text(rdiViewModel.bodyProfileText)
             } label: {
-                Text("Gender")
+                Text("Body Profile")
             }
         }
     }

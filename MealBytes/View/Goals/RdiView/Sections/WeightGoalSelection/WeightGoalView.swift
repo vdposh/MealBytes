@@ -1,5 +1,5 @@
 //
-//  WeightGoalSelectionView.swift
+//  WeightGoalView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 13.08.2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WeightGoalSelectionView: View {
+struct WeightGoalView: View {
     @Binding var selectedGoal: WeightGoal
     @Environment(\.dismiss) private var dismiss
     

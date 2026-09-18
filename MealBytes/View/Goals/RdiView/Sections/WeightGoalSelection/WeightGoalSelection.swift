@@ -13,7 +13,7 @@ struct WeightGoalSelection: View {
     var body: some View {
         Section {
             NavigationLink {
-                WeightGoalSelectionView(
+                WeightGoalView(
                     selectedGoal: $rdiViewModel.selectedWeightGoal
                 )
             } label: {

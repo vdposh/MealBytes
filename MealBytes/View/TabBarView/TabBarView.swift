@@ -38,6 +38,9 @@ struct TabBarView: View {
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             loginErrorAlert
         }
+        .task {
+            await profileViewModel.loadProfileData()
+        }
     }
     
     private var loginErrorAlert: Alert {
