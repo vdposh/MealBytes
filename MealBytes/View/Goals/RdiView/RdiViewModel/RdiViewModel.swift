@@ -178,7 +178,12 @@ final class RdiViewModel: ObservableObject {
         heightUnit: HeightUnit,
         weightGoal: WeightGoal
     ) {
-        guard isValid else {
+        guard age.isValidNumericInput(in: 1...120),
+              weight.isValidNumericInput(),
+              height.isValidNumericInput(),
+              gender != .notSelected,
+              activity != .notSelected,
+              weightGoal != .notSelected else {
             calculatedRdi = ""
             return
         }

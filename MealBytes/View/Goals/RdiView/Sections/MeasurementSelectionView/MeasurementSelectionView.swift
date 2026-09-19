@@ -38,15 +38,18 @@ struct MeasurementSelectionView<
         }
         .navigationTitle(title)
         .safeAreaInset(edge: .bottom) {
-            if focus {
-                DirectionToolbarView(
-                    done: {
-                        focus = false
-                        normalizeAction()
-                    }
-                )
-            }
+            ToolbarButtonView(
+                action: {
+                    focus = false
+                    normalizeAction()
+                },
+                alignment: .trailing,
+                focused: focus
+            )
+            .opacity(focus ? 1 : 0)
+            .allowsHitTesting(focus)
         }
+        .ignoresSafeArea(edges: focus ? [] : .bottom)
     }
 }
 

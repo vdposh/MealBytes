@@ -32,13 +32,16 @@ struct BodyProfileView: View {
         .navigationTitle("Body Profile")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
-            DirectionToolbarView(
-                focused: focus,
-                done: {
+            ToolbarButtonView(
+                action: {
                     focus = false
                     rdiViewModel.normalizeAge()
-                }
+                },
+                alignment: .trailing,
+                focused: focus
             )
+            .opacity(focus ? 1 : 0)
+            .allowsHitTesting(focus)
         }
         .ignoresSafeArea(edges: focus ? [] : .bottom)
     }

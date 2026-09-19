@@ -16,51 +16,45 @@ struct DirectionToolbarView: View {
     var moveDown: () -> Void = {}
     var done: () -> Void
     
-    private var horizontalPadding: CGFloat {
-        let width = UIScreen.currentSize.width
-        let base: CGFloat = width < 420 ? 16 : (focused ? 20 : 16)
-        return focused ? base : base * 1.75
-    }
-    
     var body: some View {
         HStack {
             HStack {
-                DirectionIconButton(
-                    systemImage: "chevron.up",
+                ToolbarButtonView(
+                    icon: "chevron.up",
+                    action: moveUp,
+                    focused: focused,
                     isActive: canMoveUp,
-                    action: moveUp
+                    isArrows: true
                 )
                 
-                DirectionIconButton(
-                    systemImage: "chevron.down",
+                ToolbarButtonView(
+                    icon: "chevron.down",
+                    action: moveDown,
+                    focused: focused,
                     isActive: canMoveDown,
-                    action: moveDown
+                    isArrows: true
                 )
             }
-            .transaction { $0.animation = nil }
             .glassEffect(.regular.interactive(), in: .capsule)
-            .opacity(showArrows ? 1 : 0)
+            .padding(.horizontal, UIScreen.horizontalPadding(focused: focused))
+            .padding(.bottom, focused ? 10 : 26)
+            .animation(.default, value: focused)
             
-            DirectionIconButton(
-                systemImage: "checkmark",
-                isActive: true,
-                action: done
+            ToolbarButtonView(
+                action: done,
+                alignment: .trailing,
+                focused: focused
             )
-            .glassEffect(.regular.interactive(), in: .circle)
-            .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .padding(.horizontal, horizontalPadding)
-        .padding(.bottom, focused ? 10 : 26)
-        .animation(.default, value: focused)
         .opacity(focused ? 1 : 0)
         .allowsHitTesting(focused)
     }
 }
 
 #Preview {
-    PreviewContentView.contentView
+    PreviewDailyIntakeView.dailyIntakeView
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewContentView.contentView
 }

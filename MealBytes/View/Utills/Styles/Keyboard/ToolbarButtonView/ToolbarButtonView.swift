@@ -8,35 +8,47 @@
 import SwiftUI
 
 struct ToolbarButtonView: View {
-    let icon: String
+    var icon: String = "checkmark"
     let action: () -> Void
     var alignment: Alignment = .leading
     var focused: Bool = false
+    var isActive: Bool = true
+    var isArrows: Bool = false
     
-    private var horizontalPadding: CGFloat {
-        let width = UIScreen.currentSize.width
-        let base: CGFloat = width < 420 ? 16 : (focused ? 20 : 16)
-        return focused ? base : base * 1.75
-    }
-    
-    var body: some View {
+    private var button: some View {
         Button {
             action()
         } label: {
             Image(systemName: icon)
                 .font(.title2)
                 .frame(width: 50, height: 50)
-                .foregroundStyle(Color.primary)
+                .foregroundStyle(isActive ? Color.primary : Color(.systemGray2))
         }
-        .glassEffect(.regular.interactive(), in: .circle)
-        .frame(
-            maxWidth: alignment == .center ? nil : .infinity,
-            alignment: alignment
-        )
-        .padding(.horizontal, horizontalPadding)
-        .padding(.bottom, focused ? 10 : 26)
-        .animation(.default, value: focused)
+        .disabled(!isActive)
     }
+    
+    var body: some View {
+        if isArrows {
+            button
+        } else {
+            button
+                .glassEffect(.regular.interactive(), in: .circle)
+                .frame(
+                    maxWidth: alignment == .center ? nil : .infinity,
+                    alignment: alignment
+                )
+                .padding(
+                    .horizontal,
+                    UIScreen.horizontalPadding(focused: focused)
+                )
+                .padding(.bottom, focused ? 10 : 26)
+                .animation(.default, value: focused)
+        }
+    }
+}
+
+#Preview {
+    PreviewDailyIntakeView.dailyIntakeView
 }
 
 #Preview {

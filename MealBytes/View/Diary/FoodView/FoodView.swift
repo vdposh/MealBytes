@@ -301,7 +301,6 @@ struct FoodView: View {
             }
             
             ToolbarButtonView(
-                icon: "checkmark",
                 action: {
                     amountFocused = false
                     foodViewModel.normalizeAmount()
