@@ -38,10 +38,6 @@ struct SearchView: View {
             searchViewToolbar
         }
         .environment(\.editMode, $editModeState)
-        .background {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-        }
         .onChange(of: mealType) {
             searchViewModel.displaySearchViewData(for: mealType)
         }

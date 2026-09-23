@@ -15,8 +15,7 @@ struct PasswordView: View {
             Section {
                 SecureFieldView(
                     text: $passwordViewModel.currentPassword,
-                    placeholder: "Current Password",
-                    showLabel: false
+                    placeholder: "Current Password"
                 )
             }
             .disabled(passwordViewModel.isLoading)
@@ -24,15 +23,15 @@ struct PasswordView: View {
             Section {
                 SecureFieldView(
                     text: $passwordViewModel.newPassword,
-                    placeholder: "New Password",
-                    showLabel: false
+                    placeholder: "New Password"
                 )
                 
                 SecureFieldView(
                     text: $passwordViewModel.confirmPassword,
-                    placeholder: "Confirm New Password",
-                    showLabel: false
+                    placeholder: "Confirm New Password"
                 )
+            } footer: {
+                Text("Password must be at least 6 characters long.")
             }
             .disabled(passwordViewModel.isLoading)
         }

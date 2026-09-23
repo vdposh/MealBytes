@@ -14,7 +14,7 @@ struct MacronutrientMetricsSection: View {
     var body: some View {
         Section {
             MacronutrientFieldView(
-                title: "Fat",
+                title: NutrientType.fat.title,
                 binding: $dailyIntakeViewModel.fat,
                 focus: $focus,
                 focusCase: .fat,
@@ -22,7 +22,7 @@ struct MacronutrientMetricsSection: View {
             )
             
             MacronutrientFieldView(
-                title: "Carbohydrate",
+                title: NutrientType.carbohydrate.title,
                 binding: $dailyIntakeViewModel.carbohydrate,
                 focus: $focus,
                 focusCase: .carbohydrate,
@@ -30,7 +30,7 @@ struct MacronutrientMetricsSection: View {
             )
             
             MacronutrientFieldView(
-                title: "Protein",
+                title: NutrientType.protein.title,
                 binding: $dailyIntakeViewModel.protein,
                 focus: $focus,
                 focusCase: .protein,

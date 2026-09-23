@@ -25,7 +25,7 @@ struct CustomIntakeView: View {
             Section {
                 ServingTextFieldView(
                     text: $customIntakeViewModel.calories,
-                    stackText: "Calories",
+                    stackText: NutrientType.calories.title,
                     useStackTrailing: true,
                     keyboardType: .numberPad,
                     inputMode: .integer,
@@ -35,7 +35,7 @@ struct CustomIntakeView: View {
                 
                 ServingTextFieldView(
                     text: $customIntakeViewModel.fat,
-                    stackText: "Fat",
+                    stackText: NutrientType.fat.title,
                     useStackTrailing: true,
                     keyboardType: .numberPad,
                     inputMode: .integer,
@@ -45,7 +45,7 @@ struct CustomIntakeView: View {
                 
                 ServingTextFieldView(
                     text: $customIntakeViewModel.carbohydrate,
-                    stackText: "Carbohydrate",
+                    stackText: NutrientType.carbohydrate.title,
                     useStackTrailing: true,
                     keyboardType: .numberPad,
                     inputMode: .integer,
@@ -55,7 +55,7 @@ struct CustomIntakeView: View {
                 
                 ServingTextFieldView(
                     text: $customIntakeViewModel.protein,
-                    stackText: "Protein",
+                    stackText: NutrientType.protein.title,
                     useStackTrailing: true,
                     keyboardType: .numberPad,
                     inputMode: .integer,

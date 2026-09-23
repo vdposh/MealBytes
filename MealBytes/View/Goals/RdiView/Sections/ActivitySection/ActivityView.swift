@@ -13,30 +13,17 @@ struct ActivityView: View {
     var body: some View {
         Form {
             ForEach(
-                Activity.allCases.filter { $0 != .notSelected
-                },
-                id: \.self) { activity in
-                    Button {
-                        selectedActivity = activity
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(activity.rawValue)
-                                .foregroundStyle(Color.primary)
-                            
-                            Text(activity.description)
-                                .font(.caption)
-                                .foregroundStyle(Color.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.trailing, 32)
-                        .overlay(alignment: .trailing) {
-                            if selectedActivity == activity {
-                                Image(systemName: "checkmark")
-                                    .font(.headline)
-                            }
-                        }
-                    }
+                Activity.allCases.filter { $0 != .notSelected },
+                id: \.self
+            ) { activity in
+                SelectionRow(
+                    title: activity.rawValue,
+                    description: activity.description,
+                    isSelected: selectedActivity == activity
+                ) {
+                    selectedActivity = activity
                 }
+            }
         }
         .navigationTitle("Activity")
     }

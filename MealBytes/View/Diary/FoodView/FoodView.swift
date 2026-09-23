@@ -235,6 +235,7 @@ struct FoodView: View {
                     } label: {
                         Text("Add")
                             .fontWeight(.semibold)
+                            .foregroundStyle(.white)
                     }
                     .disabled(!foodViewModel.canAddFood)
                 }

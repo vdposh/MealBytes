@@ -14,7 +14,7 @@ struct OverviewRdiSection: View {
         Section {
             HStack {
                 if rdiViewModel.isValid {
-                    Text("Calories")
+                    Text(NutrientType.calories.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
@@ -26,21 +26,21 @@ struct OverviewRdiSection: View {
             
             if let macros = rdiViewModel.macroNutrients {
                 HStack {
-                    Text("Fat")
+                    Text(NutrientType.fat.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(macros.fat.asWhole())
                 }
                 
                 HStack {
-                    Text("Carbohydrate")
+                    Text(NutrientType.carbohydrate.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(macros.carbs.asWhole())
                 }
                 
                 HStack {
-                    Text("Protein")
+                    Text(NutrientType.protein.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(macros.protein.asWhole())

@@ -19,8 +19,18 @@ struct ProfileView: View {
     private var profileViewContentBody: some View {
         Form {
             AccountSection(profileViewModel: profileViewModel)
-            ThemePickerSection()
-            IntakeToggleSection(profileViewModel: profileViewModel)
+            
+            Section {
+                ThemePickerSection()
+                
+                if !profileViewModel.mainViewModel.intake.isEmpty {
+                    IntakeToggleSection(profileViewModel: profileViewModel)
+                }
+            } footer: {
+                if !profileViewModel.mainViewModel.intake.isEmpty {
+                    Text("Enable to display daily intake progress directly in the Diary.")
+                }
+            }
         }
         .id(profileViewModel.uniqueId)
     }

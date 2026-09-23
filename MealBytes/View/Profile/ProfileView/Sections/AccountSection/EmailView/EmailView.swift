@@ -18,11 +18,14 @@ struct EmailView: View {
     
     var body: some View {
         Form {
-            LoginTextFieldView(
-                text: $emailViewModel.newEmail,
-                placeholder: "New Email",
-                showLabel: false
-            )
+            Section {
+                LoginTextFieldView(
+                    text: $emailViewModel.newEmail,
+                    placeholder: "New Email"
+                )
+            } footer: {
+                Text("Enter a new email. A verification link will be sent to it.")
+            }
         }
         .navigationTitle("Email")
         .navigationBarTitleDisplayMode(.inline)

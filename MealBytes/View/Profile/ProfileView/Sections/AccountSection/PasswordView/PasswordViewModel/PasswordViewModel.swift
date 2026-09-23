@@ -62,10 +62,6 @@ final class PasswordViewModel: ObservableObject {
     }
     
     private func validatePassword() -> String? {
-        if newPassword.count < 6 {
-            return "Password must be at least 6 characters long."
-        }
-        
         if newPassword != confirmPassword {
             return "New password and confirmation do not match."
         }
@@ -78,7 +74,8 @@ final class PasswordViewModel: ObservableObject {
             switch authErrorCode {
             case .weakPassword: return .weakPassword
             case .networkError: return .networkError
-            case .wrongPassword: return .incorrectCredentials
+            case .wrongPassword: return .incorrectCurrentPassword
+            case .invalidCredential: return .incorrectCurrentPassword
             default: return .unknownError
             }
         }

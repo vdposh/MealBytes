@@ -11,16 +11,14 @@ struct ThemePickerSection: View {
     @EnvironmentObject var themeManager: ThemeManager
     
     var body: some View {
-        Section {
-            NavigationLink {
-                ThemePickerView(themeManager: themeManager)
-                    .environmentObject(themeManager)
+        NavigationLink {
+            ThemePickerView(themeManager: themeManager)
+                .environmentObject(themeManager)
+        } label: {
+            LabeledContent {
+                Text(themeManager.selectedTheme.themeName)
             } label: {
-                LabeledContent {
-                    Text(themeManager.selectedTheme.themeName)
-                } label: {
-                    Text("App Theme")
-                }
+                Text("App Theme")
             }
         }
     }

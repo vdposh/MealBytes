@@ -9,7 +9,6 @@ import SwiftUI
 
 struct WeightGoalView: View {
     @Binding var selectedGoal: WeightGoal
-    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         Form {
@@ -17,25 +16,12 @@ struct WeightGoalView: View {
                 WeightGoal.allCases.filter { $0 != .notSelected
                 },
                 id: \.self) { goal in
-                    Button {
+                    SelectionRow(
+                        title: goal.rawValue,
+                        description: goal.description,
+                        isSelected: selectedGoal == goal
+                    ) {
                         selectedGoal = goal
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(goal.rawValue)
-                                .foregroundStyle(Color.primary)
-                            
-                            Text(goal.description)
-                                .font(.caption)
-                                .foregroundStyle(Color.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.trailing, 32)
-                        .overlay(alignment: .trailing) {
-                            if selectedGoal == goal {
-                                Image(systemName: "checkmark")
-                                    .font(.headline)
-                            }
-                        }
                     }
                 }
         }

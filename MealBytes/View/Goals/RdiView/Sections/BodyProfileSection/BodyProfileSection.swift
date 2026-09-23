@@ -17,7 +17,7 @@ struct BodyProfileSection: View {
             LabeledContent {
                 Text(rdiViewModel.bodyProfileText)
             } label: {
-                Text("Body Profile")
+                Text("Age & Sex")
             }
         }
     }

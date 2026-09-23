@@ -39,7 +39,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
         case .monounsaturatedFat: "Monounsaturated Fat"
         case .cholesterol: "Cholesterol"
         case .sodium: "Sodium"
-        case .carbohydrate: "Carbohydrate"
+        case .carbohydrate: "Carbohydrates"
         case .fiber: "Dietary Fiber"
         case .sugar: "Total Sugars"
         case .addedSugars: "Includes Added Sugars"
@@ -61,7 +61,7 @@ enum NutrientType: String, Identifiable, CaseIterable {
     
     var longTitle: String {
         switch self {
-        case .carbohydrate: "Total Carbohydrates"
+        case .carbohydrate: "Total Carbohydrate"
         case .fat: "Total Fat"
         default: title
         }

@@ -14,28 +14,14 @@ struct AccountSection: View {
         NavigationLink {
             AccountView(profileViewModel: profileViewModel)
         } label: {
-            if let email = profileViewModel.email {
-                HStack(spacing: 10) {
-                    Image(systemName: "person.crop.circle")
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .foregroundStyle(.tertiary)
-                    
-                    VStack(alignment: .leading) {
-                        Text("Name")
-                            .font(.title3)
-                            .fontWeight(.medium)
-                        
-                        
-                        Text(email)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+            LabeledContent {
+                if let email = profileViewModel.email {
+                    Text(email)
+                } else {
+                    Text("Account disconnected")
                 }
-            } else {
-                Text("Account disconnected")
-                    .font(.title3)
-                    .fontWeight(.medium)
+            } label: {
+                Text("Account")
             }
         }
     }

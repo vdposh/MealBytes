@@ -37,7 +37,7 @@ struct RegisterView: View {
                     placeholder: "Confirm Password"
                 )
             } footer: {
-                Text("Enter email and create a password. A verification email will be sent.")
+                Text("Enter email and create a password (min 6 characters). A verification email will be sent.")
             }
         }
     }
@@ -58,6 +58,7 @@ struct RegisterView: View {
                     } label: {
                         Text("Resend")
                             .fontWeight(.semibold)
+                            .foregroundStyle(.white)
                     }
                     .disabled(registerViewModel.isRegisterLoading)
                 } else {

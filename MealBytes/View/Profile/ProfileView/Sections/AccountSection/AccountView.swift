@@ -83,11 +83,20 @@ struct AccountView: View {
                 }
             }
             
+            Button(role: .cancel) {
+                profileViewModel.showAlert = false
+            }
+            .keyboardShortcut(.defaultAction)
+            
         case .signOut:
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
                     await profileViewModel.handleProfileAlertAction()
                 }
+            }
+            
+            Button(role: .cancel) {
+                profileViewModel.showAlert = false
             }
             
         default:
@@ -98,4 +107,8 @@ struct AccountView: View {
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewProfileView.profileView
 }

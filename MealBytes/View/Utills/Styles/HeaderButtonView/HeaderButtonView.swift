@@ -53,7 +53,7 @@ struct HeaderButtonView: View {
                     action()
                 }
             } label: {
-                HStack(alignment: .firstTextBaseline) {
+                HStack {
                     VStack(alignment: .leading) {
                         HeaderTextView(mealType: mealType, title: title)
                         
