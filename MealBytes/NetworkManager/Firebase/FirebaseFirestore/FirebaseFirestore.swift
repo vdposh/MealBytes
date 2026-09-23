@@ -22,7 +22,7 @@ protocol FirebaseFirestoreProtocol {
         isLoggedIn: Bool
     )
     func loadMacrosIntakeFirestore() async throws -> MacrosIntake
-    func loadRdiFirestore() async throws -> RdiData
+    func loadPersonalIntakeFirestore() async throws -> PersonalIntakeData
     func loadCustomIntakeFirestore() async throws -> CustomIntake
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake
     func loadDisplayIntakeFirestore() async throws -> Bool
@@ -40,8 +40,12 @@ protocol FirebaseFirestoreProtocol {
         for mealType: MealType
     ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
-    func saveMacrosIntakeFirestore(_ MacrosIntakeData: MacrosIntake) async throws
-    func saveRdiFirestore(_ rdiData: RdiData) async throws
+    func saveMacrosIntakeFirestore(
+        _ MacrosIntakeData: MacrosIntake
+    ) async throws
+    func savePersonalIntakeFirestore(
+        _ PersonalIntakeData: PersonalIntakeData
+    ) async throws
     func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
     func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws
@@ -348,8 +352,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try documentReference.setData(from: MacrosIntakeData)
     }
     
-    // MARK: - Load RDI
-    func loadRdiFirestore() async throws -> RdiData {
+    // MARK: - Load PersonalIntake
+    func loadPersonalIntakeFirestore() async throws -> PersonalIntakeData {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -358,13 +362,14 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
-            .document("RdiView")
+            .document("PersonalIntakeView")
         
-        return try await documentReference.getDocument(as: RdiData.self)
+        return try await documentReference
+            .getDocument(as: PersonalIntakeData.self)
     }
     
-    // MARK: - Save RDI
-    func saveRdiFirestore(_ rdiData: RdiData) async throws {
+    // MARK: - Save PersonalIntake
+    func savePersonalIntakeFirestore(_ personalIntakeData: PersonalIntakeData) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -373,9 +378,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
-            .document("RdiView")
+            .document("PersonalIntakeView")
         
-        try documentReference.setData(from: rdiData)
+        try documentReference.setData(from: personalIntakeData)
     }
     
     // MARK: - Load CustomIntake

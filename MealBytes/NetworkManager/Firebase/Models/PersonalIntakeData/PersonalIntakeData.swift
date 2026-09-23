@@ -1,5 +1,5 @@
 //
-//  RdiData.swift
+//  PersonalIntakeData.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 24/03/2025.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct RdiData: Codable {
-    let calculatedRdi: String
+struct PersonalIntakeData: Codable {
+    let calculatedPersonalIntake: String
     let age: String
     let selectedGender: String
     let selectedActivity: String

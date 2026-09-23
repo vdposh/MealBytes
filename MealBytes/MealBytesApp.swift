@@ -38,7 +38,7 @@ struct MealBytesApp: App {
         let macrosIntakeViewModel = MacrosIntakeViewModel(
             mainViewModel: mainViewModel
         )
-        let rdiViewModel = RdiViewModel(
+        let personalIntakeViewModel = PersonalIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let customIntakeViewModel = CustomIntakeViewModel(
@@ -47,7 +47,7 @@ struct MealBytesApp: App {
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
             macrosIntakeViewModel: macrosIntakeViewModel,
-            rdiViewModel: rdiViewModel,
+            personalIntakeViewModel: personalIntakeViewModel,
             customIntakeViewModel: customIntakeViewModel
         )
         let loginViewModel = LoginViewModel(

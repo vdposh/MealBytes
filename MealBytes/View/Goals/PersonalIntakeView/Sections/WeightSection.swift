@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct WeightSection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         NavigationLink {
             MeasurementSelectionView(
-                value: $rdiViewModel.weight,
-                selectedUnit: $rdiViewModel.selectedWeightUnit,
+                value: $personalIntakeViewModel.weight,
+                selectedUnit: $personalIntakeViewModel.selectedWeightUnit,
                 title: "Weight",
                 maxIntegerDigits: 3,
-                normalizeAction: rdiViewModel.normalizeWeight
+                normalizeAction: personalIntakeViewModel.normalizeWeight
             )
         } label: {
             LabeledContent {
-                if !rdiViewModel.weight.isEmpty {
-                    Text("\(rdiViewModel.weight) \(rdiViewModel.selectedWeightUnit.rawValue)")
+                if !personalIntakeViewModel.weight.isEmpty {
+                    Text("\(personalIntakeViewModel.weight) \(personalIntakeViewModel.selectedWeightUnit.rawValue)")
                 }
             } label: {
                 Text("Weight")
@@ -37,5 +37,5 @@ enum WeightUnit: String, CaseIterable {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

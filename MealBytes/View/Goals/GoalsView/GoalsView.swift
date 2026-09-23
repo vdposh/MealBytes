@@ -12,7 +12,7 @@ struct GoalsView: View {
     
     var body: some View {
         Form {
-            RdiSectionView(goalsViewModel: goalsViewModel)
+            PersonalIntakeSectionView(goalsViewModel: goalsViewModel)
             MacrosIntakeSectionView(goalsViewModel: goalsViewModel)
             CustomIntakeSectionView(goalsViewModel: goalsViewModel)
             

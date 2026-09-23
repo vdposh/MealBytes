@@ -14,7 +14,8 @@ struct PreviewContentView {
         MacrosIntakeViewModelProtocol = MacrosIntakeViewModel(
             mainViewModel: mainViewModel
         )
-        let rdiViewModel: RdiViewModelProtocol = RdiViewModel(
+        let personalIntakeViewModel:
+        PersonalIntakeViewModelProtocol = PersonalIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let customIntakeViewModel = CustomIntakeViewModel(
@@ -23,7 +24,7 @@ struct PreviewContentView {
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
             macrosIntakeViewModel: macrosIntakeViewModel,
-            rdiViewModel: rdiViewModel,
+            personalIntakeViewModel: personalIntakeViewModel,
             customIntakeViewModel: customIntakeViewModel
         )
         let loginViewModel = LoginViewModel(

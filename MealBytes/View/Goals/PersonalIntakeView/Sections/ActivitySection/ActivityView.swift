@@ -56,5 +56,5 @@ enum Activity: String, CaseIterable {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

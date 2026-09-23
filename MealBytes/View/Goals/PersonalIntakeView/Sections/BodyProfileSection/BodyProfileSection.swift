@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct BodyProfileSection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         NavigationLink {
-            BodyProfileView(rdiViewModel: rdiViewModel)
+            BodyProfileView(personalIntakeViewModel: personalIntakeViewModel)
         } label: {
             LabeledContent {
-                Text(rdiViewModel.bodyProfileText)
+                Text(personalIntakeViewModel.bodyProfileText)
             } label: {
                 Text("Age & Sex")
             }
@@ -24,5 +24,5 @@ struct BodyProfileSection: View {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

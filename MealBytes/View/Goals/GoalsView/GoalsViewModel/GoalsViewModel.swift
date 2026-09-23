@@ -19,18 +19,18 @@ final class GoalsViewModel: ObservableObject {
     
     private let mainViewModel: MainViewModelProtocol
     let macrosIntakeViewModel: MacrosIntakeViewModelProtocol
-    let rdiViewModel: RdiViewModelProtocol
+    let personalIntakeViewModel: PersonalIntakeViewModelProtocol
     let customIntakeViewModel: CustomIntakeViewModelProtocol
     
     init(
         mainViewModel: MainViewModelProtocol,
         macrosIntakeViewModel: MacrosIntakeViewModelProtocol,
-        rdiViewModel: RdiViewModelProtocol,
+        personalIntakeViewModel: PersonalIntakeViewModelProtocol,
         customIntakeViewModel: CustomIntakeViewModelProtocol
     ) {
         self.mainViewModel = mainViewModel
         self.macrosIntakeViewModel = macrosIntakeViewModel
-        self.rdiViewModel = rdiViewModel
+        self.personalIntakeViewModel = personalIntakeViewModel
         self.customIntakeViewModel = customIntakeViewModel
     }
     
@@ -44,13 +44,14 @@ final class GoalsViewModel: ObservableObject {
             isDataLoaded = false
         }
         
-        async let rdiTask: () = rdiViewModel.loadRdiView()
+        async let personalIntakeTask: () = personalIntakeViewModel
+            .loadPersonalIntakeView()
         async let macrosIntakeTask: () = macrosIntakeViewModel
             .loadMacrosIntakeView()
         async let customIntakeTask: () = customIntakeViewModel
             .loadCustomIntake()
         
-        _ = await (rdiTask, macrosIntakeTask, customIntakeTask)
+        _ = await (personalIntakeTask, macrosIntakeTask, customIntakeTask)
         
         await MainActor.run {
             conditionallyClearGoalsView()
@@ -61,13 +62,13 @@ final class GoalsViewModel: ObservableObject {
     
     func conditionallyClearGoalsView() {
         macrosIntakeViewModel.conditionallyClearMacrosIntake()
-        rdiViewModel.conditionallyClearRdi()
+        personalIntakeViewModel.conditionallyClearPersonalIntake()
         customIntakeViewModel.conditionallyClearCustomIntake()
     }
     
     func clearGoalsView() {
         macrosIntakeViewModel.clearMacrosIntake()
-        rdiViewModel.clearRdi()
+        personalIntakeViewModel.clearPersonalIntake()
         customIntakeViewModel.clearCustomIntake()
     }
     
@@ -77,7 +78,8 @@ final class GoalsViewModel: ObservableObject {
         let text: String
         
         switch source {
-        case .rdiView: text = rdiViewModel.rdiText
+        case .personalIntakeView: text = personalIntakeViewModel
+                .personalIntakeText
         case .macrosIntakeView: text = macrosIntakeViewModel.macrosIntakeText
         case .customView: text = customIntakeViewModel.customIntakeText
         }
@@ -92,9 +94,9 @@ final class GoalsViewModel: ObservableObject {
     
     func isActive(_ source: IntakeSourceType) -> Bool {
         switch source {
-        case .rdiView:
+        case .personalIntakeView:
             return currentIntakeSource == source &&
-            rdiViewModel.rdiText != "Fill in the data"
+            personalIntakeViewModel.personalIntakeText != "Fill in the data"
         case .macrosIntakeView:
             return currentIntakeSource == source &&
             macrosIntakeViewModel.macrosIntakeText != "Fill in the data"
@@ -105,11 +107,13 @@ final class GoalsViewModel: ObservableObject {
     }
     
     var currentIntakeSource: IntakeSourceType {
-        IntakeSourceType(rawValue: mainViewModel.intakeSource) ?? .rdiView
+        IntakeSourceType(
+            rawValue: mainViewModel.intakeSource
+        ) ?? .personalIntakeView
     }
     
     enum IntakeSourceType: String {
-        case rdiView
+        case personalIntakeView
         case macrosIntakeView
         case customView
     }

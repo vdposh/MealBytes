@@ -54,5 +54,5 @@ struct MeasurementSelectionView<
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

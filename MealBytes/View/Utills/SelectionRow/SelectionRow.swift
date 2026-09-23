@@ -11,7 +11,7 @@ struct SelectionRow: View {
     let title: String
     var description: String? = nil
     let isSelected: Bool
-    var checkmarkColor: Color = .primary
+    var checkmarkColor: Color = .accent
     let action: () -> Void
     
     var body: some View {

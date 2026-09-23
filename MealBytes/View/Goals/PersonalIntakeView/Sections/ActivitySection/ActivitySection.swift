@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct ActivitySection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         Section {
             NavigationLink {
                 ActivityView(
-                    selectedActivity: $rdiViewModel.selectedActivity
+                    selectedActivity: $personalIntakeViewModel.selectedActivity
                 )
             } label: {
                 LabeledContent {
-                    Text(rdiViewModel.selectedActivity.rawValue)
+                    Text(personalIntakeViewModel.selectedActivity.rawValue)
                 } label: {
                     Text("Activity")
                 }
@@ -28,5 +28,5 @@ struct ActivitySection: View {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

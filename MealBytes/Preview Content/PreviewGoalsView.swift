@@ -12,14 +12,16 @@ struct PreviewGoalsView {
         let mainViewModel = MainViewModel()
         let macrosIntakeViewModel = MacrosIntakeViewModel(
             mainViewModel: mainViewModel)
-        let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
+        let personalIntakeViewModel = PersonalIntakeViewModel(
+            mainViewModel: mainViewModel
+        )
         let customIntakeViewModel = CustomIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
             macrosIntakeViewModel: macrosIntakeViewModel,
-            rdiViewModel: rdiViewModel,
+            personalIntakeViewModel: personalIntakeViewModel,
             customIntakeViewModel: customIntakeViewModel
         )
         

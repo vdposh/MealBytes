@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct WeightGoalSelection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         Section {
             NavigationLink {
                 WeightGoalView(
-                    selectedGoal: $rdiViewModel.selectedWeightGoal
+                    selectedGoal: $personalIntakeViewModel.selectedWeightGoal
                 )
             } label: {
                 LabeledContent {
-                    Text(rdiViewModel.selectedWeightGoal.rawValue)
+                    Text(personalIntakeViewModel.selectedWeightGoal.rawValue)
                 } label: {
                     Text("Weight Goal")
                 }
@@ -28,5 +28,5 @@ struct WeightGoalSelection: View {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

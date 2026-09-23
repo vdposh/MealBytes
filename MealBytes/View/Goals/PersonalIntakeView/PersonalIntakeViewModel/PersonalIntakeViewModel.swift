@@ -1,5 +1,5 @@
 //
-//  RdiViewModel.swift
+//  PersonalIntakeViewModel.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 24/03/2025.
@@ -8,16 +8,16 @@
 import SwiftUI
 import Combine
 
-protocol RdiViewModelProtocol {
-    var rdiText: String { get }
+protocol PersonalIntakeViewModelProtocol {
+    var personalIntakeText: String { get }
     
-    func loadRdiView() async
-    func saveRdiView() async
-    func clearRdi()
-    func conditionallyClearRdi()
+    func loadPersonalIntakeView() async
+    func savePersonalIntakeView() async
+    func clearPersonalIntake()
+    func conditionallyClearPersonalIntake()
 }
 
-final class RdiViewModel: ObservableObject {
+final class PersonalIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var age: String = ""
     @Published var weight: String = ""
@@ -27,9 +27,9 @@ final class RdiViewModel: ObservableObject {
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
     @Published var selectedWeightGoal: WeightGoal = .notSelected
-    @Published var calculatedRdi: String = ""
+    @Published var calculatedPersonalIntake: String = ""
     @Published var didSaveSuccessfully: Bool = false
-    @Published var didLoadNonEmptyRdi: Bool = false
+    @Published var didLoadNonEmptyPersonalIntake: Bool = false
     
     var proteinPercentage: Double = 0.30
     var fatPercentage: Double = 0.20
@@ -42,40 +42,45 @@ final class RdiViewModel: ObservableObject {
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
         
-        setupBindingsRdiView()
+        setupBindingsPersonalIntakeView()
     }
     
     deinit {
         cancellables.removeAll()
     }
     
-    // MARK: - Load RDI Data
-    func loadRdiView() async {
+    // MARK: - Load PersonalIntake Data
+    func loadPersonalIntakeView() async {
         do {
-            let rdiData = try await firestore.loadRdiFirestore()
-            let hasAnyData = !rdiData.calculatedRdi.isEmpty
+            let personalIntakeData = try await firestore
+                .loadPersonalIntakeFirestore()
+            let hasAnyData = !personalIntakeData
+                .calculatedPersonalIntake.isEmpty
             
             await MainActor.run {
-                self.calculatedRdi = rdiData.calculatedRdi
-                self.age = rdiData.age
+                self.calculatedPersonalIntake = personalIntakeData
+                    .calculatedPersonalIntake
+                self.age = personalIntakeData.age
                 self.selectedGender = Gender(
-                    rawValue: rdiData.selectedGender
+                    rawValue: personalIntakeData.selectedGender
                 ) ?? .notSelected
                 self.selectedActivity = Activity(
-                    rawValue: rdiData.selectedActivity
+                    rawValue: personalIntakeData.selectedActivity
                 ) ?? .notSelected
-                self.weight = (Double(rdiData.weight) ?? 0).asDecimal()
+                self.weight = (Double(personalIntakeData.weight) ?? 0)
+                    .asDecimal()
                 self.selectedWeightUnit = WeightUnit(
-                    rawValue: rdiData.selectedWeightUnit
+                    rawValue: personalIntakeData.selectedWeightUnit
                 ) ?? .kg
-                self.height = (Double(rdiData.height) ?? 0).asDecimal()
+                self.height = (Double(personalIntakeData.height) ?? 0)
+                    .asDecimal()
                 self.selectedHeightUnit = HeightUnit(
-                    rawValue: rdiData.selectedHeightUnit
+                    rawValue: personalIntakeData.selectedHeightUnit
                 ) ?? .cm
                 self.selectedWeightGoal = WeightGoal(
-                    rawValue: rdiData.selectedWeightGoal
+                    rawValue: personalIntakeData.selectedWeightGoal
                 ) ?? .notSelected
-                self.didLoadNonEmptyRdi = hasAnyData
+                self.didLoadNonEmptyPersonalIntake = hasAnyData
             }
         } catch {
             await MainActor.run {
@@ -84,17 +89,17 @@ final class RdiViewModel: ObservableObject {
         }
     }
     
-    func conditionallyClearRdi() {
-        if !didSaveSuccessfully && !didLoadNonEmptyRdi {
-            clearRdi()
+    func conditionallyClearPersonalIntake() {
+        if !didSaveSuccessfully && !didLoadNonEmptyPersonalIntake {
+            clearPersonalIntake()
         }
         
         didSaveSuccessfully = false
-        didLoadNonEmptyRdi = false
+        didLoadNonEmptyPersonalIntake = false
     }
     
-    func clearRdi() {
-        calculatedRdi = ""
+    func clearPersonalIntake() {
+        calculatedPersonalIntake = ""
         age = ""
         weight = ""
         height = ""
@@ -104,12 +109,14 @@ final class RdiViewModel: ObservableObject {
         selectedHeightUnit = .cm
     }
     
-    // MARK: - Save RDI Data
-    func saveRdiView() async {
-        let stableRdi = String(calculatedRdi.doubleValue ?? 0)
+    // MARK: - Save PersonalIntake Data
+    func savePersonalIntakeView() async {
+        let stablePersonalIntake = String(
+            calculatedPersonalIntake.doubleValue ?? 0
+        )
         
-        let rdiData = RdiData(
-            calculatedRdi: stableRdi,
+        let personalIntakeData = PersonalIntakeData(
+            calculatedPersonalIntake: stablePersonalIntake,
             age: age.trimmedLeadingZeros,
             selectedGender: selectedGender.rawValue,
             selectedActivity: selectedActivity.rawValue,
@@ -121,14 +128,15 @@ final class RdiViewModel: ObservableObject {
         )
         
         do {
-            try await firestore.saveRdiFirestore(rdiData)
+            try await firestore.savePersonalIntakeFirestore(personalIntakeData)
             
             await MainActor.run {
-                mainViewModel.updateIntake(to: stableRdi)
+                mainViewModel.updateIntake(to: stablePersonalIntake)
                 didSaveSuccessfully = true
             }
             
-            await mainViewModel.saveCurrentIntakeMainView(source: "rdiView")
+            await mainViewModel
+                .saveCurrentIntakeMainView(source: "personalIntakeView")
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -137,7 +145,7 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Calculation
-    private func setupBindingsRdiView() {
+    private func setupBindingsPersonalIntakeView() {
         Publishers.CombineLatest(
             Publishers.CombineLatest(
                 Publishers.CombineLatest($age, $weight),
@@ -154,7 +162,7 @@ final class RdiViewModel: ObservableObject {
             let ((age, weight), (height, gender)) = combined1
             let ((activity, weightUnit), (heightUnit, weightGoal)) = combined2
             
-            self?.recalculateRdi(
+            self?.recalculatePersonalIntake(
                 age: age,
                 weight: weight,
                 height: height,
@@ -168,7 +176,7 @@ final class RdiViewModel: ObservableObject {
         .store(in: &cancellables)
     }
     
-    private func recalculateRdi(
+    private func recalculatePersonalIntake(
         age: String,
         weight: String,
         height: String,
@@ -184,15 +192,17 @@ final class RdiViewModel: ObservableObject {
               gender != .notSelected,
               activity != .notSelected,
               weightGoal != .notSelected else {
-            calculatedRdi = ""
+            calculatedPersonalIntake = ""
             return
         }
         
         let ageValue = age.doubleValue ?? 0
         let weightValue = weight.doubleValue ?? 0
         let heightValue = height.doubleValue ?? 0
-        let weightInKg = weightUnit == .lbs ? weightValue * 0.453592 : weightValue
-        let heightInCm = heightUnit == .inches ? heightValue * 2.54 : heightValue
+        let weightInKg = weightUnit ==
+            .lbs ? weightValue * 0.453592 : weightValue
+        let heightInCm = heightUnit ==
+            .inches ? heightValue * 2.54 : heightValue
         
         let bmr: Double
         let activityFactor: Double
@@ -228,11 +238,12 @@ final class RdiViewModel: ObservableObject {
             adjustedCalories = tdee
         }
         
-        calculatedRdi = max(1, adjustedCalories).asWhole()
+        calculatedPersonalIntake = max(1, adjustedCalories).asWhole()
     }
     
     var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
-        guard let calories = calculatedRdi.doubleValue, calories > 0 else {
+        guard let calories = calculatedPersonalIntake.doubleValue,
+              calories > 0 else {
             return nil
         }
         
@@ -253,30 +264,34 @@ final class RdiViewModel: ObservableObject {
     }
     
     // MARK: - Text
-    func text(for calculatedRdi: String, useUnit: Bool = true) -> String {
-        guard let rdiValue = calculatedRdi.doubleValue,
-              rdiValue > 0,
+    func text(
+        for calculatedPersonalIntake: String,
+        useUnit: Bool = true
+    ) -> String {
+        guard let personalIntakeValue = calculatedPersonalIntake.doubleValue,
+              personalIntakeValue > 0,
               isValid else {
             return "Fill in the data"
         }
         
-        let formattedValue = rdiValue.asWhole()
+        let formattedValue = personalIntakeValue.asWhole()
         
         guard useUnit else {
             return formattedValue
         }
         
-        return rdiValue == 1
+        return personalIntakeValue == 1
         ? "\(formattedValue) calorie"
         : "\(formattedValue) calories"
     }
     
-    var rdiText: String {
-        text(for: calculatedRdi)
+    var personalIntakeText: String {
+        text(for: calculatedPersonalIntake)
     }
     
     var bodyProfileText: String {
-        let gender = selectedGender == .notSelected ? "" : selectedGender.rawValue
+        let gender = selectedGender ==
+            .notSelected ? "" : selectedGender.rawValue
         let age = age.isEmpty ? "" : formattedAge
         
         return [gender, age]
@@ -315,12 +330,12 @@ final class RdiViewModel: ObservableObject {
     }
 }
 
-extension RdiViewModel: RdiViewModelProtocol {}
+extension PersonalIntakeViewModel: PersonalIntakeViewModelProtocol {}
 
 #Preview {
     PreviewContentView.contentView
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

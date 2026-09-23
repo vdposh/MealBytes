@@ -9,13 +9,13 @@ import SwiftUI
 
 struct BodyProfileView: View {
     @FocusState private var focus: Bool
-    @ObservedObject var rdiViewModel: RdiViewModel
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         Form {
             Section {
                 ServingTextFieldView(
-                    text: $rdiViewModel.age,
+                    text: $personalIntakeViewModel.age,
                     stackText: "Age",
                     useStackTrailing: true,
                     keyboardType: .numberPad,
@@ -26,7 +26,9 @@ struct BodyProfileView: View {
             }
             
             Section {
-                GenderView(selectedGender: $rdiViewModel.selectedGender)
+                GenderView(
+                    selectedGender: $personalIntakeViewModel.selectedGender
+                )
             }
         }
         .navigationTitle("Body Profile")
@@ -35,7 +37,7 @@ struct BodyProfileView: View {
             ToolbarButtonView(
                 action: {
                     focus = false
-                    rdiViewModel.normalizeAge()
+                    personalIntakeViewModel.normalizeAge()
                 },
                 alignment: .trailing,
                 focused: focus
@@ -48,5 +50,5 @@ struct BodyProfileView: View {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

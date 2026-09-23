@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct HeightSection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         NavigationLink {
             MeasurementSelectionView(
-                value: $rdiViewModel.height,
-                selectedUnit: $rdiViewModel.selectedHeightUnit,
+                value: $personalIntakeViewModel.height,
+                selectedUnit: $personalIntakeViewModel.selectedHeightUnit,
                 title: "Height",
                 maxIntegerDigits: 3,
-                normalizeAction: rdiViewModel.normalizeHeight
+                normalizeAction: personalIntakeViewModel.normalizeHeight
             )
         } label: {
             LabeledContent {
-                if !rdiViewModel.height.isEmpty {
-                    Text("\(rdiViewModel.height) \(rdiViewModel.selectedHeightUnit.rawValue)")
+                if !personalIntakeViewModel.height.isEmpty {
+                    Text("\(personalIntakeViewModel.height) \(personalIntakeViewModel.selectedHeightUnit.rawValue)")
                 }
             } label: {
                 Text("Height")
@@ -37,5 +37,5 @@ enum HeightUnit: String, CaseIterable {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

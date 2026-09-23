@@ -36,5 +36,5 @@ enum Gender: String, CaseIterable {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }

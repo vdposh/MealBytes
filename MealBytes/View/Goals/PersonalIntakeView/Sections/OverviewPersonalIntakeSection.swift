@@ -1,5 +1,5 @@
 //
-//  OverviewRdiSection.swift
+//  OverviewPersonalIntakeSection.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 27/03/2025.
@@ -7,24 +7,28 @@
 
 import SwiftUI
 
-struct OverviewRdiSection: View {
-    @ObservedObject var rdiViewModel: RdiViewModel
+struct OverviewPersonalIntakeSection: View {
+    @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
         Section {
             HStack {
-                if rdiViewModel.isValid {
+                if personalIntakeViewModel.isValid {
                     Text(NutrientType.calories.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(
-                    rdiViewModel
-                        .text(for: rdiViewModel.calculatedRdi, useUnit: false)
+                    personalIntakeViewModel
+                        .text(
+                            for: personalIntakeViewModel
+                                .calculatedPersonalIntake,
+                            useUnit: false
+                        )
                 )
             }
             
-            if let macros = rdiViewModel.macroNutrients {
+            if let macros = personalIntakeViewModel.macroNutrients {
                 HStack {
                     Text(NutrientType.fat.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,7 +55,7 @@ struct OverviewRdiSection: View {
 }
 
 #Preview {
-    PreviewRdiView.rdiView
+    PreviewPersonalIntakeView.personalIntakeView
 }
 
 #Preview {

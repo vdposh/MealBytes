@@ -1,5 +1,5 @@
 //
-//  RdiSectionView.swift
+//  PersonalIntakeSectionView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 23/07/2025.
@@ -7,30 +7,32 @@
 
 import SwiftUI
 
-struct RdiSectionView: View {
+struct PersonalIntakeSectionView: View {
     @ObservedObject var goalsViewModel: GoalsViewModel
     
     var body: some View {
         Section {
             if goalsViewModel.isDataLoaded {
-                if let rdiViewModel = goalsViewModel
-                    .rdiViewModel as? RdiViewModel {
+                if let personalIntakeViewModel = goalsViewModel
+                    .personalIntakeViewModel as? PersonalIntakeViewModel {
                     NavigationLink {
-                        RdiView(rdiViewModel: rdiViewModel)
+                        PersonalIntakeView(
+                            personalIntakeViewModel: personalIntakeViewModel
+                        )
                     } label: {
-                        let rdiState = goalsViewModel.displayState(
-                            for: .rdiView
+                        let personalIntakeState = goalsViewModel.displayState(
+                            for: .personalIntakeView
                         )
                         
                         LabeledContent {
-                            Text(rdiViewModel.rdiText)
-                                .foregroundStyle(rdiState.color)
-                                .fontWeight(rdiState.weight)
+                            Text(personalIntakeViewModel.personalIntakeText)
+                                .foregroundStyle(personalIntakeState.color)
+                                .fontWeight(personalIntakeState.weight)
                         } label: {
                             Label {
                                 Text(IntakeSource.personal.rawValue)
                             } icon: {
-                                Image(systemName: rdiState.icon)
+                                Image(systemName: personalIntakeState.icon)
                                     .foregroundStyle(.accent)
                             }
                         }

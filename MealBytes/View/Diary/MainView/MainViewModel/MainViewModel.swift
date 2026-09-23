@@ -436,7 +436,7 @@ final class MainViewModel: ObservableObject {
         }
         
         switch intakeSource {
-        case "rdiView":
+        case "personalIntakeView":
             let fatTarget = (intakeValue * 0.30) / 9
             let carbsTarget = (intakeValue * 0.50) / 4
             let proteinTarget = (intakeValue * 0.20) / 4
