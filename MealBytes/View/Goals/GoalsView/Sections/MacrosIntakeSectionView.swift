@@ -1,5 +1,5 @@
 //
-//  DailyIntakeSectionView.swift
+//  MacrosIntakeSectionView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 23/07/2025.
@@ -7,32 +7,32 @@
 
 import SwiftUI
 
-struct DailyIntakeSectionView: View {
+struct MacrosIntakeSectionView: View {
     @ObservedObject var goalsViewModel: GoalsViewModel
     
     var body: some View {
         Section {
             if goalsViewModel.isDataLoaded {
-                if let dailyIntakeViewModel = goalsViewModel
-                    .dailyIntakeViewModel as? DailyIntakeViewModel {
+                if let macrosIntakeViewModel = goalsViewModel
+                    .macrosIntakeViewModel as? MacrosIntakeViewModel {
                     NavigationLink {
-                        DailyIntakeView(
-                            dailyIntakeViewModel: dailyIntakeViewModel
+                        MacrosIntakeView(
+                            macrosIntakeViewModel: macrosIntakeViewModel
                         )
                     } label: {
-                        let dailyIntakeState = goalsViewModel.displayState(
-                            for: .dailyIntakeView
+                        let macrosIntakeState = goalsViewModel.displayState(
+                            for: .macrosIntakeView
                         )
                         
                         LabeledContent {
-                            Text(dailyIntakeViewModel.dailyIntakeText)
-                                .foregroundStyle(dailyIntakeState.color)
-                                .fontWeight(dailyIntakeState.weight)
+                            Text(macrosIntakeViewModel.macrosIntakeText)
+                                .foregroundStyle(macrosIntakeState.color)
+                                .fontWeight(macrosIntakeState.weight)
                         } label: {
                             Label {
                                 Text(IntakeSource.macros.rawValue)
                             } icon: {
-                                Image(systemName: dailyIntakeState.icon)
+                                Image(systemName: macrosIntakeState.icon)
                                     .foregroundStyle(.accent)
                             }
                         }

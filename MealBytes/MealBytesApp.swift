@@ -35,7 +35,7 @@ struct MealBytesApp: App {
     
     init() {
         let mainViewModel = MainViewModel()
-        let dailyIntakeViewModel = DailyIntakeViewModel(
+        let macrosIntakeViewModel = MacrosIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let rdiViewModel = RdiViewModel(
@@ -46,7 +46,7 @@ struct MealBytesApp: App {
         )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
-            dailyIntakeViewModel: dailyIntakeViewModel,
+            macrosIntakeViewModel: macrosIntakeViewModel,
             rdiViewModel: rdiViewModel,
             customIntakeViewModel: customIntakeViewModel
         )

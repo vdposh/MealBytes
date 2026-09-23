@@ -1,5 +1,5 @@
 //
-//  DailyIntakeViewModel.swift
+//  MacrosIntakeViewModel.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 23/03/2025.
@@ -8,16 +8,16 @@
 import SwiftUI
 import Combine
 
-protocol DailyIntakeViewModelProtocol {
-    var dailyIntakeText: String { get }
+protocol MacrosIntakeViewModelProtocol {
+    var macrosIntakeText: String { get }
     
-    func loadDailyIntakeView() async
-    func saveDailyIntakeView() async
-    func conditionallyClearDailyIntake()
-    func clearDailyIntake()
+    func loadMacrosIntakeView() async
+    func saveMacrosIntakeView() async
+    func conditionallyClearMacrosIntake()
+    func clearMacrosIntake()
 }
 
-final class DailyIntakeViewModel: ObservableObject {
+final class MacrosIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var calories: String = ""
     @Published var fat: String = ""
@@ -33,25 +33,25 @@ final class DailyIntakeViewModel: ObservableObject {
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
         
-        setupBindingsDailyIntakeView()
+        setupBindingsMacrosIntakeView()
     }
     
     deinit {
         cancellables.removeAll()
     }
     
-    // MARK: - Load DailyIntake Data
-    func loadDailyIntakeView() async {
+    // MARK: - Load MacrosIntake Data
+    func loadMacrosIntakeView() async {
         do {
-            let dailyIntakeData = try await firestore
-                .loadDailyIntakeFirestore()
+            let macrosIntakeData = try await firestore
+                .loadMacrosIntakeFirestore()
             
             await MainActor.run {
-                calories = dailyIntakeData.calories
-                fat = dailyIntakeData.fat
-                carbohydrate = dailyIntakeData.carbohydrate
-                protein = dailyIntakeData.protein
-                didLoadNonEmptyIntake = !dailyIntakeData.calories.isEmpty
+                calories = macrosIntakeData.calories
+                fat = macrosIntakeData.fat
+                carbohydrate = macrosIntakeData.carbohydrate
+                protein = macrosIntakeData.protein
+                didLoadNonEmptyIntake = !macrosIntakeData.calories.isEmpty
             }
         } catch {
             await MainActor.run {
@@ -60,26 +60,26 @@ final class DailyIntakeViewModel: ObservableObject {
         }
     }
     
-    func conditionallyClearDailyIntake() {
+    func conditionallyClearMacrosIntake() {
         if !didSaveSuccessfully && !didLoadNonEmptyIntake {
-            clearDailyIntake()
+            clearMacrosIntake()
         }
         
         didSaveSuccessfully = false
         didLoadNonEmptyIntake = false
     }
     
-    func clearDailyIntake() {
+    func clearMacrosIntake() {
         calories = ""
         fat = ""
         carbohydrate = ""
         protein = ""
     }
     
-    // MARK: - Save DailyIntake Data
-    func saveDailyIntakeView() async {
+    // MARK: - Save MacrosIntake Data
+    func saveMacrosIntakeView() async {
         let trimmedCalories = calories.trimmedLeadingZeros
-        let dailyIntakeData = DailyIntake(
+        let macrosIntakeData = MacrosIntake(
             calories: trimmedCalories,
             fat: fat.trimmedLeadingZeros,
             carbohydrate: carbohydrate.trimmedLeadingZeros,
@@ -87,7 +87,7 @@ final class DailyIntakeViewModel: ObservableObject {
         )
         
         do {
-            try await firestore.saveDailyIntakeFirestore(dailyIntakeData)
+            try await firestore.saveMacrosIntakeFirestore(macrosIntakeData)
             
             await MainActor.run {
                 mainViewModel.updateIntake(to: trimmedCalories)
@@ -101,7 +101,7 @@ final class DailyIntakeViewModel: ObservableObject {
             }
             
             await mainViewModel.saveCurrentIntakeMainView(
-                source: "dailyIntakeView"
+                source: "macrosIntakeView"
             )
         } catch {
             await MainActor.run {
@@ -111,7 +111,7 @@ final class DailyIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Calculation
-    private func setupBindingsDailyIntakeView() {
+    private func setupBindingsMacrosIntakeView() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)
             .sink { [weak self] fat, carb, protein in
                 self?.calculateCalories(
@@ -176,7 +176,7 @@ final class DailyIntakeViewModel: ObservableObject {
         : "\(formattedValue) calories"
     }
     
-    var dailyIntakeText: String {
+    var macrosIntakeText: String {
         text(for: calories)
     }
     
@@ -217,12 +217,12 @@ final class DailyIntakeViewModel: ObservableObject {
     }
 }
 
-extension DailyIntakeViewModel: DailyIntakeViewModelProtocol {}
+extension MacrosIntakeViewModel: MacrosIntakeViewModelProtocol {}
 
 #Preview {
     PreviewContentView.contentView
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }

@@ -52,7 +52,7 @@ struct DirectionToolbarView: View {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }
 
 #Preview {

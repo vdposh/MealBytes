@@ -10,7 +10,7 @@ import SwiftUI
 struct PreviewProfileView {
     static var profileView: some View {
         let mainViewModel = MainViewModel()
-        let dailyIntakeViewModel = DailyIntakeViewModel(
+        let macrosIntakeViewModel = MacrosIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
@@ -19,7 +19,7 @@ struct PreviewProfileView {
         )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
-            dailyIntakeViewModel: dailyIntakeViewModel,
+            macrosIntakeViewModel: macrosIntakeViewModel,
             rdiViewModel: rdiViewModel,
             customIntakeViewModel: customIntakeViewModel
         )

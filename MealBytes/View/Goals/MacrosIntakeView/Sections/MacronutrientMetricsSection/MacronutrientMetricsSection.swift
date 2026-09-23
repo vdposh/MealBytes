@@ -9,32 +9,32 @@ import SwiftUI
 
 struct MacronutrientMetricsSection: View {
     @FocusState var focus: MacronutrientsFocus?
-    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
+    @ObservedObject var macrosIntakeViewModel: MacrosIntakeViewModel
     
     var body: some View {
         Section {
             MacronutrientFieldView(
                 title: NutrientType.fat.title,
-                binding: $dailyIntakeViewModel.fat,
+                binding: $macrosIntakeViewModel.fat,
                 focus: $focus,
                 focusCase: .fat,
-                dailyIntakeViewModel: dailyIntakeViewModel
+                macrosIntakeViewModel: macrosIntakeViewModel
             )
             
             MacronutrientFieldView(
                 title: NutrientType.carbohydrate.title,
-                binding: $dailyIntakeViewModel.carbohydrate,
+                binding: $macrosIntakeViewModel.carbohydrate,
                 focus: $focus,
                 focusCase: .carbohydrate,
-                dailyIntakeViewModel: dailyIntakeViewModel
+                macrosIntakeViewModel: macrosIntakeViewModel
             )
             
             MacronutrientFieldView(
                 title: NutrientType.protein.title,
-                binding: $dailyIntakeViewModel.protein,
+                binding: $macrosIntakeViewModel.protein,
                 focus: $focus,
                 focusCase: .protein,
-                dailyIntakeViewModel: dailyIntakeViewModel
+                macrosIntakeViewModel: macrosIntakeViewModel
             )
         } footer: {
             Text("Enter macronutrient values in grams. This data will be used to calculate calories and track your goals.")
@@ -43,5 +43,5 @@ struct MacronutrientMetricsSection: View {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }

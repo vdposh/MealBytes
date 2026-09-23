@@ -1,5 +1,5 @@
 //
-//  DailyIntakeView.swift
+//  MacrosIntakeView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 22/03/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DailyIntakeView: View {
+struct MacrosIntakeView: View {
     @FocusState private var macronutrientsFocused: MacronutrientsFocus?
     @Environment(\.dismiss) private var dismiss
     
@@ -17,20 +17,20 @@ struct DailyIntakeView: View {
         .protein
     ]
     
-    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
+    @ObservedObject var macrosIntakeViewModel: MacrosIntakeViewModel
     
     var body: some View {
-        dailyIntakeViewContentBody
+        macrosIntakeViewContentBody
             .navigationTitle(IntakeSource.macros.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                dailyIntakeViewToolbar
+                macrosIntakeViewToolbar
             }
             .safeAreaInset(edge: .bottom) {
                 buildKeyboardToolbar(
                     current: macronutrientsFocused,
                     ordered: macroOrder,
-                    normalize: dailyIntakeViewModel.normalizeInputs,
+                    normalize: macrosIntakeViewModel.normalizeInputs,
                     set: { macronutrientsFocused = $0 }
                 )
             }
@@ -42,38 +42,38 @@ struct DailyIntakeView: View {
             }
     }
     
-    private var dailyIntakeViewContentBody: some View {
+    private var macrosIntakeViewContentBody: some View {
         Form {
-            OverviewDailyIntakeSection(
-                dailyIntakeViewModel: dailyIntakeViewModel
+            OverviewMacrosIntakeSection(
+                macrosIntakeViewModel: macrosIntakeViewModel
             )
             MacronutrientMetricsSection(
                 focus: _macronutrientsFocused,
-                dailyIntakeViewModel: dailyIntakeViewModel
+                macrosIntakeViewModel: macrosIntakeViewModel
             )
         }
     }
     
     @ToolbarContentBuilder
-    private var dailyIntakeViewToolbar: some ToolbarContent {
+    private var macrosIntakeViewToolbar: some ToolbarContent {
         ToolbarItem {
             Button(role: .confirm) {
                 Task {
-                    await dailyIntakeViewModel.saveDailyIntakeView()
+                    await macrosIntakeViewModel.saveMacrosIntakeView()
                 }
                 
                 macronutrientsFocused = nil
-                dailyIntakeViewModel.normalizeInputs()
+                macrosIntakeViewModel.normalizeInputs()
                 dismiss()
             }
-            .disabled(!dailyIntakeViewModel.isValid)
+            .disabled(!macrosIntakeViewModel.isValid)
         }
     }
     
     private func handleFocusLoss(_ focus: MacronutrientsFocus?) {
         guard let focus else { return }
         
-        dailyIntakeViewModel.handleMacronutrientsFocusChange(
+        macrosIntakeViewModel.handleMacronutrientsFocusChange(
             focus: focus,
             didGainFocus: false
         )
@@ -91,5 +91,5 @@ enum MacronutrientsFocus: Hashable {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }

@@ -13,7 +13,7 @@ struct MacronutrientFieldView: View {
     let focus: FocusState<MacronutrientsFocus?>.Binding
     let focusCase: MacronutrientsFocus
     
-    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
+    @ObservedObject var macrosIntakeViewModel: MacrosIntakeViewModel
     
     var body: some View {
         ServingTextFieldView(
@@ -29,5 +29,5 @@ struct MacronutrientFieldView: View {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }

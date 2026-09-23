@@ -10,7 +10,7 @@ import SwiftUI
 struct PreviewGoalsView {
     static var goalsView: some View {
         let mainViewModel = MainViewModel()
-        let dailyIntakeViewModel = DailyIntakeViewModel(
+        let macrosIntakeViewModel = MacrosIntakeViewModel(
             mainViewModel: mainViewModel)
         let rdiViewModel = RdiViewModel(mainViewModel: mainViewModel)
         let customIntakeViewModel = CustomIntakeViewModel(
@@ -18,7 +18,7 @@ struct PreviewGoalsView {
         )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
-            dailyIntakeViewModel: dailyIntakeViewModel,
+            macrosIntakeViewModel: macrosIntakeViewModel,
             rdiViewModel: rdiViewModel,
             customIntakeViewModel: customIntakeViewModel
         )

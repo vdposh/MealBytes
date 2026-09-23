@@ -48,7 +48,7 @@ struct ToolbarButtonView: View {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }
 
 #Preview {

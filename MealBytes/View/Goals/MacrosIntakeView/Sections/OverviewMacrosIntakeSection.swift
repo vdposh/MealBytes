@@ -1,5 +1,5 @@
 //
-//  OverviewDailyIntakeSection.swift
+//  OverviewMacrosIntakeSection.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 23/03/2025.
@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-struct OverviewDailyIntakeSection: View {
-    @ObservedObject var dailyIntakeViewModel: DailyIntakeViewModel
+struct OverviewMacrosIntakeSection: View {
+    @ObservedObject var macrosIntakeViewModel: MacrosIntakeViewModel
     
     var body: some View {
         Section {
             HStack {
-                if dailyIntakeViewModel.isValid {
+                if macrosIntakeViewModel.isValid {
                     Text("Calories")
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(
-                    dailyIntakeViewModel
+                    macrosIntakeViewModel
                         .text(
-                            for: dailyIntakeViewModel.calories,
+                            for: macrosIntakeViewModel.calories,
                             useUnit: false
                         )
                 )
@@ -31,5 +31,5 @@ struct OverviewDailyIntakeSection: View {
 }
 
 #Preview {
-    PreviewDailyIntakeView.dailyIntakeView
+    PreviewMacrosIntakeView.macrosIntakeView
 }

@@ -293,12 +293,13 @@ final class MainViewModel: ObservableObject {
             }
         } else {
             do {
-                let dailyIntakeData = try await firestore.loadDailyIntakeFirestore()
+                let macrosIntakeData = try await firestore
+                    .loadMacrosIntakeFirestore()
                 await MainActor.run {
                     updateMacros(
-                        fat: dailyIntakeData.fat,
-                        carbohydrate: dailyIntakeData.carbohydrate,
-                        protein: dailyIntakeData.protein
+                        fat: macrosIntakeData.fat,
+                        carbohydrate: macrosIntakeData.carbohydrate,
+                        protein: macrosIntakeData.protein
                     )
                 }
             } catch {
@@ -441,7 +442,7 @@ final class MainViewModel: ObservableObject {
             let proteinTarget = (intakeValue * 0.20) / 4
             return (fatTarget, carbsTarget, proteinTarget)
             
-        case "dailyIntakeView":
+        case "macrosIntakeView":
             guard let fat = Double(macroFat),
                   let carbs = Double(macroCarbs),
                   let protein = Double(macroProtein) else {

@@ -10,8 +10,8 @@ import SwiftUI
 struct PreviewContentView {
     static var contentView: some View {
         let mainViewModel = MainViewModel()
-        let dailyIntakeViewModel:
-        DailyIntakeViewModelProtocol = DailyIntakeViewModel(
+        let macrosIntakeViewModel:
+        MacrosIntakeViewModelProtocol = MacrosIntakeViewModel(
             mainViewModel: mainViewModel
         )
         let rdiViewModel: RdiViewModelProtocol = RdiViewModel(
@@ -22,7 +22,7 @@ struct PreviewContentView {
         )
         let goalsViewModel = GoalsViewModel(
             mainViewModel: mainViewModel,
-            dailyIntakeViewModel: dailyIntakeViewModel,
+            macrosIntakeViewModel: macrosIntakeViewModel,
             rdiViewModel: rdiViewModel,
             customIntakeViewModel: customIntakeViewModel
         )

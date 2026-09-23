@@ -21,7 +21,7 @@ protocol FirebaseFirestoreProtocol {
         email: String,
         isLoggedIn: Bool
     )
-    func loadDailyIntakeFirestore() async throws -> DailyIntake
+    func loadMacrosIntakeFirestore() async throws -> MacrosIntake
     func loadRdiFirestore() async throws -> RdiData
     func loadCustomIntakeFirestore() async throws -> CustomIntake
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake
@@ -40,7 +40,7 @@ protocol FirebaseFirestoreProtocol {
         for mealType: MealType
     ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
-    func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) async throws
+    func saveMacrosIntakeFirestore(_ MacrosIntakeData: MacrosIntake) async throws
     func saveRdiFirestore(_ rdiData: RdiData) async throws
     func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
@@ -318,8 +318,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await path.delete()
     }
     
-    // MARK: - Load DailyIntake
-    func loadDailyIntakeFirestore() async throws -> DailyIntake {
+    // MARK: - Load MacrosIntake
+    func loadMacrosIntakeFirestore() async throws -> MacrosIntake {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -328,13 +328,13 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
-            .document("DailyIntakeView")
+            .document("MacrosIntakeView")
         
-        return try await documentReference.getDocument(as: DailyIntake.self)
+        return try await documentReference.getDocument(as: MacrosIntake.self)
     }
     
-    // MARK: - Save DailyIntake
-    func saveDailyIntakeFirestore(_ DailyIntakeData: DailyIntake) throws {
+    // MARK: - Save MacrosIntake
+    func saveMacrosIntakeFirestore(_ MacrosIntakeData: MacrosIntake) throws {
         guard let uid = Auth.auth().currentUser?.uid else {
             throw AppError.decoding
         }
@@ -343,9 +343,9 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
-            .document("DailyIntakeView")
+            .document("MacrosIntakeView")
         
-        try documentReference.setData(from: DailyIntakeData)
+        try documentReference.setData(from: MacrosIntakeData)
     }
     
     // MARK: - Load RDI
