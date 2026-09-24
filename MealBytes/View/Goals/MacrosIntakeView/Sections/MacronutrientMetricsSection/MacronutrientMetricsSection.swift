@@ -15,6 +15,8 @@ struct MacronutrientMetricsSection: View {
         Section {
             MacronutrientFieldView(
                 title: NutrientType.fat.title,
+                labelIconName: "f.circle.fill",
+                labelIconColor: .customFat,
                 binding: $macrosIntakeViewModel.fat,
                 focus: $focus,
                 focusCase: .fat,
@@ -23,6 +25,8 @@ struct MacronutrientMetricsSection: View {
             
             MacronutrientFieldView(
                 title: NutrientType.carbohydrate.title,
+                labelIconName: "c.circle.fill",
+                labelIconColor: .customCarbs,
                 binding: $macrosIntakeViewModel.carbohydrate,
                 focus: $focus,
                 focusCase: .carbohydrate,
@@ -31,6 +35,8 @@ struct MacronutrientMetricsSection: View {
             
             MacronutrientFieldView(
                 title: NutrientType.protein.title,
+                labelIconName: "p.circle.fill",
+                labelIconColor: .customProtein,
                 binding: $macrosIntakeViewModel.protein,
                 focus: $focus,
                 focusCase: .protein,

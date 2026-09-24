@@ -14,8 +14,14 @@ struct OverviewPersonalIntakeSection: View {
         Section {
             HStack {
                 if personalIntakeViewModel.isValid {
-                    Text(NutrientType.calories.title)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label {
+                        Text(NutrientType.calories.title)
+                    } icon: {
+                        Image(systemName: "flame.fill")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.customCalories)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(
@@ -30,22 +36,40 @@ struct OverviewPersonalIntakeSection: View {
             
             if let macros = personalIntakeViewModel.macroNutrients {
                 HStack {
-                    Text(NutrientType.fat.title)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label {
+                        Text(NutrientType.fat.title)
+                    } icon: {
+                        Image(systemName: "f.circle.fill")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.customFat)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(macros.fat.asWhole())
                 }
                 
                 HStack {
-                    Text(NutrientType.carbohydrate.title)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label {
+                        Text(NutrientType.carbohydrate.title)
+                    } icon: {
+                        Image(systemName: "c.circle.fill")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.customCarbs)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(macros.carbs.asWhole())
                 }
                 
                 HStack {
-                    Text(NutrientType.protein.title)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label {
+                        Text(NutrientType.protein.title)
+                    } icon: {
+                        Image(systemName: "p.circle.fill")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.customProtein)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(macros.protein.asWhole())
                 }

@@ -14,8 +14,14 @@ struct OverviewMacrosIntakeSection: View {
         Section {
             HStack {
                 if macrosIntakeViewModel.isValid {
-                    Text("Calories")
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label {
+                        Text(NutrientType.calories.title)
+                    } icon: {
+                        Image(systemName: "flame.fill")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.customCalories)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(

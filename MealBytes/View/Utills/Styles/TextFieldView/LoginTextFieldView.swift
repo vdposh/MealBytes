@@ -35,7 +35,7 @@ struct LoginTextFieldView: View {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
             } icon: {
-                Image(systemName: "person.fill")
+                Image(systemName: "envelope.fill")
                     .foregroundStyle(text.isEmpty ? .customGray : .accent)
                     .symbolColorRenderingMode(.gradient)
             }

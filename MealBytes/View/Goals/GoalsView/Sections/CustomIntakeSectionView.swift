@@ -36,7 +36,6 @@ struct CustomIntakeSectionView: View {
                                     .foregroundStyle(.accent)
                             }
                         }
-                        .labelIconToTitleSpacing(10)
                     }
                     .disabled(!goalsViewModel.isDataLoaded)
                 }
@@ -51,7 +50,6 @@ struct CustomIntakeSectionView: View {
                             .foregroundStyle(.accent)
                     }
                 }
-                .labelIconToTitleSpacing(10)
             }
         } footer: {
             Text(IntakeSource.custom.description)

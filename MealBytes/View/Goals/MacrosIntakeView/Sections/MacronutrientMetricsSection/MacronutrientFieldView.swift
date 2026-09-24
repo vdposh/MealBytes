@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MacronutrientFieldView: View {
     let title: String
+    let labelIconName: String
+    let labelIconColor: Color
     let binding: Binding<String>
     let focus: FocusState<MacronutrientsFocus?>.Binding
     let focusCase: MacronutrientsFocus
@@ -18,6 +20,8 @@ struct MacronutrientFieldView: View {
     var body: some View {
         ServingTextFieldView(
             text: binding,
+            labelIconName: labelIconName,
+            labelIconColor: labelIconColor,
             stackText: title,
             useStackTrailing: true,
             keyboardType: .numberPad,

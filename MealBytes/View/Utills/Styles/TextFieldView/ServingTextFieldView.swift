@@ -13,6 +13,7 @@ struct ServingTextFieldView: View {
     
     var placeholder: String = "Enter value"
     var labelIconName: String = "plus.forwardslash.minus"
+    var labelIconColor: Color = .customGray
     var stackText: String = ""
     var trailingUnit: String? = nil
     var useLabel: Bool = false
@@ -53,7 +54,7 @@ struct ServingTextFieldView: View {
                     field
                 } icon: {
                     Image(systemName: labelIconName)
-                        .foregroundStyle(.customGray)
+                        .foregroundStyle(labelIconColor)
                         .symbolColorRenderingMode(.gradient)
                 }
             } else if useStack {
@@ -69,8 +70,14 @@ struct ServingTextFieldView: View {
                 }
             } else if useStackTrailing {
                 HStack {
-                    Text(stackText)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label {
+                        Text(stackText)
+                    } icon: {
+                        Image(systemName: labelIconName)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(labelIconColor)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     field
                         .multilineTextAlignment(.trailing)
