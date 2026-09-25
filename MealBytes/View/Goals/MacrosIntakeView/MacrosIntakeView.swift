@@ -8,69 +8,48 @@
 import SwiftUI
 
 struct MacrosIntakeView: View {
-    @FocusState private var macronutrientsFocused: MacronutrientsFocus?
-    @Environment(\.dismiss) private var dismiss
-    
-    private let macroOrder: [MacronutrientsFocus] = [
-        .fat,
-        .carbohydrate,
-        .protein
-    ]
-    
+    @FocusState.Binding var focus: MacronutrientsFocus?
     @ObservedObject var macrosIntakeViewModel: MacrosIntakeViewModel
     
     var body: some View {
-        macrosIntakeViewContentBody
-            .navigationTitle(IntakeSource.macros.rawValue)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                macrosIntakeViewToolbar
-            }
-            .safeAreaInset(edge: .bottom) {
-                buildKeyboardToolbar(
-                    current: macronutrientsFocused,
-                    ordered: macroOrder,
-                    normalize: macrosIntakeViewModel.normalizeInputs,
-                    set: { macronutrientsFocused = $0 }
-                )
-            }
-            .ignoresSafeArea(
-                edges: macronutrientsFocused != nil ? [] : .bottom
+        Section {
+            NutrientLabelRow(
+                type: .calories,
+                value: macrosIntakeViewModel.calories
             )
-            .onChange(of: macronutrientsFocused) {
-                handleFocusLoss(macronutrientsFocused)
-            }
-    }
-    
-    private var macrosIntakeViewContentBody: some View {
-        Form {
-            MacrosMetricsSection(
-                focus: _macronutrientsFocused,
-                macrosIntakeViewModel: macrosIntakeViewModel
+            
+            NutrientFieldRow(
+                type: .fat,
+                text: $macrosIntakeViewModel.fat,
+                focus: $focus,
+                focusCase: .fat
             )
+            
+            NutrientFieldRow(
+                type: .carbohydrate,
+                text: $macrosIntakeViewModel.carbohydrate,
+                focus: $focus,
+                focusCase: .carbohydrate
+            )
+            
+            NutrientFieldRow(
+                type: .protein,
+                text: $macrosIntakeViewModel.protein,
+                focus: $focus,
+                focusCase: .protein
+            )
+        } footer: {
+            Text("Enter macronutrient values. This data will be used to calculate calories.")
         }
-    }
-    
-    @ToolbarContentBuilder
-    private var macrosIntakeViewToolbar: some ToolbarContent {
-        ToolbarItem {
-            Button(role: .confirm) {
-                Task {
-                    await macrosIntakeViewModel.saveMacrosIntakeView()
-                }
-                
-                macronutrientsFocused = nil
-                macrosIntakeViewModel.normalizeInputs()
-                dismiss()
-            }
-            .disabled(!macrosIntakeViewModel.isValid)
+        .onChange(of: focus) {
+            handleFocusLoss(focus)
         }
     }
     
     private func handleFocusLoss(_ focus: MacronutrientsFocus?) {
         guard let focus else { return }
         
-        macrosIntakeViewModel.handleMacronutrientsFocusChange(
+        macrosIntakeViewModel.handleFocusChange(
             focus: focus,
             didGainFocus: false
         )
@@ -88,5 +67,5 @@ enum MacronutrientsFocus: Hashable {
 }
 
 #Preview {
-    PreviewMacrosIntakeView.macrosIntakeView
+    PreviewGoalsView.goalsView
 }

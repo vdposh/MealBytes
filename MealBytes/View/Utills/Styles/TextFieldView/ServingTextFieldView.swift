@@ -171,7 +171,7 @@ struct ServingTextFieldView: View {
 }
 
 #Preview {
-    PreviewMacrosIntakeView.macrosIntakeView
+    PreviewGoalsView.goalsView
 }
 
 #Preview {

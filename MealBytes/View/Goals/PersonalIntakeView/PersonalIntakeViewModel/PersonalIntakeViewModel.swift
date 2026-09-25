@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 protocol PersonalIntakeViewModelProtocol {
-    var personalIntakeText: String { get }
+    var isValid: Bool { get }
     
     func loadPersonalIntakeView() async
     func savePersonalIntakeView() async
@@ -22,12 +22,13 @@ final class PersonalIntakeViewModel: ObservableObject {
     @Published var age: String = ""
     @Published var weight: String = ""
     @Published var height: String = ""
-    @Published var selectedSex: Sex = .notSelected
+    @Published var selectedSex: Sex = .notSet
     @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
     @Published var selectedWeightGoal: WeightGoal = .notSelected
     @Published var calculatedPersonalIntake: String = ""
+    @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyPersonalIntake: Bool = false
     
@@ -37,6 +38,7 @@ final class PersonalIntakeViewModel: ObservableObject {
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
@@ -63,7 +65,7 @@ final class PersonalIntakeViewModel: ObservableObject {
                 self.age = personalIntakeData.age
                 self.selectedSex = Sex(
                     rawValue: personalIntakeData.selectedSex
-                ) ?? .notSelected
+                ) ?? .notSet
                 self.selectedActivity = Activity(
                     rawValue: personalIntakeData.selectedActivity
                 ) ?? .notSelected
@@ -103,10 +105,11 @@ final class PersonalIntakeViewModel: ObservableObject {
         age = ""
         weight = ""
         height = ""
-        selectedSex = .notSelected
+        selectedSex = .notSet
         selectedActivity = .notSelected
         selectedWeightUnit = .kg
         selectedHeightUnit = .cm
+        isValid = false
     }
     
     // MARK: - Save PersonalIntake Data
@@ -172,8 +175,32 @@ final class PersonalIntakeViewModel: ObservableObject {
                 heightUnit: heightUnit,
                 weightGoal: weightGoal
             )
+            
+            self?.isValid = self?.validate(
+                age: age,
+                weight: weight,
+                height: height,
+                sex: sex,
+                activity: activity,
+                weightGoal: weightGoal
+            ) ?? false
         }
         .store(in: &cancellables)
+    }
+    
+    private func validate(
+        age: String,
+        weight: String,
+        height: String,
+        sex: Sex,
+        activity: Activity,
+        weightGoal: WeightGoal
+    ) -> Bool {
+        !age.isEmpty &&
+        weight.isValidNumericInput() &&
+        height.isValidNumericInput() &&
+        activity != .notSelected &&
+        weightGoal != .notSelected
     }
     
     private func recalculatePersonalIntake(
@@ -189,7 +216,6 @@ final class PersonalIntakeViewModel: ObservableObject {
         guard !age.isEmpty,
               weight.isValidNumericInput(),
               height.isValidNumericInput(),
-              sex != .notSelected,
               activity != .notSelected,
               weightGoal != .notSelected else {
             calculatedPersonalIntake = ""
@@ -214,7 +240,6 @@ final class PersonalIntakeViewModel: ObservableObject {
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
         case .notSet:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 78
-        case .notSelected: return
         }
         
         switch activity {
@@ -243,6 +268,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         calculatedPersonalIntake = max(1, adjustedCalories).asWhole()
     }
     
+    // MARK: - UI Helper
     var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
         guard let calories = calculatedPersonalIntake.doubleValue,
               calories > 0 else {
@@ -256,46 +282,30 @@ final class PersonalIntakeViewModel: ObservableObject {
         return (proteinGrams, fatGrams, carbsGrams)
     }
     
-    var isValid: Bool {
-        !age.isEmpty &&
-        weight.isValidNumericInput() &&
-        height.isValidNumericInput() &&
-        selectedSex != .notSelected &&
-        selectedActivity != .notSelected &&
-        selectedWeightGoal != .notSelected
-    }
-    
-    // MARK: - Text
-    func text(
-        for calculatedPersonalIntake: String,
-        useUnit: Bool = true
-    ) -> String {
-        guard let personalIntakeValue = calculatedPersonalIntake.doubleValue,
-              personalIntakeValue > 0,
-              isValid else {
-            return "Fill in the data"
-        }
-        
-        let formattedValue = personalIntakeValue.asWhole()
-        
-        guard useUnit else {
-            return formattedValue
-        }
-        
-        return personalIntakeValue == 1
-        ? "\(formattedValue) calorie"
-        : "\(formattedValue) calories"
-    }
-    
-    var personalIntakeText: String {
-        text(for: calculatedPersonalIntake)
-    }
-    
     var formattedAge: String {
         guard let age = Int(age) else {
             return age
         }
         return "\(age) \(age == 1 ? "year" : "years")"
+    }
+    
+    var macroValues: [NutrientType: String] {
+        [
+            .calories: (calculatedPersonalIntake.doubleValue ?? 0).asWhole(),
+            .fat: (macroNutrients?.fat ?? 0).asWhole(),
+            .carbohydrate: (macroNutrients?.carbs ?? 0).asWhole(),
+            .protein: (macroNutrients?.protein ?? 0).asWhole()
+        ]
+    }
+    
+    var weightText: String {
+        guard let value = Double(weight), value > 0 else { return "" }
+        return "\(weight) \(selectedWeightUnit.rawValue)"
+    }
+    
+    var heightText: String {
+        guard let value = Double(height), value > 0 else { return "" }
+        return "\(height) \(selectedHeightUnit.rawValue)"
     }
     
     // MARK: - Keyboard
@@ -315,5 +325,5 @@ extension PersonalIntakeViewModel: PersonalIntakeViewModelProtocol {}
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

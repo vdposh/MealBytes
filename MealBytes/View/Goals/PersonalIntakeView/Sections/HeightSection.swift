@@ -21,9 +21,7 @@ struct HeightSection: View {
             )
         } label: {
             LabeledContent {
-                if !personalIntakeViewModel.height.isEmpty {
-                    Text("\(personalIntakeViewModel.height) \(personalIntakeViewModel.selectedHeightUnit.rawValue)")
-                }
+                Text(personalIntakeViewModel.heightText)
             } label: {
                 Text("Height")
             }
@@ -37,5 +35,5 @@ enum HeightUnit: String, CaseIterable {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

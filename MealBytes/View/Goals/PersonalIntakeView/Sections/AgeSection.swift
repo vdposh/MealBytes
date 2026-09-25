@@ -57,5 +57,5 @@ struct AgeSection: View {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

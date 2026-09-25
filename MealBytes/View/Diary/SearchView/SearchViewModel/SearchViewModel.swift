@@ -67,6 +67,7 @@ final class SearchViewModel: ObservableObject {
     
     private var currentTask: Task<Void, Never>?
     private var currentSearchTask: Task<Void, Never>?
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {

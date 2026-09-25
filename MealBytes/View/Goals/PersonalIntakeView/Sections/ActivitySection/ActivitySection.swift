@@ -28,5 +28,5 @@ struct ActivitySection: View {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

@@ -9,12 +9,13 @@ import SwiftUI
 import Combine
 
 protocol MacrosIntakeViewModelProtocol {
-    var macrosIntakeText: String { get }
+    var isValid: Bool { get }
     
     func loadMacrosIntakeView() async
     func saveMacrosIntakeView() async
     func conditionallyClearMacrosIntake()
     func clearMacrosIntake()
+    func normalizeInputs()
 }
 
 final class MacrosIntakeViewModel: ObservableObject {
@@ -23,11 +24,13 @@ final class MacrosIntakeViewModel: ObservableObject {
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
     @Published var protein: String = ""
+    @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyIntake: Bool = false
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModelProtocol) {
@@ -74,6 +77,7 @@ final class MacrosIntakeViewModel: ObservableObject {
         fat = ""
         carbohydrate = ""
         protein = ""
+        isValid = false
     }
     
     // MARK: - Save MacrosIntake Data
@@ -114,7 +118,15 @@ final class MacrosIntakeViewModel: ObservableObject {
     private func setupBindingsMacrosIntakeView() {
         Publishers.CombineLatest3($fat, $carbohydrate, $protein)
             .sink { [weak self] fat, carb, protein in
-                self?.calculateCalories(
+                guard let self else { return }
+                
+                self.calculateCalories(
+                    fat: fat,
+                    carbohydrate: carb,
+                    protein: protein
+                )
+                
+                self.isValid = self.validate(
                     fat: fat,
                     carbohydrate: carb,
                     protein: protein
@@ -123,12 +135,34 @@ final class MacrosIntakeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func validate(
+        fat: String,
+        carbohydrate: String,
+        protein: String
+    ) -> Bool {
+        let hasAnyValue = !fat.isEmpty || !carbohydrate.isEmpty || !protein.isEmpty
+        guard hasAnyValue else {
+            return false
+        }
+        
+        if !fat.isEmpty && !fat.isValidNumericInput() {
+            return false
+        }
+        if !carbohydrate.isEmpty && !carbohydrate.isValidNumericInput() {
+            return false
+        }
+        if !protein.isEmpty && !protein.isValidNumericInput() {
+            return false
+        }
+        
+        return true
+    }
+    
     private func calculateCalories(
         fat: String,
         carbohydrate: String,
         protein: String
     ) {
-        
         let fatValue = fat.doubleValue ?? 0
         let carbValue = carbohydrate.doubleValue ?? 0
         let protValue = protein.doubleValue ?? 0
@@ -148,52 +182,6 @@ final class MacrosIntakeViewModel: ObservableObject {
         : "0"
     }
     
-    var isValid: Bool {
-        let hasAnyValue = !fat.isEmpty ||
-        !carbohydrate.isEmpty ||
-        !protein.isEmpty
-        
-        guard hasAnyValue else { return false }
-        
-        if !fat.isEmpty && !fat.isValidNumericInput() {
-            return false
-        }
-        if !carbohydrate.isEmpty && !carbohydrate.isValidNumericInput() {
-            return false
-        }
-        if !protein.isEmpty && !protein.isValidNumericInput() {
-            return false
-        }
-        
-        return true
-    }
-    
-    // MARK: - Text
-    func text(for calculatedIntake: String, useUnit: Bool = true) -> String {
-        guard isValid else {
-            return "Fill in the data"
-        }
-        
-        guard let intakeValue = calculatedIntake.doubleValue,
-              intakeValue > 0 else {
-            return "Fill in the data"
-        }
-        
-        let formattedValue = intakeValue.asWhole()
-        
-        guard useUnit else {
-            return formattedValue
-        }
-        
-        return intakeValue == 1
-        ? "\(formattedValue) calorie"
-        : "\(formattedValue) calories"
-    }
-    
-    var macrosIntakeText: String {
-        text(for: calories)
-    }
-    
     // MARK: - Keyboard
     func normalizeInputs() {
         calories = calories.trimmedLeadingZeros
@@ -203,7 +191,7 @@ final class MacrosIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Focus
-    func handleMacronutrientsFocusChange(
+    func handleFocusChange(
         focus: MacronutrientsFocus,
         didGainFocus: Bool
     ) {
@@ -238,5 +226,5 @@ extension MacrosIntakeViewModel: MacrosIntakeViewModelProtocol {}
 }
 
 #Preview {
-    PreviewMacrosIntakeView.macrosIntakeView
+    PreviewGoalsView.goalsView
 }

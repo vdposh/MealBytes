@@ -32,7 +32,7 @@ struct NutrientLabelRow: View {
 }
 
 #Preview {
-    PreviewMacrosIntakeView.macrosIntakeView
+    PreviewGoalsView.goalsView
 }
 
 #Preview {

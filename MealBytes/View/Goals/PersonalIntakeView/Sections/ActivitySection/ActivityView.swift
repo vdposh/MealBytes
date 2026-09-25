@@ -56,5 +56,5 @@ enum Activity: String, CaseIterable {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

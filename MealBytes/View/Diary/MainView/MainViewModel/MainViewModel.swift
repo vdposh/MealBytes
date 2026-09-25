@@ -65,6 +65,7 @@ final class MainViewModel: ObservableObject {
     lazy var searchViewModel: SearchViewModelProtocol = SearchViewModel(
         mainViewModel: self
     )
+    
     private var cancellables = Set<AnyCancellable>()
     
     init() {

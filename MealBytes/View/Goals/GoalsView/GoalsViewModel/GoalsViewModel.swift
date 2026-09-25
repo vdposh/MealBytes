@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 protocol GoalsViewModelProtocol {
     func clearGoalsView()
@@ -13,14 +14,14 @@ protocol GoalsViewModelProtocol {
 
 final class GoalsViewModel: ObservableObject {
     @Published var selectedIntakeSource: IntakeSource = .personal
-    @Published var uniqueId = UUID()
-    @Published var isDataLoaded: Bool = false
-    @Published var isLoading: Bool = false
+    @Published var isSelectedValid: Bool = false
     
     private let mainViewModel: MainViewModelProtocol
     let macrosIntakeViewModel: MacrosIntakeViewModelProtocol
     let personalIntakeViewModel: PersonalIntakeViewModelProtocol
     let customIntakeViewModel: CustomIntakeViewModelProtocol
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(
         mainViewModel: MainViewModelProtocol,
@@ -32,18 +33,16 @@ final class GoalsViewModel: ObservableObject {
         self.macrosIntakeViewModel = macrosIntakeViewModel
         self.personalIntakeViewModel = personalIntakeViewModel
         self.customIntakeViewModel = customIntakeViewModel
+        
+        setupValidation()
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     // MARK: - Load Goals Data
     func loadGoalsData() async {
-        guard !isLoading else { return }
-        
-        await MainActor.run {
-            uniqueId = UUID()
-            isLoading = true
-            isDataLoaded = false
-        }
-        
         async let personalIntakeTask: () = personalIntakeViewModel
             .loadPersonalIntakeView()
         async let macrosIntakeTask: () = macrosIntakeViewModel
@@ -54,9 +53,11 @@ final class GoalsViewModel: ObservableObject {
         _ = await (personalIntakeTask, macrosIntakeTask, customIntakeTask)
         
         await MainActor.run {
+            selectedIntakeSource = IntakeSource(
+                rawValue: mainViewModel.intakeSource
+            ) ?? .personal
+            
             conditionallyClearGoalsView()
-            isLoading = false
-            isDataLoaded = true
         }
     }
     
@@ -72,49 +73,109 @@ final class GoalsViewModel: ObservableObject {
         customIntakeViewModel.clearCustomIntake()
     }
     
-    // MARK: - Text
-    func displayState(for source: IntakeSourceType) -> IntakeDisplayState {
-        let isActive = self.isActive(source)
-        let text: String
-        
-        switch source {
-        case .personalIntakeView: text = personalIntakeViewModel
-                .personalIntakeText
-        case .macrosIntakeView: text = macrosIntakeViewModel.macrosIntakeText
-        case .customView: text = customIntakeViewModel.customIntakeText
+    // MARK: - Calculation
+    private func setupValidation() {
+        if let macros = macrosIntakeViewModel as? MacrosIntakeViewModel {
+            macros.$isValid
+                .sink { [weak self] _ in
+                    self?.updateSelectedValid()
+                }
+                .store(in: &cancellables)
         }
         
-        return IntakeDisplayState(
-            text: text,
-            color: isActive ? .accent : .secondary,
-            icon: isActive ? "person.fill" : "person"
-        )
+        if let custom = customIntakeViewModel as? CustomIntakeViewModel {
+            custom.$isValid
+                .sink { [weak self] _ in
+                    self?.updateSelectedValid()
+                }
+                .store(in: &cancellables)
+        }
+        
+        if let personal = personalIntakeViewModel as? PersonalIntakeViewModel {
+            personal.$isValid
+                .sink { [weak self] _ in
+                    self?.updateSelectedValid()
+                }
+                .store(in: &cancellables)
+        }
+        
+        $selectedIntakeSource
+            .sink { [weak self] _ in
+                self?.updateSelectedValid()
+            }
+            .store(in: &cancellables)
     }
     
-    func isActive(_ source: IntakeSourceType) -> Bool {
-        switch source {
-        case .personalIntakeView:
-            return currentIntakeSource == source &&
-            personalIntakeViewModel.personalIntakeText != "Fill in the data"
-        case .macrosIntakeView:
-            return currentIntakeSource == source &&
-            macrosIntakeViewModel.macrosIntakeText != "Fill in the data"
-        case .customView:
-            return currentIntakeSource == source &&
-            customIntakeViewModel.customIntakeText != "Fill in the data"
+    private func updateSelectedValid() {
+        switch selectedIntakeSource {
+        case .personal:
+            isSelectedValid = personalIntakeViewModel.isValid
+        case .macros:
+            isSelectedValid = macrosIntakeViewModel.isValid
+        case .custom:
+            isSelectedValid = customIntakeViewModel.isValid
         }
     }
     
-    var currentIntakeSource: IntakeSourceType {
-        IntakeSourceType(
-            rawValue: mainViewModel.intakeSource
-        ) ?? .personalIntakeView
+    func selectSource(_ source: IntakeSource) {
+        selectedIntakeSource = source
+        updateSelectedValid()
     }
     
-    enum IntakeSourceType: String {
-        case personalIntakeView
-        case macrosIntakeView
-        case customView
+    // MARK: - UI Helper
+    @ViewBuilder
+    func view(
+        for source: IntakeSource,
+        customFocus: FocusState<CustomIntakeFocus?>.Binding,
+        macrosFocus: FocusState<MacronutrientsFocus?>.Binding
+    ) -> some View {
+        switch source {
+        case .personal:
+            if let personalIntakeViewModel = personalIntakeViewModel
+                as? PersonalIntakeViewModel {
+                PersonalIntakeView(
+                    personalIntakeViewModel: personalIntakeViewModel
+                )
+            }
+        case .macros:
+            if let macrosIntakeViewModel = macrosIntakeViewModel
+                as? MacrosIntakeViewModel {
+                MacrosIntakeView(
+                    focus: macrosFocus,
+                    macrosIntakeViewModel: macrosIntakeViewModel
+                )
+            }
+        case .custom:
+            if let customIntakeViewModel = customIntakeViewModel
+                as? CustomIntakeViewModel {
+                CustomIntakeView(
+                    customIntakeViewModel: customIntakeViewModel,
+                    focus: customFocus
+                )
+            }
+        }
+    }
+    
+    func saveSelected() async {
+        switch selectedIntakeSource {
+        case .personal:
+            await personalIntakeViewModel.savePersonalIntakeView()
+        case .macros:
+            await macrosIntakeViewModel.saveMacrosIntakeView()
+        case .custom:
+            await customIntakeViewModel.saveCustomIntake()
+        }
+    }
+    
+    func normalizeSelected() {
+        switch selectedIntakeSource {
+        case .personal:
+            break
+        case .macros:
+            macrosIntakeViewModel.normalizeInputs()
+        case .custom:
+            customIntakeViewModel.normalizeInputs()
+        }
     }
 }
 

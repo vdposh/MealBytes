@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import Combine
 
 protocol CustomIntakeViewModelProtocol {
-    var customIntakeText: String { get }
+    var isValid: Bool { get }
     
     func loadCustomIntake() async
     func saveCustomIntake() async
     func conditionallyClearCustomIntake()
     func clearCustomIntake()
+    func normalizeInputs()
 }
 
 final class CustomIntakeViewModel: ObservableObject {
@@ -22,14 +24,23 @@ final class CustomIntakeViewModel: ObservableObject {
     @Published var protein: String = ""
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
+    @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyCustomIntake: Bool = false
     
     private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     
+    private var cancellables = Set<AnyCancellable>()
+    
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        
+        setupValidation()
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     // MARK: - Load CustomIntake Data
@@ -68,6 +79,7 @@ final class CustomIntakeViewModel: ObservableObject {
         protein = ""
         fat = ""
         carbohydrate = ""
+        isValid = false
     }
     
     // MARK: - Save CustomIntake Data
@@ -102,33 +114,33 @@ final class CustomIntakeViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Text
-    func text(for calories: String) -> String {
-        guard let caloriesValue = calories.doubleValue,
-              caloriesValue > 0 else {
-            return "Fill in the data"
+    // MARK: - Calculation
+    private func setupValidation() {
+        Publishers.CombineLatest4(
+            $calories,
+            $fat,
+            $carbohydrate,
+            $protein
+        )
+        .sink { [weak self] cal, fat, carb, prot in
+            guard let self else { return }
+            
+            self.isValid = self.validate(
+                calories: cal,
+                fat: fat,
+                carbohydrate: carb,
+                protein: prot
+            )
         }
-        
-        let formattedValue = caloriesValue.asWhole()
-        
-        return caloriesValue == 1
-        ? "\(formattedValue) calorie"
-        : "\(formattedValue) calories"
+        .store(in: &cancellables)
     }
     
-    var customIntakeText: String {
-        text(for: calories)
-    }
-    
-    // MARK: - Keyboard
-    func normalizeInputs() {
-        calories = calories.trimmedLeadingZeros
-        protein = protein.trimmedLeadingZeros
-        fat = fat.trimmedLeadingZeros
-        carbohydrate = carbohydrate.trimmedLeadingZeros
-    }
-    
-    var isValid: Bool {
+    private func validate(
+        calories: String,
+        fat: String,
+        carbohydrate: String,
+        protein: String
+    ) -> Bool {
         let hasAnyValue = !calories.isEmpty ||
         !fat.isEmpty ||
         !carbohydrate.isEmpty ||
@@ -150,6 +162,47 @@ final class CustomIntakeViewModel: ObservableObject {
         }
         
         return true
+    }
+    
+    // MARK: - Keyboard
+    func normalizeInputs() {
+        calories = calories.trimmedLeadingZeros
+        protein = protein.trimmedLeadingZeros
+        fat = fat.trimmedLeadingZeros
+        carbohydrate = carbohydrate.trimmedLeadingZeros
+    }
+    
+    func handleFocusChange(
+        focus: CustomIntakeFocus,
+        didGainFocus: Bool
+    ) {
+        normalizeInputs()
+        
+        switch focus {
+        case .calories:
+            if didGainFocus {
+            } else if calories.isValidNumericInput() {
+                calories = calories.trimmedLeadingZeros
+            }
+            
+        case .fat:
+            if didGainFocus {
+            } else if fat.isValidNumericInput() {
+                fat = fat.trimmedLeadingZeros
+            }
+            
+        case .carbohydrate:
+            if didGainFocus {
+            } else if carbohydrate.isValidNumericInput() {
+                carbohydrate = carbohydrate.trimmedLeadingZeros
+            }
+            
+        case .protein:
+            if didGainFocus {
+            } else if protein.isValidNumericInput() {
+                protein = protein.trimmedLeadingZeros
+            }
+        }
     }
 }
 

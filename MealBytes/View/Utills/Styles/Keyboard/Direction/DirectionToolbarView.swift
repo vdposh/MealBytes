@@ -52,7 +52,7 @@ struct DirectionToolbarView: View {
 }
 
 #Preview {
-    PreviewMacrosIntakeView.macrosIntakeView
+    PreviewGoalsView.goalsView
 }
 
 #Preview {

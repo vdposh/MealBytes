@@ -54,5 +54,5 @@ struct MeasurementSelectionView<
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

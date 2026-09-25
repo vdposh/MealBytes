@@ -21,9 +21,7 @@ struct WeightSection: View {
             )
         } label: {
             LabeledContent {
-                if !personalIntakeViewModel.weight.isEmpty {
-                    Text("\(personalIntakeViewModel.weight) \(personalIntakeViewModel.selectedWeightUnit.rawValue)")
-                }
+                Text(personalIntakeViewModel.weightText)
             } label: {
                 Text("Weight")
             }
@@ -37,5 +35,5 @@ enum WeightUnit: String, CaseIterable {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

@@ -28,5 +28,5 @@ struct WeightGoalSelection: View {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }

@@ -12,30 +12,13 @@ struct OverviewPersonalIntakeSection: View {
     
     var body: some View {
         Section {
-            if personalIntakeViewModel.isValid {
+            ForEach(
+                [NutrientType.calories, .fat, .carbohydrate, .protein],
+                id: \.self
+            ) { type in
                 NutrientLabelRow(
-                    type: .calories,
-                    value: personalIntakeViewModel.text(
-                        for: personalIntakeViewModel.calculatedPersonalIntake,
-                        useUnit: false
-                    )
-                )
-            }
-            
-            if let macros = personalIntakeViewModel.macroNutrients {
-                NutrientLabelRow(
-                    type: .fat,
-                    value: macros.fat.asWhole()
-                )
-                
-                NutrientLabelRow(
-                    type: .carbohydrate,
-                    value: macros.carbs.asWhole()
-                )
-                
-                NutrientLabelRow(
-                    type: .protein,
-                    value: macros.protein.asWhole()
+                    type: type,
+                    value: personalIntakeViewModel.macroValues[type] ?? "0"
                 )
             }
         }
@@ -43,7 +26,7 @@ struct OverviewPersonalIntakeSection: View {
 }
 
 #Preview {
-    PreviewPersonalIntakeView.personalIntakeView
+    PreviewGoalsView.goalsView
 }
 
 #Preview {
