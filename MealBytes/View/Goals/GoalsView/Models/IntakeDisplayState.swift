@@ -10,6 +10,5 @@ import SwiftUI
 struct IntakeDisplayState {
     let text: String
     let color: Color
-    let weight: Font.Weight
     let icon: String
 }

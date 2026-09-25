@@ -42,7 +42,10 @@ final class CustomIntakeViewModel: ObservableObject {
                 fat = data.fat
                 carbohydrate = data.carbohydrate
                 protein = data.protein
-                didLoadNonEmptyCustomIntake = !data.calories.isEmpty
+                didLoadNonEmptyCustomIntake = !data.calories.isEmpty ||
+                !data.fat.isEmpty ||
+                !data.carbohydrate.isEmpty ||
+                !data.protein.isEmpty
             }
         } catch {
             await MainActor.run {
@@ -126,10 +129,27 @@ final class CustomIntakeViewModel: ObservableObject {
     }
     
     var isValid: Bool {
-        calories.isValidNumericInput() &&
-        protein.isValidNumericInput() &&
-        fat.isValidNumericInput() &&
-        carbohydrate.isValidNumericInput()
+        let hasAnyValue = !calories.isEmpty ||
+        !fat.isEmpty ||
+        !carbohydrate.isEmpty ||
+        !protein.isEmpty
+        
+        guard hasAnyValue else { return false }
+        
+        if !calories.isEmpty && !calories.isValidNumericInput() {
+            return false
+        }
+        if !fat.isEmpty && !fat.isValidNumericInput() {
+            return false
+        }
+        if !carbohydrate.isEmpty && !carbohydrate.isValidNumericInput() {
+            return false
+        }
+        if !protein.isEmpty && !protein.isValidNumericInput() {
+            return false
+        }
+        
+        return true
     }
 }
 

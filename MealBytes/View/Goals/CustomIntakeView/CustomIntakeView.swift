@@ -55,53 +55,34 @@ struct CustomIntakeView: View {
     private var customIntakeViewBody: some View {
         Form {
             Section {
-                ServingTextFieldView(
+                NutrientFieldRow(
+                    type: .calories,
                     text: $customIntakeViewModel.calories,
-                    labelIconName: "flame.fill",
-                    labelIconColor: .customCalories,
-                    stackText: NutrientType.calories.title,
-                    useStackTrailing: true,
-                    keyboardType: .numberPad,
-                    inputMode: .integer,
+                    focus: $focus,
+                    focusCase: .calories,
                     maxIntegerDigits: 5
                 )
-                .focused($focus, equals: .calories)
                 
-                ServingTextFieldView(
+                NutrientFieldRow(
+                    type: .fat,
                     text: $customIntakeViewModel.fat,
-                    labelIconName: "f.circle.fill",
-                    labelIconColor: .customFat,
-                    stackText: NutrientType.fat.title,
-                    useStackTrailing: true,
-                    keyboardType: .numberPad,
-                    inputMode: .integer,
-                    maxIntegerDigits: 3
+                    focus: $focus,
+                    focusCase: .fat
                 )
-                .focused($focus, equals: .fat)
                 
-                ServingTextFieldView(
+                NutrientFieldRow(
+                    type: .carbohydrate,
                     text: $customIntakeViewModel.carbohydrate,
-                    labelIconName: "c.circle.fill",
-                    labelIconColor: .customCarbs,
-                    stackText: NutrientType.carbohydrate.title,
-                    useStackTrailing: true,
-                    keyboardType: .numberPad,
-                    inputMode: .integer,
-                    maxIntegerDigits: 3
+                    focus: $focus,
+                    focusCase: .carbohydrate
                 )
-                .focused($focus, equals: .carbohydrate)
                 
-                ServingTextFieldView(
+                NutrientFieldRow(
+                    type: .protein,
                     text: $customIntakeViewModel.protein,
-                    labelIconName: "p.circle.fill",
-                    labelIconColor: .customProtein,
-                    stackText: NutrientType.protein.title,
-                    useStackTrailing: true,
-                    keyboardType: .numberPad,
-                    inputMode: .integer,
-                    maxIntegerDigits: 3
+                    focus: $focus,
+                    focusCase: .protein
                 )
-                .focused($focus, equals: .protein)
             } footer: {
                 Text("Enter values directly")
             }

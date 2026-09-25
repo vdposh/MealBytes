@@ -24,17 +24,11 @@ struct CustomIntakeSectionView: View {
                             for: .customView
                         )
                         
-                        LabeledContent {
-                            Text(customIntakeViewModel.customIntakeText)
-                                .foregroundStyle(customIntakeState.color)
-                                .fontWeight(customIntakeState.weight)
-                        } label: {
-                            Label {
-                                Text(IntakeSource.custom.rawValue)
-                            } icon: {
-                                Image(systemName: customIntakeState.icon)
-                                    .foregroundStyle(.accent)
-                            }
+                        Label {
+                            Text(IntakeSource.custom.rawValue)
+                        } icon: {
+                            Image(systemName: customIntakeState.icon)
+                                .foregroundStyle(.accent)
                         }
                     }
                     .disabled(!goalsViewModel.isDataLoaded)

@@ -44,7 +44,7 @@ struct MacrosIntakeView: View {
     
     private var macrosIntakeViewContentBody: some View {
         Form {
-            MacronutrientMetricsSection(
+            MacrosMetricsSection(
                 focus: _macronutrientsFocused,
                 macrosIntakeViewModel: macrosIntakeViewModel
             )

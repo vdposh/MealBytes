@@ -24,17 +24,11 @@ struct MacrosIntakeSectionView: View {
                             for: .macrosIntakeView
                         )
                         
-                        LabeledContent {
-                            Text(macrosIntakeViewModel.macrosIntakeText)
-                                .foregroundStyle(macrosIntakeState.color)
-                                .fontWeight(macrosIntakeState.weight)
-                        } label: {
-                            Label {
-                                Text(IntakeSource.macros.rawValue)
-                            } icon: {
-                                Image(systemName: macrosIntakeState.icon)
-                                    .foregroundStyle(.accent)
-                            }
+                        Label {
+                            Text(IntakeSource.macros.rawValue)
+                        } icon: {
+                            Image(systemName: macrosIntakeState.icon)
+                                .foregroundStyle(.accent)
                         }
                     }
                     .disabled(!goalsViewModel.isDataLoaded)

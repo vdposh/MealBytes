@@ -11,7 +11,7 @@ struct ServingTextFieldView: View {
     @Binding var text: String
     @FocusState private var focus: Bool
     
-    var placeholder: String = "Enter value"
+    var placeholder: String = "0"
     var labelIconName: String = "plus.forwardslash.minus"
     var labelIconColor: Color = .customGray
     var stackText: String = ""
@@ -58,7 +58,6 @@ struct ServingTextFieldView: View {
                             .fontWeight(.semibold)
                             .foregroundStyle(labelIconColor)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     field
                         .multilineTextAlignment(.trailing)
@@ -169,6 +168,10 @@ struct ServingTextFieldView: View {
 
 #Preview {
     PreviewContentView.contentView
+}
+
+#Preview {
+    PreviewMacrosIntakeView.macrosIntakeView
 }
 
 #Preview {

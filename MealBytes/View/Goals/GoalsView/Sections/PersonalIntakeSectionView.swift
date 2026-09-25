@@ -24,17 +24,11 @@ struct PersonalIntakeSectionView: View {
                             for: .personalIntakeView
                         )
                         
-                        LabeledContent {
-                            Text(personalIntakeViewModel.personalIntakeText)
-                                .foregroundStyle(personalIntakeState.color)
-                                .fontWeight(personalIntakeState.weight)
-                        } label: {
-                            Label {
-                                Text(IntakeSource.personal.rawValue)
-                            } icon: {
-                                Image(systemName: personalIntakeState.icon)
-                                    .foregroundStyle(.accent)
-                            }
+                        Label {
+                            Text(IntakeSource.personal.rawValue)
+                        } icon: {
+                            Image(systemName: personalIntakeState.icon)
+                                .foregroundStyle(.accent)
                         }
                     }
                     .disabled(!goalsViewModel.isDataLoaded)

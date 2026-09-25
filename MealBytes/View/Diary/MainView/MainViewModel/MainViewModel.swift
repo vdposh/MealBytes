@@ -443,19 +443,15 @@ final class MainViewModel: ObservableObject {
             return (fatTarget, carbsTarget, proteinTarget)
             
         case "macrosIntakeView":
-            guard let fat = Double(macroFat),
-                  let carbs = Double(macroCarbs),
-                  let protein = Double(macroProtein) else {
-                return nil
-            }
+            let fat = Double(macroFat) ?? 0
+            let carbs = Double(macroCarbs) ?? 0
+            let protein = Double(macroProtein) ?? 0
             return (fat, carbs, protein)
             
         case "customView":
-            guard let fat = Double(macroFat),
-                  let carbs = Double(macroCarbs),
-                  let protein = Double(macroProtein) else {
-                return nil
-            }
+            let fat = Double(macroFat) ?? 0
+            let carbs = Double(macroCarbs) ?? 0
+            let protein = Double(macroProtein) ?? 0
             return (fat, carbs, protein)
             
         default:

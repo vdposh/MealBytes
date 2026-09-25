@@ -149,9 +149,23 @@ final class MacrosIntakeViewModel: ObservableObject {
     }
     
     var isValid: Bool {
-        fat.isValidNumericInput() &&
-        carbohydrate.isValidNumericInput() &&
-        protein.isValidNumericInput()
+        let hasAnyValue = !fat.isEmpty ||
+        !carbohydrate.isEmpty ||
+        !protein.isEmpty
+        
+        guard hasAnyValue else { return false }
+        
+        if !fat.isEmpty && !fat.isValidNumericInput() {
+            return false
+        }
+        if !carbohydrate.isEmpty && !carbohydrate.isValidNumericInput() {
+            return false
+        }
+        if !protein.isEmpty && !protein.isValidNumericInput() {
+            return false
+        }
+        
+        return true
     }
     
     // MARK: - Text
