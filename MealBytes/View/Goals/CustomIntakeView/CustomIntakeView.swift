@@ -102,6 +102,8 @@ struct CustomIntakeView: View {
                     maxIntegerDigits: 3
                 )
                 .focused($focus, equals: .protein)
+            } footer: {
+                Text("Enter values directly")
             }
         }
     }

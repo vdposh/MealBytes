@@ -22,7 +22,7 @@ final class PersonalIntakeViewModel: ObservableObject {
     @Published var age: String = ""
     @Published var weight: String = ""
     @Published var height: String = ""
-    @Published var selectedGender: Gender = .notSelected
+    @Published var selectedSex: Sex = .notSelected
     @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
@@ -61,8 +61,8 @@ final class PersonalIntakeViewModel: ObservableObject {
                 self.calculatedPersonalIntake = personalIntakeData
                     .calculatedPersonalIntake
                 self.age = personalIntakeData.age
-                self.selectedGender = Gender(
-                    rawValue: personalIntakeData.selectedGender
+                self.selectedSex = Sex(
+                    rawValue: personalIntakeData.selectedSex
                 ) ?? .notSelected
                 self.selectedActivity = Activity(
                     rawValue: personalIntakeData.selectedActivity
@@ -103,7 +103,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         age = ""
         weight = ""
         height = ""
-        selectedGender = .notSelected
+        selectedSex = .notSelected
         selectedActivity = .notSelected
         selectedWeightUnit = .kg
         selectedHeightUnit = .cm
@@ -118,7 +118,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         let personalIntakeData = PersonalIntakeData(
             calculatedPersonalIntake: stablePersonalIntake,
             age: age.trimmedLeadingZeros,
-            selectedGender: selectedGender.rawValue,
+            selectedSex: selectedSex.rawValue,
             selectedActivity: selectedActivity.rawValue,
             weight: String(weight.doubleValue ?? 0),
             selectedWeightUnit: selectedWeightUnit.rawValue,
@@ -149,7 +149,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         Publishers.CombineLatest(
             Publishers.CombineLatest(
                 Publishers.CombineLatest($age, $weight),
-                Publishers.CombineLatest($height, $selectedGender)
+                Publishers.CombineLatest($height, $selectedSex)
             ),
             Publishers.CombineLatest(
                 Publishers
@@ -159,14 +159,14 @@ final class PersonalIntakeViewModel: ObservableObject {
             )
         )
         .sink { [weak self] combined1, combined2 in
-            let ((age, weight), (height, gender)) = combined1
+            let ((age, weight), (height, sex)) = combined1
             let ((activity, weightUnit), (heightUnit, weightGoal)) = combined2
             
             self?.recalculatePersonalIntake(
                 age: age,
                 weight: weight,
                 height: height,
-                gender: gender,
+                sex: sex,
                 activity: activity,
                 weightUnit: weightUnit,
                 heightUnit: heightUnit,
@@ -180,16 +180,16 @@ final class PersonalIntakeViewModel: ObservableObject {
         age: String,
         weight: String,
         height: String,
-        gender: Gender,
+        sex: Sex,
         activity: Activity,
         weightUnit: WeightUnit,
         heightUnit: HeightUnit,
         weightGoal: WeightGoal
     ) {
-        guard age.isValidNumericInput(in: 1...120),
+        guard !age.isEmpty,
               weight.isValidNumericInput(),
               height.isValidNumericInput(),
-              gender != .notSelected,
+              sex != .notSelected,
               activity != .notSelected,
               weightGoal != .notSelected else {
             calculatedPersonalIntake = ""
@@ -207,11 +207,13 @@ final class PersonalIntakeViewModel: ObservableObject {
         let bmr: Double
         let activityFactor: Double
         
-        switch gender {
+        switch sex {
         case .male:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue + 5
         case .female:
             bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 161
+        case .notSet:
+            bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * ageValue - 78
         case .notSelected: return
         }
         
@@ -255,10 +257,10 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     var isValid: Bool {
-        age.isValidNumericInput(in: 1...120) &&
+        !age.isEmpty &&
         weight.isValidNumericInput() &&
         height.isValidNumericInput() &&
-        selectedGender != .notSelected &&
+        selectedSex != .notSelected &&
         selectedActivity != .notSelected &&
         selectedWeightGoal != .notSelected
     }
@@ -289,16 +291,6 @@ final class PersonalIntakeViewModel: ObservableObject {
         text(for: calculatedPersonalIntake)
     }
     
-    var bodyProfileText: String {
-        let gender = selectedGender ==
-            .notSelected ? "" : selectedGender.rawValue
-        let age = age.isEmpty ? "" : formattedAge
-        
-        return [gender, age]
-            .filter { !$0.isEmpty }
-            .joined(separator: ", ")
-    }
-    
     var formattedAge: String {
         guard let age = Int(age) else {
             return age
@@ -307,20 +299,6 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Keyboard
-    func normalizeAge() {
-        if let value = age.doubleValue {
-            if value >= 1 && value <= 120 {
-                age = age.trimmedLeadingZeros
-            } else if value > 120 {
-                age = "120"
-            } else {
-                age = ""
-            }
-        } else {
-            age = ""
-        }
-    }
-    
     func normalizeWeight() {
         weight = weight.trimmedLeadingZeros
     }

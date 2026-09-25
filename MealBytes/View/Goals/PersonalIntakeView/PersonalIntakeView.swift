@@ -12,22 +12,21 @@ struct PersonalIntakeView: View {
     @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
-        PersonalIntakeViewContentBody
+        personalIntakeViewContentBody
             .navigationTitle(IntakeSource.personal.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                PersonalIntakeViewToolbar
+                personalIntakeViewToolbar
             }
     }
     
-    private var PersonalIntakeViewContentBody: some View {
+    private var personalIntakeViewContentBody: some View {
         Form {
             OverviewPersonalIntakeSection(
                 personalIntakeViewModel: personalIntakeViewModel
             )
-            BodyProfileSection(
-                personalIntakeViewModel: personalIntakeViewModel
-            )
+            SexSection(personalIntakeViewModel: personalIntakeViewModel)
+            AgeSection(personalIntakeViewModel: personalIntakeViewModel)
             WeightSection(personalIntakeViewModel: personalIntakeViewModel)
             HeightSection(personalIntakeViewModel: personalIntakeViewModel)
             ActivitySection(personalIntakeViewModel: personalIntakeViewModel)
@@ -38,7 +37,7 @@ struct PersonalIntakeView: View {
     }
     
     @ToolbarContentBuilder
-    private var PersonalIntakeViewToolbar: some ToolbarContent {
+    private var personalIntakeViewToolbar: some ToolbarContent {
         ToolbarItem {
             Button(role: .confirm) {
                 Task {

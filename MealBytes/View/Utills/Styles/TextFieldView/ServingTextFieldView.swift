@@ -15,9 +15,7 @@ struct ServingTextFieldView: View {
     var labelIconName: String = "plus.forwardslash.minus"
     var labelIconColor: Color = .customGray
     var stackText: String = ""
-    var trailingUnit: String? = nil
     var useLabel: Bool = false
-    var useStack: Bool = false
     var useStackTrailing: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
@@ -41,12 +39,6 @@ struct ServingTextFieldView: View {
                     finalizeInput(&text)
                 }
             }
-            .overlay(alignment: .trailing) {
-                if let trailingUnit, !text.isEmpty {
-                    Text(trailingUnit)
-                        .foregroundStyle(Color(.systemGray))
-                }
-            }
         
         Group {
             if useLabel {
@@ -56,17 +48,6 @@ struct ServingTextFieldView: View {
                     Image(systemName: labelIconName)
                         .foregroundStyle(labelIconColor)
                         .symbolColorRenderingMode(.gradient)
-                }
-            } else if useStack {
-                HStack {
-                    Text(stackText)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    field
-                        .containerRelativeFrame(.horizontal) {
-                            length,
-                            _ in length * 0.5
-                        }
                 }
             } else if useStackTrailing {
                 HStack {

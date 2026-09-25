@@ -10,7 +10,7 @@ import SwiftUI
 struct PersonalIntakeData: Codable {
     let calculatedPersonalIntake: String
     let age: String
-    let selectedGender: String
+    let selectedSex: String
     let selectedActivity: String
     let weight: String
     let selectedWeightUnit: String
