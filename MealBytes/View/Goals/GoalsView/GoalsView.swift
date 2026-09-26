@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct GoalsView: View {
-    @ObservedObject var goalsViewModel: GoalsViewModel
     @FocusState private var customFocus: CustomIntakeFocus?
     @FocusState private var macrosFocus: MacronutrientsFocus?
-    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var goalsViewModel: GoalsViewModel
     
     private let customOrder: [CustomIntakeFocus] = [
         .calories, .fat, .carbohydrate, .protein
@@ -23,20 +22,18 @@ struct GoalsView: View {
     
     var body: some View {
         Form {
-            Section {
-                ForEach(IntakeSource.allCases, id: \.self) { source in
-                    SelectionRow(
-                        title: source.rawValue,
-                        description: source.description,
-                        isSelected: goalsViewModel
-                            .selectedIntakeSource == source
-                    ) {
-                        goalsViewModel.selectSource(source)
-                    }
+            ForEach(IntakeSource.allCases, id: \.self) { source in
+                SelectionRow(
+                    title: source.rawValue,
+                    description: source.description,
+                    isSelected: goalsViewModel
+                        .selectedIntakeSource == source
+                ) {
+                    goalsViewModel.selectSource(source)
                 }
             }
             
-            goalsViewModel.view(
+            goalsViewModel.goalsViewBuilder(
                 for: goalsViewModel.selectedIntakeSource,
                 customFocus: $customFocus,
                 macrosFocus: $macrosFocus
@@ -50,8 +47,6 @@ struct GoalsView: View {
                     Task {
                         await goalsViewModel.saveSelected()
                     }
-                    
-                    dismiss()
                 }
                 .disabled(!goalsViewModel.isSelectedValid)
             }
@@ -77,9 +72,6 @@ struct GoalsView: View {
             }
         }
         .ignoresSafeArea(edges: ignoreBottomSafeArea ? .bottom : [])
-        .task {
-            await goalsViewModel.loadGoalsData()
-        }
     }
     
     private var ignoreBottomSafeArea: Bool {

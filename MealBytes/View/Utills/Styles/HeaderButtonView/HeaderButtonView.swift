@@ -8,43 +8,16 @@
 import SwiftUI
 
 struct HeaderButtonView: View {
-    let mealType: MealType
     let title: String
-    let calories: Double?
-    let fat: Double?
-    let carbs: Double?
-    let protein: Double?
-    let hasItems: Bool
-    let isExpanded: Bool
-    let showNutrients: Bool
-    let isEdit: Bool
+    var calories: Double? = nil
+    var fat: Double? = nil
+    var carbs: Double? = nil
+    var protein: Double? = nil
+    var hasItems: Bool = false
+    var isExpanded: Bool = false
+    var showNutrients: Bool = false
+    var isEdit: Bool = false
     let action: () -> Void
-    
-    init(
-        mealType: MealType,
-        title: String,
-        calories: Double? = nil,
-        fat: Double? = nil,
-        carbs: Double? = nil,
-        protein: Double? = nil,
-        hasItems: Bool = false,
-        isExpanded: Bool = false,
-        showNutrients: Bool = false,
-        isEdit: Bool = false,
-        action: @escaping () -> Void
-    ) {
-        self.mealType = mealType
-        self.title = title
-        self.calories = calories
-        self.fat = fat
-        self.carbs = carbs
-        self.protein = protein
-        self.hasItems = hasItems
-        self.isExpanded = isExpanded
-        self.showNutrients = showNutrients
-        self.isEdit = isEdit
-        self.action = action
-    }
     
     var body: some View {
         if showNutrients {
@@ -55,7 +28,7 @@ struct HeaderButtonView: View {
             } label: {
                 HStack {
                     VStack(alignment: .leading) {
-                        HeaderTextView(mealType: mealType, title: title)
+                        HeaderTextView(title: title)
                         
                         if hasItems && showNutrients,
                            let calories, let fat, let carbs, let protein {
@@ -77,7 +50,10 @@ struct HeaderButtonView: View {
                             .animation(.default, value: isExpanded)
                     }
                 }
-                .padding(.horizontal)
+                .padding(
+                    .horizontal,
+                    UIScreen.horizontalPadding(focused: true)
+                )
                 .padding(.vertical, 10)
                 .contentShape(Rectangle())
             }
@@ -85,8 +61,11 @@ struct HeaderButtonView: View {
             .buttonStyle(InvisibleButtonStyle())
         } else {
             HStack {
-                HeaderTextView(mealType: mealType, title: title)
-                    .padding(.horizontal)
+                HeaderTextView(title: title)
+                    .padding(
+                        .horizontal,
+                        UIScreen.horizontalPadding(focused: true)
+                    )
                     .padding(.vertical, 10)
                 
                 if isEdit {
@@ -97,7 +76,10 @@ struct HeaderButtonView: View {
                             .fontWeight(.regular)
                             .foregroundStyle(.accent)
                     }
-                    .padding(.horizontal)
+                    .padding(
+                        .horizontal,
+                        UIScreen.horizontalPadding(focused: true)
+                    )
                     .padding(.vertical, 10)
                     .buttonStyle(.borderless)
                 }

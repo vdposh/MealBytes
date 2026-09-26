@@ -70,7 +70,6 @@ struct SearchViewContent: View {
                         }
                     } header: {
                         HeaderButtonView(
-                            mealType: mealType,
                             title: "Bookmarks",
                             isEdit: !searchViewModel.isEditModeActive &&
                             !isSearching

@@ -23,13 +23,10 @@ struct GoalsSection: View {
                     proteinCard
                 }
             }
+            .listRowInsets(.all, 0)
         } header: {
             Text("Goals")
-                .padding(.horizontal)
-                .padding(.bottom, 8)
         }
-        .listRowInsets(.vertical, 0)
-        .listSectionMargins(.horizontal, 0)
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
     }

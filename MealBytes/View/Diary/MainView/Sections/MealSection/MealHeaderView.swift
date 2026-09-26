@@ -146,7 +146,6 @@ struct MealHeaderView: View {
     @ViewBuilder
     private var headerContent: some View {
         HeaderButtonView(
-            mealType: mealType,
             title: title,
             calories: calories,
             fat: fat,

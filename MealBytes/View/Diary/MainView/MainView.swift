@@ -106,7 +106,8 @@ struct MainView: View {
                         
                     }
             }
-            .padding()
+            .padding(.vertical)
+            .padding(.horizontal, UIScreen.horizontalPadding(focused: true))
             .glassEffect(.regular.interactive())
         }
         .listRowInsets(.vertical, 0)

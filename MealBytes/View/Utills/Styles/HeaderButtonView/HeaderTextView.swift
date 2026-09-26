@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct HeaderTextView: View {
-    let mealType: MealType
-    var title: String?
+    let title: String
     
     var body: some View {
-        Text(title ?? mealType.rawValue)
+        Text(title)
             .font(.title3)
             .fontWeight(.semibold)
             .foregroundStyle(Color.primary)

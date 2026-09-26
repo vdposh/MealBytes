@@ -10,6 +10,7 @@ import Combine
 
 protocol GoalsViewModelProtocol {
     func clearGoalsView()
+    func loadGoalsData() async
 }
 
 final class GoalsViewModel: ObservableObject {
@@ -124,7 +125,7 @@ final class GoalsViewModel: ObservableObject {
     
     // MARK: - UI Helper
     @ViewBuilder
-    func view(
+    func goalsViewBuilder(
         for source: IntakeSource,
         customFocus: FocusState<CustomIntakeFocus?>.Binding,
         macrosFocus: FocusState<MacronutrientsFocus?>.Binding

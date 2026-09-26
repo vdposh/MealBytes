@@ -16,19 +16,19 @@ struct TabBarView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Goals", systemImage: "chart.bar", value: .goals) {
+            Tab("Goals", systemImage: "chart.pie.fill", value: .goals) {
                 NavigationStack {
                     GoalsView(goalsViewModel: goalsViewModel)
                 }
             }
             
-            Tab("Diary", systemImage: "fork.knife", value: .diary) {
+            Tab("Diary", systemImage: "book.closed.fill", value: .diary) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
                 }
             }
             
-            Tab("Profile", systemImage: "person.fill", value: .profile) {
+            Tab("Settings", systemImage: "gear", value: .settings) {
                 NavigationStack {
                     ProfileView(profileViewModel: profileViewModel)
                 }
@@ -60,7 +60,7 @@ struct TabBarView: View {
 }
 
 enum Tabs {
-    case diary, goals, profile, search
+    case diary, goals, settings, search
 }
 
 #Preview {

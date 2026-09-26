@@ -37,7 +37,7 @@ struct GoalCard: View {
                     ActivityRingView(progress: progress, mainColor: color)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, UIScreen.horizontalPadding(focused: true))
             .padding(.vertical, 14)
         }
     }
