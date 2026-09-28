@@ -11,20 +11,26 @@ struct WeightSection: View {
     @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
-        NavigationLink {
-            MeasurementSelectionView(
-                value: $personalIntakeViewModel.weight,
-                selectedUnit: $personalIntakeViewModel.selectedWeightUnit,
-                title: "Weight",
-                maxIntegerDigits: 3,
-                normalizeAction: personalIntakeViewModel.normalizeWeight
-            )
-        } label: {
-            LabeledContent {
-                Text(personalIntakeViewModel.weightText)
-            } label: {
-                Text("Weight")
+        CollapsibleRow(
+            title: "Weight",
+            value: personalIntakeViewModel.weight.isEmpty
+            ? ""
+            : personalIntakeViewModel.weightText,
+            isExpanded: personalIntakeViewModel.isExpandedWeight,
+            onToggle: {
+                personalIntakeViewModel.toggleSection(.weight)
             }
+        ) {
+            DecimalPickerRow(
+                text: $personalIntakeViewModel.weight,
+                selectedUnit: $personalIntakeViewModel.selectedWeightUnit,
+                integerRange: { unit in
+                    unit == .kg ? 30...200 : 66...440
+                },
+                minValue: { unit in
+                    unit == .kg ? 30 : 66
+                }
+            )
         }
     }
 }

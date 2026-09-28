@@ -22,9 +22,15 @@ struct GoalsView: View {
     
     var body: some View {
         Form {
+            goalsViewModel.goalsViewBuilder(
+                for: goalsViewModel.selectedIntakeSource,
+                customFocus: $customFocus,
+                macrosFocus: $macrosFocus
+            )
+            
             ForEach(IntakeSource.allCases, id: \.self) { source in
                 SelectionRow(
-                    title: source.rawValue,
+                    title: source.title,
                     description: source.description,
                     isSelected: goalsViewModel
                         .selectedIntakeSource == source
@@ -32,12 +38,6 @@ struct GoalsView: View {
                     goalsViewModel.selectSource(source)
                 }
             }
-            
-            goalsViewModel.goalsViewBuilder(
-                for: goalsViewModel.selectedIntakeSource,
-                customFocus: $customFocus,
-                macrosFocus: $macrosFocus
-            )
         }
         .navigationTitle("Goals")
         .navigationBarTitleDisplayMode(.inline)
@@ -82,23 +82,6 @@ struct GoalsView: View {
             return customFocus == nil
         case .macros:
             return macrosFocus == nil
-        }
-    }
-}
-
-enum IntakeSource: String, CaseIterable {
-    case personal = "Personal"
-    case macros = "Macros"
-    case custom = "Custom"
-    
-    var description: String {
-        switch self {
-        case .personal:
-            return "Set goal based on body parameters"
-        case .macros:
-            return "Calculated from macronutrients"
-        case .custom:
-            return "Direct entry"
         }
     }
 }

@@ -25,7 +25,9 @@ struct PreviewGoalsView {
             customIntakeViewModel: customIntakeViewModel
         )
         
-        return GoalsView(goalsViewModel: goalsViewModel)
+        return NavigationStack {
+            GoalsView(goalsViewModel: goalsViewModel)
+        }
     }
 }
 

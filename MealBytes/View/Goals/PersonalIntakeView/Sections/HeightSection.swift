@@ -11,20 +11,26 @@ struct HeightSection: View {
     @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
-        NavigationLink {
-            MeasurementSelectionView(
-                value: $personalIntakeViewModel.height,
-                selectedUnit: $personalIntakeViewModel.selectedHeightUnit,
-                title: "Height",
-                maxIntegerDigits: 3,
-                normalizeAction: personalIntakeViewModel.normalizeHeight
-            )
-        } label: {
-            LabeledContent {
-                Text(personalIntakeViewModel.heightText)
-            } label: {
-                Text("Height")
+        CollapsibleRow(
+            title: "Height",
+            value: personalIntakeViewModel.height.isEmpty
+            ? ""
+            : personalIntakeViewModel.heightText,
+            isExpanded: personalIntakeViewModel.isExpandedHeight,
+            onToggle: {
+                personalIntakeViewModel.toggleSection(.height)
             }
+        ) {
+            DecimalPickerRow(
+                text: $personalIntakeViewModel.height,
+                selectedUnit: $personalIntakeViewModel.selectedHeightUnit,
+                integerRange: { unit in
+                    unit == .cm ? 100...250 : 39...98
+                },
+                minValue: { unit in
+                    unit == .cm ? 100 : 39
+                }
+            )
         }
     }
 }

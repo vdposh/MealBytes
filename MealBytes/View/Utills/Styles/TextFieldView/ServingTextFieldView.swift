@@ -12,6 +12,7 @@ struct ServingTextFieldView: View {
     @FocusState private var focus: Bool
     
     var placeholder: String = "0"
+    var unitText: String = ""
     var labelIconName: String = "plus.forwardslash.minus"
     var labelIconColor: Color = .customGray
     var stackText: String = ""
@@ -59,8 +60,17 @@ struct ServingTextFieldView: View {
                             .foregroundStyle(labelIconColor)
                     }
                     
-                    field
-                        .multilineTextAlignment(.trailing)
+                    HStack(spacing: 4) {
+                        field
+                        
+                        Text(unitText)
+                            .foregroundStyle(
+                                text.isEmpty ? Color(
+                                    .placeholderText
+                                ) : .primary
+                            )
+                    }
+                    .multilineTextAlignment(.trailing)
                 }
             } else {
                 field

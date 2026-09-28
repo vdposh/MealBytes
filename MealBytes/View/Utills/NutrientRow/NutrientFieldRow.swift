@@ -15,24 +15,18 @@ struct NutrientFieldRow<Focus: Hashable>: View {
     var maxIntegerDigits: Int = 3
     
     var body: some View {
-        HStack(spacing: 4) {
-            ServingTextFieldView(
-                text: $text,
-                labelIconName: type.iconName,
-                labelIconColor: type.iconColor,
-                stackText: type.title,
-                useStackTrailing: true,
-                keyboardType: .numberPad,
-                inputMode: .integer,
-                maxIntegerDigits: maxIntegerDigits
-            )
-            .focused(focus, equals: focusCase)
-            
-            Text(type.unitType.unitDescription(for: Double(text) ?? 0))
-                .foregroundStyle(
-                    text.isEmpty ? Color(.placeholderText) : .primary
-                )
-        }
+        ServingTextFieldView(
+            text: $text,
+            unitText: type.unitType.unitDescription(for: Double(text) ?? 0),
+            labelIconName: type.iconName,
+            labelIconColor: type.iconColor,
+            stackText: type.title,
+            useStackTrailing: true,
+            keyboardType: .numberPad,
+            inputMode: .integer,
+            maxIntegerDigits: maxIntegerDigits
+        )
+        .focused(focus, equals: focusCase)
     }
 }
 

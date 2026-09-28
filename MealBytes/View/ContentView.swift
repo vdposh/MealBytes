@@ -36,6 +36,7 @@ struct ContentView: View {
         }
         .task {
             await loginViewModel.loadData()
+            await goalsViewModel.loadGoalsData()
         }
     }
 }

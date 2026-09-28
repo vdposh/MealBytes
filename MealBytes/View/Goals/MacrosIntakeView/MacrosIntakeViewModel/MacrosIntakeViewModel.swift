@@ -105,7 +105,7 @@ final class MacrosIntakeViewModel: ObservableObject {
             }
             
             await mainViewModel.saveCurrentIntakeMainView(
-                source: "macrosIntakeView"
+                source: IntakeSource.macros.rawValue
             )
         } catch {
             await MainActor.run {

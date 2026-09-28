@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 final class SystemStatsViewModel: ObservableObject {
     @Published var usedMemoryMB: Double = 0

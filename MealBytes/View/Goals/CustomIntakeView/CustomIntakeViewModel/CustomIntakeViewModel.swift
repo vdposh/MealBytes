@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 protocol CustomIntakeViewModelProtocol {
     var isValid: Bool { get }
@@ -20,10 +19,26 @@ protocol CustomIntakeViewModelProtocol {
 
 final class CustomIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
-    @Published var calories: String = ""
-    @Published var protein: String = ""
-    @Published var fat: String = ""
-    @Published var carbohydrate: String = ""
+    @Published var calories: String = "" {
+        didSet {
+            recalculateIsValid()
+        }
+    }
+    @Published var protein: String = "" {
+        didSet {
+            recalculateIsValid()
+        }
+    }
+    @Published var fat: String = "" {
+        didSet {
+            recalculateIsValid()
+        }
+    }
+    @Published var carbohydrate: String = "" {
+        didSet {
+            recalculateIsValid()
+        }
+    }
     @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyCustomIntake: Bool = false
@@ -31,16 +46,8 @@ final class CustomIntakeViewModel: ObservableObject {
     private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     
-    private var cancellables = Set<AnyCancellable>()
-    
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
-        
-        setupValidation()
-    }
-    
-    deinit {
-        cancellables.removeAll()
     }
     
     // MARK: - Load CustomIntake Data
@@ -106,7 +113,10 @@ final class CustomIntakeViewModel: ObservableObject {
                 didSaveSuccessfully = true
             }
             
-            await mainViewModel.saveCurrentIntakeMainView(source: "customView")
+            await mainViewModel
+                .saveCurrentIntakeMainView(
+                    source: IntakeSource.custom.rawValue
+                )
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -115,24 +125,13 @@ final class CustomIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Calculation
-    private func setupValidation() {
-        Publishers.CombineLatest4(
-            $calories,
-            $fat,
-            $carbohydrate,
-            $protein
+    private func recalculateIsValid() {
+        isValid = validate(
+            calories: calories,
+            fat: fat,
+            carbohydrate: carbohydrate,
+            protein: protein
         )
-        .sink { [weak self] cal, fat, carb, prot in
-            guard let self else { return }
-            
-            self.isValid = self.validate(
-                calories: cal,
-                fat: fat,
-                carbohydrate: carb,
-                protein: prot
-            )
-        }
-        .store(in: &cancellables)
     }
     
     private func validate(

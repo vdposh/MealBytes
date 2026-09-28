@@ -39,7 +39,7 @@ struct MacrosIntakeView: View {
                 focusCase: .protein
             )
         } footer: {
-            Text("Enter macronutrient values. This data will be used to calculate calories.")
+            Text("Enter macronutrients values to calculate calories.")
         }
         .onChange(of: focus) {
             handleFocusLoss(focus)

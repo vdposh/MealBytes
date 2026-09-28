@@ -80,7 +80,7 @@ struct MealBytesApp: App {
             .onChange(of: scenePhase) {
                 if scenePhase == .active {
                     Task {
-                        await loginViewModel.loadData()
+                        await loginViewModel.loadLoginData()
                         
                         if loginViewModel.isLoggedIn {
                             await profileViewModel.loadProfileData()

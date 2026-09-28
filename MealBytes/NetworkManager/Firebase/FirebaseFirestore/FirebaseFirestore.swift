@@ -322,36 +322,6 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await path.delete()
     }
     
-    // MARK: - Load MacrosIntake
-    func loadMacrosIntakeFirestore() async throws -> MacrosIntake {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
-        
-        let documentReference = firestore
-            .collection("Users")
-            .document(uid)
-            .collection("GoalsView")
-            .document("MacrosIntakeView")
-        
-        return try await documentReference.getDocument(as: MacrosIntake.self)
-    }
-    
-    // MARK: - Save MacrosIntake
-    func saveMacrosIntakeFirestore(_ MacrosIntakeData: MacrosIntake) throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
-        
-        let documentReference = firestore
-            .collection("Users")
-            .document(uid)
-            .collection("GoalsView")
-            .document("MacrosIntakeView")
-        
-        try documentReference.setData(from: MacrosIntakeData)
-    }
-    
     // MARK: - Load PersonalIntake
     func loadPersonalIntakeFirestore() async throws -> PersonalIntakeData {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -383,6 +353,36 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try documentReference.setData(from: personalIntakeData)
     }
     
+    // MARK: - Load MacrosIntake
+    func loadMacrosIntakeFirestore() async throws -> MacrosIntake {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let documentReference = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("GoalsView")
+            .document("MacrosIntakeView")
+        
+        return try await documentReference.getDocument(as: MacrosIntake.self)
+    }
+    
+    // MARK: - Save MacrosIntake
+    func saveMacrosIntakeFirestore(_ MacrosIntakeData: MacrosIntake) throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let documentReference = firestore
+            .collection("Users")
+            .document(uid)
+            .collection("GoalsView")
+            .document("MacrosIntakeView")
+        
+        try documentReference.setData(from: MacrosIntakeData)
+    }
+    
     // MARK: - Load CustomIntake
     func loadCustomIntakeFirestore() async throws -> CustomIntake {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -393,7 +393,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
-            .document("CustomIntake")
+            .document("CustomIntakeView")
         
         return try await documentReference.getDocument(as: CustomIntake.self)
     }
@@ -408,7 +408,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("Users")
             .document(uid)
             .collection("GoalsView")
-            .document("CustomIntake")
+            .document("CustomIntakeView")
         
         try documentReference.setData(from: customIntake)
     }

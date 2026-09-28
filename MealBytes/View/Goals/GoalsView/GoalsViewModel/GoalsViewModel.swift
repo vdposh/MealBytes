@@ -180,6 +180,31 @@ final class GoalsViewModel: ObservableObject {
     }
 }
 
+enum IntakeSource: String, CaseIterable {
+    case personal = "personalIntakeView"
+    case macros = "macrosIntakeView"
+    case custom = "customView"
+    
+    var title: String {
+        switch self {
+        case .personal: return "Personal"
+        case .macros: return "Macros"
+        case .custom: return "Custom"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .personal:
+            return "Based on body parameters"
+        case .macros:
+            return "Calculated from macronutrients"
+        case .custom:
+            return "Direct entry"
+        }
+    }
+}
+
 extension GoalsViewModel: GoalsViewModelProtocol {}
 
 #Preview {

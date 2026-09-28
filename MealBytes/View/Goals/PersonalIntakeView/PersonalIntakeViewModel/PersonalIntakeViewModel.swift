@@ -31,6 +31,9 @@ final class PersonalIntakeViewModel: ObservableObject {
     @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyPersonalIntake: Bool = false
+    @Published var isExpandedAge: Bool = false
+    @Published var isExpandedWeight: Bool = false
+    @Published var isExpandedHeight: Bool = false
     
     var proteinPercentage: Double = 0.30
     var fatPercentage: Double = 0.20
@@ -139,7 +142,9 @@ final class PersonalIntakeViewModel: ObservableObject {
             }
             
             await mainViewModel
-                .saveCurrentIntakeMainView(source: "personalIntakeView")
+                .saveCurrentIntakeMainView(
+                    source: IntakeSource.personal.rawValue
+                )
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -180,7 +185,6 @@ final class PersonalIntakeViewModel: ObservableObject {
                 age: age,
                 weight: weight,
                 height: height,
-                sex: sex,
                 activity: activity,
                 weightGoal: weightGoal
             ) ?? false
@@ -192,7 +196,6 @@ final class PersonalIntakeViewModel: ObservableObject {
         age: String,
         weight: String,
         height: String,
-        sex: Sex,
         activity: Activity,
         weightGoal: WeightGoal
     ) -> Bool {
@@ -269,7 +272,7 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-    var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
+        var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
         guard let calories = calculatedPersonalIntake.doubleValue,
               calories > 0 else {
             return nil
@@ -299,22 +302,51 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     var weightText: String {
-        guard let value = Double(weight), value > 0 else { return "" }
+        guard let value = weight.doubleValue, value > 0 else { return "" }
         return "\(weight) \(selectedWeightUnit.rawValue)"
     }
     
     var heightText: String {
-        guard let value = Double(height), value > 0 else { return "" }
+        guard let value = height.doubleValue, value > 0 else { return "" }
         return "\(height) \(selectedHeightUnit.rawValue)"
     }
     
-    // MARK: - Keyboard
-    func normalizeWeight() {
-        weight = weight.trimmedLeadingZeros
+    func collapseAllSections() {
+        isExpandedAge = false
+        isExpandedWeight = false
+        isExpandedHeight = false
     }
     
-    func normalizeHeight() {
-        height = height.trimmedLeadingZeros
+    func toggleSection(_ section: PersonalSection) {
+        let willExpand = !isSectionExpanded(section)
+        
+        isExpandedAge = false
+        isExpandedWeight = false
+        isExpandedHeight = false
+        
+        if willExpand {
+            setSection(section, expanded: true)
+        }
+    }
+
+    private func isSectionExpanded(_ section: PersonalSection) -> Bool {
+        switch section {
+        case .age: return isExpandedAge
+        case .weight: return isExpandedWeight
+        case .height: return isExpandedHeight
+        }
+    }
+
+    private func setSection(_ section: PersonalSection, expanded: Bool) {
+        switch section {
+        case .age: isExpandedAge = expanded
+        case .weight: isExpandedWeight = expanded
+        case .height: isExpandedHeight = expanded
+        }
+    }
+
+    enum PersonalSection {
+        case age, weight, height
     }
 }
 

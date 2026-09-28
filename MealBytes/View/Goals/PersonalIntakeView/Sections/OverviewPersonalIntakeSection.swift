@@ -21,6 +21,8 @@ struct OverviewPersonalIntakeSection: View {
                     value: personalIntakeViewModel.macroValues[type] ?? "0"
                 )
             }
+        } footer: {
+            Text("Calculated from Body Profile")
         }
     }
 }

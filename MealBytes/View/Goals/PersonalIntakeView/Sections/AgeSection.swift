@@ -8,39 +8,19 @@
 import SwiftUI
 
 struct AgeSection: View {
-    @State private var isExpanded: Bool = false
     @ObservedObject var personalIntakeViewModel: PersonalIntakeViewModel
     
     var body: some View {
-        Button {
-            withAnimation {
-                isExpanded.toggle()
+        CollapsibleRow(
+            title: "Age",
+            value: personalIntakeViewModel.age.isEmpty
+            ? ""
+            : personalIntakeViewModel.formattedAge,
+            isExpanded: personalIntakeViewModel.isExpandedAge,
+            onToggle: {
+                personalIntakeViewModel.toggleSection(.age)
             }
-        } label: {
-            LabeledContent {
-                HStack(spacing: 10) {
-                    Text(
-                        personalIntakeViewModel.age.isEmpty
-                        ? ""
-                        : personalIntakeViewModel.formattedAge
-                    )
-                    .foregroundStyle(isExpanded ? .primary : .secondary)
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.footnote)
-                        .fontWeight(.bold)
-                        .foregroundStyle(isExpanded ? .primary : .tertiary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .animation(.default, value: isExpanded)
-                }
-                .padding(.trailing, 2)
-            } label: {
-                Text("Age")
-                    .foregroundStyle(Color.primary)
-            }
-        }
-        
-        if isExpanded {
+        ) {
             Picker("Age", selection: $personalIntakeViewModel.age) {
                 ForEach(1...120, id: \.self) { age in
                     Text("\(age)")

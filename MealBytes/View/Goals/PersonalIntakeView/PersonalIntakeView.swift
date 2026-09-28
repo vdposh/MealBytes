@@ -14,14 +14,37 @@ struct PersonalIntakeView: View {
         OverviewPersonalIntakeSection(
             personalIntakeViewModel: personalIntakeViewModel
         )
-        SexSection(personalIntakeViewModel: personalIntakeViewModel)
-        AgeSection(personalIntakeViewModel: personalIntakeViewModel)
-        WeightSection(personalIntakeViewModel: personalIntakeViewModel)
-        HeightSection(personalIntakeViewModel: personalIntakeViewModel)
-        ActivitySection(personalIntakeViewModel: personalIntakeViewModel)
-        WeightGoalSelection(
-            personalIntakeViewModel: personalIntakeViewModel
-        )
+        
+        Section {
+            NavigationLink {
+                Form {
+                    SexSection(
+                        personalIntakeViewModel: personalIntakeViewModel
+                    )
+                    AgeSection(
+                        personalIntakeViewModel: personalIntakeViewModel
+                    )
+                    WeightSection(
+                        personalIntakeViewModel: personalIntakeViewModel
+                    )
+                    HeightSection(
+                        personalIntakeViewModel: personalIntakeViewModel
+                    )
+                    ActivitySection(
+                        personalIntakeViewModel: personalIntakeViewModel
+                    )
+                    WeightGoalSelection(
+                        personalIntakeViewModel: personalIntakeViewModel
+                    )
+                }
+                .navigationTitle("Body Profile")
+                .onDisappear {
+                    personalIntakeViewModel.collapseAllSections()
+                }
+            } label: {
+                Text("Body Profile")
+            }
+        }
     }
 }
 

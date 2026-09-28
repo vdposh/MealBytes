@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 import FirebaseCore
 
 protocol MainViewModelProtocol {
@@ -65,8 +64,6 @@ final class MainViewModel: ObservableObject {
     lazy var searchViewModel: SearchViewModelProtocol = SearchViewModel(
         mainViewModel: self
     )
-    
-    private var cancellables = Set<AnyCancellable>()
     
     init() {
         var items = [MealType: [MealItem]]()
@@ -276,7 +273,7 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Intake
     private func loadIntakeMainView() async {
-        if intakeSource == "customView" {
+        if intakeSource == IntakeSource.custom.rawValue {
             do {
                 let customData = try await firestore
                     .loadCustomIntakeFirestore()
@@ -437,19 +434,19 @@ final class MainViewModel: ObservableObject {
         }
         
         switch intakeSource {
-        case "personalIntakeView":
+        case IntakeSource.personal.rawValue:
             let fatTarget = (intakeValue * 0.30) / 9
             let carbsTarget = (intakeValue * 0.50) / 4
             let proteinTarget = (intakeValue * 0.20) / 4
             return (fatTarget, carbsTarget, proteinTarget)
             
-        case "macrosIntakeView":
+        case IntakeSource.macros.rawValue:
             let fat = Double(macroFat) ?? 0
             let carbs = Double(macroCarbs) ?? 0
             let protein = Double(macroProtein) ?? 0
             return (fat, carbs, protein)
             
-        case "customView":
+        case IntakeSource.custom.rawValue:
             let fat = Double(macroFat) ?? 0
             let carbs = Double(macroCarbs) ?? 0
             let protein = Double(macroProtein) ?? 0
@@ -689,12 +686,6 @@ final class MainViewModel: ObservableObject {
     func expandAllSections() {
         expandedSections.keys.forEach { key in
             expandedSections[key] = true
-        }
-    }
-    
-    func collapseAllSections() {
-        expandedSections.keys.forEach { key in
-            expandedSections[key] = false
         }
     }
     
