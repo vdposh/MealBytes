@@ -28,32 +28,13 @@ struct MealBytesApp: App {
     @Environment(\.colorScheme) private var systemColorScheme
     
     @StateObject private var mainViewModel: MainViewModel
-    @StateObject private var goalsViewModel: GoalsViewModel
     @StateObject private var loginViewModel: LoginViewModel
     @StateObject private var profileViewModel: ProfileViewModel
     @StateObject private var themeManager: ThemeManager
     
     init() {
         let mainViewModel = MainViewModel()
-        let macrosIntakeViewModel = MacrosIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
-        let personalIntakeViewModel = PersonalIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
-        let customIntakeViewModel = CustomIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
-        let goalsViewModel = GoalsViewModel(
-            mainViewModel: mainViewModel,
-            macrosIntakeViewModel: macrosIntakeViewModel,
-            personalIntakeViewModel: personalIntakeViewModel,
-            customIntakeViewModel: customIntakeViewModel
-        )
-        let loginViewModel = LoginViewModel(
-            mainViewModel: mainViewModel,
-            goalsViewModel: goalsViewModel
-        )
+        let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
         let profileViewModel = ProfileViewModel(
             loginViewModel: loginViewModel,
             mainViewModel: mainViewModel
@@ -61,7 +42,6 @@ struct MealBytesApp: App {
         let themeManager = ThemeManager()
         
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
-        _goalsViewModel = StateObject(wrappedValue: goalsViewModel)
         _loginViewModel = StateObject(wrappedValue: loginViewModel)
         _profileViewModel = StateObject(wrappedValue: profileViewModel)
         _themeManager = StateObject(wrappedValue: themeManager)
@@ -72,7 +52,6 @@ struct MealBytesApp: App {
             ContentView(
                 loginViewModel: loginViewModel,
                 mainViewModel: mainViewModel,
-                goalsViewModel: goalsViewModel,
                 profileViewModel: profileViewModel
             )
             .environmentObject(themeManager)

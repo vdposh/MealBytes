@@ -52,6 +52,7 @@ final class MainViewModel: ObservableObject {
     @Published var macroCarbs: String = ""
     @Published var macroProtein: String = ""
     @Published var showDatePicker: Bool = false
+    @Published var showGoals: Bool = false
     @Published var showNutrientTotals: Bool = false
     @Published var showClearDayAlert: Bool = false
     @Published var showClearMealTypeAlert: Bool = false
@@ -63,6 +64,12 @@ final class MainViewModel: ObservableObject {
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     lazy var searchViewModel: SearchViewModelProtocol = SearchViewModel(
         mainViewModel: self
+    )
+    lazy var goalsViewModel = GoalsViewModel(
+        mainViewModel: self,
+        macrosIntakeViewModel: MacrosIntakeViewModel(mainViewModel: self),
+        personalIntakeViewModel: PersonalIntakeViewModel(mainViewModel: self),
+        customIntakeViewModel: CustomIntakeViewModel(mainViewModel: self)
     )
     
     init() {
@@ -92,6 +99,8 @@ final class MainViewModel: ObservableObject {
             macroTask,
             bookmarksTask
         )
+        
+        await goalsViewModel.loadGoalsData()
     }
     
     // MARK: - Load Meal Item
@@ -700,6 +709,7 @@ final class MainViewModel: ObservableObject {
         
         expandAllSections()
         resetDateToToday()
+        goalsViewModel.clearGoalsView()
         setDisplayIntake(true)
     }
     

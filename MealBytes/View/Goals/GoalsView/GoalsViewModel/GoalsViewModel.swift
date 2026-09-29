@@ -124,39 +124,6 @@ final class GoalsViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-    @ViewBuilder
-    func goalsViewBuilder(
-        for source: IntakeSource,
-        customFocus: FocusState<CustomIntakeFocus?>.Binding,
-        macrosFocus: FocusState<MacronutrientsFocus?>.Binding
-    ) -> some View {
-        switch source {
-        case .personal:
-            if let personalIntakeViewModel = personalIntakeViewModel
-                as? PersonalIntakeViewModel {
-                PersonalIntakeView(
-                    personalIntakeViewModel: personalIntakeViewModel
-                )
-            }
-        case .macros:
-            if let macrosIntakeViewModel = macrosIntakeViewModel
-                as? MacrosIntakeViewModel {
-                MacrosIntakeView(
-                    focus: macrosFocus,
-                    macrosIntakeViewModel: macrosIntakeViewModel
-                )
-            }
-        case .custom:
-            if let customIntakeViewModel = customIntakeViewModel
-                as? CustomIntakeViewModel {
-                CustomIntakeView(
-                    customIntakeViewModel: customIntakeViewModel,
-                    focus: customFocus
-                )
-            }
-        }
-    }
-    
     func saveSelected() async {
         switch selectedIntakeSource {
         case .personal:

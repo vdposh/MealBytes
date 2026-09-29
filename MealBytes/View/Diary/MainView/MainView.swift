@@ -40,11 +40,10 @@ struct MainView: View {
             mealSection
             nutrientTotalsButtonView
         }
-        .sheet(isPresented: $mainViewModel.showNutrientTotals) {
-            NutrientTotalsSheet(
-                nutrients: mainViewModel.filteredNutrientValues,
-                hasMealItems: mainViewModel.hasMealItems
-            )
+        .sheet(isPresented: $mainViewModel.showGoals) {
+            NavigationStack {
+                GoalsView(goalsViewModel: mainViewModel.goalsViewModel)
+            }
         }
         .sheet(item: $mainViewModel.selectedMealType) { mealType in
             if let searchViewModel = mainViewModel
@@ -75,6 +74,12 @@ struct MainView: View {
                     originalMealItemId: mealItem.id
                 )
             }
+        }
+        .sheet(isPresented: $mainViewModel.showNutrientTotals) {
+            NutrientTotalsSheet(
+                nutrients: mainViewModel.filteredNutrientValues,
+                hasMealItems: mainViewModel.hasMealItems
+            )
         }
     }
     

@@ -29,7 +29,7 @@ struct GoalsSection: View {
                 title: "Goals",
                 isEdit: true
             ) {
-                
+                mainViewModel.showGoals = true
             }
         }
         .listRowBackground(Color.clear)

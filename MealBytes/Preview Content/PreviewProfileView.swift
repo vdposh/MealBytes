@@ -10,25 +10,7 @@ import SwiftUI
 struct PreviewProfileView {
     static var profileView: some View {
         let mainViewModel = MainViewModel()
-        let macrosIntakeViewModel = MacrosIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
-        let personalIntakeViewModel = PersonalIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
-        let customIntakeViewModel = CustomIntakeViewModel(
-            mainViewModel: mainViewModel
-        )
-        let goalsViewModel = GoalsViewModel(
-            mainViewModel: mainViewModel,
-            macrosIntakeViewModel: macrosIntakeViewModel,
-            personalIntakeViewModel: personalIntakeViewModel,
-            customIntakeViewModel: customIntakeViewModel
-        )
-        let loginViewModel = LoginViewModel(
-            mainViewModel: mainViewModel,
-            goalsViewModel: goalsViewModel
-        )
+        let loginViewModel = LoginViewModel(mainViewModel: mainViewModel)
         let themeManager = ThemeManager()
         
         return NavigationStack {

@@ -11,17 +11,10 @@ struct TabBarView: View {
     @State private var selectedTab: Tabs = .diary
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var mainViewModel: MainViewModel
-    @ObservedObject var goalsViewModel: GoalsViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Goals", systemImage: "chart.pie.fill", value: .goals) {
-                NavigationStack {
-                    GoalsView(goalsViewModel: goalsViewModel)
-                }
-            }
-            
             Tab("Diary", systemImage: "book.closed.fill", value: .diary) {
                 NavigationStack {
                     MainView(mainViewModel: mainViewModel)
@@ -60,7 +53,7 @@ struct TabBarView: View {
 }
 
 enum Tabs {
-    case diary, goals, settings, search
+    case diary, settings, search
 }
 
 #Preview {

@@ -10,6 +10,7 @@ import SwiftUI
 struct GoalsView: View {
     @FocusState private var customFocus: CustomIntakeFocus?
     @FocusState private var macrosFocus: MacronutrientsFocus?
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject var goalsViewModel: GoalsViewModel
     
     private let customOrder: [CustomIntakeFocus] = [
@@ -22,22 +23,8 @@ struct GoalsView: View {
     
     var body: some View {
         Form {
-            goalsViewModel.goalsViewBuilder(
-                for: goalsViewModel.selectedIntakeSource,
-                customFocus: $customFocus,
-                macrosFocus: $macrosFocus
-            )
-            
-            ForEach(IntakeSource.allCases, id: \.self) { source in
-                SelectionRow(
-                    title: source.title,
-                    description: source.description,
-                    isSelected: goalsViewModel
-                        .selectedIntakeSource == source
-                ) {
-                    goalsViewModel.selectSource(source)
-                }
-            }
+            goalsViewBuilder
+            sourceSelectionRows
         }
         .navigationTitle("Goals")
         .navigationBarTitleDisplayMode(.inline)
@@ -47,6 +34,8 @@ struct GoalsView: View {
                     Task {
                         await goalsViewModel.saveSelected()
                     }
+                    
+                    dismiss()
                 }
                 .disabled(!goalsViewModel.isSelectedValid)
             }
@@ -72,6 +61,47 @@ struct GoalsView: View {
             }
         }
         .ignoresSafeArea(edges: ignoreBottomSafeArea ? .bottom : [])
+    }
+    
+    private var sourceSelectionRows: some View {
+        ForEach(IntakeSource.allCases, id: \.self) { source in
+            SelectionRow(
+                title: source.title,
+                description: source.description,
+                isSelected: goalsViewModel.selectedIntakeSource == source
+            ) {
+                goalsViewModel.selectSource(source)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var goalsViewBuilder: some View {
+        switch goalsViewModel.selectedIntakeSource {
+        case .personal:
+            if let personalIntakeViewModel = goalsViewModel
+                .personalIntakeViewModel as? PersonalIntakeViewModel {
+                PersonalIntakeView(
+                    personalIntakeViewModel: personalIntakeViewModel
+                )
+            }
+        case .macros:
+            if let macrosIntakeViewModel = goalsViewModel
+                .macrosIntakeViewModel as? MacrosIntakeViewModel {
+                MacrosIntakeView(
+                    focus: $macrosFocus,
+                    macrosIntakeViewModel: macrosIntakeViewModel
+                )
+            }
+        case .custom:
+            if let customIntakeViewModel = goalsViewModel
+                .customIntakeViewModel as? CustomIntakeViewModel {
+                CustomIntakeView(
+                    customIntakeViewModel: customIntakeViewModel,
+                    focus: $customFocus
+                )
+            }
+        }
     }
     
     private var ignoreBottomSafeArea: Bool {

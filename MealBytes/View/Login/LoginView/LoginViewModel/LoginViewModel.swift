@@ -22,14 +22,9 @@ final class LoginViewModel: ObservableObject {
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     private let mainViewModel: MainViewModelProtocol
-    private let goalsViewModel: GoalsViewModelProtocol
     
-    init(
-        mainViewModel: MainViewModelProtocol,
-        goalsViewModel: GoalsViewModelProtocol
-    ) {
+    init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
-        self.goalsViewModel = goalsViewModel
     }
     
     // MARK: - Load Data
@@ -158,7 +153,6 @@ final class LoginViewModel: ObservableObject {
         isSignIn = false
         
         mainViewModel.resetMainState()
-        goalsViewModel.clearGoalsView()
     }
     
     // MARK: - Alert
