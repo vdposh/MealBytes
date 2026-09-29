@@ -25,7 +25,12 @@ struct GoalsSection: View {
             }
             .listRowInsets(.all, 0)
         } header: {
-            Text("Goals")
+            HeaderButtonView(
+                title: "Goals",
+                isEdit: true
+            ) {
+                
+            }
         }
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)

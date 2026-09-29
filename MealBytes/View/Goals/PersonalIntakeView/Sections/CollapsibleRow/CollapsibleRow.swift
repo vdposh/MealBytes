@@ -28,7 +28,7 @@ struct CollapsibleRow<Content: View>: View {
                     Image(systemName: "chevron.right")
                         .font(.footnote)
                         .fontWeight(.bold)
-                        .foregroundStyle(.accent)
+                        .foregroundStyle(isExpanded ? .primary : .tertiary)
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
                         .animation(.default, value: isExpanded)
                 }

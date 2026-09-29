@@ -21,7 +21,7 @@ struct HeightSection: View {
                 personalIntakeViewModel.toggleSection(.height)
             }
         ) {
-            DecimalPickerRow(
+            WheelPickerRow(
                 text: $personalIntakeViewModel.height,
                 selectedUnit: $personalIntakeViewModel.selectedHeightUnit,
                 integerRange: { unit in
