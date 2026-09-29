@@ -78,6 +78,7 @@ final class GoalsViewModel: ObservableObject {
     private func setupValidation() {
         if let macros = macrosIntakeViewModel as? MacrosIntakeViewModel {
             macros.$isValid
+                .receive(on: RunLoop.main)
                 .sink { [weak self] _ in
                     self?.updateSelectedValid()
                 }
@@ -86,6 +87,7 @@ final class GoalsViewModel: ObservableObject {
         
         if let custom = customIntakeViewModel as? CustomIntakeViewModel {
             custom.$isValid
+                .receive(on: RunLoop.main)
                 .sink { [weak self] _ in
                     self?.updateSelectedValid()
                 }
@@ -94,6 +96,7 @@ final class GoalsViewModel: ObservableObject {
         
         if let personal = personalIntakeViewModel as? PersonalIntakeViewModel {
             personal.$isValid
+                .receive(on: RunLoop.main)
                 .sink { [weak self] _ in
                     self?.updateSelectedValid()
                 }
@@ -101,6 +104,7 @@ final class GoalsViewModel: ObservableObject {
         }
         
         $selectedIntakeSource
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateSelectedValid()
             }
@@ -131,7 +135,7 @@ final class GoalsViewModel: ObservableObject {
         case .macros:
             await macrosIntakeViewModel.saveMacrosIntakeView()
         case .custom:
-            await customIntakeViewModel.saveCustomIntake()
+            await customIntakeViewModel.saveCustomIntakeView()
         }
     }
     

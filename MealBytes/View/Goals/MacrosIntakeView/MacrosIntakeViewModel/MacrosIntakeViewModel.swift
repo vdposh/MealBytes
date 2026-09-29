@@ -81,10 +81,9 @@ final class MacrosIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Save MacrosIntake Data
-    func saveMacrosIntakeView() async {
-        let trimmedCalories = calories.trimmedLeadingZeros
+    func saveMacrosIntakeData() async {
         let macrosIntakeData = MacrosIntake(
-            calories: trimmedCalories,
+            calories: calories.trimmedLeadingZeros,
             fat: fat.trimmedLeadingZeros,
             carbohydrate: carbohydrate.trimmedLeadingZeros,
             protein: protein.trimmedLeadingZeros
@@ -92,21 +91,6 @@ final class MacrosIntakeViewModel: ObservableObject {
         
         do {
             try await firestore.saveMacrosIntakeFirestore(macrosIntakeData)
-            
-            await MainActor.run {
-                mainViewModel.updateIntake(to: trimmedCalories)
-                mainViewModel
-                    .updateMacros(
-                        fat: fat.trimmedLeadingZeros,
-                        carbohydrate: carbohydrate.trimmedLeadingZeros,
-                        protein: protein.trimmedLeadingZeros
-                    )
-                didSaveSuccessfully = true
-            }
-            
-            await mainViewModel.saveCurrentIntakeMainView(
-                source: IntakeSource.macros.rawValue
-            )
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -114,9 +98,29 @@ final class MacrosIntakeViewModel: ObservableObject {
         }
     }
     
+    func saveMacrosIntakeView() async {
+        await saveMacrosIntakeData()
+        
+        await MainActor.run {
+            mainViewModel.updateIntake(to: calories.trimmedLeadingZeros)
+            mainViewModel.updateMacros(
+                fat: fat.trimmedLeadingZeros,
+                carbohydrate: carbohydrate.trimmedLeadingZeros,
+                protein: protein.trimmedLeadingZeros
+            )
+            didSaveSuccessfully = true
+        }
+        
+        await mainViewModel.saveCurrentIntakeMainView(
+            source: IntakeSource.macros.rawValue
+        )
+    }
+    
     // MARK: - Calculation
     private func setupBindingsMacrosIntakeView() {
-        Publishers.CombineLatest3($fat, $carbohydrate, $protein)
+        let fields = Publishers.CombineLatest3($fat, $carbohydrate, $protein)
+        
+        fields
             .sink { [weak self] fat, carb, protein in
                 guard let self else { return }
                 
@@ -131,6 +135,18 @@ final class MacrosIntakeViewModel: ObservableObject {
                     carbohydrate: carb,
                     protein: protein
                 )
+            }
+            .store(in: &cancellables)
+        
+        fields
+            .dropFirst()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] fat, carb, protein in
+                guard let self, self.isValid else { return }
+                
+                Task {
+                    await self.saveMacrosIntakeView()
+                }
             }
             .store(in: &cancellables)
     }

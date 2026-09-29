@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import Combine
 
 protocol CustomIntakeViewModelProtocol {
     var isValid: Bool { get }
     
     func loadCustomIntake() async
-    func saveCustomIntake() async
+    func saveCustomIntakeView() async
     func conditionallyClearCustomIntake()
     func clearCustomIntake()
     func normalizeInputs()
@@ -19,26 +20,10 @@ protocol CustomIntakeViewModelProtocol {
 
 final class CustomIntakeViewModel: ObservableObject {
     @Published var appError: AppError?
-    @Published var calories: String = "" {
-        didSet {
-            recalculateIsValid()
-        }
-    }
-    @Published var protein: String = "" {
-        didSet {
-            recalculateIsValid()
-        }
-    }
-    @Published var fat: String = "" {
-        didSet {
-            recalculateIsValid()
-        }
-    }
-    @Published var carbohydrate: String = "" {
-        didSet {
-            recalculateIsValid()
-        }
-    }
+    @Published var calories: String = ""
+    @Published var protein: String = ""
+    @Published var fat: String = ""
+    @Published var carbohydrate: String = ""
     @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyCustomIntake: Bool = false
@@ -46,8 +31,16 @@ final class CustomIntakeViewModel: ObservableObject {
     private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     
+    private var cancellables = Set<AnyCancellable>()
+    
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
+        
+        setupBindingsCustomIntakeView()
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     // MARK: - Load CustomIntake Data
@@ -90,10 +83,9 @@ final class CustomIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Save CustomIntake Data
-    func saveCustomIntake() async {
-        let trimmedCalories = calories.trimmedLeadingZeros
+    func saveCustomIntakeData() async {
         let data = CustomIntake(
-            calories: trimmedCalories,
+            calories: calories.trimmedLeadingZeros,
             fat: fat.trimmedLeadingZeros,
             carbohydrate: carbohydrate.trimmedLeadingZeros,
             protein: protein.trimmedLeadingZeros
@@ -103,20 +95,12 @@ final class CustomIntakeViewModel: ObservableObject {
             try await firestore.saveCustomIntakeFirestore(data)
             
             await MainActor.run {
-                mainViewModel.updateIntake(to: trimmedCalories)
-                mainViewModel
-                    .updateMacros(
-                        fat: fat.trimmedLeadingZeros,
-                        carbohydrate: carbohydrate.trimmedLeadingZeros,
-                        protein: protein.trimmedLeadingZeros
-                    )
-                didSaveSuccessfully = true
-            }
-            
-            await mainViewModel
-                .saveCurrentIntakeMainView(
-                    source: IntakeSource.custom.rawValue
+                mainViewModel.updateMacros(
+                    fat: fat.trimmedLeadingZeros,
+                    carbohydrate: carbohydrate.trimmedLeadingZeros,
+                    protein: protein.trimmedLeadingZeros
                 )
+            }
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -124,14 +108,59 @@ final class CustomIntakeViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Calculation
-    private func recalculateIsValid() {
-        isValid = validate(
-            calories: calories,
-            fat: fat,
-            carbohydrate: carbohydrate,
-            protein: protein
+    func saveCustomIntakeView() async {
+        await saveCustomIntakeData()
+        
+        let trimmedCalories = calories.trimmedLeadingZeros
+        
+        await MainActor.run {
+            mainViewModel.updateIntake(to: trimmedCalories)
+            mainViewModel.updateMacros(
+                fat: fat.trimmedLeadingZeros,
+                carbohydrate: carbohydrate.trimmedLeadingZeros,
+                protein: protein.trimmedLeadingZeros
+            )
+            didSaveSuccessfully = true
+        }
+        
+        await mainViewModel.saveCurrentIntakeMainView(
+            source: IntakeSource.custom.rawValue
         )
+    }
+    
+    // MARK: - Calculation
+    private func setupBindingsCustomIntakeView() {
+        let fields = Publishers.CombineLatest4(
+            $calories,
+            $fat,
+            $carbohydrate,
+            $protein
+        )
+        
+        fields
+            .sink { [weak self] calories, fat, carb, protein in
+                guard let self else { return }
+                
+                self.isValid = self.validate(
+                    calories: calories,
+                    fat: fat,
+                    carbohydrate: carb,
+                    protein: protein
+                )
+            }
+            .store(in: &cancellables)
+        
+        fields
+            .dropFirst()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self, self.isValid else { return }
+                
+                Task {
+                    await self.saveCustomIntakeView()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func validate(

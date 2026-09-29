@@ -444,9 +444,9 @@ final class MainViewModel: ObservableObject {
         
         switch intakeSource {
         case IntakeSource.personal.rawValue:
-            let fatTarget = (intakeValue * 0.30) / 9
+            let fatTarget = (intakeValue * 0.20) / 9
             let carbsTarget = (intakeValue * 0.50) / 4
-            let proteinTarget = (intakeValue * 0.20) / 4
+            let proteinTarget = (intakeValue * 0.30) / 4
             return (fatTarget, carbsTarget, proteinTarget)
             
         case IntakeSource.macros.rawValue:

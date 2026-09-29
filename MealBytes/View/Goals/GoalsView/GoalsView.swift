@@ -29,15 +29,13 @@ struct GoalsView: View {
         .navigationTitle("Goals")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem {
-                Button(role: .confirm) {
-                    Task {
-                        await goalsViewModel.saveSelected()
-                    }
-                    
+            ToolbarItem(placement: .cancellationAction) {
+                Button(role: .close) {
                     dismiss()
+                } label: {
+                    Text("Close")
+                        .fontWeight(.medium)
                 }
-                .disabled(!goalsViewModel.isSelectedValid)
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -71,6 +69,10 @@ struct GoalsView: View {
                 isSelected: goalsViewModel.selectedIntakeSource == source
             ) {
                 goalsViewModel.selectSource(source)
+                
+                Task {
+                    await goalsViewModel.saveSelected()
+                }
             }
         }
     }

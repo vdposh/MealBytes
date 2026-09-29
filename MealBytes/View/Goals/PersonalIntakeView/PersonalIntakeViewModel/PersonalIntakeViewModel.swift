@@ -61,6 +61,9 @@ final class PersonalIntakeViewModel: ObservableObject {
                 .loadPersonalIntakeFirestore()
             let hasAnyData = !personalIntakeData
                 .calculatedPersonalIntake.isEmpty
+            || !personalIntakeData.age.isEmpty
+            || !personalIntakeData.weight.isEmpty
+            || !personalIntakeData.height.isEmpty
             
             await MainActor.run {
                 self.calculatedPersonalIntake = personalIntakeData
@@ -116,13 +119,9 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     // MARK: - Save PersonalIntake Data
-    func savePersonalIntakeView() async {
-        let stablePersonalIntake = String(
-            calculatedPersonalIntake.doubleValue ?? 0
-        )
-        
+    func savePersonalIntakeData() async {
         let personalIntakeData = PersonalIntakeData(
-            calculatedPersonalIntake: stablePersonalIntake,
+            calculatedPersonalIntake: calculatedPersonalIntake,
             age: age.trimmedLeadingZeros,
             selectedSex: selectedSex.rawValue,
             selectedActivity: selectedActivity.rawValue,
@@ -135,26 +134,34 @@ final class PersonalIntakeViewModel: ObservableObject {
         
         do {
             try await firestore.savePersonalIntakeFirestore(personalIntakeData)
-            
-            await MainActor.run {
-                mainViewModel.updateIntake(to: stablePersonalIntake)
-                didSaveSuccessfully = true
-            }
-            
-            await mainViewModel
-                .saveCurrentIntakeMainView(
-                    source: IntakeSource.personal.rawValue
-                )
         } catch {
             await MainActor.run {
                 appError = .decoding
             }
         }
     }
+
+    func savePersonalIntakeView() async {
+        await savePersonalIntakeData()
+        
+        await MainActor.run {
+            mainViewModel.updateIntake(to: stablePersonalIntake)
+            didSaveSuccessfully = true
+        }
+        
+        await mainViewModel
+            .saveCurrentIntakeMainView(
+                source: IntakeSource.personal.rawValue
+            )
+    }
+    
+    private var stablePersonalIntake: String {
+        String(calculatedPersonalIntake.doubleValue ?? 0)
+    }
     
     // MARK: - Calculation
     private func setupBindingsPersonalIntakeView() {
-        Publishers.CombineLatest(
+        let fields = Publishers.CombineLatest(
             Publishers.CombineLatest(
                 Publishers.CombineLatest($age, $weight),
                 Publishers.CombineLatest($height, $selectedSex)
@@ -166,30 +173,44 @@ final class PersonalIntakeViewModel: ObservableObject {
                     .CombineLatest($selectedHeightUnit, $selectedWeightGoal)
             )
         )
-        .sink { [weak self] combined1, combined2 in
-            let ((age, weight), (height, sex)) = combined1
-            let ((activity, weightUnit), (heightUnit, weightGoal)) = combined2
-            
-            self?.recalculatePersonalIntake(
-                age: age,
-                weight: weight,
-                height: height,
-                sex: sex,
-                activity: activity,
-                weightUnit: weightUnit,
-                heightUnit: heightUnit,
-                weightGoal: weightGoal
-            )
-            
-            self?.isValid = self?.validate(
-                age: age,
-                weight: weight,
-                height: height,
-                activity: activity,
-                weightGoal: weightGoal
-            ) ?? false
-        }
-        .store(in: &cancellables)
+        
+        fields
+            .sink { [weak self] combined1, combined2 in
+                let ((age, weight), (height, sex)) = combined1
+                let ((activity, weightUnit), (heightUnit, weightGoal)) = combined2
+                
+                self?.recalculatePersonalIntake(
+                    age: age,
+                    weight: weight,
+                    height: height,
+                    sex: sex,
+                    activity: activity,
+                    weightUnit: weightUnit,
+                    heightUnit: heightUnit,
+                    weightGoal: weightGoal
+                )
+                
+                self?.isValid = self?.validate(
+                    age: age,
+                    weight: weight,
+                    height: height,
+                    activity: activity,
+                    weightGoal: weightGoal
+                ) ?? false
+            }
+            .store(in: &cancellables)
+        
+        fields
+            .dropFirst()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                
+                Task {
+                    await self.savePersonalIntakeView()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func validate(
@@ -272,7 +293,7 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
-        var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
+    var macroNutrients: (protein: Double, fat: Double, carbs: Double)? {
         guard let calories = calculatedPersonalIntake.doubleValue,
               calories > 0 else {
             return nil
