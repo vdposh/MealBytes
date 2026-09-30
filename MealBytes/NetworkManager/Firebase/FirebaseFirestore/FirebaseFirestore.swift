@@ -25,7 +25,6 @@ protocol FirebaseFirestoreProtocol {
     func loadPersonalIntakeFirestore() async throws -> PersonalIntakeData
     func loadCustomIntakeFirestore() async throws -> CustomIntake
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake
-    func loadDisplayIntakeFirestore() async throws -> Bool
     func addMealItemFirestore(_ mealItem: MealItem) async throws
     func addBookmarkFirestore(
         _ foods: [Food],
@@ -48,7 +47,6 @@ protocol FirebaseFirestoreProtocol {
     ) async throws
     func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
-    func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemsFirestore(on date: Date) async throws
@@ -442,44 +440,6 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document("CurrentIntake")
         
         try documentReference.setData(from: data)
-    }
-    
-    // MARK: - Load Display Intake
-    func loadDisplayIntakeFirestore() async throws -> Bool {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
-        
-        let documentReference = firestore
-            .collection("Users")
-            .document(uid)
-            .collection("ProfileView")
-            .document("DisplayIntake")
-        let snapshot = try await documentReference.getDocument()
-        
-        guard let data = snapshot.data(),
-              let displayIntake = data["displayIntake"] as? Bool else {
-            throw AppError.decoding
-        }
-        
-        return displayIntake
-    }
-    
-    // MARK: - Save Display Intake
-    func saveDisplayIntakeFirestore(_ displayIntake: Bool) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
-        
-        let documentReference = firestore
-            .collection("Users")
-            .document(uid)
-            .collection("ProfileView")
-            .document("DisplayIntake")
-        
-        try await documentReference.setData(
-            ["displayIntake": displayIntake]
-        )
     }
     
     // MARK: - Current User

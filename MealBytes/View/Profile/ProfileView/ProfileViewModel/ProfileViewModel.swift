@@ -10,7 +10,6 @@ import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
-    @Published var uniqueId = UUID()
     @Published var alertContent: AlertContentProfile?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
@@ -67,8 +66,6 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Delete Account
     private func deleteAccount() async {
-        uniqueId = UUID()
-        
         await MainActor.run {
             isDeletingAccount = true
         }

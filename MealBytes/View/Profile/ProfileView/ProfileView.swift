@@ -22,17 +22,8 @@ struct ProfileView: View {
             
             Section {
                 ThemePickerSection()
-                
-                if !profileViewModel.mainViewModel.intake.isEmpty {
-                    IntakeToggleSection(profileViewModel: profileViewModel)
-                }
-            } footer: {
-                if !profileViewModel.mainViewModel.intake.isEmpty {
-                    Text("Enable to display daily intake progress directly in the Diary.")
-                }
             }
         }
-        .id(profileViewModel.uniqueId)
     }
 }
 

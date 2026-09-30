@@ -140,12 +140,11 @@ final class PersonalIntakeViewModel: ObservableObject {
             }
         }
     }
-
+    
     func savePersonalIntakeView() async {
         await savePersonalIntakeData()
         
         await MainActor.run {
-            mainViewModel.updateIntake(to: stablePersonalIntake)
             didSaveSuccessfully = true
         }
         
@@ -153,10 +152,6 @@ final class PersonalIntakeViewModel: ObservableObject {
             .saveCurrentIntakeMainView(
                 source: IntakeSource.personal.rawValue
             )
-    }
-    
-    private var stablePersonalIntake: String {
-        String(calculatedPersonalIntake.doubleValue ?? 0)
     }
     
     // MARK: - Calculation
@@ -197,18 +192,6 @@ final class PersonalIntakeViewModel: ObservableObject {
                     activity: activity,
                     weightGoal: weightGoal
                 ) ?? false
-            }
-            .store(in: &cancellables)
-        
-        fields
-            .dropFirst()
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                
-                Task {
-                    await self.savePersonalIntakeView()
-                }
             }
             .store(in: &cancellables)
     }
@@ -349,7 +332,7 @@ final class PersonalIntakeViewModel: ObservableObject {
             setSection(section, expanded: true)
         }
     }
-
+    
     private func isSectionExpanded(_ section: PersonalSection) -> Bool {
         switch section {
         case .age: return isExpandedAge
@@ -357,7 +340,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         case .height: return isExpandedHeight
         }
     }
-
+    
     private func setSection(_ section: PersonalSection, expanded: Bool) {
         switch section {
         case .age: isExpandedAge = expanded
@@ -365,7 +348,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         case .height: isExpandedHeight = expanded
         }
     }
-
+    
     enum PersonalSection {
         case age, weight, height
     }

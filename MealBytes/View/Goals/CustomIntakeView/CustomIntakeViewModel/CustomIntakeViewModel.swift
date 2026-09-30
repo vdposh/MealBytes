@@ -93,14 +93,6 @@ final class CustomIntakeViewModel: ObservableObject {
         
         do {
             try await firestore.saveCustomIntakeFirestore(data)
-            
-            await MainActor.run {
-                mainViewModel.updateMacros(
-                    fat: fat.trimmedLeadingZeros,
-                    carbohydrate: carbohydrate.trimmedLeadingZeros,
-                    protein: protein.trimmedLeadingZeros
-                )
-            }
         } catch {
             await MainActor.run {
                 appError = .decoding
@@ -111,15 +103,7 @@ final class CustomIntakeViewModel: ObservableObject {
     func saveCustomIntakeView() async {
         await saveCustomIntakeData()
         
-        let trimmedCalories = calories.trimmedLeadingZeros
-        
         await MainActor.run {
-            mainViewModel.updateIntake(to: trimmedCalories)
-            mainViewModel.updateMacros(
-                fat: fat.trimmedLeadingZeros,
-                carbohydrate: carbohydrate.trimmedLeadingZeros,
-                protein: protein.trimmedLeadingZeros
-            )
             didSaveSuccessfully = true
         }
         
@@ -147,18 +131,6 @@ final class CustomIntakeViewModel: ObservableObject {
                     carbohydrate: carb,
                     protein: protein
                 )
-            }
-            .store(in: &cancellables)
-        
-        fields
-            .dropFirst()
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                guard let self, self.isValid else { return }
-                
-                Task {
-                    await self.saveCustomIntakeView()
-                }
             }
             .store(in: &cancellables)
     }

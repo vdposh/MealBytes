@@ -43,9 +43,7 @@ struct GoalsSection: View {
             value: mainViewModel
                 .totalCalories()
                 .asWhole(unit: NutrientType.calories.unitType.rawValue),
-            progress: mainViewModel
-                .canDisplayIntake() ? mainViewModel
-                .calorieProgress() : nil
+            progress: mainViewModel.calorieProgress()
         )
     }
     
@@ -55,9 +53,7 @@ struct GoalsSection: View {
             value: mainViewModel
                 .totalNutrients().fat
                 .asWhole(unit: NutrientType.fat.unitType.rawValue),
-            progress: mainViewModel
-                .canDisplayIntake() ? mainViewModel
-                .macroProgress(for: .fat) : nil,
+            progress: mainViewModel.macroProgress(for: .fat),
             color: .customFat
         )
     }
@@ -68,9 +64,7 @@ struct GoalsSection: View {
             value: mainViewModel
                 .totalNutrients().carbs
                 .asWhole(unit: NutrientType.carbohydrate.unitType.rawValue),
-            progress: mainViewModel
-                .canDisplayIntake() ? mainViewModel
-                .macroProgress(for: .carbohydrate) : nil,
+            progress: mainViewModel.macroProgress(for: .carbohydrate),
             color: .customCarbs
         )
     }
@@ -81,9 +75,7 @@ struct GoalsSection: View {
             value: mainViewModel
                 .totalNutrients().protein
                 .asWhole(unit: NutrientType.protein.unitType.rawValue),
-            progress: mainViewModel
-                .canDisplayIntake() ? mainViewModel
-                .macroProgress(for: .protein) : nil,
+            progress: mainViewModel.macroProgress(for: .protein),
             color: .customProtein
         )
     }

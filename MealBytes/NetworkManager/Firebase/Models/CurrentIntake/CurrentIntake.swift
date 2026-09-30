@@ -8,6 +8,5 @@
 import SwiftUI
 
 struct CurrentIntake: Codable {
-    let intake: String
     let source: String
 }

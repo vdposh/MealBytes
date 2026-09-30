@@ -10,26 +10,25 @@ import FirebaseCore
 
 protocol MainViewModelProtocol {
     var date: Date { get set }
-    var intakeSource: String { get }
-    var displayIntake: Bool { get }
     var intake: String { get }
+    var intakeSource: String { get }
     
     func loadMainData() async
     func saveCurrentIntakeMainView(source: String) async
-    func saveDisplayIntakeMainView(_ newValue: Bool) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
     func deleteMealItemMainView(with id: UUID, for: MealType, animated: Bool)
-    func intakePercentage(for calories: Double) -> String
-    func updateIntake(to value: String)
-    func updateMacros(fat: String, carbohydrate: String, protein: String)
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool)
-    func setDisplayIntake(_ value: Bool)
-    func canDisplayIntake() -> Bool
     func formattedDate() -> String
     func resetDateToToday()
     func resetMainState()
+}
+
+struct MacroTargets {
+    var fat: Double = 0
+    var carbs: Double = 0
+    var protein: Double = 0
 }
 
 final class MainViewModel: ObservableObject {
@@ -48,16 +47,13 @@ final class MainViewModel: ObservableObject {
     @Published var mealTypeToClear: MealType?
     @Published var intake: String = ""
     @Published var intakeSource: String = ""
-    @Published var macroFat: String = ""
-    @Published var macroCarbs: String = ""
-    @Published var macroProtein: String = ""
+    @Published var macroTargets = MacroTargets()
     @Published var showDatePicker: Bool = false
     @Published var showGoals: Bool = false
     @Published var showNutrientTotals: Bool = false
     @Published var showClearDayAlert: Bool = false
     @Published var showClearMealTypeAlert: Bool = false
     @Published var isExpanded: Bool = false
-    @Published var displayIntake: Bool = true
     
     let calendar = Calendar.current
     
@@ -89,18 +85,17 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Main Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
-        async let macroTask: () = loadIntakeMainView()
-        async let displayIntakeTask: () = loadDisplayIntakeMainView()
+        async let intakeTask: () = loadIntakeMainView()
         async let bookmarksTask: () = searchViewModel.loadSearchViewData()
         
-        _ = await (
-            mealItemsTask,
-            displayIntakeTask,
-            macroTask,
-            bookmarksTask
-        )
+        _ = await (mealItemsTask, intakeTask, bookmarksTask)
         
         await goalsViewModel.loadGoalsData()
+        
+        await MainActor.run {
+            self.intake = currentIntakeFromVM()
+            self.macroTargets = computeMacroTargets(for: intakeSource)
+        }
     }
     
     // MARK: - Load Meal Item
@@ -282,46 +277,11 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Load Intake
     private func loadIntakeMainView() async {
-        if intakeSource == IntakeSource.custom.rawValue {
-            do {
-                let customData = try await firestore
-                    .loadCustomIntakeFirestore()
-                await MainActor.run {
-                    updateMacros(
-                        fat: customData.fat,
-                        carbohydrate: customData.carbohydrate,
-                        protein: customData.protein
-                    )
-                }
-            } catch {
-                await MainActor.run {
-                    appError = .decoding
-                }
-            }
-        } else {
-            do {
-                let macrosIntakeData = try await firestore
-                    .loadMacrosIntakeFirestore()
-                await MainActor.run {
-                    updateMacros(
-                        fat: macrosIntakeData.fat,
-                        carbohydrate: macrosIntakeData.carbohydrate,
-                        protein: macrosIntakeData.protein
-                    )
-                }
-            } catch {
-                await MainActor.run {
-                    appError = .decoding
-                }
-            }
-        }
-        
         do {
-            let fetchedData = try await firestore.loadCurrentIntakeFirestore()
+            let current = try await firestore.loadCurrentIntakeFirestore()
             
             await MainActor.run {
-                self.intake = fetchedData.intake
-                self.intakeSource = fetchedData.source
+                self.intakeSource = current.source
             }
         } catch {
             await MainActor.run {
@@ -333,27 +293,17 @@ final class MainViewModel: ObservableObject {
     // MARK: - Save Current Intake
     func saveCurrentIntakeMainView(source: String) async {
         do {
-            let intakeData = CurrentIntake(intake: intake, source: source)
+            let intakeData = CurrentIntake(source: source)
             
             try await firestore.saveCurrentIntakeFirestore(intakeData)
             
-            await MainActor.run {
-                self.intakeSource = source
-            }
-        } catch {
-            await MainActor.run {
-                appError = .network
-            }
-        }
-    }
-    
-    // MARK: - Load Display Intake
-    private func loadDisplayIntakeMainView() async {
-        do {
-            let value = try await firestore.loadDisplayIntakeFirestore()
+            let newIntake = currentIntakeFromVM(for: source)
+            let newTargets = computeMacroTargets(for: source)
             
             await MainActor.run {
-                displayIntake = value
+                self.intakeSource = source
+                self.intake = newIntake
+                self.macroTargets = newTargets
             }
         } catch {
             await MainActor.run {
@@ -362,130 +312,100 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save Display Intake
-    func saveDisplayIntakeMainView(_ newValue: Bool) async {
-        await MainActor.run {
-            displayIntake = newValue
-        }
+    // MARK: - Intake from VM
+    private func currentIntakeFromVM(for source: String? = nil) -> String {
+        let source = source ?? intakeSource
         
-        do {
-            try await firestore.saveDisplayIntakeFirestore(newValue)
-        } catch {
-            await MainActor.run {
-                appError = .network
+        switch source {
+        case IntakeSource.personal.rawValue:
+            if let personal = goalsViewModel.personalIntakeViewModel
+                as? PersonalIntakeViewModel {
+                return personal.calculatedPersonalIntake
             }
-        }
-    }
-    
-    // MARK: - Calculation (Intake)
-    func totalIntakePercentage(for mealType: MealType? = nil) -> String {
-        let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
-        
-        let totalCalories = types.reduce(0.0) { sum, type in
-            let items = filteredMealItems(for: type, on: date)
-            let calories = items.reduce(0.0) { $0 + $1.caloriesValue }
-            return sum + calories
-        }
-        
-        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
-            return "0%"
-        }
-        
-        let percentage = totalCalories / intakeValue
-        return percentage.asPercentage()
-    }
-    
-    func intakePercentage(for calories: Double) -> String {
-        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
-            return "0%"
-        }
-        let percentage = (calories / intakeValue)
-        return percentage.asPercentage()
-    }
-    
-    func progressValue(for mealType: MealType) -> Double {
-        let calories = filteredMealItems(for: mealType, on: date).reduce(0) {
-            $0 + ($1.nutrients[.calories] ?? 0)
-        }
-        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
-            return 0
-        }
-        return min(max(calories / intakeValue, 0), 1)
-    }
-    
-    func summariesForCaloriesSection() -> [NutrientType: Double] {
-        mealItems.values.reduce(
-            into: [NutrientType: Double]()) { result, items in
-                items.forEach { item in
-                    guard calendar.isDate(
-                        item.date,
-                        inSameDayAs: date
-                    ) else { return }
-                    item.nutrients.forEach { nutrient, value in
-                        result[nutrient, default: 0.0] += value
-                    }
-                }
+        case IntakeSource.macros.rawValue:
+            if let macros = goalsViewModel.macrosIntakeViewModel
+                as? MacrosIntakeViewModel {
+                return macros.calories
             }
+        case IntakeSource.custom.rawValue:
+            if let custom = goalsViewModel.customIntakeViewModel
+                as? CustomIntakeViewModel {
+                return custom.calories
+            }
+        default:
+            break
+        }
+        return ""
     }
     
+    private func computeMacroTargets(for source: String) -> MacroTargets {
+        let intakeValue = currentIntakeFromVM(for: source).doubleValue ?? 0
+        guard intakeValue > 0 else {
+            return MacroTargets()
+        }
+        
+        switch source {
+        case IntakeSource.personal.rawValue:
+            return MacroTargets(
+                fat: (intakeValue * 0.20) / 9,
+                carbs: (intakeValue * 0.50) / 4,
+                protein: (intakeValue * 0.30) / 4
+            )
+            
+        case IntakeSource.macros.rawValue:
+            guard let macros = goalsViewModel.macrosIntakeViewModel
+                    as? MacrosIntakeViewModel else {
+                return MacroTargets()
+            }
+            return MacroTargets(
+                fat: macros.fat.doubleValue ?? 0,
+                carbs: macros.carbohydrate.doubleValue ?? 0,
+                protein: macros.protein.doubleValue ?? 0
+            )
+            
+        case IntakeSource.custom.rawValue:
+            guard let custom = goalsViewModel.customIntakeViewModel
+                    as? CustomIntakeViewModel else {
+                return MacroTargets()
+            }
+            return MacroTargets(
+                fat: custom.fat.doubleValue ?? 0,
+                carbs: custom.carbohydrate.doubleValue ?? 0,
+                protein: custom.protein.doubleValue ?? 0
+            )
+            
+        default:
+            return MacroTargets()
+        }
+    }
+    
+    // MARK: - Calculation
     func calorieProgress() -> Double? {
         guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
             return nil
         }
         let calories = totalCalories()
-        guard intakeValue > 0 else { return 0 }
         return calories / intakeValue
     }
     
-    func getMacroTargets() -> (fat: Double, carbs: Double, protein: Double)? {
-        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
-            return nil
-        }
-        
-        switch intakeSource {
-        case IntakeSource.personal.rawValue:
-            let fatTarget = (intakeValue * 0.20) / 9
-            let carbsTarget = (intakeValue * 0.50) / 4
-            let proteinTarget = (intakeValue * 0.30) / 4
-            return (fatTarget, carbsTarget, proteinTarget)
-            
-        case IntakeSource.macros.rawValue:
-            let fat = Double(macroFat) ?? 0
-            let carbs = Double(macroCarbs) ?? 0
-            let protein = Double(macroProtein) ?? 0
-            return (fat, carbs, protein)
-            
-        case IntakeSource.custom.rawValue:
-            let fat = Double(macroFat) ?? 0
-            let carbs = Double(macroCarbs) ?? 0
-            let protein = Double(macroProtein) ?? 0
-            return (fat, carbs, protein)
-            
-        default:
-            return nil
-        }
-    }
-    
     func macroProgress(for type: NutrientType) -> Double? {
-        guard let targets = getMacroTargets() else { return nil }
         let current = totalNutrients()
         
         switch type {
         case .fat:
-            guard targets.fat > 0 else { return 0 }
-            return current.fat / targets.fat
+            guard macroTargets.fat > 0 else { return 0 }
+            return current.fat / macroTargets.fat
         case .carbohydrate:
-            guard targets.carbs > 0 else { return 0 }
-            return current.carbs / targets.carbs
+            guard macroTargets.carbs > 0 else { return 0 }
+            return current.carbs / macroTargets.carbs
         case .protein:
-            guard targets.protein > 0 else { return 0 }
-            return current.protein / targets.protein
+            guard macroTargets.protein > 0 else { return 0 }
+            return current.protein / macroTargets.protein
         default:
             return nil
         }
     }
     
-    // MARK: - Calculation (Calories)
     func totalCalories(for mealType: MealType? = nil) -> Double {
         let types: [MealType] = mealType.map { [$0] } ?? MealType.allCases
         
@@ -496,33 +416,6 @@ final class MainViewModel: ObservableObject {
             }
             return sum + Double(typeTotal)
         }
-    }
-    
-    var remainingCalories: Double {
-        let total = totalCalories()
-        let intake = self.intake.doubleValue ?? 0
-        return intake - total
-    }
-    
-    var isOverLimit: Bool {
-        remainingCalories < 0
-    }
-    
-    var remainingCaloriesText: String {
-        abs(remainingCalories).asWhole()
-    }
-    
-    var remainingCaloriesWord: String {
-        isOverLimit ? "over" : "under"
-    }
-    
-    var remainingCaloriesUnit: String {
-        let value = abs(remainingCalories)
-        return value == 1 ? "calorie" : "calories"
-    }
-    
-    var remainingCaloriesWordColor: Color {
-        isOverLimit ? .customRed : .accent
     }
     
     // MARK: - Calculation (Nutrients)
@@ -702,15 +595,9 @@ final class MainViewModel: ObservableObject {
     func resetMainState() {
         selectedMealType = nil
         
-        intake = ""
-        macroFat = ""
-        macroCarbs = ""
-        macroProtein = ""
-        
         expandAllSections()
         resetDateToToday()
         goalsViewModel.clearGoalsView()
-        setDisplayIntake(true)
     }
     
     // MARK: - Alert
@@ -789,35 +676,12 @@ final class MainViewModel: ObservableObject {
         )
     }
     
-    var currentIntake: String {
-        (intake.doubleValue ?? 0).asWhole()
-    }
-    
     func filteredItems(for mealType: MealType) -> [MealItem] {
         filteredMealItems(for: mealType, on: date)
     }
     
     func hasItems(for mealType: MealType) -> Bool {
         !filteredItems(for: mealType).isEmpty
-    }
-    
-    func totalCaloriesText(for mealType: MealType) -> String {
-        totalCalories(for: mealType).asWhole()
-    }
-    
-    func canDisplayIntake() -> Bool {
-        displayIntake && !intake.isEmpty
-    }
-    
-    func intakePercentageText(for mealType: MealType) -> String {
-        totalIntakePercentage(for: mealType)
-    }
-    
-    func isExpandedBinding(for mealType: MealType) -> Binding<Bool> {
-        Binding(
-            get: { self.expandedSections[mealType] ?? false },
-            set: { self.expandedSections[mealType] = $0 }
-        )
     }
     
     func isExpanded(for mealType: MealType) -> Bool {
@@ -837,20 +701,6 @@ extension MainViewModel: MainViewModelProtocol {
     
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool) {
         expandedSections[mealType] = isExpanded
-    }
-    
-    func setDisplayIntake(_ value: Bool) {
-        displayIntake = value
-    }
-    
-    func updateIntake(to value: String) {
-        intake = (Double(value) ?? 0).asWhole(grouping: false)
-    }
-    
-    func updateMacros(fat: String, carbohydrate: String, protein: String) {
-        self.macroFat = fat
-        self.macroCarbs = carbohydrate
-        self.macroProtein = protein
     }
 }
 

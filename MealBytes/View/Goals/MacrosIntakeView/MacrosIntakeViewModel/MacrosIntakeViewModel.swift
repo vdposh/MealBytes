@@ -102,12 +102,6 @@ final class MacrosIntakeViewModel: ObservableObject {
         await saveMacrosIntakeData()
         
         await MainActor.run {
-            mainViewModel.updateIntake(to: calories.trimmedLeadingZeros)
-            mainViewModel.updateMacros(
-                fat: fat.trimmedLeadingZeros,
-                carbohydrate: carbohydrate.trimmedLeadingZeros,
-                protein: protein.trimmedLeadingZeros
-            )
             didSaveSuccessfully = true
         }
         
@@ -135,18 +129,6 @@ final class MacrosIntakeViewModel: ObservableObject {
                     carbohydrate: carb,
                     protein: protein
                 )
-            }
-            .store(in: &cancellables)
-        
-        fields
-            .dropFirst()
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sink { [weak self] fat, carb, protein in
-                guard let self, self.isValid else { return }
-                
-                Task {
-                    await self.saveMacrosIntakeView()
-                }
             }
             .store(in: &cancellables)
     }
