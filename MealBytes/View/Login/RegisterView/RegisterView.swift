@@ -57,13 +57,13 @@ struct RegisterView: View {
                         }
                     } label: {
                         Text("Resend")
-                            .fontWeight(.semibold)
+                            .fontWeight(.medium)
                             .foregroundStyle(.white)
                     }
                     .disabled(registerViewModel.isRegisterLoading)
                 } else {
                     Text(registerViewModel.timerText)
-                        .fontWeight(.semibold)
+                        .fontWeight(.medium)
                         .frame(width: 65)
                 }
                 

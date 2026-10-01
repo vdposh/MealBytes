@@ -38,7 +38,7 @@ struct PersonalIntakeView: View {
                     )
                 }
                 .navigationTitle("Body Profile")
-                .onDisappear {
+                .task {
                     personalIntakeViewModel.collapseAllSections()
                 }
             } label: {

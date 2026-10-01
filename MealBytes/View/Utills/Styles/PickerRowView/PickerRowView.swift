@@ -21,7 +21,6 @@ struct PickerRowView<MenuContent: View>: View {
             } icon: {
                 Image(systemName: iconName)
                     .foregroundStyle(.customGray)
-                    .symbolColorRenderingMode(.gradient)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(alignment: .trailing) {

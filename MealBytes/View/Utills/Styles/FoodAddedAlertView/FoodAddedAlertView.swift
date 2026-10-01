@@ -17,7 +17,6 @@ struct FoodAddedAlertView: View {
                 .font(.subheadline)
         } icon: {
             Image(systemName: "text.badge.plus")
-                .symbolColorRenderingMode(.gradient)
         }
         .foregroundStyle(.secondary)
         .padding(.vertical, 14)

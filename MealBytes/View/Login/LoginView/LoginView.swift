@@ -58,7 +58,7 @@ struct LoginView: View {
                     }
                 } label: {
                     Text("Login")
-                        .fontWeight(.semibold)
+                        .fontWeight(.medium)
                         .foregroundStyle(.white)
                 }
                 .disabled(!loginViewModel.isLoginEnabled())

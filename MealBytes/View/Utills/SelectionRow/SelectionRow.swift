@@ -35,6 +35,7 @@ struct SelectionRow: View {
                     Image(systemName: "checkmark")
                         .font(.headline)
                         .foregroundStyle(checkmarkColor)
+                        .padding(.trailing, 2)
                 }
             }
         }

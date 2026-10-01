@@ -48,7 +48,6 @@ struct ServingTextFieldView: View {
                 } icon: {
                     Image(systemName: labelIconName)
                         .foregroundStyle(labelIconColor)
-                        .symbolColorRenderingMode(.gradient)
                 }
             } else if useStackTrailing {
                 HStack {

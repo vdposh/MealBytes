@@ -167,7 +167,6 @@ struct FoodView: View {
                 } icon: {
                     Image(systemName: "text.justify")
                         .foregroundStyle(.customGray)
-                        .symbolColorRenderingMode(.gradient)
                 }
                 .onChange(of: selected) {
                     foodViewModel.updateServing(selected)
@@ -189,7 +188,6 @@ struct FoodView: View {
                 } icon: {
                     Image(systemName: "fork.knife")
                         .foregroundStyle(.customGray)
-                        .symbolColorRenderingMode(.gradient)
                 }
                 .onChange(of: mealType) {
                     amountFocused = false
@@ -234,7 +232,7 @@ struct FoodView: View {
                         }
                     } label: {
                         Text("Add")
-                            .fontWeight(.semibold)
+                            .fontWeight(.medium)
                             .foregroundStyle(.white)
                     }
                     .disabled(!foodViewModel.canAddFood)

@@ -35,7 +35,6 @@ struct SecureFieldView: View {
             } icon: {
                 Image(systemName: "key.fill")
                     .foregroundStyle(text.isEmpty ? .customGray : .accent)
-                    .symbolColorRenderingMode(.gradient)
             }
         } else {
             SecureField(placeholder, text: $text)

@@ -38,15 +38,6 @@ struct GoalsView: View {
                 }
                 .disabled(!goalsViewModel.isSelectedValid)
             }
-            
-            ToolbarItem(placement: .cancellationAction) {
-                Button(role: .close) {
-                    dismiss()
-                } label: {
-                    Text("Close")
-                        .fontWeight(.medium)
-                }
-            }
         }
         .safeAreaInset(edge: .bottom) {
             switch goalsViewModel.selectedIntakeSource {

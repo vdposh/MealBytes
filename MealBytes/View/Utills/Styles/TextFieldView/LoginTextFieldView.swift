@@ -37,7 +37,6 @@ struct LoginTextFieldView: View {
             } icon: {
                 Image(systemName: "envelope.fill")
                     .foregroundStyle(text.isEmpty ? .customGray : .accent)
-                    .symbolColorRenderingMode(.gradient)
             }
         } else {
             TextField(placeholder, text: $text)
