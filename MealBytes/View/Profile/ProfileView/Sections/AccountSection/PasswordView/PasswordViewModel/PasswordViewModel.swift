@@ -8,7 +8,6 @@
 import SwiftUI
 import FirebaseAuth
 
-@MainActor
 final class PasswordViewModel: ObservableObject {
     @Published var currentPassword: String = ""
     @Published var newPassword: String = ""
@@ -26,17 +25,21 @@ final class PasswordViewModel: ObservableObject {
         guard isFormValid else { return }
         
         if let errorMessage = validatePassword() {
-            alertTitle = "Error"
-            alertMessage = errorMessage
-            showAlert = true
+            await MainActor.run {
+                alertTitle = "Error"
+                alertMessage = errorMessage
+                showAlert = true
+            }
             return
         }
         
-        isLoading = true
+        await MainActor.run { isLoading = true }
         
         defer {
-            withAnimation {
-                isLoading = false
+            Task { @MainActor in
+                withAnimation {
+                    isLoading = false
+                }
             }
         }
         
@@ -46,18 +49,24 @@ final class PasswordViewModel: ObservableObject {
                 newPassword: newPassword
             )
             
-            isSuccess = true
-            alertTitle = "Done"
-            alertMessage = "Password has been successfully updated."
-            showAlert = true
+            await MainActor.run {
+                isSuccess = true
+                alertTitle = "Done"
+                alertMessage = "Password has been successfully updated."
+                showAlert = true
+            }
             
         } catch {
-            isSuccess = false
-            alertTitle = "Error"
-            alertMessage = handlePasswordError(
+            let errorMessage = handlePasswordError(
                 error as NSError
             ).errorDescription ?? "Failed to update password."
-            showAlert = true
+            
+            await MainActor.run {
+                isSuccess = false
+                alertTitle = "Error"
+                alertMessage = errorMessage
+                showAlert = true
+            }
         }
     }
     
@@ -66,6 +75,9 @@ final class PasswordViewModel: ObservableObject {
             return "New password and confirmation do not match."
         }
         
+        if newPassword.count < 6 {
+            return "Password must be at least 6 characters long."
+        }
         return nil
     }
     
@@ -82,12 +94,12 @@ final class PasswordViewModel: ObservableObject {
         return .unknownError
     }
     
-    func resetPasswordState() {
-        currentPassword = ""
-        newPassword = ""
-        confirmPassword = ""
-        showAlert = false
-        isSuccess = false
+    func resetPasswordState() async {
+        await MainActor.run {
+            currentPassword = ""
+            newPassword = ""
+            confirmPassword = ""
+        }
     }
     
     // MARK: - UI Helper

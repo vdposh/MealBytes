@@ -8,7 +8,6 @@
 import SwiftUI
 import FirebaseAuth
 
-@MainActor
 final class EmailViewModel: ObservableObject {
     @Published var alertType: EmailAlertType?
     @Published var newEmail: String = ""
@@ -33,14 +32,18 @@ final class EmailViewModel: ObservableObject {
         
         if let currentEmail = firebaseAuth.getCurrentUserEmail(),
            cleanedEmail == currentEmail {
-            alertType = .error(
-                title: "Error",
-                message: AuthError.sameEmail.errorDescription ?? ""
-            )
+            await MainActor.run {
+                alertType = .error(
+                    title: "Error",
+                    message: AuthError.sameEmail.errorDescription ?? ""
+                )
+            }
             return
         }
         
-        alertType = .password
+        await MainActor.run {
+            alertType = .password
+        }
     }
     
     func confirmChangeEmail() async {
@@ -50,11 +53,15 @@ final class EmailViewModel: ObservableObject {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased()
         
-        isLoading = true
+        await MainActor.run {
+            isLoading = true
+        }
         
         defer {
-            withAnimation {
-                isLoading = false
+            Task { @MainActor in
+                withAnimation {
+                    isLoading = false
+                }
             }
         }
         
@@ -64,17 +71,21 @@ final class EmailViewModel: ObservableObject {
                 password: password
             )
             
-            alertType = .success(
-                title: "Done",
-                message: "A verification link has been sent to email."
-            )
-            password = ""
+            await MainActor.run {
+                alertType = .success(
+                    title: "Done",
+                    message: "A verification link has been sent to email."
+                )
+                password = ""
+            }
         } catch {
             let error = handleEmailError(error as NSError)
-            alertType = .error(
-                title: "Error",
-                message: error.errorDescription ?? "Failed to change email."
-            )
+            await MainActor.run {
+                alertType = .error(
+                    title: "Error",
+                    message: error.errorDescription ?? "Failed to change email."
+                )
+            }
         }
     }
     

@@ -19,7 +19,17 @@ struct AccountView: View {
         .navigationBarTitleDisplayMode(.inline)
         .alert(
             profileViewModel.alertTitle,
-            isPresented: $profileViewModel.showAlert,
+            isPresented: Binding(
+                get: { profileViewModel.showAlert },
+                set: { newValue in
+                    if !newValue {
+                        Task { @MainActor in
+                            profileViewModel.showAlert = false
+                            profileViewModel.alertContent = nil
+                        }
+                    }
+                }
+            ),
             actions: {
                 alertActions
             },
@@ -83,10 +93,8 @@ struct AccountView: View {
                 }
             }
             
-            Button(role: .cancel) {
-                profileViewModel.showAlert = false
-            }
-            .keyboardShortcut(.defaultAction)
+            Button(role: .cancel) { }
+                .keyboardShortcut(.defaultAction)
             
         case .signOut:
             Button(profileViewModel.destructiveTitle, role: .destructive) {
@@ -95,9 +103,7 @@ struct AccountView: View {
                 }
             }
             
-            Button(role: .cancel) {
-                profileViewModel.showAlert = false
-            }
+            Button(role: .cancel) { }
             
         default:
             EmptyView()

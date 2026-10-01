@@ -53,12 +53,22 @@ struct PasswordView: View {
         }
         .alert(
             passwordViewModel.alertTitle,
-            isPresented: $passwordViewModel.showAlert,
+            isPresented: Binding(
+                get: { passwordViewModel.showAlert },
+                set: { newValue in
+                    if !newValue {
+                        Task { @MainActor in
+                            passwordViewModel.showAlert = false
+                        }
+                    }
+                }
+            ),
             actions: {
                 Button("OK") {
-                    if passwordViewModel.isSuccess {
-                        passwordViewModel.resetPasswordState()
-                    } else {
+                    Task {
+                        if passwordViewModel.isSuccess {
+                            await passwordViewModel.resetPasswordState()
+                        }
                         passwordViewModel.showAlert = false
                     }
                 }

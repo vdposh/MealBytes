@@ -47,7 +47,13 @@ struct EmailView: View {
             emailViewModel.alertTitle,
             isPresented: Binding(
                 get: { emailViewModel.alertType != nil },
-                set: { if !$0 { emailViewModel.alertType = nil } }
+                set: { newValue in
+                    if !newValue {
+                        Task { @MainActor in
+                            emailViewModel.alertType = nil
+                        }
+                    }
+                }
             ),
             actions: {
                 alertActions
