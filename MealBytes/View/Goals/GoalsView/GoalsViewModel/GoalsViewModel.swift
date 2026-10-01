@@ -85,15 +85,6 @@ final class GoalsViewModel: ObservableObject {
                 .store(in: &cancellables)
         }
         
-        if let custom = customIntakeViewModel as? CustomIntakeViewModel {
-            custom.$isValid
-                .receive(on: RunLoop.main)
-                .sink { [weak self] _ in
-                    self?.updateSelectedValid()
-                }
-                .store(in: &cancellables)
-        }
-        
         if let personal = personalIntakeViewModel as? PersonalIntakeViewModel {
             personal.$isValid
                 .receive(on: RunLoop.main)
@@ -118,7 +109,7 @@ final class GoalsViewModel: ObservableObject {
         case .macros:
             isSelectedValid = macrosIntakeViewModel.isValid
         case .custom:
-            isSelectedValid = customIntakeViewModel.isValid
+            isSelectedValid = true
         }
     }
     

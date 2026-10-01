@@ -6,11 +6,8 @@
 //
 
 import SwiftUI
-import Combine
 
 protocol CustomIntakeViewModelProtocol {
-    var isValid: Bool { get }
-    
     func loadCustomIntake() async
     func saveCustomIntakeView() async
     func conditionallyClearCustomIntake()
@@ -24,23 +21,14 @@ final class CustomIntakeViewModel: ObservableObject {
     @Published var protein: String = ""
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
-    @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
     @Published var didLoadNonEmptyCustomIntake: Bool = false
     
     private let mainViewModel: MainViewModelProtocol
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     
-    private var cancellables = Set<AnyCancellable>()
-    
     init(mainViewModel: MainViewModelProtocol) {
         self.mainViewModel = mainViewModel
-        
-        setupBindingsCustomIntakeView()
-    }
-    
-    deinit {
-        cancellables.removeAll()
     }
     
     // MARK: - Load CustomIntake Data
@@ -79,7 +67,6 @@ final class CustomIntakeViewModel: ObservableObject {
         protein = ""
         fat = ""
         carbohydrate = ""
-        isValid = false
     }
     
     // MARK: - Save CustomIntake Data
@@ -110,58 +97,6 @@ final class CustomIntakeViewModel: ObservableObject {
         await mainViewModel.saveCurrentIntakeMainView(
             source: IntakeSource.custom.rawValue
         )
-    }
-    
-    // MARK: - Calculation
-    private func setupBindingsCustomIntakeView() {
-        let fields = Publishers.CombineLatest4(
-            $calories,
-            $fat,
-            $carbohydrate,
-            $protein
-        )
-        
-        fields
-            .sink { [weak self] calories, fat, carb, protein in
-                guard let self else { return }
-                
-                self.isValid = self.validate(
-                    calories: calories,
-                    fat: fat,
-                    carbohydrate: carb,
-                    protein: protein
-                )
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func validate(
-        calories: String,
-        fat: String,
-        carbohydrate: String,
-        protein: String
-    ) -> Bool {
-        let hasAnyValue = !calories.isEmpty ||
-        !fat.isEmpty ||
-        !carbohydrate.isEmpty ||
-        !protein.isEmpty
-        
-        guard hasAnyValue else { return false }
-        
-        if !calories.isEmpty && !calories.isValidNumericInput() {
-            return false
-        }
-        if !fat.isEmpty && !fat.isValidNumericInput() {
-            return false
-        }
-        if !carbohydrate.isEmpty && !carbohydrate.isValidNumericInput() {
-            return false
-        }
-        if !protein.isEmpty && !protein.isValidNumericInput() {
-            return false
-        }
-        
-        return true
     }
     
     // MARK: - Keyboard

@@ -29,6 +29,10 @@ struct GoalsSection: View {
                 title: "Goals",
                 isEdit: true
             ) {
+                Task {
+                    await mainViewModel.goalsViewModel.loadGoalsData()
+                }
+                
                 mainViewModel.showGoals = true
             }
         }

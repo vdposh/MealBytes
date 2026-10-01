@@ -138,22 +138,9 @@ final class MacrosIntakeViewModel: ObservableObject {
         carbohydrate: String,
         protein: String
     ) -> Bool {
-        let hasAnyValue = !fat.isEmpty || !carbohydrate.isEmpty || !protein.isEmpty
-        guard hasAnyValue else {
-            return false
-        }
-        
-        if !fat.isEmpty && !fat.isValidNumericInput() {
-            return false
-        }
-        if !carbohydrate.isEmpty && !carbohydrate.isValidNumericInput() {
-            return false
-        }
-        if !protein.isEmpty && !protein.isValidNumericInput() {
-            return false
-        }
-        
-        return true
+        fat.isValidNumericInput() &&
+        carbohydrate.isValidNumericInput() &&
+        protein.isValidNumericInput()
     }
     
     private func calculateCalories(
@@ -164,14 +151,6 @@ final class MacrosIntakeViewModel: ObservableObject {
         let fatValue = fat.doubleValue ?? 0
         let carbValue = carbohydrate.doubleValue ?? 0
         let protValue = protein.doubleValue ?? 0
-        
-        let allEmpty = fat.isEmpty && carbohydrate.isEmpty && protein.isEmpty
-        let allZero = fatValue == 0 && carbValue == 0 && protValue == 0
-        
-        if allEmpty || allZero {
-            calories = "0"
-            return
-        }
         
         let totalCalories = (fatValue * 9) + (carbValue * 4) + (protValue * 4)
         

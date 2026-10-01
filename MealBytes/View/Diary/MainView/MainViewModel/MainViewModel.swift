@@ -339,13 +339,12 @@ final class MainViewModel: ObservableObject {
     }
     
     private func computeMacroTargets(for source: String) -> MacroTargets {
-        let intakeValue = currentIntakeFromVM(for: source).doubleValue ?? 0
-        guard intakeValue > 0 else {
-            return MacroTargets()
-        }
-        
         switch source {
         case IntakeSource.personal.rawValue:
+            let intakeValue = currentIntakeFromVM(for: source).doubleValue ?? 0
+            guard intakeValue > 0 else {
+                return MacroTargets()
+            }
             return MacroTargets(
                 fat: (intakeValue * 0.20) / 9,
                 carbs: (intakeValue * 0.50) / 4,
@@ -393,13 +392,13 @@ final class MainViewModel: ObservableObject {
         
         switch type {
         case .fat:
-            guard macroTargets.fat > 0 else { return 0 }
+            guard macroTargets.fat > 0 else { return nil }
             return current.fat / macroTargets.fat
         case .carbohydrate:
-            guard macroTargets.carbs > 0 else { return 0 }
+            guard macroTargets.carbs > 0 else { return nil }
             return current.carbs / macroTargets.carbs
         case .protein:
-            guard macroTargets.protein > 0 else { return 0 }
+            guard macroTargets.protein > 0 else { return nil }
             return current.protein / macroTargets.protein
         default:
             return nil
@@ -418,7 +417,6 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Calculation (Nutrients)
     func totalNutrients(for mealType: MealType? = nil) -> (
         fat: Double,
         carbs: Double,
@@ -443,6 +441,7 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Calculation (Nutrients)
     private func recalculateNutrients(for date: Date) {
         nutrientSummaries = mealItems.values.reduce(
             into: [NutrientType: Double]()

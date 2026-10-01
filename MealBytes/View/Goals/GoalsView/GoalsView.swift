@@ -69,9 +69,6 @@ struct GoalsView: View {
             }
         }
         .ignoresSafeArea(edges: ignoreBottomSafeArea ? .bottom : [])
-        .task {
-            await goalsViewModel.loadGoalsData()
-        }
     }
     
     private var sourceSelectionRows: some View {
