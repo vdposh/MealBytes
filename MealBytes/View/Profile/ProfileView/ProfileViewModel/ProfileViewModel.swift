@@ -10,6 +10,7 @@ import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
+    @Published var deleteConfirmationText: String = ""
     @Published var alertContent: AlertContentProfile?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
@@ -95,6 +96,7 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Alert
     func prepareAlert(for type: AlertTypeProfileView) {
+        deleteConfirmationText = ""
         alertContent = AlertContentProfile(type: type)
         showAlert = true
     }
@@ -116,6 +118,8 @@ final class ProfileViewModel: ObservableObject {
         alertContent = nil
         appError = nil
         
+        deleteConfirmationText = ""
+        
         showAlert = false
         isDeletingAccount = false
         
@@ -135,8 +139,10 @@ final class ProfileViewModel: ObservableObject {
         alertContent?.destructiveTitle ?? "Confirm"
     }
     
-    var isLoading: Bool {
-        isDeletingAccount
+    var isDeleteConfirmed: Bool {
+        deleteConfirmationText
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() == "delete"
     }
 }
 

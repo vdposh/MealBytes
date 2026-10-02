@@ -26,12 +26,26 @@ final class ResetViewModel: ObservableObject {
             isLoading = true
         }
         
+        let cleanedEmail = email
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        
+        guard cleanedEmail.isValidEmail else {
+            await handleResetResult(success: false, error: .invalidEmail)
+            await MainActor.run {
+                withAnimation {
+                    isLoading = false
+                }
+            }
+            return
+        }
+        
         do {
-            try await firebaseAuth.resetPasswordAuth(email: email)
+            try await firebaseAuth.resetPasswordAuth(email: cleanedEmail)
             
             await MainActor.run {
                 isEmailSent = true
-                sentEmail = email
+                sentEmail = cleanedEmail
             }
             
             await handleResetResult(success: true, error: nil)
@@ -81,7 +95,7 @@ final class ResetViewModel: ObservableObject {
     
     // MARK: - Button State
     func isResetEnabled() -> Bool {
-        return !email.isEmpty
+        !email.isEmpty
     }
     
     // MARK: - Error

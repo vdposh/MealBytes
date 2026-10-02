@@ -44,24 +44,33 @@ final class RegisterViewModel: ObservableObject {
         }
         
         guard password == confirmPassword else {
-            await handleSignUpResult(success: false, error: .passwordMismatch)
+            await handleSignUpResult(error: .passwordMismatch)
+            return
+        }
+        
+        let cleanedEmail = email
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        
+        guard cleanedEmail.isValidEmail else {
+            await handleSignUpResult(error: .invalidEmail)
             return
         }
         
         do {
             try await firebaseAuth.signUpAuth(
-                email: email,
+                email: cleanedEmail,
                 password: password
             )
             
-            await handleSignUpResult(success: true)
+            await handleSignUpResult()
             await MainActor.run {
                 showResendOptions = true
             }
             await startResendTimer()
         } catch {
             let authError = handleRegisterError(error as NSError)
-            await handleSignUpResult(success: false, error: authError)
+            await handleSignUpResult(error: authError)
         }
     }
     
@@ -148,10 +157,7 @@ final class RegisterViewModel: ObservableObject {
         }
     }
     
-    private func handleSignUpResult(
-        success: Bool,
-        error: AuthError? = nil
-    ) async {
+    private func handleSignUpResult(error: AuthError? = nil) async {
         await MainActor.run {
             self.error = error
             showAlert = true
@@ -160,7 +166,7 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Button State
     func isRegisterEnabled() -> Bool {
-        return !email.isEmpty &&
+        !email.isEmpty &&
         !password.isEmpty &&
         !confirmPassword.isEmpty
     }

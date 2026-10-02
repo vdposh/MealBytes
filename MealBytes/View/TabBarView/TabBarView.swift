@@ -27,7 +27,7 @@ struct TabBarView: View {
                 }
             }
         }
-        .disabled(profileViewModel.isLoading)
+        .disabled(profileViewModel.isDeletingAccount)
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             loginErrorAlert
         }

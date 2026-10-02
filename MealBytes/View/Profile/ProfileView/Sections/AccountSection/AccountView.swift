@@ -71,14 +71,10 @@ struct AccountView: View {
                 Text("Sign Out")
             }
             
-            if profileViewModel.isDeletingAccount {
-                LoadingView()
-            } else {
-                Button(role: .destructive) {
-                    profileViewModel.prepareAlert(for: .deleteAccount)
-                } label: {
-                    Text("Delete Account")
-                }
+            Button(role: .destructive) {
+                profileViewModel.prepareAlert(for: .deleteAccount)
+            } label: {
+                Text("Delete Account")
             }
         }
     }
@@ -87,14 +83,20 @@ struct AccountView: View {
     private var alertActions: some View {
         switch profileViewModel.alertContent?.type {
         case .deleteAccount:
+            TextField(
+                "Enter \"Delete\" to confirm",
+                text: $profileViewModel.deleteConfirmationText
+            )
+            .autocorrectionDisabled()
+            
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
                     await profileViewModel.handleProfileAlertAction()
                 }
             }
+            .disabled(!profileViewModel.isDeleteConfirmed)
             
             Button(role: .cancel) { }
-                .keyboardShortcut(.defaultAction)
             
         case .signOut:
             Button(profileViewModel.destructiveTitle, role: .destructive) {

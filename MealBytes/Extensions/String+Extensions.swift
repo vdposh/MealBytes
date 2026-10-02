@@ -45,6 +45,12 @@ extension String {
         return formatter.number(from: self)?.doubleValue
     }
     
+    // MARK: - Email
+    var isValidEmail: Bool {
+        let pattern = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return range(of: pattern, options: .regularExpression) != nil
+    }
+    
     // MARK: - Text
     func pluralized(for amount: Double) -> String {
         guard amount != 1 else { return self }

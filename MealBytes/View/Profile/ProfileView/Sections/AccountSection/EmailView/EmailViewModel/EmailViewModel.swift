@@ -30,6 +30,16 @@ final class EmailViewModel: ObservableObject {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased()
         
+        guard cleanedEmail.isValidEmail else {
+            await MainActor.run {
+                alertType = .error(
+                    title: "Error",
+                    message: AuthError.invalidEmail.errorDescription ?? ""
+                )
+            }
+            return
+        }
+        
         if let currentEmail = firebaseAuth.getCurrentUserEmail(),
            cleanedEmail == currentEmail {
             await MainActor.run {

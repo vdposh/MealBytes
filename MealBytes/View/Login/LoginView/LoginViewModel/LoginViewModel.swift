@@ -89,9 +89,21 @@ final class LoginViewModel: ObservableObject {
             }
         }
         
+        let cleanedEmail = email
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        
+        guard cleanedEmail.isValidEmail else {
+            await MainActor.run {
+                error = .invalidEmail
+                updateAlertState()
+            }
+            return
+        }
+        
         do {
             let user = try await firebaseAuth.signInAuth(
-                email: email,
+                email: cleanedEmail,
                 password: password
             )
             
@@ -105,7 +117,7 @@ final class LoginViewModel: ObservableObject {
             
             do {
                 try await firestore.saveLoginDataFirestore(
-                    email: email,
+                    email: cleanedEmail,
                     isLoggedIn: true
                 )
             } catch {
@@ -223,7 +235,7 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Button State
     func isLoginEnabled() -> Bool {
-        return !email.isEmpty && !password.isEmpty
+        !email.isEmpty && !password.isEmpty
     }
     
     // MARK: - Error
