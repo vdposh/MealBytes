@@ -26,12 +26,6 @@ protocol MainViewModelProtocol {
     func resetMainState()
 }
 
-struct MacroTargets {
-    var fat: Double = 0
-    var carbs: Double = 0
-    var protein: Double = 0
-}
-
 final class MainViewModel: ObservableObject {
     @Published var date = Date() {
         didSet {
@@ -46,9 +40,8 @@ final class MainViewModel: ObservableObject {
     @Published var selectedMealType: MealType?
     @Published var selectedFoodItem: MealItem?
     @Published var mealTypeToClear: MealType?
-    @Published var intake: String = ""
     @Published var intakeSource: String = ""
-    @Published var macroTargets = MacroTargets()
+    @Published var nutrientTargets = NutrientTargets()
     @Published var showDatePicker: Bool = false
     @Published var showGoals: Bool = false
     @Published var displayGoals: Bool = true
@@ -96,8 +89,7 @@ final class MainViewModel: ObservableObject {
         await goalsViewModel.loadGoalsData()
         
         await MainActor.run {
-            self.intake = currentIntakeFromVM()
-            self.macroTargets = computeMacroTargets(for: intakeSource)
+            self.nutrientTargets = computeNutrientTargets(for: intakeSource)
         }
     }
     
@@ -329,13 +321,11 @@ final class MainViewModel: ObservableObject {
             
             try await firestore.saveCurrentIntakeFirestore(intakeData)
             
-            let newIntake = currentIntakeFromVM(for: source)
-            let newTargets = computeMacroTargets(for: source)
+            let newTargets = computeNutrientTargets(for: source)
             
             await MainActor.run {
                 self.intakeSource = source
-                self.intake = newIntake
-                self.macroTargets = newTargets
+                self.nutrientTargets = newTargets
             }
         } catch {
             await MainActor.run {
@@ -370,20 +360,20 @@ final class MainViewModel: ObservableObject {
         return ""
     }
     
-    private func computeMacroTargets(for source: String) -> MacroTargets {
+    private func computeNutrientTargets(
+        for source: String
+    ) -> NutrientTargets {
+        let intakeValue = currentIntakeFromVM(for: source).doubleValue ?? 0
+        
         switch source {
         case IntakeSource.personal.rawValue:
-            let intakeValue = currentIntakeFromVM(for: source).doubleValue ?? 0
-            guard intakeValue > 0 else {
-                return MacroTargets()
-            }
-            
+            guard intakeValue > 0 else { return NutrientTargets() }
             guard let personal = goalsViewModel.personalIntakeViewModel
                     as? PersonalIntakeViewModel else {
-                return MacroTargets()
+                return NutrientTargets()
             }
-            
-            return MacroTargets(
+            return NutrientTargets(
+                calories: intakeValue,
                 fat: (intakeValue * personal.fatPercentage) / 9,
                 carbs: (intakeValue * personal.carbsPercentage) / 4,
                 protein: (intakeValue * personal.proteinPercentage) / 4
@@ -392,9 +382,10 @@ final class MainViewModel: ObservableObject {
         case IntakeSource.macros.rawValue:
             guard let macros = goalsViewModel.macrosIntakeViewModel
                     as? MacrosIntakeViewModel else {
-                return MacroTargets()
+                return NutrientTargets()
             }
-            return MacroTargets(
+            return NutrientTargets(
+                calories: intakeValue,
                 fat: macros.fat.doubleValue ?? 0,
                 carbs: macros.carbohydrate.doubleValue ?? 0,
                 protein: macros.protein.doubleValue ?? 0
@@ -403,26 +394,25 @@ final class MainViewModel: ObservableObject {
         case IntakeSource.custom.rawValue:
             guard let custom = goalsViewModel.customIntakeViewModel
                     as? CustomIntakeViewModel else {
-                return MacroTargets()
+                return NutrientTargets()
             }
-            return MacroTargets(
+            return NutrientTargets(
+                calories: intakeValue,
                 fat: custom.fat.doubleValue ?? 0,
                 carbs: custom.carbohydrate.doubleValue ?? 0,
                 protein: custom.protein.doubleValue ?? 0
             )
             
         default:
-            return MacroTargets()
+            return NutrientTargets()
         }
     }
     
     // MARK: - Calculation
     func calorieProgress() -> Double? {
-        guard let intakeValue = intake.doubleValue, intakeValue > 0 else {
-            return nil
-        }
+        guard nutrientTargets.calories > 0 else { return nil }
         let calories = totalCalories()
-        return calories / intakeValue
+        return calories / nutrientTargets.calories
     }
     
     func macroProgress(for type: NutrientType) -> Double? {
@@ -430,14 +420,14 @@ final class MainViewModel: ObservableObject {
         
         switch type {
         case .fat:
-            guard macroTargets.fat > 0 else { return nil }
-            return current.fat / macroTargets.fat
+            guard nutrientTargets.fat > 0 else { return nil }
+            return current.fat / nutrientTargets.fat
         case .carbohydrate:
-            guard macroTargets.carbs > 0 else { return nil }
-            return current.carbs / macroTargets.carbs
+            guard nutrientTargets.carbs > 0 else { return nil }
+            return current.carbs / nutrientTargets.carbs
         case .protein:
-            guard macroTargets.protein > 0 else { return nil }
-            return current.protein / macroTargets.protein
+            guard nutrientTargets.protein > 0 else { return nil }
+            return current.protein / nutrientTargets.protein
         default:
             return nil
         }
