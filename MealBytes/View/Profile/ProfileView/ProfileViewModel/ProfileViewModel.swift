@@ -14,6 +14,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var alertContent: AlertContentProfile?
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
+    @Published var displayGoals: Bool = true
     @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
@@ -43,7 +44,17 @@ final class ProfileViewModel: ObservableObject {
         
         await MainActor.run {
             email = user.email
+            displayGoals = mainViewModel.displayGoals
         }
+    }
+    
+    // MARK: - Goals Disabled
+    func setDisplayGoals(_ display: Bool) async {
+        await MainActor.run {
+            displayGoals = display
+        }
+        
+        await mainViewModel.setDisplayGoals(display)
     }
     
     // MARK: - Sign Out

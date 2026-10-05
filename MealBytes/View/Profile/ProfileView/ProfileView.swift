@@ -23,6 +23,19 @@ struct ProfileView: View {
             Section {
                 ThemePickerSection()
             }
+            
+            Section {
+                Toggle("Goals", isOn: Binding(
+                    get: { profileViewModel.displayGoals },
+                    set: { newValue in
+                        Task {
+                            await profileViewModel.setDisplayGoals(newValue)
+                        }
+                    }
+                ))
+            } footer: {
+                Text("Enable to show Goal Cards in the Diary.")
+            }
         }
     }
 }

@@ -83,8 +83,11 @@ struct MainView: View {
         }
     }
     
+    @ViewBuilder
     private var goalsSection: some View {
-        GoalsSection(mainViewModel: mainViewModel)
+        if mainViewModel.displayGoals {
+            GoalsSection(mainViewModel: mainViewModel)
+        }
     }
     
     private var mealSection: some View {

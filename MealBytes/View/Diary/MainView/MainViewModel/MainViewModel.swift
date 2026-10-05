@@ -10,11 +10,12 @@ import FirebaseCore
 
 protocol MainViewModelProtocol {
     var date: Date { get set }
-    var intake: String { get }
+    var displayGoals: Bool { get }
     var intakeSource: String { get }
     
     func loadMainData() async
     func saveCurrentIntakeMainView(source: String) async
+    func setDisplayGoals(_ display: Bool) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
@@ -50,6 +51,7 @@ final class MainViewModel: ObservableObject {
     @Published var macroTargets = MacroTargets()
     @Published var showDatePicker: Bool = false
     @Published var showGoals: Bool = false
+    @Published var displayGoals: Bool = true
     @Published var showNutrientTotals: Bool = false
     @Published var showClearDayAlert: Bool = false
     @Published var showClearMealTypeAlert: Bool = false
@@ -85,10 +87,11 @@ final class MainViewModel: ObservableObject {
     // MARK: - Load Main Data
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
+        async let displayGoalsTask: () = loadDisplayGoalsMainView()
         async let intakeTask: () = loadIntakeMainView()
         async let bookmarksTask: () = searchViewModel.loadSearchViewData()
         
-        _ = await (mealItemsTask, intakeTask, bookmarksTask)
+        _ = await (mealItemsTask, displayGoalsTask, intakeTask, bookmarksTask)
         
         await goalsViewModel.loadGoalsData()
         
@@ -271,6 +274,35 @@ final class MainViewModel: ObservableObject {
                 await MainActor.run {
                     appError = .network
                 }
+            }
+        }
+    }
+    
+    // MARK: - Load Goals Disabled
+    private func loadDisplayGoalsMainView() async {
+        do {
+            let display = try await firestore.loadDisplayGoalsFirestore()
+            await MainActor.run {
+                displayGoals = display
+            }
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
+        }
+    }
+    
+    // MARK: - Set Goals Disabled
+    func setDisplayGoals(_ display: Bool) async {
+        await MainActor.run {
+            displayGoals = display
+        }
+        
+        do {
+            try await firestore.saveDisplayGoalsFirestore(display)
+        } catch {
+            await MainActor.run {
+                appError = .network
             }
         }
     }
