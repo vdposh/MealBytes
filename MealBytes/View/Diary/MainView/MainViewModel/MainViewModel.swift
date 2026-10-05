@@ -345,10 +345,16 @@ final class MainViewModel: ObservableObject {
             guard intakeValue > 0 else {
                 return MacroTargets()
             }
+            
+            guard let personal = goalsViewModel.personalIntakeViewModel
+                    as? PersonalIntakeViewModel else {
+                return MacroTargets()
+            }
+            
             return MacroTargets(
-                fat: (intakeValue * 0.20) / 9,
-                carbs: (intakeValue * 0.50) / 4,
-                protein: (intakeValue * 0.30) / 4
+                fat: (intakeValue * personal.fatPercentage) / 9,
+                carbs: (intakeValue * personal.carbsPercentage) / 4,
+                protein: (intakeValue * personal.proteinPercentage) / 4
             )
             
         case IntakeSource.macros.rawValue:

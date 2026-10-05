@@ -17,4 +17,5 @@ struct PersonalIntakeData: Codable {
     let height: String
     let selectedHeightUnit: String
     let selectedWeightGoal: String
+    let selectedDistribution: String?
 }

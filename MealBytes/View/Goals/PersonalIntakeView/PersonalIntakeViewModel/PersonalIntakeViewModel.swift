@@ -26,7 +26,8 @@ final class PersonalIntakeViewModel: ObservableObject {
     @Published var selectedActivity: Activity = .notSelected
     @Published var selectedWeightUnit: WeightUnit = .kg
     @Published var selectedHeightUnit: HeightUnit = .cm
-    @Published var selectedWeightGoal: WeightGoal = .notSelected
+    @Published var selectedWeightGoal: WeightGoal = .maintain
+    @Published var selectedDistribution: MacroDistribution = .balanced
     @Published var calculatedPersonalIntake: String = ""
     @Published var isValid: Bool = false
     @Published var didSaveSuccessfully: Bool = false
@@ -35,9 +36,9 @@ final class PersonalIntakeViewModel: ObservableObject {
     @Published var isExpandedWeight: Bool = false
     @Published var isExpandedHeight: Bool = false
     
-    var proteinPercentage: Double = 0.30
-    var fatPercentage: Double = 0.20
-    var carbsPercentage: Double = 0.50
+    var proteinPercentage: Double { selectedDistribution.protein }
+    var fatPercentage: Double { selectedDistribution.fat }
+    var carbsPercentage: Double { selectedDistribution.carbs }
     
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
     private let mainViewModel: MainViewModelProtocol
@@ -87,7 +88,10 @@ final class PersonalIntakeViewModel: ObservableObject {
                 ) ?? .cm
                 self.selectedWeightGoal = WeightGoal(
                     rawValue: personalIntakeData.selectedWeightGoal
-                ) ?? .notSelected
+                ) ?? .maintain
+                self.selectedDistribution = MacroDistribution(
+                    rawValue: personalIntakeData.selectedDistribution ?? ""
+                ) ?? .balanced
                 self.didLoadNonEmptyPersonalIntake = hasAnyData
             }
         } catch {
@@ -115,6 +119,8 @@ final class PersonalIntakeViewModel: ObservableObject {
         selectedActivity = .notSelected
         selectedWeightUnit = .kg
         selectedHeightUnit = .cm
+        selectedWeightGoal = .maintain
+        selectedDistribution = .balanced
         isValid = false
     }
     
@@ -129,7 +135,8 @@ final class PersonalIntakeViewModel: ObservableObject {
             selectedWeightUnit: selectedWeightUnit.rawValue,
             height: String(height.doubleValue ?? 0),
             selectedHeightUnit: selectedHeightUnit.rawValue,
-            selectedWeightGoal: selectedWeightGoal.rawValue
+            selectedWeightGoal: selectedWeightGoal.rawValue,
+            selectedDistribution: selectedDistribution.rawValue
         )
         
         do {
@@ -206,8 +213,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         !age.isEmpty &&
         weight.isValidNumericInput() &&
         height.isValidNumericInput() &&
-        activity != .notSelected &&
-        weightGoal != .notSelected
+        activity != .notSelected
     }
     
     private func recalculatePersonalIntake(
@@ -223,8 +229,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         guard !age.isEmpty,
               weight.isValidNumericInput(),
               height.isValidNumericInput(),
-              activity != .notSelected,
-              weightGoal != .notSelected else {
+              activity != .notSelected else {
             calculatedPersonalIntake = ""
             return
         }
@@ -268,8 +273,6 @@ final class PersonalIntakeViewModel: ObservableObject {
             adjustedCalories = tdee
         case .gain:
             adjustedCalories = tdee * 1.15
-        case .notSelected:
-            adjustedCalories = tdee
         }
         
         calculatedPersonalIntake = max(1, adjustedCalories).asWhole()

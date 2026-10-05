@@ -33,9 +33,6 @@ struct PersonalIntakeView: View {
                     ActivitySection(
                         personalIntakeViewModel: personalIntakeViewModel
                     )
-                    WeightGoalSelection(
-                        personalIntakeViewModel: personalIntakeViewModel
-                    )
                 }
                 .navigationTitle("Body Profile")
                 .task {
@@ -44,6 +41,14 @@ struct PersonalIntakeView: View {
             } label: {
                 Text("Body Profile")
             }
+            
+            MacroDistributionSelection(
+                personalIntakeViewModel: personalIntakeViewModel
+            )
+            
+            WeightGoalSelection(
+                personalIntakeViewModel: personalIntakeViewModel
+            )
         }
     }
 }

@@ -24,7 +24,7 @@ struct GoalsView: View {
     var body: some View {
         Form {
             goalsViewBuilder
-            sourceSelectionRows
+            intakeSourceSection
         }
         .navigationTitle("Goals")
         .navigationBarTitleDisplayMode(.inline)
@@ -34,6 +34,7 @@ struct GoalsView: View {
                     Task {
                         await goalsViewModel.saveSelected()
                     }
+                    
                     dismiss()
                 }
                 .disabled(!goalsViewModel.isSelectedValid)
@@ -62,14 +63,16 @@ struct GoalsView: View {
         .ignoresSafeArea(edges: ignoreBottomSafeArea ? .bottom : [])
     }
     
-    private var sourceSelectionRows: some View {
-        ForEach(IntakeSource.allCases, id: \.self) { source in
-            SelectionRow(
-                title: source.title,
-                description: source.description,
-                isSelected: goalsViewModel.selectedIntakeSource == source
-            ) {
-                goalsViewModel.selectSource(source)
+    private var intakeSourceSection: some View {
+        Section {
+            NavigationLink {
+                IntakeSourceView(goalsViewModel: goalsViewModel)
+            } label: {
+                LabeledContent {
+                    Text(goalsViewModel.selectedIntakeSource.title)
+                } label: {
+                    Text("Goal Type")
+                }
             }
         }
     }

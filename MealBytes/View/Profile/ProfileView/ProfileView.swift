@@ -12,7 +12,7 @@ struct ProfileView: View {
     
     var body: some View {
         profileViewContentBody
-            .navigationTitle("Profile")
+            .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
     }
     
