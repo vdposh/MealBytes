@@ -23,7 +23,7 @@ struct FoodItemRow: View {
             FoodItemView(
                 foodName: mealItem.foodName,
                 formattedText: formattedText,
-                calories: energyUnit.convert(fromKcal: mealItem.caloriesValue),
+                calories: energyUnit.fromKcal(fromKcal: mealItem.caloriesValue),
                 fat: mealItem.fatValue,
                 carbs: mealItem.carbsValue,
                 protein: mealItem.proteinValue

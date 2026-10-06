@@ -52,7 +52,7 @@ struct NutrientValueProvider {
             .map { type in
                 let rawValue = summary[type] ?? 0
                 let value = type == .calories
-                ? energyUnit.convert(fromKcal: rawValue)
+                ? energyUnit.fromKcal(fromKcal: rawValue)
                 : rawValue
                 let unit = type == .calories
                 ? UnitNutrients(rawValue: energyUnit.rawValue) ?? type.unitType

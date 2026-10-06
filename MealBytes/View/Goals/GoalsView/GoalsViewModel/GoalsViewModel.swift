@@ -118,6 +118,67 @@ final class GoalsViewModel: ObservableObject {
         updateSelectedValid()
     }
     
+    // MARK: - Current Intake
+    func currentIntakeSource(for source: String? = nil) -> String {
+        let source = source ?? mainViewModel.intakeSource
+        
+        switch source {
+        case IntakeSource.personal.rawValue:
+            return personalIntakeViewModel.calculatedPersonalIntake
+        case IntakeSource.macros.rawValue:
+            return macrosIntakeViewModel.calories
+        case IntakeSource.custom.rawValue:
+            return customIntakeViewModel.caloriesKcal
+        default:
+            return ""
+        }
+    }
+    
+    func nutrientTargets(for source: String) -> NutrientTargets {
+        let intakeValue = currentIntakeSource(for: source).doubleValue ?? 0
+        
+        switch source {
+        case IntakeSource.personal.rawValue:
+            guard intakeValue > 0 else { return NutrientTargets() }
+            return NutrientTargets(
+                calories: intakeValue,
+                fat: (
+                    intakeValue * personalIntakeViewModel.fatPercentage
+                ) / 9,
+                carbs: (
+                    intakeValue * personalIntakeViewModel.carbsPercentage
+                ) / 4,
+                protein: (
+                    intakeValue * personalIntakeViewModel.proteinPercentage
+                ) / 4
+            )
+            
+        case IntakeSource.macros.rawValue:
+            return NutrientTargets(
+                calories: intakeValue,
+                fat: macrosIntakeViewModel.fat.doubleValue ?? 0,
+                carbs: macrosIntakeViewModel.carbohydrate.doubleValue ?? 0,
+                protein: macrosIntakeViewModel.protein.doubleValue ?? 0
+            )
+            
+        case IntakeSource.custom.rawValue:
+            return NutrientTargets(
+                calories: intakeValue,
+                fat: customIntakeViewModel.fat.doubleValue ?? 0,
+                carbs: customIntakeViewModel.carbohydrate.doubleValue ?? 0,
+                protein: customIntakeViewModel.protein.doubleValue ?? 0
+            )
+            
+        default:
+            return NutrientTargets()
+        }
+    }
+    
+    // MARK: - Energy Unit Changed (CustomIntakeView)
+    func energyUnitChanged(to newUnit: EnergyUnit) {
+        customIntakeViewModel.energyUnitChanged(to: newUnit)
+    }
+    
     // MARK: - UI Helper
     func saveSelected() async {
         switch selectedIntakeSource {

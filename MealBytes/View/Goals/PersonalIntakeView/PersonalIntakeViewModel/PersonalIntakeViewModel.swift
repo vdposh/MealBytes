@@ -10,6 +10,10 @@ import Combine
 
 protocol PersonalIntakeViewModelProtocol {
     var isValid: Bool { get }
+    var calculatedPersonalIntake: String { get }
+    var fatPercentage: Double { get }
+    var carbsPercentage: Double { get }
+    var proteinPercentage: Double { get }
     
     func loadPersonalIntakeView() async
     func savePersonalIntakeView() async
@@ -301,7 +305,7 @@ final class PersonalIntakeViewModel: ObservableObject {
     
     var macroValues: [NutrientType: String] {
         let caloriesKcal = calculatedPersonalIntake.doubleValue ?? 0
-        let caloriesDisplay = energyUnit.convert(fromKcal: caloriesKcal)
+        let caloriesDisplay = energyUnit.fromKcal(fromKcal: caloriesKcal)
         
         return [
             .calories: caloriesDisplay.asWhole(),

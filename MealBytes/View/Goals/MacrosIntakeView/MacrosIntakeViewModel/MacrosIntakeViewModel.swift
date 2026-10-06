@@ -10,6 +10,10 @@ import Combine
 
 protocol MacrosIntakeViewModelProtocol {
     var isValid: Bool { get }
+    var calories: String { get }
+    var fat: String { get }
+    var carbohydrate: String { get }
+    var protein: String { get }
     
     func loadMacrosIntakeView() async
     func saveMacrosIntakeView() async
@@ -202,7 +206,7 @@ final class MacrosIntakeViewModel: ObservableObject {
     
     var displayCalories: String {
         let kcal = calories.doubleValue ?? 0
-        let display = energyUnit.convert(fromKcal: kcal)
+        let display = energyUnit.fromKcal(fromKcal: kcal)
         return display.asWhole()
     }
 }

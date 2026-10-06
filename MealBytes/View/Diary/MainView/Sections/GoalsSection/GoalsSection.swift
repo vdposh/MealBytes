@@ -29,10 +29,6 @@ struct GoalsSection: View {
                 title: "Goals",
                 isEdit: true
             ) {
-                Task {
-                    await mainViewModel.goalsViewModel.loadGoalsData()
-                }
-                
                 mainViewModel.showGoals = true
             }
         }
@@ -43,7 +39,7 @@ struct GoalsSection: View {
     // MARK: - Cards
     private var calorieCard: some View {
         let kcal = mainViewModel.totalCalories()
-        let value = mainViewModel.energyUnit.convert(fromKcal: kcal)
+        let value = mainViewModel.energyUnit.fromKcal(fromKcal: kcal)
         
         return GoalCard(
             title: NutrientType.calories.title,

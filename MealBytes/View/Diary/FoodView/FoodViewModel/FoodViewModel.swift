@@ -460,7 +460,7 @@ final class FoodViewModel: ObservableObject {
                 return NutrientValue(
                     type: value.type,
                     value: isCalories
-                    ? unit.convert(fromKcal: rawValue)
+                    ? unit.fromKcal(fromKcal: rawValue)
                     : rawValue,
                     isSubValue: value.isSubValue,
                     unit: isCalories

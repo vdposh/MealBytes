@@ -18,10 +18,17 @@ enum EnergyUnit: String, CaseIterable {
         }
     }
     
-    func convert(fromKcal kcal: Double) -> Double {
+    func fromKcal(fromKcal kcal: Double) -> Double {
         switch self {
         case .kcal: return kcal
         case .kj: return kcal * 4.184
+        }
+    }
+    
+    func toKcal(fromKj kj: Double) -> Double {
+        switch self {
+        case .kcal: return kj
+        case .kj: return kj / 4.184
         }
     }
 }

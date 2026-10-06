@@ -327,6 +327,7 @@ final class MainViewModel: ObservableObject {
     func setEnergyUnit(_ unit: EnergyUnit) async {
         await MainActor.run {
             energyUnit = unit
+            goalsViewModel.energyUnitChanged(to: unit)
         }
         
         do {
@@ -373,78 +374,11 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Intake from VM
-    private func currentIntakeFromVM(for source: String? = nil) -> String {
-        let source = source ?? intakeSource
-        
-        switch source {
-        case IntakeSource.personal.rawValue:
-            if let personal = goalsViewModel.personalIntakeViewModel
-                as? PersonalIntakeViewModel {
-                return personal.calculatedPersonalIntake
-            }
-        case IntakeSource.macros.rawValue:
-            if let macros = goalsViewModel.macrosIntakeViewModel
-                as? MacrosIntakeViewModel {
-                return macros.calories
-            }
-        case IntakeSource.custom.rawValue:
-            if let custom = goalsViewModel.customIntakeViewModel
-                as? CustomIntakeViewModel {
-                return custom.calories
-            }
-        default:
-            break
-        }
-        return ""
-    }
-    
+    // MARK: - Current Intake
     private func computeNutrientTargets(
         for source: String
     ) -> NutrientTargets {
-        let intakeValue = currentIntakeFromVM(for: source).doubleValue ?? 0
-        
-        switch source {
-        case IntakeSource.personal.rawValue:
-            guard intakeValue > 0 else { return NutrientTargets() }
-            guard let personal = goalsViewModel.personalIntakeViewModel
-                    as? PersonalIntakeViewModel else {
-                return NutrientTargets()
-            }
-            return NutrientTargets(
-                calories: intakeValue,
-                fat: (intakeValue * personal.fatPercentage) / 9,
-                carbs: (intakeValue * personal.carbsPercentage) / 4,
-                protein: (intakeValue * personal.proteinPercentage) / 4
-            )
-            
-        case IntakeSource.macros.rawValue:
-            guard let macros = goalsViewModel.macrosIntakeViewModel
-                    as? MacrosIntakeViewModel else {
-                return NutrientTargets()
-            }
-            return NutrientTargets(
-                calories: intakeValue,
-                fat: macros.fat.doubleValue ?? 0,
-                carbs: macros.carbohydrate.doubleValue ?? 0,
-                protein: macros.protein.doubleValue ?? 0
-            )
-            
-        case IntakeSource.custom.rawValue:
-            guard let custom = goalsViewModel.customIntakeViewModel
-                    as? CustomIntakeViewModel else {
-                return NutrientTargets()
-            }
-            return NutrientTargets(
-                calories: intakeValue,
-                fat: custom.fat.doubleValue ?? 0,
-                carbs: custom.carbohydrate.doubleValue ?? 0,
-                protein: custom.protein.doubleValue ?? 0
-            )
-            
-        default:
-            return NutrientTargets()
-        }
+        goalsViewModel.nutrientTargets(for: source)
     }
     
     // MARK: - Calculation
