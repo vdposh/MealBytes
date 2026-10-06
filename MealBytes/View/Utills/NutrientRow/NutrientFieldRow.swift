@@ -13,11 +13,16 @@ struct NutrientFieldRow<Focus: Hashable>: View {
     let focus: FocusState<Focus?>.Binding
     let focusCase: Focus
     var maxIntegerDigits: Int = 3
+    var unit: UnitNutrients? = nil
+    
+    var displayUnit: UnitNutrients {
+        unit ?? type.unitType
+    }
     
     var body: some View {
         ServingTextFieldView(
             text: $text,
-            unitText: type.unitType.unitDescription(for: Double(text) ?? 0),
+            unitText: displayUnit.unitDescription(for: Double(text) ?? 0),
             labelIconName: type.iconName,
             labelIconColor: type.iconColor,
             stackText: type.title,

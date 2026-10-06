@@ -139,6 +139,11 @@ final class CustomIntakeViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - UI Helper
+    var energyUnit: EnergyUnit {
+        mainViewModel.energyUnit
+    }
 }
 
 extension CustomIntakeViewModel: CustomIntakeViewModelProtocol {}

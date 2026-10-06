@@ -194,6 +194,17 @@ final class MacrosIntakeViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - UI Helper
+    var energyUnit: EnergyUnit {
+        mainViewModel.energyUnit
+    }
+    
+    var displayCalories: String {
+        let kcal = calories.doubleValue ?? 0
+        let display = energyUnit.convert(fromKcal: kcal)
+        return display.asWhole()
+    }
 }
 
 extension MacrosIntakeViewModel: MacrosIntakeViewModelProtocol {}

@@ -13,14 +13,7 @@ enum EnergyUnit: String, CaseIterable {
     
     var title: String {
         switch self {
-        case .kcal: return "Kilocalories"
-        case .kj: return "Kilojoules"
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .kcal: return "Calories (kcal)"
+        case .kcal: return "Kilocalories (kcal)"
         case .kj: return "Kilojoules (kJ)"
         }
     }

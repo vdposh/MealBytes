@@ -584,7 +584,10 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Filtered Nutrients
     var filteredNutrientValues: [NutrientValue] {
-        NutrientValueProvider().fromSummary(nutrientSummaries)
+        NutrientValueProvider().fromSummary(
+            nutrientSummaries,
+            energyUnit: energyUnit
+        )
     }
     
     func formattedMealText(for mealItem: MealItem) -> String {

@@ -14,12 +14,14 @@ struct MealSectionView: View {
     
     var body: some View {
         let nutrients = mainViewModel.totalNutrients(for: mealType)
+        let kcal = mainViewModel.totalCalories(for: mealType)
+        let displayCalories = mainViewModel.energyUnit.convert(fromKcal: kcal)
         
         MealHeaderView(
             mainViewModel: mainViewModel,
             mealType: mealType,
             title: mealType.rawValue,
-            calories: Double(mainViewModel.totalCalories(for: mealType)),
+            calories: displayCalories,
             fat: nutrients.fat,
             protein: nutrients.protein,
             carbohydrate: nutrients.carbs

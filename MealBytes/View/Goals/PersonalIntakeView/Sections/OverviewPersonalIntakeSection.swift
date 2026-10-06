@@ -18,7 +18,12 @@ struct OverviewPersonalIntakeSection: View {
             ) { type in
                 NutrientLabelRow(
                     type: type,
-                    value: personalIntakeViewModel.macroValues[type] ?? "0"
+                    value: personalIntakeViewModel.macroValues[type] ?? "0",
+                    unit: type == .calories
+                    ? UnitNutrients(
+                        rawValue: personalIntakeViewModel.energyUnit.rawValue
+                    )
+                    : nil
                 )
             }
         } footer: {

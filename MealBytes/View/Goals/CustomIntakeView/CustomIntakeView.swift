@@ -25,7 +25,10 @@ struct CustomIntakeView: View {
                 text: $customIntakeViewModel.calories,
                 focus: $focus,
                 focusCase: .calories,
-                maxIntegerDigits: 5
+                maxIntegerDigits: 5,
+                unit: UnitNutrients(
+                    rawValue: customIntakeViewModel.energyUnit.rawValue
+                )
             )
             
             NutrientFieldRow(

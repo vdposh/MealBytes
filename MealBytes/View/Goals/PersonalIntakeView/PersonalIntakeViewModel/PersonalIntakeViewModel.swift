@@ -300,12 +300,19 @@ final class PersonalIntakeViewModel: ObservableObject {
     }
     
     var macroValues: [NutrientType: String] {
-        [
-            .calories: (calculatedPersonalIntake.doubleValue ?? 0).asWhole(),
+        let caloriesKcal = calculatedPersonalIntake.doubleValue ?? 0
+        let caloriesDisplay = energyUnit.convert(fromKcal: caloriesKcal)
+        
+        return [
+            .calories: caloriesDisplay.asWhole(),
             .fat: (macroNutrients?.fat ?? 0).asWhole(),
             .carbohydrate: (macroNutrients?.carbs ?? 0).asWhole(),
             .protein: (macroNutrients?.protein ?? 0).asWhole()
         ]
+    }
+    
+    var energyUnit: EnergyUnit {
+        mainViewModel.energyUnit
     }
     
     var weightText: String {

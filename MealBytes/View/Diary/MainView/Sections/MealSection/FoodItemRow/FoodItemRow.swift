@@ -10,6 +10,7 @@ import SwiftUI
 struct FoodItemRow: View {
     let mealItem: MealItem
     let mealType: MealType
+    let energyUnit: EnergyUnit
     let formattedText: String
     let onSelect: () -> Void
     let onMove: (MealType) -> Void
@@ -22,7 +23,7 @@ struct FoodItemRow: View {
             FoodItemView(
                 foodName: mealItem.foodName,
                 formattedText: formattedText,
-                calories: mealItem.caloriesValue,
+                calories: energyUnit.convert(fromKcal: mealItem.caloriesValue),
                 fat: mealItem.fatValue,
                 carbs: mealItem.carbsValue,
                 protein: mealItem.proteinValue

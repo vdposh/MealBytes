@@ -43,12 +43,20 @@ struct NutrientValueProvider {
         }
     }
     
-    func fromSummary(_ summary: [NutrientType: Double]) -> [NutrientValue] {
+    func fromSummary(
+        _ summary: [NutrientType: Double],
+        energyUnit: EnergyUnit
+    ) -> [NutrientValue] {
         NutrientType.allCases
             .filter { $0 != .servingSize }
             .map { type in
-                let value = summary[type] ?? 0
-                let unit = type.unitType
+                let rawValue = summary[type] ?? 0
+                let value = type == .calories
+                ? energyUnit.convert(fromKcal: rawValue)
+                : rawValue
+                let unit = type == .calories
+                ? UnitNutrients(rawValue: energyUnit.rawValue) ?? type.unitType
+                : type.unitType
                 
                 return NutrientValue(
                     type: type,

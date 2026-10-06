@@ -572,6 +572,10 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    var energyUnit: EnergyUnit {
+        mainViewModel.energyUnit
+    }
+    
     var showPagination: Bool {
         return !query.isEmpty && contentState == .results
     }

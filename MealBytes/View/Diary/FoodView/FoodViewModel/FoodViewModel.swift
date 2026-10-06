@@ -63,6 +63,10 @@ final class FoodViewModel: ObservableObject {
         self.originalMealItemId = originalMealItemId ?? UUID()
     }
     
+    var energyUnit: EnergyUnit {
+        mainViewModel.energyUnit
+    }
+    
     // MARK: - Fetch Food Details
     @MainActor
     func fetchFoodDetails() async {
@@ -132,12 +136,7 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Add Food Item
     func addMealItemFoodView(in section: MealType, for date: Date) async {
-        let nutrients = nutrientValues.reduce(
-            into: [NutrientType: Double]()
-        ) {
-            result, detail in
-            result[detail.type] = detail.value
-        }
+        let nutrients = storageNutrients
         let newItem = MealItem(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
@@ -161,7 +160,7 @@ final class FoodViewModel: ObservableObject {
             await searchViewModel.addToHistory(food, for: mealType)
             
             if let selectedServing {
-                let adjusted = getAdjustedNutrients()
+                let adjusted = getAdjustedNutrientsForStorage()
                 
                 let metadata = FoodMetadata(
                     foodId: food.searchFoodId,
@@ -203,12 +202,7 @@ final class FoodViewModel: ObservableObject {
         
         let createdAt = didChangeMealType ? Date() : originalCreatedAt
         
-        let roundedNutrients = nutrientValues.reduce(
-            into: [NutrientType: Double]()
-        ) {
-            result, detail in
-            result[detail.type] = detail.value
-        }
+        let nutrients = storageNutrients
         
         let updatedMealItem = MealItem(
             id: originalMealItemId,
@@ -217,7 +211,7 @@ final class FoodViewModel: ObservableObject {
             portionUnit: selectedServing.measurementDescription == "ml"
             ? "ml"
             : selectedServing.metricServingUnit,
-            nutrients: roundedNutrients,
+            nutrients: nutrients,
             measurementDescription: selectedServing.measurementDescription,
             amount: amount.doubleValue ?? 0,
             date: date,
@@ -286,7 +280,7 @@ final class FoodViewModel: ObservableObject {
         guard isBookmarkFilled,
               let selectedServing else { return }
         
-        let adjusted = getAdjustedNutrients()
+        let adjusted = getAdjustedNutrientsForStorage()
         
         let metadata = FoodMetadata(
             foodId: food.searchFoodId,
@@ -455,15 +449,35 @@ final class FoodViewModel: ObservableObject {
     var nutrientValues: [NutrientValue] {
         guard let selectedServing else { return [] }
         
+        let unit = energyUnit
+        
         return NutrientValueProvider()
             .fromServing(selectedServing)
             .map { value in
-                NutrientValue(
+                let rawValue = value.value * calculateSelectedAmountValue()
+                let isCalories = value.type == .calories
+                
+                return NutrientValue(
                     type: value.type,
-                    value: value.value * calculateSelectedAmountValue(),
+                    value: isCalories
+                    ? unit.convert(fromKcal: rawValue)
+                    : rawValue,
                     isSubValue: value.isSubValue,
-                    unit: value.unit
+                    unit: isCalories
+                    ? UnitNutrients(rawValue: unit.rawValue) ?? value.unit
+                    : value.unit
                 )
+            }
+    }
+    
+    private var storageNutrients: [NutrientType: Double] {
+        guard let selectedServing else { return [:] }
+        
+        return NutrientValueProvider()
+            .fromServing(selectedServing)
+            .reduce(into: [NutrientType: Double]()) { result, value in
+                result[value.type] = value
+                    .value * calculateSelectedAmountValue()
             }
     }
     
@@ -482,7 +496,7 @@ final class FoodViewModel: ObservableObject {
             .asDecimal(unit: unit.unitDescription(for: scaledAmount))
     }
     
-    func getAdjustedNutrients() -> (
+    func getAdjustedNutrientsForStorage() -> (
         calories: Double,
         fat: Double,
         carbs: Double,
@@ -492,7 +506,17 @@ final class FoodViewModel: ObservableObject {
             return (0, 0, 0, 0)
         }
         
-        let nutrients = nutrientValues
+        let nutrients = NutrientValueProvider()
+            .fromServing(selectedServing!)
+            .map { value in
+                NutrientValue(
+                    type: value.type,
+                    value: value.value * calculateSelectedAmountValue(),
+                    isSubValue: value.isSubValue,
+                    unit: value.unit
+                )
+            }
+        
         let calories = nutrients.first(
             where: { $0.type == .calories
             })?.value ?? 0

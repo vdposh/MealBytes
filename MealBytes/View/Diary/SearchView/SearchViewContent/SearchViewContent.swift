@@ -164,7 +164,8 @@ struct SearchViewContent: View {
             FoodDetailView(
                 food: food,
                 foodMetadata: searchViewModel
-                    .foodMetadataDict[food.searchFoodId]
+                    .foodMetadataDict[food.searchFoodId],
+                energyUnit: searchViewModel.energyUnit
             )
         } else {
             NavigationLink {
@@ -181,7 +182,8 @@ struct SearchViewContent: View {
                 FoodDetailView(
                     food: food,
                     foodMetadata: searchViewModel
-                        .foodMetadataDict[food.searchFoodId]
+                        .foodMetadataDict[food.searchFoodId],
+                    energyUnit: searchViewModel.energyUnit
                 )
             }
             .swipeActions {

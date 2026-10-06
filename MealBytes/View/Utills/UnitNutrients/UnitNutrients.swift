@@ -10,6 +10,7 @@ import SwiftUI
 enum UnitNutrients: String {
     case empty
     case kcal
+    case kj = "kJ"
     case g
     case mg
     case mcg
@@ -22,6 +23,8 @@ enum UnitNutrients: String {
             return ""
         case .kcal:
             return full ? "kilocalorie" + (isSingular ? "" : "s") : "kcal"
+        case .kj:
+            return full ? "kilojoule" + (isSingular ? "" : "s") : "kJ"
         case .g:
             return full ? "gram" + (isSingular ? "" : "s") : "g"
         case .mg:

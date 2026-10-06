@@ -42,11 +42,12 @@ struct GoalsSection: View {
     
     // MARK: - Cards
     private var calorieCard: some View {
-        GoalCard(
+        let kcal = mainViewModel.totalCalories()
+        let value = mainViewModel.energyUnit.convert(fromKcal: kcal)
+        
+        return GoalCard(
             title: NutrientType.calories.title,
-            value: mainViewModel
-                .totalCalories()
-                .asWhole(unit: NutrientType.calories.unitType.rawValue),
+            value: value.asWhole(unit: mainViewModel.energyUnit.rawValue),
             progress: mainViewModel.calorieProgress()
         )
     }

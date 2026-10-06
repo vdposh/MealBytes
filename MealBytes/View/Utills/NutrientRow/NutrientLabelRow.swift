@@ -10,12 +10,16 @@ import SwiftUI
 struct NutrientLabelRow: View {
     let type: NutrientType
     let value: String
+    var unit: UnitNutrients? = nil
+    
+    var displayUnit: UnitNutrients {
+        unit ?? type.unitType
+    }
     
     var body: some View {
         HStack {
             Label {
                 Text(type.title)
-                
             } icon: {
                 Image(systemName: type.iconName)
                     .fontWeight(.semibold)
@@ -25,7 +29,7 @@ struct NutrientLabelRow: View {
             
             HStack(spacing: 4) {
                 Text(value)
-                Text(type.unitType.unitDescription(for: Double(value) ?? 0))
+                Text(displayUnit.unitDescription(for: Double(value) ?? 0))
             }
         }
     }

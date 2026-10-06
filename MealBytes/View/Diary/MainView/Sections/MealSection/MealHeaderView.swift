@@ -114,6 +114,7 @@ struct MealHeaderView: View {
                 FoodItemRow(
                     mealItem: item,
                     mealType: mealType,
+                    energyUnit: mainViewModel.energyUnit,
                     formattedText: mainViewModel.formattedMealText(for: item),
                     onSelect: {
                         mainViewModel.selectedFoodItem = item
