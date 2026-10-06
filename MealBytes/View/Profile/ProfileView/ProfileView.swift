@@ -36,6 +36,21 @@ struct ProfileView: View {
             } footer: {
                 Text("Enable to show Goal Cards in the Diary.")
             }
+            
+            Section {
+                Picker("Energy Unit", selection: Binding(
+                    get: { profileViewModel.energyUnit },
+                    set: { newValue in
+                        Task {
+                            await profileViewModel.setEnergyUnit(newValue)
+                        }
+                    }
+                )) {
+                    ForEach(EnergyUnit.allCases, id: \.self) { unit in
+                        Text(unit.title).tag(unit)
+                    }
+                }
+            }
         }
     }
 }

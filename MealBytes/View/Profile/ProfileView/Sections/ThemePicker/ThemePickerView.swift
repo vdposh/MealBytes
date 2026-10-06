@@ -49,10 +49,10 @@ struct ThemePickerView: View {
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .accent))
             } footer: {
-                Text("Enable for app theme to follow your system settings")
+                Text("Enable for appearance to follow your system settings")
             }
         }
-        .navigationTitle("App Theme")
+        .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.inline)
     }
     

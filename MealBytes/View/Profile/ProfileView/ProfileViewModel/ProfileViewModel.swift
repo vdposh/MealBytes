@@ -15,6 +15,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var displayGoals: Bool = true
+    @Published var energyUnit: EnergyUnit = .kcal
     @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
@@ -45,6 +46,7 @@ final class ProfileViewModel: ObservableObject {
         await MainActor.run {
             email = user.email
             displayGoals = mainViewModel.displayGoals
+            energyUnit = mainViewModel.energyUnit
         }
     }
     
@@ -55,6 +57,15 @@ final class ProfileViewModel: ObservableObject {
         }
         
         await mainViewModel.setDisplayGoals(display)
+    }
+    
+    // MARK: - Energy Unit
+    func setEnergyUnit(_ unit: EnergyUnit) async {
+        await MainActor.run {
+            energyUnit = unit
+        }
+        
+        await mainViewModel.setEnergyUnit(unit)
     }
     
     // MARK: - Sign Out

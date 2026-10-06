@@ -26,6 +26,7 @@ protocol FirebaseFirestoreProtocol {
     func loadCustomIntakeFirestore() async throws -> CustomIntake
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake
     func loadDisplayGoalsFirestore() async throws -> Bool
+    func loadEnergyUnitFirestore() async throws -> String
     func addMealItemFirestore(_ mealItem: MealItem) async throws
     func addBookmarkFirestore(
         _ foods: [Food],
@@ -49,6 +50,7 @@ protocol FirebaseFirestoreProtocol {
     func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
     func saveDisplayGoalsFirestore(_ disabled: Bool) async throws
+    func saveEnergyUnitFirestore(_ unit: String) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemsFirestore(on date: Date) async throws
@@ -477,6 +479,41 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .collection("ProfileView")
             .document("DisplayGoals")
             .setData(["display": display])
+    }
+    
+    // MARK: - Load Energy Unit
+    func loadEnergyUnitFirestore() async throws -> String {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        let snapshot = try await firestore
+            .collection("Users")
+            .document(uid)
+            .collection("ProfileView")
+            .document("EnergyUnit")
+            .getDocument()
+        
+        guard let data = snapshot.data(),
+              let unit = data["unit"] as? String else {
+            return EnergyUnit.kcal.rawValue
+        }
+        
+        return unit
+    }
+    
+    // MARK: - Save Energy Unit
+    func saveEnergyUnitFirestore(_ unit: String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw AppError.decoding
+        }
+        
+        try await firestore
+            .collection("Users")
+            .document(uid)
+            .collection("ProfileView")
+            .document("EnergyUnit")
+            .setData(["unit": unit])
     }
     
     // MARK: - Current User

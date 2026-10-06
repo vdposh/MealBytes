@@ -18,7 +18,7 @@ struct ThemePickerSection: View {
             LabeledContent {
                 Text(themeManager.selectedTheme.themeName)
             } label: {
-                Text("App Theme")
+                Text("Appearance")
             }
         }
     }

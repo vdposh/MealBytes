@@ -11,11 +11,13 @@ import FirebaseCore
 protocol MainViewModelProtocol {
     var date: Date { get set }
     var displayGoals: Bool { get }
+    var energyUnit: EnergyUnit { get }
     var intakeSource: String { get }
     
     func loadMainData() async
     func saveCurrentIntakeMainView(source: String) async
     func setDisplayGoals(_ display: Bool) async
+    func setEnergyUnit(_ unit: EnergyUnit) async
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
@@ -35,6 +37,7 @@ final class MainViewModel: ObservableObject {
     @Published var mealItems: [MealType: [MealItem]]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
+    @Published var energyUnit: EnergyUnit = .kcal
     @Published var appError: AppError?
     @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
@@ -81,10 +84,17 @@ final class MainViewModel: ObservableObject {
     func loadMainData() async {
         async let mealItemsTask: () = loadMealItemsMainView()
         async let displayGoalsTask: () = loadDisplayGoalsMainView()
+        async let energyUnitTask: () = loadEnergyUnitMainView()
         async let intakeTask: () = loadIntakeMainView()
         async let bookmarksTask: () = searchViewModel.loadSearchViewData()
         
-        _ = await (mealItemsTask, displayGoalsTask, intakeTask, bookmarksTask)
+        _ = await (
+            mealItemsTask,
+            displayGoalsTask,
+            intakeTask,
+            bookmarksTask,
+            energyUnitTask
+        )
         
         await goalsViewModel.loadGoalsData()
         
@@ -292,6 +302,35 @@ final class MainViewModel: ObservableObject {
         
         do {
             try await firestore.saveDisplayGoalsFirestore(display)
+        } catch {
+            await MainActor.run {
+                appError = .network
+            }
+        }
+    }
+    
+    // MARK: - Load Energy Unit
+    private func loadEnergyUnitMainView() async {
+        do {
+            let unit = try await firestore.loadEnergyUnitFirestore()
+            await MainActor.run {
+                energyUnit = EnergyUnit(rawValue: unit) ?? .kcal
+            }
+        } catch {
+            await MainActor.run {
+                self.appError = .network
+            }
+        }
+    }
+    
+    // MARK: - Set Energy Unit
+    func setEnergyUnit(_ unit: EnergyUnit) async {
+        await MainActor.run {
+            energyUnit = unit
+        }
+        
+        do {
+            try await firestore.saveEnergyUnitFirestore(unit.rawValue)
         } catch {
             await MainActor.run {
                 appError = .network
