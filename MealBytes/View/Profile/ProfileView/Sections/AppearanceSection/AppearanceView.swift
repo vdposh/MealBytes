@@ -1,5 +1,5 @@
 //
-//  ThemePickerView.swift
+//  AppearanceView.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 30.03.2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ThemePickerView: View {
+struct AppearanceView: View {
     @ObservedObject var themeManager: ThemeManager
     @Environment(\.colorScheme) private var colorScheme
     
@@ -67,7 +67,7 @@ struct ThemePickerView: View {
 
 #Preview {
     NavigationStack {
-        ThemePickerView(themeManager: ThemeManager())
+        AppearanceView(themeManager: ThemeManager())
     }
 }
 

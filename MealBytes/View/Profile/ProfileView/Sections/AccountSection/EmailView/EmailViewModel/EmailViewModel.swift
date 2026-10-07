@@ -120,6 +120,7 @@ final class EmailViewModel: ObservableObject {
             case .emailAlreadyInUse: return .emailAlreadyInUse
             case .networkError: return .networkError
             case .wrongPassword: return .incorrectCredentials
+            case .invalidCredential: return .incorrectCredentials
             case .requiresRecentLogin: return .sessionExpired
             default: return .unknownError
             }

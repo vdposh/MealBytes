@@ -19,38 +19,8 @@ struct ProfileView: View {
     private var profileViewContentBody: some View {
         Form {
             AccountSection(profileViewModel: profileViewModel)
-            
-            Section {
-                ThemePickerSection()
-            }
-            
-            Section {
-                Toggle("Goals", isOn: Binding(
-                    get: { profileViewModel.displayGoals },
-                    set: { newValue in
-                        Task {
-                            await profileViewModel.setDisplayGoals(newValue)
-                        }
-                    }
-                ))
-            } footer: {
-                Text("Enable to show Goal Cards in the Diary.")
-            }
-            
-            Section {
-                Picker("Energy Unit", selection: Binding(
-                    get: { profileViewModel.energyUnit },
-                    set: { newValue in
-                        Task {
-                            await profileViewModel.setEnergyUnit(newValue)
-                        }
-                    }
-                )) {
-                    ForEach(EnergyUnit.allCases, id: \.self) { unit in
-                        Text(unit.title).tag(unit)
-                    }
-                }
-            }
+            GeneralSection(profileViewModel: profileViewModel)
+            AppearanceSection()
         }
     }
 }

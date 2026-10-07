@@ -11,17 +11,19 @@ struct AccountSection: View {
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
-        NavigationLink {
-            AccountView(profileViewModel: profileViewModel)
-        } label: {
-            LabeledContent {
-                if let email = profileViewModel.email {
-                    Text(email)
-                } else {
-                    Text("Account disconnected")
-                }
+        Section {
+            NavigationLink {
+                AccountView(profileViewModel: profileViewModel)
             } label: {
-                Text("Account")
+                LabeledContent {
+                    if let email = profileViewModel.email {
+                        Text(email)
+                    } else {
+                        Text("Account disconnected")
+                    }
+                } label: {
+                    Text("Account")
+                }
             }
         }
     }

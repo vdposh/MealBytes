@@ -29,7 +29,7 @@ struct ThemeButton: View {
 
 #Preview {
     NavigationStack {
-        ThemePickerView(themeManager: ThemeManager())
+        AppearanceView(themeManager: ThemeManager())
     }
 }
 
