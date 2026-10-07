@@ -47,7 +47,7 @@ final class CustomIntakeViewModel: ObservableObject {
             
             await MainActor.run {
                 let kcal = Double(data.calories) ?? 0
-                let display = mainViewModel.energyUnit.fromKcal(fromKcal: kcal)
+                let display = mainViewModel.energyUnit.fromKcal(kcal: kcal)
                 calories = display > 0 ? display.asWhole(grouping: false) : ""
                 fat = data.fat
                 carbohydrate = data.carbohydrate
@@ -84,7 +84,7 @@ final class CustomIntakeViewModel: ObservableObject {
     // MARK: - Save CustomIntake Data
     func saveCustomIntakeData() async {
         let kcal = lastEnergyUnit.toKcal(
-            fromKj: calories.doubleValue ?? 0
+            value: calories.doubleValue ?? 0
         )
         
         let data = CustomIntake(
@@ -120,8 +120,8 @@ final class CustomIntakeViewModel: ObservableObject {
         guard newUnit != lastEnergyUnit else { return }
         
         let currentValue = calories.doubleValue ?? 0
-        let kcal = lastEnergyUnit.toKcal(fromKj: currentValue)
-        let newValue = newUnit.fromKcal(fromKcal: kcal)
+        let kcal = lastEnergyUnit.toKcal(value: currentValue)
+        let newValue = newUnit.fromKcal(kcal: kcal)
         
         calories = newValue > 0 ? newValue.asWhole(grouping: false) : ""
         lastEnergyUnit = newUnit
@@ -133,7 +133,7 @@ final class CustomIntakeViewModel: ObservableObject {
     
     var caloriesKcal: String {
         let kcal = lastEnergyUnit
-            .toKcal(fromKj: calories.doubleValue ?? 0)
+            .toKcal(value: calories.doubleValue ?? 0)
         return kcal > 0 ? kcal.asWhole(grouping: false) : ""
     }
     

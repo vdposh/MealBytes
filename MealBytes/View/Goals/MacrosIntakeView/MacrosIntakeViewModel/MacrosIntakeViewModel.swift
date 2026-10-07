@@ -206,7 +206,7 @@ final class MacrosIntakeViewModel: ObservableObject {
     
     var displayCalories: String {
         let kcal = calories.doubleValue ?? 0
-        let display = energyUnit.fromKcal(fromKcal: kcal)
+        let display = energyUnit.fromKcal(kcal: kcal)
         return display.asWhole()
     }
 }

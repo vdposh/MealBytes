@@ -305,7 +305,7 @@ final class PersonalIntakeViewModel: ObservableObject {
     
     var macroValues: [NutrientType: String] {
         let caloriesKcal = calculatedPersonalIntake.doubleValue ?? 0
-        let caloriesDisplay = energyUnit.fromKcal(fromKcal: caloriesKcal)
+        let caloriesDisplay = energyUnit.fromKcal(kcal: caloriesKcal)
         
         return [
             .calories: caloriesDisplay.asWhole(),

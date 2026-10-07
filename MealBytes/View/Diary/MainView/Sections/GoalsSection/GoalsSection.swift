@@ -39,7 +39,7 @@ struct GoalsSection: View {
     // MARK: - Cards
     private var calorieCard: some View {
         let kcal = mainViewModel.totalCalories()
-        let value = mainViewModel.energyUnit.fromKcal(fromKcal: kcal)
+        let value = mainViewModel.energyUnit.fromKcal(kcal: kcal)
         
         return GoalCard(
             title: NutrientType.calories.title,

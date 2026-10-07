@@ -15,7 +15,7 @@ struct MealSectionView: View {
     var body: some View {
         let nutrients = mainViewModel.totalNutrients(for: mealType)
         let kcal = mainViewModel.totalCalories(for: mealType)
-        let displayCalories = mainViewModel.energyUnit.fromKcal(fromKcal: kcal)
+        let displayCalories = mainViewModel.energyUnit.fromKcal(kcal: kcal)
         
         MealHeaderView(
             mainViewModel: mainViewModel,

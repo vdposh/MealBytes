@@ -17,7 +17,7 @@ struct FoodDetailView: View {
             FoodItemView(
                 foodName: food.searchFoodName,
                 formattedText: metadata.formattedText,
-                calories: energyUnit.fromKcal(fromKcal: metadata.calories),
+                calories: energyUnit.fromKcal(kcal: metadata.calories),
                 fat: metadata.fat,
                 carbs: metadata.carbs,
                 protein: metadata.protein
@@ -26,7 +26,7 @@ struct FoodDetailView: View {
             FoodItemView(
                 foodName: food.searchFoodName,
                 formattedText: nutrients.description,
-                calories: energyUnit.fromKcal(fromKcal: nutrients.calories),
+                calories: energyUnit.fromKcal(kcal: nutrients.calories),
                 fat: nutrients.fat,
                 carbs: nutrients.carbs,
                 protein: nutrients.protein
