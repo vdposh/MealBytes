@@ -22,7 +22,9 @@ struct ToolbarButtonView: View {
             Image(systemName: icon)
                 .font(.title2)
                 .frame(width: 50, height: 50)
-                .foregroundStyle(isActive ? Color.primary : Color(.systemGray2))
+                .foregroundStyle(
+                    isActive ? Color.primary : Color(.systemGray2)
+                )
         }
         .disabled(!isActive)
     }

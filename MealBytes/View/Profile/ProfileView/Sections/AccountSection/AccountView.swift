@@ -55,7 +55,7 @@ struct AccountView: View {
                 PasswordView()
             } label: {
                 LabeledContent {
-                    Text("••••••••")
+                    Text(profileViewModel.isLoggedIn ? "••••••••" : "")
                 } label: {
                     Text("Password")
                 }

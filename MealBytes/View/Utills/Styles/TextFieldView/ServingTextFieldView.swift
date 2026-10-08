@@ -46,18 +46,28 @@ struct ServingTextFieldView: View {
                 Label {
                     field
                 } icon: {
-                    Image(systemName: labelIconName)
-                        .foregroundStyle(labelIconColor)
+                    Button {
+                        focus = true
+                    } label: {
+                        Image(systemName: labelIconName)
+                            .foregroundStyle(labelIconColor)
+                    }
+                    .buttonStyle(InvisibleButtonStyle())
                 }
             } else if useStackTrailing {
                 HStack {
-                    Label {
-                        Text(stackText)
-                    } icon: {
-                        Image(systemName: labelIconName)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(labelIconColor)
+                    Button {
+                        focus = true
+                    } label: {
+                        Label {
+                            Text(stackText)
+                        } icon: {
+                            Image(systemName: labelIconName)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(labelIconColor)
+                        }
                     }
+                    .buttonStyle(InvisibleButtonStyle())
                     
                     HStack(spacing: 4) {
                         field
@@ -75,15 +85,6 @@ struct ServingTextFieldView: View {
                 field
             }
         }
-        .overlay(
-            Button {
-                focus = true
-            } label: {
-                Color.clear
-            }
-        )
-        .buttonStyle(.borderless)
-        .focused($focus)
     }
     
     private func validateInput(_ input: inout String) {

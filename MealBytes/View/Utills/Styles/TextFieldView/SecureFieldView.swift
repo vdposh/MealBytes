@@ -11,34 +11,20 @@ struct SecureFieldView: View {
     @Binding var text: String
     @FocusState private var focus: Bool
     var placeholder: String = "Password"
-    var showLabel: Bool = true
     
     var body: some View {
-        content
-            .overlay(
-                Button {
-                    $focus.wrappedValue = true
-                } label: {
-                    Color.clear
-                }
-            )
-            .buttonStyle(.borderless)
-            .focused($focus)
-    }
-    
-    @ViewBuilder
-    private var content: some View {
-        if showLabel {
-            Label {
-                SecureField(placeholder, text: $text)
-                    .autocapitalization(.none)
-            } icon: {
+        Label {
+            SecureField(placeholder, text: $text)
+                .autocapitalization(.none)
+                .focused($focus)
+        } icon: {
+            Button {
+                focus = true
+            } label: {
                 Image(systemName: "key.fill")
                     .foregroundStyle(text.isEmpty ? .customGray : .accent)
             }
-        } else {
-            SecureField(placeholder, text: $text)
-                .autocapitalization(.none)
+            .buttonStyle(InvisibleButtonStyle())
         }
     }
 }

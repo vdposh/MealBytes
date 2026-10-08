@@ -149,6 +149,10 @@ final class ProfileViewModel: ObservableObject {
     }
     
     // MARK: - UI Helper
+    var isLoggedIn: Bool {
+        !(email ?? "").isEmpty
+    }
+    
     var alertTitle: String {
         alertContent?.title ?? "Alert"
     }

@@ -28,7 +28,7 @@ struct HeaderButtonView: View {
             } label: {
                 HStack {
                     VStack(alignment: .leading) {
-                        HeaderTextView(title: title)
+                        Text(title)
                         
                         if hasItems && showNutrients,
                            let calories, let fat, let carbs, let protein {
@@ -50,42 +50,26 @@ struct HeaderButtonView: View {
                             .animation(.default, value: isExpanded)
                     }
                 }
-                .padding(
-                    .horizontal,
-                    UIScreen.horizontalPadding(focused: true)
-                )
-                .padding(.vertical, 10)
                 .contentShape(Rectangle())
             }
-            .listRowInsets(.all, 0)
             .buttonStyle(InvisibleButtonStyle())
         } else {
             HStack {
-                HeaderTextView(title: title)
-                    .padding(
-                        .horizontal,
-                        UIScreen.horizontalPadding(focused: true)
-                    )
-                    .padding(.vertical, 10)
+                Text(title)
+                    .foregroundStyle(Color.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if isEdit {
                     Button {
                         action()
                     } label: {
                         Text("Edit")
-                            .fontWeight(.regular)
                             .foregroundStyle(.accent)
                     }
-                    .padding(
-                        .horizontal,
-                        UIScreen.horizontalPadding(focused: true)
-                    )
-                    .padding(.vertical, 10)
                     .buttonStyle(.borderless)
                 }
             }
             .transaction { $0.animation = nil }
-            .listRowInsets(.all, 0)
         }
     }
 }

@@ -34,6 +34,7 @@ struct MealHeaderView: View {
             headerContent
         }
         .transaction { $0.animation = nil }
+        .headerProminence(.increased)
         .alert(
             isPresented: $mainViewModel.showClearMealTypeAlert,
             content: {
