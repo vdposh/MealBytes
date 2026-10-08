@@ -22,11 +22,11 @@ struct NutrientFieldRow<Focus: Hashable>: View {
     var body: some View {
         ServingTextFieldView(
             text: $text,
-            unitText: displayUnit.unitDescription(for: Double(text) ?? 0),
+            unitText: displayUnit.unitDescription(for: text.doubleValue ?? 0),
             labelIconName: type.iconName,
             labelIconColor: type.iconColor,
             stackText: type.title,
-            useStackTrailing: true,
+            useLabel: false,
             keyboardType: .numberPad,
             inputMode: .integer,
             maxIntegerDigits: maxIntegerDigits

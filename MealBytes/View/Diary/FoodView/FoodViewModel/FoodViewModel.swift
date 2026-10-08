@@ -96,8 +96,7 @@ final class FoodViewModel: ObservableObject {
                 let servingDescription = metadata?
                     .servingDescription ?? initialMeasurementDescription
                 
-                if let metadata = metadata,
-                   let value = Double(metadata.amount) {
+                if let metadata, let value = metadata.amount.doubleValue {
                     amount = value.asDecimal(grouping: false)
                 }
                 
@@ -372,7 +371,7 @@ final class FoodViewModel: ObservableObject {
         let formattedAmount = amount
         let measurement = serving.measurementDescription
         let servingSize = serving.metricServingAmount
-        let amountValue = Double(formattedAmount) ?? 0
+        let amountValue = formattedAmount.doubleValue ?? 0
         
         if formattedAmount.isEmpty || amountValue == 0 {
             if measurement == "g" {

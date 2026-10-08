@@ -13,12 +13,14 @@ struct LoginTextFieldView: View {
     var placeholder: String = "Email"
     
     var body: some View {
+        let field = TextField(placeholder, text: $text)
+            .keyboardType(.emailAddress)
+            .autocapitalization(.none)
+            .disableAutocorrection(true)
+            .focused($focus)
+        
         Label {
-            TextField(placeholder, text: $text)
-                .keyboardType(.emailAddress)
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
-                .focused($focus)
+            field
         } icon: {
             Button {
                 focus = true

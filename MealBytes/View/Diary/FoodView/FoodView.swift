@@ -141,8 +141,7 @@ struct FoodView: View {
         Section {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
-                placeholder: "Enter amount",
-                useLabel: true
+                placeholder: "Enter amount"
             )
             .focused($amountFocused)
             

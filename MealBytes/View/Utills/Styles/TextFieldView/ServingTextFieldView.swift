@@ -16,8 +16,7 @@ struct ServingTextFieldView: View {
     var labelIconName: String = "plus.forwardslash.minus"
     var labelIconColor: Color = .customGray
     var stackText: String = ""
-    var useLabel: Bool = false
-    var useStackTrailing: Bool = false
+    var useLabel: Bool = true
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -41,48 +40,54 @@ struct ServingTextFieldView: View {
                 }
             }
         
-        Group {
-            if useLabel {
-                Label {
-                    field
-                } icon: {
-                    Button {
-                        focus = true
-                    } label: {
-                        Image(systemName: labelIconName)
-                            .foregroundStyle(labelIconColor)
-                    }
-                    .buttonStyle(InvisibleButtonStyle())
+        if useLabel {
+            Label {
+                field
+            } icon: {
+                Button {
+                    focus = true
+                } label: {
+                    Image(systemName: labelIconName)
+                        .foregroundStyle(labelIconColor)
                 }
-            } else if useStackTrailing {
+                .buttonStyle(InvisibleButtonStyle())
+            }
+        } else {
+            Label {
                 HStack {
                     Button {
                         focus = true
                     } label: {
-                        Label {
-                            Text(stackText)
-                        } icon: {
-                            Image(systemName: labelIconName)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(labelIconColor)
-                        }
+                        Text(stackText)
                     }
                     .buttonStyle(InvisibleButtonStyle())
                     
                     HStack(spacing: 4) {
                         field
+                            .multilineTextAlignment(.trailing)
                         
-                        Text(unitText)
-                            .foregroundStyle(
-                                text.isEmpty ? Color(
-                                    .placeholderText
-                                ) : .primary
-                            )
+                        Button {
+                            focus = true
+                        } label: {
+                            Text(unitText)
+                                .foregroundStyle(
+                                    text.isEmpty
+                                    ? Color(.placeholderText)
+                                    : .primary
+                                )
+                        }
+                        .buttonStyle(InvisibleButtonStyle())
                     }
-                    .multilineTextAlignment(.trailing)
                 }
-            } else {
-                field
+            } icon: {
+                Button {
+                    focus = true
+                } label: {
+                    Image(systemName: labelIconName)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(labelIconColor)
+                }
+                .buttonStyle(InvisibleButtonStyle())
             }
         }
     }

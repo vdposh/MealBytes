@@ -29,7 +29,7 @@ struct NutrientLabelRow: View {
             
             HStack(spacing: 4) {
                 Text(value)
-                Text(displayUnit.unitDescription(for: Double(value) ?? 0))
+                Text(displayUnit.unitDescription(for: value.doubleValue ?? 0))
             }
         }
     }

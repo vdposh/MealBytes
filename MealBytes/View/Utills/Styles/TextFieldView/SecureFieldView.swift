@@ -13,10 +13,12 @@ struct SecureFieldView: View {
     var placeholder: String = "Password"
     
     var body: some View {
+        let field = SecureField(placeholder, text: $text)
+            .autocapitalization(.none)
+            .focused($focus)
+        
         Label {
-            SecureField(placeholder, text: $text)
-                .autocapitalization(.none)
-                .focused($focus)
+            field
         } icon: {
             Button {
                 focus = true

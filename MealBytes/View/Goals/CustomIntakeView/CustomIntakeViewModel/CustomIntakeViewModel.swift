@@ -46,7 +46,7 @@ final class CustomIntakeViewModel: ObservableObject {
             let data = try await firestore.loadCustomIntakeFirestore()
             
             await MainActor.run {
-                let kcal = Double(data.calories) ?? 0
+                let kcal = data.calories.doubleValue ?? 0
                 let display = mainViewModel.energyUnit.fromKcal(kcal: kcal)
                 calories = display > 0 ? display.asWhole(grouping: false) : ""
                 fat = data.fat
