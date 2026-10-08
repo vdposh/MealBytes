@@ -108,6 +108,7 @@ final class CustomIntakeViewModel: ObservableObject {
         
         await MainActor.run {
             didSaveSuccessfully = true
+            normalizeInputs()
         }
         
         await mainViewModel.saveCurrentIntakeMainView(

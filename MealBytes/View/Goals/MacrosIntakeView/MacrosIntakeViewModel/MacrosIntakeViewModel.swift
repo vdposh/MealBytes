@@ -107,6 +107,7 @@ final class MacrosIntakeViewModel: ObservableObject {
         
         await MainActor.run {
             didSaveSuccessfully = true
+            normalizeInputs()
         }
         
         await mainViewModel.saveCurrentIntakeMainView(
