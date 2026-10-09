@@ -13,22 +13,38 @@ struct LoginTextFieldView: View {
     var placeholder: String = "Email"
     
     var body: some View {
-        let field = TextField(placeholder, text: $text)
+        contentLoginTextField
+            .overlay {
+                focusOverlay
+            }
+    }
+    
+    private var field: some View {
+        TextField(placeholder, text: $text)
             .keyboardType(.emailAddress)
             .autocapitalization(.none)
             .disableAutocorrection(true)
             .focused($focus)
-        
+    }
+    
+    private var contentLoginTextField: some View {
         Label {
             field
         } icon: {
+            Image(systemName: "envelope.fill")
+                .foregroundStyle(text.isEmpty ? .customGray : .accent)
+        }
+    }
+    
+    @ViewBuilder
+    private var focusOverlay: some View {
+        if !focus {
             Button {
                 focus = true
             } label: {
-                Image(systemName: "envelope.fill")
-                    .foregroundStyle(text.isEmpty ? .customGray : .accent)
+                Color.clear
             }
-            .buttonStyle(InvisibleButtonStyle())
+            .buttonStyle(.borderless)
         }
     }
 }

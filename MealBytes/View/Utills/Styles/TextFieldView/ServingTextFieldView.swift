@@ -23,12 +23,15 @@ struct ServingTextFieldView: View {
     var maxFractionalDigits: Int = 2
     var maxIntegerDigits: Int = 4
     
-    private var decimalSeparator: String {
-        Locale.current.decimalSeparator ?? "."
+    var body: some View {
+        contentServingTextField
+            .overlay {
+                focusOverlay
+            }
     }
     
-    var body: some View {
-        let field = TextField(placeholder, text: $text)
+    private var field: some View {
+        TextField(placeholder, text: $text)
             .keyboardType(keyboardType)
             .focused($focus)
             .onChange(of: text) {
@@ -39,57 +42,56 @@ struct ServingTextFieldView: View {
                     finalizeInput(&text)
                 }
             }
-        
+    }
+    
+    @ViewBuilder
+    private var contentServingTextField: some View {
         if useLabel {
             Label {
                 field
             } icon: {
-                Button {
-                    focus = true
-                } label: {
-                    Image(systemName: labelIconName)
-                        .foregroundStyle(labelIconColor)
-                }
-                .buttonStyle(InvisibleButtonStyle())
+                Image(systemName: labelIconName)
+                    .foregroundStyle(labelIconColor)
             }
         } else {
             Label {
                 HStack {
-                    Button {
-                        focus = true
-                    } label: {
-                        Text(stackText)
-                    }
-                    .buttonStyle(InvisibleButtonStyle())
+                    Text(stackText)
                     
                     HStack(spacing: 4) {
                         field
                             .multilineTextAlignment(.trailing)
                         
-                        Button {
-                            focus = true
-                        } label: {
-                            Text(unitText)
-                                .foregroundStyle(
-                                    text.isEmpty
-                                    ? Color(.placeholderText)
-                                    : .primary
-                                )
-                        }
-                        .buttonStyle(InvisibleButtonStyle())
+                        Text(unitText)
+                            .foregroundStyle(
+                                text.isEmpty
+                                ? Color(.placeholderText)
+                                : .primary
+                            )
                     }
                 }
             } icon: {
-                Button {
-                    focus = true
-                } label: {
-                    Image(systemName: labelIconName)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(labelIconColor)
-                }
-                .buttonStyle(InvisibleButtonStyle())
+                Image(systemName: labelIconName)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(labelIconColor)
             }
         }
+    }
+    
+    @ViewBuilder
+    private var focusOverlay: some View {
+        if !focus {
+            Button {
+                focus = true
+            } label: {
+                Color.clear
+            }
+            .buttonStyle(.borderless)
+        }
+    }
+    
+    private var decimalSeparator: String {
+        Locale.current.decimalSeparator ?? "."
     }
     
     private func validateInput(_ input: inout String) {

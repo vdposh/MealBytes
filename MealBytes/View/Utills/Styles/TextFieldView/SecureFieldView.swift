@@ -13,20 +13,36 @@ struct SecureFieldView: View {
     var placeholder: String = "Password"
     
     var body: some View {
-        let field = SecureField(placeholder, text: $text)
+        contentSecureField
+            .overlay {
+                focusOverlay
+            }
+    }
+    
+    private var field: some View {
+        SecureField(placeholder, text: $text)
             .autocapitalization(.none)
             .focused($focus)
-        
+    }
+    
+    private var contentSecureField: some View {
         Label {
             field
         } icon: {
+            Image(systemName: "key.fill")
+                .foregroundStyle(text.isEmpty ? .customGray : .accent)
+        }
+    }
+    
+    @ViewBuilder
+    private var focusOverlay: some View {
+        if !focus {
             Button {
                 focus = true
             } label: {
-                Image(systemName: "key.fill")
-                    .foregroundStyle(text.isEmpty ? .customGray : .accent)
+                Color.clear
             }
-            .buttonStyle(InvisibleButtonStyle())
+            .buttonStyle(.borderless)
         }
     }
 }

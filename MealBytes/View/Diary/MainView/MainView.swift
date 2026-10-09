@@ -127,7 +127,7 @@ struct MainView: View {
     @ToolbarContentBuilder
     private var mainViewToolbar: some ToolbarContent {
         if !mainViewModel.isTodaySelected {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     withAnimation {
                         mainViewModel.date = Date()
@@ -139,9 +139,9 @@ struct MainView: View {
             }
         }
         
-        ToolbarSpacer(.fixed, placement: .primaryAction)
+        ToolbarSpacer(.fixed, placement: .topBarTrailing)
         
-        ToolbarItemGroup(placement: .primaryAction) {
+        ToolbarItem(placement: .topBarTrailing) {
             Button {
                 mainViewModel.showDatePicker.toggle()
             } label: {
@@ -150,24 +150,22 @@ struct MainView: View {
             .popover(isPresented: $mainViewModel.showDatePicker) {
                 DatePickerView(date: $mainViewModel.date)
             }
-            
-            if mainViewModel.hasMealItems {
-                Menu {
-                    Button {
-                        
-                    } label: {
-                        Label("Select", systemImage: "checkmark.circle")
-                    }
+        }
+        
+        if mainViewModel.hasMealItems {
+            ToolbarOverflowMenu {
+                Button {
                     
-                    Divider()
-                    
-                    Button(role: .destructive) {
-                        mainViewModel.showClearDayAlert = true
-                    } label: {
-                        Label("Clear Day", systemImage: "trash")
-                    }
                 } label: {
-                    Image(systemName: "ellipsis")
+                    Label("Select", systemImage: "checkmark.circle")
+                }
+                
+                Divider()
+                
+                Button(role: .destructive) {
+                    mainViewModel.showClearDayAlert = true
+                } label: {
+                    Label("Clear Day", systemImage: "trash")
                 }
             }
         }
