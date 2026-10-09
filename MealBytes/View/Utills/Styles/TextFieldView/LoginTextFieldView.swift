@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct LoginTextFieldView: View {
+struct LoginTextFieldView<Focus: Hashable>: View {
     @Binding var text: String
-    @FocusState private var focus: Bool
+    let focus: FocusState<Focus?>.Binding
+    let focusCase: Focus
     var placeholder: String = "Email"
     
     var body: some View {
@@ -24,7 +25,7 @@ struct LoginTextFieldView: View {
             .keyboardType(.emailAddress)
             .autocapitalization(.none)
             .disableAutocorrection(true)
-            .focused($focus)
+            .focused(focus, equals: focusCase)
     }
     
     private var contentLoginTextField: some View {
@@ -38,9 +39,9 @@ struct LoginTextFieldView: View {
     
     @ViewBuilder
     private var focusOverlay: some View {
-        if !focus {
+        if focus.wrappedValue != focusCase {
             Button {
-                focus = true
+                focus.wrappedValue = focusCase
             } label: {
                 Color.clear
             }

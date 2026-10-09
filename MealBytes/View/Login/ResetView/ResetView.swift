@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ResetView: View {
+    @FocusState private var resetFocus: Bool?
     @StateObject private var resetViewModel = ResetViewModel()
     
     var body: some View {
@@ -20,13 +21,18 @@ struct ResetView: View {
             .alert(isPresented: $resetViewModel.showAlert) {
                 resetViewModel.getAlert()
             }
+            .task {
+                resetFocus = true
+            }
     }
     
     private var resetViewContentBody: some View {
         Form {
             Section {
                 LoginTextFieldView(
-                    text: $resetViewModel.email
+                    text: $resetViewModel.email,
+                    focus: $resetFocus,
+                    focusCase: true
                 )
             } footer: {
                 Text("Enter email to request a password reset link.")

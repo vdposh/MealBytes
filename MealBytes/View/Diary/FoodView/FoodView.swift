@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FoodView: View {
     @State private var mealType: MealType
-    @FocusState private var amountFocused: Bool
+    @FocusState private var amountFocused: Bool?
     @Environment(\.dismiss) private var dismiss
     
     private let isEditingMealItem: Bool
@@ -55,7 +55,7 @@ struct FoodView: View {
             .safeAreaInset(edge: .bottom) {
                 foodViewSafeArea
             }
-            .ignoresSafeArea(edges: amountFocused ? [] : .bottom)
+            .ignoresSafeArea(edges: amountFocused == true ? [] : .bottom)
             .background {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
@@ -64,9 +64,10 @@ struct FoodView: View {
                 foodViewModel.mealType = mealType
             }
             .onChange(of: amountFocused) {
+                let isFocused = amountFocused == true
                 foodViewModel.handleAmountFocusChange(
-                    from: !amountFocused,
-                    to: amountFocused
+                    from: !isFocused,
+                    to: isFocused
                 )
             }
             .task {
@@ -141,9 +142,10 @@ struct FoodView: View {
         Section {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
+                focus: $amountFocused,
+                focusCase: true,
                 placeholder: "Enter amount"
             )
-            .focused($amountFocused)
             
             if let selected = foodViewModel.selectedServing,
                let servings = foodViewModel.foodDetail?.servings.serving {
@@ -169,7 +171,7 @@ struct FoodView: View {
                 }
                 .onChange(of: selected) {
                     foodViewModel.updateServing(selected)
-                    amountFocused = false
+                    amountFocused = nil
                     foodViewModel.normalizeAmount()
                 }
             }
@@ -189,7 +191,7 @@ struct FoodView: View {
                         .foregroundStyle(.customGray)
                 }
                 .onChange(of: mealType) {
-                    amountFocused = false
+                    amountFocused = nil
                     foodViewModel.normalizeAmount()
                 }
             }
@@ -280,10 +282,10 @@ struct FoodView: View {
                             Task {
                                 await foodViewModel.toggleBookmarkFoodView()
                             }
-                            amountFocused = false
+                            amountFocused = nil
                             foodViewModel.normalizeAmount()
                         },
-                        focused: amountFocused
+                        focused: amountFocused == true
                     )
                     
                 case .fromMainView:
@@ -293,21 +295,21 @@ struct FoodView: View {
                             foodViewModel.deleteMealItemFoodView()
                             dismiss()
                         },
-                        focused: amountFocused
+                        focused: amountFocused == true
                     )
                 }
             }
             
             ToolbarButtonView(
                 action: {
-                    amountFocused = false
+                    amountFocused = nil
                     foodViewModel.normalizeAmount()
                 },
                 alignment: .center,
-                focused: amountFocused
+                focused: amountFocused == true
             )
-            .opacity(amountFocused ? 1 : 0)
-            .allowsHitTesting(amountFocused)
+            .opacity(amountFocused == true ? 1 : 0)
+            .allowsHitTesting(amountFocused == true)
         }
     }
 }

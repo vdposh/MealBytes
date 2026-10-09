@@ -8,13 +8,38 @@
 import SwiftUI
 
 struct PasswordView: View {
+    @FocusState private var passwordFocus: PasswordField?
     @StateObject private var passwordViewModel = PasswordViewModel()
     
     var body: some View {
+        passwordViewContentBody
+            .navigationTitle("Password")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                passwordViewToolbar
+            }
+            .alert(
+                passwordViewModel.alertTitle,
+                isPresented: passwordAlertBinding,
+                actions: {
+                    alertActions
+                },
+                message: {
+                    Text(passwordViewModel.alertMessage)
+                }
+            )
+            .task {
+                passwordFocus = .currentPassword
+            }
+    }
+    
+    private var passwordViewContentBody: some View {
         Form {
             Section {
                 SecureFieldView(
                     text: $passwordViewModel.currentPassword,
+                    focus: $passwordFocus,
+                    focusCase: .currentPassword,
                     placeholder: "Current Password"
                 )
             }
@@ -23,11 +48,15 @@ struct PasswordView: View {
             Section {
                 SecureFieldView(
                     text: $passwordViewModel.newPassword,
+                    focus: $passwordFocus,
+                    focusCase: .newPassword,
                     placeholder: "New Password"
                 )
                 
                 SecureFieldView(
                     text: $passwordViewModel.confirmPassword,
+                    focus: $passwordFocus,
+                    focusCase: .confirmPassword,
                     placeholder: "Confirm New Password"
                 )
             } footer: {
@@ -35,48 +64,50 @@ struct PasswordView: View {
             }
             .disabled(passwordViewModel.isLoading)
         }
-        .navigationTitle("Password")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                if passwordViewModel.isLoading {
-                    ProgressView()
-                } else {
-                    Button(role: .confirm) {
-                        Task {
-                            await passwordViewModel.changePassword()
-                        }
+    }
+    
+    @ToolbarContentBuilder
+    private var passwordViewToolbar: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            if passwordViewModel.isLoading {
+                ProgressView()
+            } else {
+                Button(role: .confirm) {
+                    Task {
+                        await passwordViewModel.changePassword()
                     }
-                    .disabled(!passwordViewModel.isFormValid)
                 }
+                .disabled(!passwordViewModel.isFormValid)
             }
         }
-        .alert(
-            passwordViewModel.alertTitle,
-            isPresented: Binding(
-                get: { passwordViewModel.showAlert },
-                set: { newValue in
-                    if !newValue {
-                        Task { @MainActor in
-                            passwordViewModel.showAlert = false
-                        }
-                    }
-                }
-            ),
-            actions: {
-                Button("OK") {
-                    Task {
-                        if passwordViewModel.isSuccess {
-                            await passwordViewModel.resetPasswordState()
-                        }
+    }
+    
+    private var passwordAlertBinding: Binding<Bool> {
+        Binding(
+            get: { passwordViewModel.showAlert },
+            set: { newValue in
+                if !newValue {
+                    Task { @MainActor in
                         passwordViewModel.showAlert = false
                     }
                 }
-            },
-            message: {
-                Text(passwordViewModel.alertMessage)
             }
         )
+    }
+    
+    @ViewBuilder
+    private var alertActions: some View {
+        Button("OK") {
+            if passwordViewModel.isSuccess {
+                passwordViewModel.resetPasswordState()
+            }
+        }
+    }
+    
+    enum PasswordField: Hashable {
+        case currentPassword
+        case newPassword
+        case confirmPassword
     }
 }
 

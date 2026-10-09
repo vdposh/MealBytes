@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RegisterView: View {
+    @FocusState private var registerFocus: RegisterField?
     @StateObject private var registerViewModel = RegisterViewModel()
     
     var body: some View {
@@ -20,20 +21,30 @@ struct RegisterView: View {
             .alert(isPresented: $registerViewModel.showAlert) {
                 registerViewModel.getAlert()
             }
+            .task {
+                registerFocus = .email
+            }
     }
     
     private var registerViewContentBody: some View {
         Form {
             Section {
-                LoginTextFieldView(text: $registerViewModel.email)
-                    .textContentType(.emailAddress)
+                LoginTextFieldView(
+                    text: $registerViewModel.email,
+                    focus: $registerFocus,
+                    focusCase: .email
+                )
                 
                 SecureFieldView(
-                    text: $registerViewModel.password
+                    text: $registerViewModel.password,
+                    focus: $registerFocus,
+                    focusCase: .password
                 )
                 
                 SecureFieldView(
                     text: $registerViewModel.confirmPassword,
+                    focus: $registerFocus,
+                    focusCase: .confirmPassword,
                     placeholder: "Confirm Password"
                 )
             } footer: {
@@ -76,6 +87,12 @@ struct RegisterView: View {
                 .disabled(!registerViewModel.isRegisterEnabled())
             }
         }
+    }
+    
+    enum RegisterField: Hashable {
+        case email
+        case password
+        case confirmPassword
     }
 }
 

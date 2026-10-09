@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct SecureFieldView: View {
+struct SecureFieldView<Focus: Hashable>: View {
     @Binding var text: String
-    @FocusState private var focus: Bool
+    let focus: FocusState<Focus?>.Binding
+    let focusCase: Focus
     var placeholder: String = "Password"
     
     var body: some View {
@@ -22,7 +23,7 @@ struct SecureFieldView: View {
     private var field: some View {
         SecureField(placeholder, text: $text)
             .autocapitalization(.none)
-            .focused($focus)
+            .focused(focus, equals: focusCase)
     }
     
     private var contentSecureField: some View {
@@ -36,9 +37,9 @@ struct SecureFieldView: View {
     
     @ViewBuilder
     private var focusOverlay: some View {
-        if !focus {
+        if focus.wrappedValue != focusCase {
             Button {
-                focus = true
+                focus.wrappedValue = focusCase
             } label: {
                 Color.clear
             }

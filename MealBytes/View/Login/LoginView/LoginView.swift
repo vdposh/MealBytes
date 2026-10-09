@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
+    @FocusState private var loginFocus: LoginField?
     @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
@@ -26,11 +27,15 @@ struct LoginView: View {
         Form {
             Section {
                 LoginTextFieldView(
-                    text: $loginViewModel.email
+                    text: $loginViewModel.email,
+                    focus: $loginFocus,
+                    focusCase: .email
                 )
                 
                 SecureFieldView(
-                    text: $loginViewModel.password
+                    text: $loginViewModel.password,
+                    focus: $loginFocus,
+                    focusCase: .password
                 )
             }
             
@@ -64,6 +69,11 @@ struct LoginView: View {
                 .disabled(!loginViewModel.isLoginEnabled())
             }
         }
+    }
+    
+    enum LoginField: Hashable {
+        case email
+        case password
     }
 }
 

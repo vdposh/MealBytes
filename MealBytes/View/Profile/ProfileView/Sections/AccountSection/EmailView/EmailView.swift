@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct EmailView: View {
+    @FocusState private var emailFocus: Bool?
     @StateObject private var emailViewModel = EmailViewModel()
     
     init(currentEmail: String = "") {
@@ -17,49 +18,67 @@ struct EmailView: View {
     }
     
     var body: some View {
+        emailViewContentBody
+            .navigationTitle("Email")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                emailViewToolbar
+            }
+            .alert(
+                emailViewModel.alertTitle,
+                isPresented: emailAlertBinding,
+                actions: {
+                    alertActions
+                },
+                message: {
+                    Text(emailViewModel.alertMessage)
+                }
+            )
+            .task {
+                emailFocus = true
+            }
+    }
+    
+    private var emailViewContentBody: some View {
         Form {
             Section {
                 LoginTextFieldView(
                     text: $emailViewModel.newEmail,
+                    focus: $emailFocus,
+                    focusCase: true,
                     placeholder: "New Email"
                 )
             } footer: {
                 Text("Enter a new email. A verification link will be sent to it.")
             }
         }
-        .navigationTitle("Email")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                if emailViewModel.isLoading {
-                    ProgressView()
-                } else {
-                    Button(role: .confirm) {
-                        Task {
-                            await emailViewModel.changeEmail()
-                        }
+    }
+    
+    @ToolbarContentBuilder
+    private var emailViewToolbar: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            if emailViewModel.isLoading {
+                ProgressView()
+            } else {
+                Button(role: .confirm) {
+                    Task {
+                        await emailViewModel.changeEmail()
                     }
-                    .disabled(!emailViewModel.isFormValid)
                 }
+                .disabled(!emailViewModel.isFormValid)
             }
         }
-        .alert(
-            emailViewModel.alertTitle,
-            isPresented: Binding(
-                get: { emailViewModel.alertType != nil },
-                set: { newValue in
-                    if !newValue {
-                        Task { @MainActor in
-                            emailViewModel.alertType = nil
-                        }
+    }
+    
+    private var emailAlertBinding: Binding<Bool> {
+        Binding(
+            get: { emailViewModel.alertType != nil },
+            set: { newValue in
+                if !newValue {
+                    Task { @MainActor in
+                        emailViewModel.alertType = nil
                     }
                 }
-            ),
-            actions: {
-                alertActions
-            },
-            message: {
-                Text(emailViewModel.alertMessage)
             }
         )
     }

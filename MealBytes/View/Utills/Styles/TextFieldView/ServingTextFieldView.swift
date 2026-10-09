@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-struct ServingTextFieldView: View {
+struct ServingTextFieldView<Focus: Hashable>: View {
     @Binding var text: String
-    @FocusState private var focus: Bool
+    
+    let focus: FocusState<Focus?>.Binding
+    let focusCase: Focus
     
     var placeholder: String = "0"
     var unitText: String = ""
@@ -33,12 +35,12 @@ struct ServingTextFieldView: View {
     private var field: some View {
         TextField(placeholder, text: $text)
             .keyboardType(keyboardType)
-            .focused($focus)
+            .focused(focus, equals: focusCase)
             .onChange(of: text) {
                 validateInput(&text)
             }
-            .onChange(of: focus) {
-                if !focus {
+            .onChange(of: focus.wrappedValue) {
+                if focus.wrappedValue != focusCase {
                     finalizeInput(&text)
                 }
             }
@@ -80,9 +82,9 @@ struct ServingTextFieldView: View {
     
     @ViewBuilder
     private var focusOverlay: some View {
-        if !focus {
+        if focus.wrappedValue != focusCase {
             Button {
-                focus = true
+                focus.wrappedValue = focusCase
             } label: {
                 Color.clear
             }

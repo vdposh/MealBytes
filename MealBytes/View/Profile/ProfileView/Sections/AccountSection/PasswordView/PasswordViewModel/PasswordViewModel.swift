@@ -94,12 +94,10 @@ final class PasswordViewModel: ObservableObject {
         return .unknownError
     }
     
-    func resetPasswordState() async {
-        await MainActor.run {
-            currentPassword = ""
-            newPassword = ""
-            confirmPassword = ""
-        }
+    func resetPasswordState() {
+        currentPassword = ""
+        newPassword = ""
+        confirmPassword = ""
     }
     
     // MARK: - UI Helper

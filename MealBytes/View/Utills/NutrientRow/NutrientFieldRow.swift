@@ -22,6 +22,8 @@ struct NutrientFieldRow<Focus: Hashable>: View {
     var body: some View {
         ServingTextFieldView(
             text: $text,
+            focus: focus,
+            focusCase: focusCase,
             unitText: displayUnit.unitDescription(for: text.doubleValue ?? 0),
             labelIconName: type.iconName,
             labelIconColor: type.iconColor,
@@ -31,7 +33,6 @@ struct NutrientFieldRow<Focus: Hashable>: View {
             inputMode: .integer,
             maxIntegerDigits: maxIntegerDigits
         )
-        .focused(focus, equals: focusCase)
     }
 }
 
