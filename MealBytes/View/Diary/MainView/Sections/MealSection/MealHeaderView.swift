@@ -77,7 +77,7 @@ struct MealHeaderView: View {
                             mainViewModel.mealTypeToClear = mealType
                             mainViewModel.showClearMealTypeAlert = true
                         } label: {
-                            Label("Delete All", systemImage: "trash")
+                            Label("Clear Meal type", systemImage: "trash")
                         }
                     } label: {
                         Image(systemName: "ellipsis")

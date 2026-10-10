@@ -33,7 +33,7 @@ final class MainViewModel: ObservableObject {
             handleDateChange(from: oldValue, to: date)
         }
     }
-    @Published var mealItems: [MealType: [MealItem]]
+    @Published var mealItemsByDate: [String: [MealType: [MealItem]]] = [:]
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var energyUnit: EnergyUnit = .kcal
@@ -66,15 +66,12 @@ final class MainViewModel: ObservableObject {
     )
     
     init() {
-        var items = [MealType: [MealItem]]()
         var summaries = [NutrientType: Double]()
         var sections = [MealType: Bool]()
         
-        MealType.allCases.forEach { items[$0] = [] }
         NutrientType.allCases.forEach { summaries[$0] = 0.0 }
         MealType.allCases.forEach { sections[$0] = true }
         
-        self.mealItems = items
         self.nutrientSummaries = summaries
         self.expandedSections = sections
     }
@@ -108,11 +105,15 @@ final class MainViewModel: ObservableObject {
             let mealItems = try await firestore.loadMealItemsFirestore()
             
             await MainActor.run {
-                self.mealItems = Dictionary(
-                    grouping: mealItems,
-                    by: { $0.mealType }
-                )
+                var grouped: [String: [MealType: [MealItem]]] = [:]
                 
+                for item in mealItems {
+                    let key = dateKey(for: item.date)
+                    grouped[key, default: [:]][item.mealType, default: []]
+                        .append(item)
+                }
+                
+                self.mealItemsByDate = grouped
                 recalculateNutrients(for: date)
             }
         } catch {
@@ -128,7 +129,8 @@ final class MainViewModel: ObservableObject {
         to mealType: MealType,
         for date: Date
     ) {
-        mealItems[mealType, default: []].append(item)
+        let key = dateKey(for: date)
+        mealItemsByDate[key, default: [:]][mealType, default: []].append(item)
         expandedSections[mealType] = true
         
         recalculateNutrients(for: date)
@@ -140,14 +142,12 @@ final class MainViewModel: ObservableObject {
         for mealType: MealType,
         on date: Date
     ) {
-        guard let items = mealItems[mealType] else { return }
+        let key = dateKey(for: date)
+        guard var items = mealItemsByDate[key]?[mealType] else { return }
         
-        if let index = items.firstIndex(
-            where: { $0.id == updatedItem.id
-                && calendar.isDate($0.date, inSameDayAs: date)
-            }
-        ) {
-            mealItems[mealType]?[index] = updatedItem
+        if let index = items.firstIndex(where: { $0.id == updatedItem.id }) {
+            items[index] = updatedItem
+            mealItemsByDate[key]?[mealType] = items
         }
         
         recalculateNutrients(for: date)
@@ -156,6 +156,8 @@ final class MainViewModel: ObservableObject {
     // MARK: - Move Meal Item
     func moveMealItem(_ item: MealItem, to newMealType: MealType) {
         guard item.mealType != newMealType else { return }
+        
+        let key = dateKey(for: item.date)
         
         let updatedItem = MealItem(
             id: item.id,
@@ -171,11 +173,10 @@ final class MainViewModel: ObservableObject {
         )
         
         withAnimation {
-            var newMealItems = mealItems
-            newMealItems[item.mealType]?.removeAll { $0.id == item.id }
-            newMealItems[newMealType, default: []].append(updatedItem)
-            mealItems = newMealItems
-            
+            mealItemsByDate[key]?[item.mealType]?
+                .removeAll { $0.id == item.id }
+            mealItemsByDate[key]?[newMealType, default: []]
+                .append(updatedItem)
             expandedSections[newMealType] = true
         }
         
@@ -196,13 +197,12 @@ final class MainViewModel: ObservableObject {
         for mealType: MealType,
         animated: Bool = true
     ) {
-        let itemToDelete = mealItems[mealType]?.first(where: { $0.id == id })
+        let key = dateKey(for: date)
+        let itemToDelete = mealItemsByDate[key]?[mealType]?
+            .first(where: { $0.id == id })
         
         let update = {
-            var newMealItems = self.mealItems
-            newMealItems[mealType]?.removeAll { $0.id == id }
-            self.mealItems = newMealItems
-            
+            self.mealItemsByDate[key]?[mealType]?.removeAll { $0.id == id }
             self.recalculateNutrients(for: self.date)
         }
         
@@ -230,14 +230,10 @@ final class MainViewModel: ObservableObject {
     // MARK: - Clear Day
     func clearDay() {
         let dateToClear = date
+        let key = dateKey(for: dateToClear)
         
         withAnimation {
-            for mealType in MealType.allCases {
-                mealItems[mealType] = mealItems[mealType]?.filter {
-                    !calendar.isDate($0.date, inSameDayAs: dateToClear)
-                }
-            }
-            
+            mealItemsByDate.removeValue(forKey: key)
             recalculateNutrients(for: date)
         }
         
@@ -255,14 +251,12 @@ final class MainViewModel: ObservableObject {
     // MARK: - Clear Meal Type
     func clearMealType(_ mealType: MealType) {
         let dateToClear = date
+        let key = dateKey(for: dateToClear)
         
         let itemsToDelete = filteredMealItems(for: mealType, on: dateToClear)
         
         withAnimation {
-            mealItems[mealType] = mealItems[mealType]?.filter {
-                !calendar.isDate($0.date, inSameDayAs: dateToClear)
-            }
-            
+            mealItemsByDate[key]?[mealType] = []
             recalculateNutrients(for: date)
         }
         
@@ -443,14 +437,13 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Calculation (Nutrients)
     private func recalculateNutrients(for date: Date) {
-        nutrientSummaries = mealItems.values.reduce(
+        let key = dateKey(for: date)
+        let dayItems = mealItemsByDate[key] ?? [:]
+        
+        nutrientSummaries = dayItems.values.reduce(
             into: [NutrientType: Double]()
         ) { result, mealList in
             mealList.forEach { item in
-                guard calendar.isDate(
-                    item.date,
-                    inSameDayAs: date
-                ) else { return }
                 item.nutrients.forEach { nutrient, value in
                     result[nutrient, default: 0.0] += value
                 }
@@ -491,28 +484,20 @@ final class MainViewModel: ObservableObject {
         for mealType: MealType,
         on date: Date
     ) -> [MealItem] {
-        return mealItems[mealType, default: []].filter {
-            calendar.isDate($0.date, inSameDayAs: date)
-        }
+        let key = dateKey(for: date)
+        return mealItemsByDate[key]?[mealType] ?? []
     }
     
     var hasMealItems: Bool {
-        mealItems.values.contains {
-            $0.contains {
-                calendar.isDate($0.date, inSameDayAs: date)
-            }
-        }
+        let key = dateKey(for: date)
+        return !(mealItemsByDate[key]?.values.allSatisfy(\.isEmpty) ?? true)
     }
     
     func hasMealItemsForMealType(
         for mealType: MealType,
         on date: Date
     ) -> Bool {
-        let items = mealItems[mealType] ?? []
-        
-        return items.contains {
-            calendar.isDate($0.date, inSameDayAs: date)
-        }
+        !filteredMealItems(for: mealType, on: date).isEmpty
     }
     
     // MARK: - Filtered Nutrients
@@ -562,6 +547,10 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Date
+    private func dateKey(for date: Date) -> String {
+        date.formatted(.iso8601.year().month().day())
+    }
+    
     func formattedDate() -> String {
         if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
             return date.formatted(
@@ -572,6 +561,14 @@ final class MainViewModel: ObservableObject {
                 .dateTime.weekday(.abbreviated).day().month(.wide).year()
             )
         }
+    }
+    
+    private func handleDateChange(from oldDate: Date, to newDate: Date) {
+        guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
+        
+        recalculateNutrients(for: newDate)
+        expandAllSections()
+        isExpanded = false
     }
     
     func setDate(_ newDate: Date) {
@@ -586,14 +583,6 @@ final class MainViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.isChangingDate = false
         }
-    }
-    
-    private func handleDateChange(from oldDate: Date, to newDate: Date) {
-        guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
-        
-        recalculateNutrients(for: newDate)
-        expandAllSections()
-        isExpanded = false
     }
     
     var isTodaySelected: Bool {
@@ -666,11 +655,13 @@ final class MainViewModel: ObservableObject {
     func clearDayAlert(for date: Date) -> Alert {
         Alert(
             title: Text("Clear Day"),
-            message: Text("Delete all food logs for \(formattedDateForAlert())?"),
+            message: Text(
+                "Delete all food logs for \(formattedDateForAlert())?"
+            ),
             primaryButton: .destructive(Text("Delete All")) {
                 self.clearDay()
             },
-            secondaryButton: .cancel(Text("Cancel"))
+            secondaryButton: .cancel()
         )
     }
     
@@ -686,7 +677,7 @@ final class MainViewModel: ObservableObject {
                 self.clearMealType(mealType)
                 self.mealTypeToClear = nil
             },
-            secondaryButton: .cancel(Text("Cancel")) {
+            secondaryButton: .cancel() {
                 self.mealTypeToClear = nil
             }
         )
