@@ -129,9 +129,7 @@ struct MainView: View {
         if !mainViewModel.isTodaySelected {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    withAnimation {
-                        mainViewModel.date = Date()
-                    }
+                    mainViewModel.setDate(Date())
                 } label: {
                     Text("Today")
                         .fontWeight(.medium)
@@ -148,7 +146,7 @@ struct MainView: View {
                 Image(systemName: "calendar")
             }
             .popover(isPresented: $mainViewModel.showDatePicker) {
-                DatePickerView(date: $mainViewModel.date)
+                DatePickerView(mainViewModel: mainViewModel)
             }
         }
         

@@ -33,7 +33,6 @@ final class SearchViewModel: ObservableObject {
     @Published var foodMetadataDict: [Int: FoodMetadata] = [:]
     @Published var selectedItems = Set<Food.ID>()
     @Published var appError: AppError?
-    @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType = .breakfast
     @Published var editingState: EditingState = .inactive
     @Published var debouncedQuery: String = ""

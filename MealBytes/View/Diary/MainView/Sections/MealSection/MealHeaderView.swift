@@ -111,35 +111,47 @@ struct MealHeaderView: View {
         if mainViewModel.isExpanded(for: mealType) {
             let items = mainViewModel.filteredItems(for: mealType)
             
-            ForEach(items, id: \.id) { item in
-                FoodItemRow(
-                    mealItem: item,
-                    mealType: mealType,
-                    energyUnit: mainViewModel.energyUnit,
-                    formattedText: mainViewModel.formattedMealText(for: item),
-                    onSelect: {
-                        mainViewModel.selectedFoodItem = item
-                    },
-                    onMove: { newMealType in
-                        mainViewModel.moveMealItem(item, to: newMealType)
-                    },
-                    onDelete: {
-                        mainViewModel
-                            .deleteMealItemMainView(
-                                with: item.id,
-                                for: mealType
-                            )
-                    }
-                )
-                .swipeActions {
-                    Button(role: .destructive) {
-                        mainViewModel
-                            .deleteMealItemMainView(
-                                with: item.id,
-                                for: mealType
-                            )
-                    }
+            if mainViewModel.isChangingDate {
+                ForEach(items.indices, id: \.self) { index in
+                    let item = items[index]
+                    foodRow(for: item)
                 }
+            } else {
+                ForEach(items, id: \.id) { item in
+                    foodRow(for: item)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func foodRow(for item: MealItem) -> some View {
+        FoodItemRow(
+            mealItem: item,
+            mealType: mealType,
+            energyUnit: mainViewModel.energyUnit,
+            formattedText: mainViewModel.formattedMealText(for: item),
+            onSelect: {
+                mainViewModel.selectedFoodItem = item
+            },
+            onMove: { newMealType in
+                mainViewModel.moveMealItem(item, to: newMealType)
+            },
+            onDelete: {
+                mainViewModel
+                    .deleteMealItemMainView(
+                        with: item.id,
+                        for: mealType
+                    )
+            }
+        )
+        .swipeActions {
+            Button(role: .destructive) {
+                mainViewModel
+                    .deleteMealItemMainView(
+                        with: item.id,
+                        for: mealType
+                    )
             }
         }
     }

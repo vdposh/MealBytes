@@ -9,13 +9,11 @@ import SwiftUI
 
 struct DatePickerView: View {
     @State private var selectedDate: Date
-    @Binding var date: Date
+    @ObservedObject var mainViewModel: MainViewModel
     
-    private let today = Date()
-    
-    init(date: Binding<Date>) {
-        self._date = date
-        self._selectedDate = State(initialValue: date.wrappedValue)
+    init(mainViewModel: MainViewModel) {
+        self.mainViewModel = mainViewModel
+        self._selectedDate = State(initialValue: mainViewModel.date)
     }
     
     var body: some View {
@@ -31,9 +29,7 @@ struct DatePickerView: View {
         .presentationCompactAdaptation(.popover)
         .onChange(of: selectedDate) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation {
-                    date = selectedDate
-                }
+                mainViewModel.setDate(selectedDate)
             }
         }
     }

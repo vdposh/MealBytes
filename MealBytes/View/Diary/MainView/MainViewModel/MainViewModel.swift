@@ -24,7 +24,6 @@ protocol MainViewModelProtocol {
     func deleteMealItemMainView(with id: UUID, for: MealType, animated: Bool)
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool)
     func formattedDate() -> String
-    func resetDateToToday()
     func resetMainState()
 }
 
@@ -39,7 +38,6 @@ final class MainViewModel: ObservableObject {
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var energyUnit: EnergyUnit = .kcal
     @Published var appError: AppError?
-    @Published var uniqueId: UUID?
     @Published var selectedMealType: MealType?
     @Published var selectedFoodItem: MealItem?
     @Published var mealTypeToClear: MealType?
@@ -52,6 +50,7 @@ final class MainViewModel: ObservableObject {
     @Published var showClearDayAlert: Bool = false
     @Published var showClearMealTypeAlert: Bool = false
     @Published var isExpanded: Bool = false
+    @Published var isChangingDate: Bool = false
     
     let calendar = Calendar.current
     
@@ -575,6 +574,20 @@ final class MainViewModel: ObservableObject {
         }
     }
     
+    func setDate(_ newDate: Date) {
+        guard !calendar.isDate(date, inSameDayAs: newDate) else { return }
+        
+        isChangingDate = true
+        
+        withAnimation {
+            date = newDate
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.isChangingDate = false
+        }
+    }
+    
     private func handleDateChange(from oldDate: Date, to newDate: Date) {
         guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
         
@@ -599,7 +612,7 @@ final class MainViewModel: ObservableObject {
         selectedMealType = nil
         
         expandAllSections()
-        resetDateToToday()
+        setDate(Date())
         goalsViewModel.clearGoalsView()
     }
     
@@ -698,10 +711,6 @@ final class MainViewModel: ObservableObject {
 }
 
 extension MainViewModel: MainViewModelProtocol {
-    func resetDateToToday() {
-        date = Date()
-    }
-    
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool) {
         expandedSections[mealType] = isExpanded
     }
