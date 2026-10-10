@@ -165,7 +165,8 @@ final class FoodViewModel: ObservableObject {
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType,
-                    amount: amount,
+                    amount: (amount.doubleValue ?? 0)
+                        .asDecimal(grouping: false),
                     servingDescription: selectedServing.measurementDescription,
                     calories: adjusted.calories,
                     fat: adjusted.fat,
@@ -285,7 +286,7 @@ final class FoodViewModel: ObservableObject {
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             mealType: mealType,
-            amount: amount,
+            amount: (amount.doubleValue ?? 0).asDecimal(grouping: false),
             servingDescription: selectedServing.measurementDescription,
             calories: adjusted.calories,
             fat: adjusted.fat,

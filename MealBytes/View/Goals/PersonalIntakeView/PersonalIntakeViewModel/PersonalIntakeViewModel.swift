@@ -80,12 +80,12 @@ final class PersonalIntakeViewModel: ObservableObject {
                 self.selectedActivity = Activity(
                     rawValue: personalIntakeData.selectedActivity
                 ) ?? .notSelected
-                self.weight = (personalIntakeData.weight.doubleValue ?? 0)
+                self.weight = (Double(personalIntakeData.weight) ?? 0)
                     .asDecimal()
                 self.selectedWeightUnit = WeightUnit(
                     rawValue: personalIntakeData.selectedWeightUnit
                 ) ?? .kg
-                self.height = (personalIntakeData.height.doubleValue ?? 0)
+                self.height = (Double(personalIntakeData.height) ?? 0)
                     .asDecimal()
                 self.selectedHeightUnit = HeightUnit(
                     rawValue: personalIntakeData.selectedHeightUnit

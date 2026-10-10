@@ -58,7 +58,10 @@ final class MacrosIntakeViewModel: ObservableObject {
                 fat = macrosIntakeData.fat
                 carbohydrate = macrosIntakeData.carbohydrate
                 protein = macrosIntakeData.protein
-                didLoadNonEmptyIntake = !macrosIntakeData.calories.isEmpty
+                didLoadNonEmptyIntake = !macrosIntakeData.calories.isEmpty ||
+                !macrosIntakeData.fat.isEmpty ||
+                !macrosIntakeData.carbohydrate.isEmpty ||
+                !macrosIntakeData.protein.isEmpty
             }
         } catch {
             await MainActor.run {
