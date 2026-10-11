@@ -92,7 +92,7 @@ final class FoodViewModel: ObservableObject {
                 let servingDescription = metadata?
                     .servingDescription ?? initialMeasurementDescription
                 
-                if let metadata, let value = metadata.amount.doubleValue {
+                if let metadata, let value = Double(metadata.amount) {
                     amount = value.asDecimal(grouping: false)
                 }
                 
@@ -161,8 +161,7 @@ final class FoodViewModel: ObservableObject {
                     foodId: food.searchFoodId,
                     foodName: food.searchFoodName,
                     mealType: mealType,
-                    amount: (amount.doubleValue ?? 0)
-                        .asDecimal(grouping: false),
+                    amount: String(amount.doubleValue ?? 0),
                     servingDescription: selectedServing.measurementDescription,
                     calories: adjusted.calories,
                     fat: adjusted.fat,
@@ -171,7 +170,11 @@ final class FoodViewModel: ObservableObject {
                     formattedText: formattedMealText(
                         for: selectedServing,
                         amount: amount
-                    )
+                    ),
+                    measurementDescription: selectedServing
+                        .measurementDescription,
+                    metricServingAmount: selectedServing.metricServingAmount,
+                    metricServingUnit: selectedServing.metricServingUnit,
                 )
                 
                 try await firestore
@@ -282,7 +285,7 @@ final class FoodViewModel: ObservableObject {
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
             mealType: mealType,
-            amount: (amount.doubleValue ?? 0).asDecimal(grouping: false),
+            amount: String(amount.doubleValue ?? 0),
             servingDescription: selectedServing.measurementDescription,
             calories: adjusted.calories,
             fat: adjusted.fat,
@@ -291,7 +294,10 @@ final class FoodViewModel: ObservableObject {
             formattedText: formattedMealText(
                 for: selectedServing,
                 amount: amount
-            )
+            ),
+            measurementDescription: selectedServing.measurementDescription,
+            metricServingAmount: selectedServing.metricServingAmount,
+            metricServingUnit: selectedServing.metricServingUnit,
         )
         
         await MainActor.run {
@@ -365,48 +371,12 @@ final class FoodViewModel: ObservableObject {
     }
     
     func formattedMealText(for serving: Serving, amount: String) -> String {
-        let formattedAmount = amount
-        let measurement = serving.measurementDescription
-        let servingSize = serving.metricServingAmount
-        let amountValue = formattedAmount.doubleValue ?? 0
-        
-        if formattedAmount.isEmpty || amountValue == 0 {
-            if measurement == "g" {
-                return "grams"
-            }
-            return measurement
-        }
-        
-        let displayMeasurement: String
-        if measurement == "g" {
-            displayMeasurement = "g"
-        } else if measurement == "ml" {
-            displayMeasurement = "ml"
-        } else if measurement.starts(with: "serving") {
-            displayMeasurement = amountValue == 1 ? "serving" : "servings"
-        } else {
-            displayMeasurement = measurement.pluralized(for: amountValue)
-        }
-        
-        let unit: String
-        if measurement == "g" {
-            unit = "g"
-        } else if measurement == "ml" {
-            unit = "ml"
-        } else {
-            unit = serving.metricServingUnit
-        }
-        
-        if servingSize == 0 {
-            return "\(formattedAmount) \(displayMeasurement)"
-        }
-        
-        if measurement == "g" || measurement == "ml" {
-            return "\(formattedAmount) \(unit)"
-        }
-        
-        let totalSize = servingSize * amountValue
-        return "\(formattedAmount) \(displayMeasurement) (\(totalSize.asDecimal()) \(unit))"
+        MealTextFormatter.format(
+            amountValue: amount.doubleValue ?? 0,
+            measurement: serving.measurementDescription,
+            servingSize: serving.metricServingAmount,
+            unit: serving.metricServingUnit
+        )
     }
     
     // MARK: - Button States
@@ -472,8 +442,10 @@ final class FoodViewModel: ObservableObject {
         return NutrientValueProvider()
             .fromServing(selectedServing)
             .reduce(into: [NutrientType: Double]()) { result, value in
-                result[value.type] = value
-                    .value * calculateSelectedAmountValue()
+                let scaled = value.value * calculateSelectedAmountValue()
+                result[value.type] = value.type == .servingSize
+                ? value.value
+                : scaled
             }
     }
     

@@ -671,7 +671,7 @@ final class MainViewModel: ObservableObject {
         }
         
         return Alert(
-            title: Text("Clear Meal type"),
+            title: Text("Clear Meal Type"),
             message: Text("Delete all entries in \(mealType.rawValue)"),
             primaryButton: .destructive(Text("Delete All")) {
                 self.clearMealType(mealType)

@@ -18,4 +18,7 @@ struct FoodMetadata: Codable {
     let carbs: Double
     let protein: Double
     let formattedText: String
+    let measurementDescription: String
+    let metricServingAmount: Double
+    let metricServingUnit: String
 }
