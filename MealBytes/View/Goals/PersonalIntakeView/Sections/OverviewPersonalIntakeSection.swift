@@ -20,9 +20,7 @@ struct OverviewPersonalIntakeSection: View {
                     type: type,
                     value: personalIntakeViewModel.macroValues[type] ?? "0",
                     unit: type == .calories
-                    ? UnitNutrients(
-                        rawValue: personalIntakeViewModel.energyUnit.rawValue
-                    )
+                    ? personalIntakeViewModel.energyUnit.unitNutrient
                     : nil
                 )
             }

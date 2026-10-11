@@ -55,7 +55,7 @@ struct NutrientValueProvider {
                 ? energyUnit.fromKcal(kcal: rawValue)
                 : rawValue
                 let unit = type == .calories
-                ? UnitNutrients(rawValue: energyUnit.rawValue) ?? type.unitType
+                ? energyUnit.unitNutrient
                 : type.unitType
                 
                 return NutrientValue(

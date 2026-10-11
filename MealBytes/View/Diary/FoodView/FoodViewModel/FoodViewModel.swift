@@ -63,10 +63,6 @@ final class FoodViewModel: ObservableObject {
         self.originalMealItemId = originalMealItemId ?? UUID()
     }
     
-    var energyUnit: EnergyUnit {
-        mainViewModel.energyUnit
-    }
-    
     // MARK: - Fetch Food Details
     @MainActor
     func fetchFoodDetails() async {
@@ -464,7 +460,7 @@ final class FoodViewModel: ObservableObject {
                     : rawValue,
                     isSubValue: value.isSubValue,
                     unit: isCalories
-                    ? UnitNutrients(rawValue: unit.rawValue) ?? value.unit
+                    ? unit.unitNutrient
                     : value.unit
                 )
             }
@@ -574,6 +570,10 @@ final class FoodViewModel: ObservableObject {
         }
         
         return true
+    }
+    
+    var energyUnit: EnergyUnit {
+        mainViewModel.energyUnit
     }
     
     var viewMode: FoodViewMode {

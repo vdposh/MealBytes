@@ -32,3 +32,12 @@ enum EnergyUnit: String, CaseIterable {
         }
     }
 }
+
+extension EnergyUnit {
+    var unitNutrient: UnitNutrients {
+        switch self {
+        case .kcal: return .kcal
+        case .kj: return .kj
+        }
+    }
+}

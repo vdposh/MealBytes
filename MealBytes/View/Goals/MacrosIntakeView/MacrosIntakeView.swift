@@ -16,9 +16,7 @@ struct MacrosIntakeView: View {
             NutrientLabelRow(
                 type: .calories,
                 value: macrosIntakeViewModel.displayCalories,
-                unit: UnitNutrients(
-                    rawValue: macrosIntakeViewModel.energyUnit.rawValue
-                )
+                unit: macrosIntakeViewModel.energyUnit.unitNutrient
             )
             
             NutrientFieldRow(
