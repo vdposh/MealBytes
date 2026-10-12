@@ -45,7 +45,9 @@ struct AccountView: View {
                 EmailView(currentEmail: profileViewModel.email ?? "")
             } label: {
                 LabeledContent {
-                    Text(profileViewModel.email ?? "")
+                    if let email = profileViewModel.email {
+                        Text(email)
+                    }
                 } label: {
                     Text("Email")
                 }
@@ -55,7 +57,9 @@ struct AccountView: View {
                 PasswordView()
             } label: {
                 LabeledContent {
-                    Text(profileViewModel.isLoggedIn ? "••••••••" : "")
+                    if profileViewModel.isLoggedIn {
+                        Text("••••••••")
+                    }
                 } label: {
                     Text("Password")
                 }

@@ -50,14 +50,16 @@ struct PasswordView: View {
                     text: $passwordViewModel.newPassword,
                     focus: $passwordFocus,
                     focusCase: .newPassword,
-                    placeholder: "New Password"
+                    placeholder: "New Password",
+                    textContentType: .newPassword
                 )
                 
                 SecureFieldView(
                     text: $passwordViewModel.confirmPassword,
                     focus: $passwordFocus,
                     focusCase: .confirmPassword,
-                    placeholder: "Confirm New Password"
+                    placeholder: "Confirm New Password",
+                    textContentType: .newPassword
                 )
             } footer: {
                 Text("Password must be at least 6 characters long.")

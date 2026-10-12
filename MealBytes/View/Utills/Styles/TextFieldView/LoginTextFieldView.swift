@@ -12,6 +12,7 @@ struct LoginTextFieldView<Focus: Hashable>: View {
     let focus: FocusState<Focus?>.Binding
     let focusCase: Focus
     var placeholder: String = "Email"
+    var textContentType: UITextContentType? = .username
     
     var body: some View {
         contentLoginTextField
@@ -23,6 +24,7 @@ struct LoginTextFieldView<Focus: Hashable>: View {
     private var field: some View {
         TextField(placeholder, text: $text)
             .keyboardType(.emailAddress)
+            .textContentType(textContentType)
             .autocapitalization(.none)
             .disableAutocorrection(true)
             .focused(focus, equals: focusCase)

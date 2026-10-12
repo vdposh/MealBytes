@@ -12,6 +12,7 @@ struct SecureFieldView<Focus: Hashable>: View {
     let focus: FocusState<Focus?>.Binding
     let focusCase: Focus
     var placeholder: String = "Password"
+    var textContentType: UITextContentType? = .password
     
     var body: some View {
         contentSecureField
@@ -22,6 +23,7 @@ struct SecureFieldView<Focus: Hashable>: View {
     
     private var field: some View {
         SecureField(placeholder, text: $text)
+            .textContentType(textContentType)
             .autocapitalization(.none)
             .focused(focus, equals: focusCase)
     }

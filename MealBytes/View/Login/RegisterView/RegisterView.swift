@@ -32,20 +32,23 @@ struct RegisterView: View {
                 LoginTextFieldView(
                     text: $registerViewModel.email,
                     focus: $registerFocus,
-                    focusCase: .email
+                    focusCase: .email,
+                    textContentType: .emailAddress
                 )
                 
                 SecureFieldView(
                     text: $registerViewModel.password,
                     focus: $registerFocus,
-                    focusCase: .password
+                    focusCase: .password,
+                    textContentType: .newPassword
                 )
                 
                 SecureFieldView(
                     text: $registerViewModel.confirmPassword,
                     focus: $registerFocus,
                     focusCase: .confirmPassword,
-                    placeholder: "Confirm Password"
+                    placeholder: "Confirm Password",
+                    textContentType: .newPassword
                 )
             } footer: {
                 Text("Enter email and create a password (min 6 characters). A verification email will be sent.")

@@ -46,7 +46,8 @@ struct EmailView: View {
                     text: $emailViewModel.newEmail,
                     focus: $emailFocus,
                     focusCase: true,
-                    placeholder: "New Email"
+                    placeholder: "New Email",
+                    textContentType: .emailAddress
                 )
             } footer: {
                 Text("Enter a new email. A verification link will be sent to it.")
