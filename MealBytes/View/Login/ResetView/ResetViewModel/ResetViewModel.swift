@@ -10,11 +10,9 @@ import FirebaseAuth
 
 final class ResetViewModel: ObservableObject {
     @Published var email: String = ""
-    @Published var sentEmail: String = ""
     @Published var success: Bool = false
     @Published var showAlert: Bool = false
     @Published var isLoading: Bool = false
-    @Published var isEmailSent = false
     
     private var error: AuthError?
     
@@ -22,9 +20,7 @@ final class ResetViewModel: ObservableObject {
     
     // MARK: - Reset Password
     func resetPassword() async {
-        await MainActor.run {
-            isLoading = true
-        }
+        guard isResetEnabled() else { return }
         
         let cleanedEmail = email
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -32,34 +28,29 @@ final class ResetViewModel: ObservableObject {
         
         guard cleanedEmail.isValidEmail else {
             await handleResetResult(success: false, error: .invalidEmail)
-            await MainActor.run {
+            return
+        }
+        
+        await MainActor.run {
+            isLoading = true
+        }
+        
+        defer {
+            Task { @MainActor in
                 withAnimation {
                     isLoading = false
                 }
             }
-            return
         }
         
         do {
             try await firebaseAuth.resetPasswordAuth(email: cleanedEmail)
-            
-            await MainActor.run {
-                isEmailSent = true
-                sentEmail = cleanedEmail
-            }
-            
             await handleResetResult(success: true, error: nil)
         } catch {
             await handleResetResult(
                 success: false,
                 error: handleResetError(error as NSError)
             )
-        }
-        
-        await MainActor.run {
-            withAnimation {
-                isLoading = false
-            }
         }
     }
     
@@ -107,25 +98,7 @@ final class ResetViewModel: ObservableObject {
             default: return .unknownError
             }
         }
-        
         return .unknownError
-    }
-    
-    // MARK: - UI Helper
-    var resetState: ResetState {
-        if isLoading {
-            return .loading
-        } else if isEmailSent {
-            return .emailSent
-        } else {
-            return .ready
-        }
-    }
-    
-    enum ResetState {
-        case loading
-        case emailSent
-        case ready
     }
 }
 

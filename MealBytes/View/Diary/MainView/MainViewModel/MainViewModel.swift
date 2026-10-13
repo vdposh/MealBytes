@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseCore
+import OSLog
 
 protocol MainViewModelProtocol {
     var date: Date { get set }
@@ -37,7 +38,6 @@ final class MainViewModel: ObservableObject {
     @Published var nutrientSummaries: [NutrientType: Double]
     @Published var expandedSections: [MealType: Bool] = [:]
     @Published var energyUnit: EnergyUnit = .kcal
-    @Published var appError: AppError?
     @Published var selectedMealType: MealType?
     @Published var selectedFoodItem: MealItem?
     @Published var mealTypeToClear: MealType?
@@ -117,9 +117,7 @@ final class MainViewModel: ObservableObject {
                 recalculateNutrients(for: date)
             }
         } catch {
-            await MainActor.run {
-                self.appError = .network
-            }
+            Logger.main.error("loadMealItems failed: \(error.localizedDescription)")
         }
     }
     
@@ -184,9 +182,7 @@ final class MainViewModel: ObservableObject {
             do {
                 try await firestore.updateMealItemFirestore(updatedItem)
             } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                Logger.main.error("moveMealItem failed: \(error.localizedDescription)")
             }
         }
     }
@@ -220,9 +216,7 @@ final class MainViewModel: ObservableObject {
             do {
                 try await firestore.deleteMealItemFirestore(itemToDelete)
             } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                Logger.main.error("deleteMealItemMainView failed: \(error.localizedDescription)")
             }
         }
     }
@@ -241,9 +235,7 @@ final class MainViewModel: ObservableObject {
             do {
                 try await firestore.deleteMealItemsFirestore(on: dateToClear)
             } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                Logger.main.error("clearDay failed: \(error.localizedDescription)")
             }
         }
     }
@@ -266,9 +258,7 @@ final class MainViewModel: ObservableObject {
                     try await firestore.deleteMealItemFirestore(item)
                 }
             } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                Logger.main.error("clearDay failed: \(error.localizedDescription)")
             }
         }
     }
@@ -281,9 +271,7 @@ final class MainViewModel: ObservableObject {
                 displayGoals = display
             }
         } catch {
-            await MainActor.run {
-                self.appError = .network
-            }
+            Logger.main.error("loadDisplayGoalsMainView failed: \(error.localizedDescription)")
         }
     }
     
@@ -296,9 +284,7 @@ final class MainViewModel: ObservableObject {
         do {
             try await firestore.saveDisplayGoalsFirestore(display)
         } catch {
-            await MainActor.run {
-                appError = .network
-            }
+            Logger.main.error("setDisplayGoals failed: \(error.localizedDescription)")
         }
     }
     
@@ -310,9 +296,7 @@ final class MainViewModel: ObservableObject {
                 energyUnit = EnergyUnit(rawValue: unit) ?? .kcal
             }
         } catch {
-            await MainActor.run {
-                self.appError = .network
-            }
+            Logger.main.error("loadEnergyUnitMainView failed: \(error.localizedDescription)")
         }
     }
     
@@ -326,9 +310,7 @@ final class MainViewModel: ObservableObject {
         do {
             try await firestore.saveEnergyUnitFirestore(unit.rawValue)
         } catch {
-            await MainActor.run {
-                appError = .network
-            }
+            Logger.main.error("setEnergyUnit failed: \(error.localizedDescription)")
         }
     }
     
@@ -341,9 +323,7 @@ final class MainViewModel: ObservableObject {
                 self.intakeSource = current.source
             }
         } catch {
-            await MainActor.run {
-                self.appError = .network
-            }
+            Logger.main.error("loadIntakeMainView failed: \(error.localizedDescription)")
         }
     }
     
@@ -361,9 +341,7 @@ final class MainViewModel: ObservableObject {
                 self.nutrientTargets = newTargets
             }
         } catch {
-            await MainActor.run {
-                appError = .network
-            }
+            Logger.main.error("saveCurrentIntakeMainView failed: \(error.localizedDescription)")
         }
     }
     

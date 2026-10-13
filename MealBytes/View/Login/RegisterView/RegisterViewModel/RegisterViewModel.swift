@@ -31,17 +31,7 @@ final class RegisterViewModel: ObservableObject {
     
     // MARK: - Sign Up
     func signUp() async {
-        await MainActor.run {
-            isRegisterLoading = true
-        }
-        
-        defer {
-            Task { @MainActor in
-                withAnimation {
-                    isRegisterLoading = false
-                }
-            }
-        }
+        guard isRegisterEnabled() else { return }
         
         guard password == confirmPassword else {
             await handleSignUpResult(error: .passwordMismatch)
@@ -55,6 +45,18 @@ final class RegisterViewModel: ObservableObject {
         guard cleanedEmail.isValidEmail else {
             await handleSignUpResult(error: .invalidEmail)
             return
+        }
+        
+        await MainActor.run {
+            isRegisterLoading = true
+        }
+        
+        defer {
+            Task { @MainActor in
+                withAnimation {
+                    isRegisterLoading = false
+                }
+            }
         }
         
         do {
@@ -91,6 +93,7 @@ final class RegisterViewModel: ObservableObject {
             
             await MainActor.run {
                 self.error = authError
+                showAlert = true
             }
         }
         

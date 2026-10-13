@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import OSLog
 
 protocol PersonalIntakeViewModelProtocol {
     var isValid: Bool { get }
@@ -22,7 +23,6 @@ protocol PersonalIntakeViewModelProtocol {
 }
 
 final class PersonalIntakeViewModel: ObservableObject {
-    @Published var appError: AppError?
     @Published var age: String = ""
     @Published var weight: String = ""
     @Published var height: String = ""
@@ -99,9 +99,7 @@ final class PersonalIntakeViewModel: ObservableObject {
                 self.didLoadNonEmptyPersonalIntake = hasAnyData
             }
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.goals.error("loadPersonalIntake failed: \(error.localizedDescription)")
         }
     }
     
@@ -146,9 +144,7 @@ final class PersonalIntakeViewModel: ObservableObject {
         do {
             try await firestore.savePersonalIntakeFirestore(personalIntakeData)
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.goals.error("savePersonalIntakeData failed: \(error.localizedDescription)")
         }
     }
     

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 protocol CustomIntakeViewModelProtocol {
     var caloriesKcal: String { get }
@@ -22,7 +23,6 @@ protocol CustomIntakeViewModelProtocol {
 }
 
 final class CustomIntakeViewModel: ObservableObject {
-    @Published var appError: AppError?
     @Published var calories: String = ""
     @Published var protein: String = ""
     @Published var fat: String = ""
@@ -59,9 +59,7 @@ final class CustomIntakeViewModel: ObservableObject {
                 !data.protein.isEmpty
             }
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.goals.error("loadCustomIntake failed: \(error.localizedDescription)")
         }
     }
     
@@ -97,9 +95,7 @@ final class CustomIntakeViewModel: ObservableObject {
         do {
             try await firestore.saveCustomIntakeFirestore(data)
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.goals.error("saveCustomIntake failed: \(error.localizedDescription)")
         }
     }
     

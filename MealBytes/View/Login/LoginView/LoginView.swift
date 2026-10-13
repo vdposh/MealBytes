@@ -29,13 +29,21 @@ struct LoginView: View {
                 LoginTextFieldView(
                     text: $loginViewModel.email,
                     focus: $loginFocus,
-                    focusCase: .email
+                    focusCase: .email,
+                    onSubmit: {
+                        loginFocus = .password
+                    }
                 )
                 
                 SecureFieldView(
                     text: $loginViewModel.password,
                     focus: $loginFocus,
-                    focusCase: .password
+                    focusCase: .password,
+                    onSubmit: {
+                        Task {
+                            await loginViewModel.signIn()
+                        }
+                    }
                 )
             }
             
@@ -49,6 +57,7 @@ struct LoginView: View {
                 }
             }
         }
+        .disabled(loginViewModel.isSignIn)
     }
     
     @ToolbarContentBuilder

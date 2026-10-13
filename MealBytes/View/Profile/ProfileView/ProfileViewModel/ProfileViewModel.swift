@@ -7,12 +7,12 @@
 
 import SwiftUI
 import FirebaseAuth
+import OSLog
 
 final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var deleteConfirmationText: String = ""
     @Published var alertContent: AlertContentProfile?
-    @Published var appError: AppError?
     @Published var showAlert: Bool = false
     @Published var displayGoals: Bool = true
     @Published var energyUnit: EnergyUnit = .kcal
@@ -77,13 +77,13 @@ final class ProfileViewModel: ObservableObject {
                 do {
                     try await firestore.deleteLoginDataFirestore()
                 } catch {
-                    appError = .network
+                    Logger.profile.error("deleteLoginData (signOut) failed: \(error.localizedDescription)")
                 }
             }
             
             resetProfileState()
         } catch {
-            appError = .decoding
+            Logger.profile.error("signOutAuth failed: \(error.localizedDescription)")
         }
     }
     
@@ -99,16 +99,12 @@ final class ProfileViewModel: ObservableObject {
             do {
                 try await firestore.deleteLoginDataFirestore()
             } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                Logger.profile.error("deleteLoginData (deleteAccount) failed: \(error.localizedDescription)")
             }
             
             resetProfileState()
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.profile.error("deleteAccountAuth failed: \(error.localizedDescription)")
         }
         
         await MainActor.run {
@@ -138,7 +134,6 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Reset State
     private func resetProfileState() {
         alertContent = nil
-        appError = nil
         
         deleteConfirmationText = ""
         

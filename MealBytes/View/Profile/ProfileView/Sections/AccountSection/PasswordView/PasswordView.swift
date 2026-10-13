@@ -40,10 +40,13 @@ struct PasswordView: View {
                     text: $passwordViewModel.currentPassword,
                     focus: $passwordFocus,
                     focusCase: .currentPassword,
-                    placeholder: "Current Password"
+                    placeholder: "Current Password",
+                    submitLabel: .next,
+                    onSubmit: {
+                        passwordFocus = .newPassword
+                    }
                 )
             }
-            .disabled(passwordViewModel.isLoading)
             
             Section {
                 SecureFieldView(
@@ -51,7 +54,11 @@ struct PasswordView: View {
                     focus: $passwordFocus,
                     focusCase: .newPassword,
                     placeholder: "New Password",
-                    textContentType: .newPassword
+                    textContentType: .newPassword,
+                    submitLabel: .next,
+                    onSubmit: {
+                        passwordFocus = .confirmPassword
+                    }
                 )
                 
                 SecureFieldView(
@@ -59,7 +66,12 @@ struct PasswordView: View {
                     focus: $passwordFocus,
                     focusCase: .confirmPassword,
                     placeholder: "Confirm New Password",
-                    textContentType: .newPassword
+                    textContentType: .password,
+                    onSubmit: {
+                        Task {
+                            await passwordViewModel.changePassword()
+                        }
+                    }
                 )
             } footer: {
                 Text("Password must be at least 6 characters long.")

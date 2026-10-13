@@ -33,12 +33,7 @@ final class FatSecretManager: FatSecretManagerProtocol {
                         )
                         continuation.resume(returning: decodedResponse)
                     } catch {
-                        switch target {
-                        case .searchFoods:
-                            continuation.resume(throwing: AppError.decoding)
-                        case .getFoodDetails:
-                            continuation.resume(throwing: AppError.decoding)
-                        }
+                        continuation.resume(throwing: AppError.decoding)
                     }
                     
                 case .failure:

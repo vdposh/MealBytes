@@ -13,6 +13,8 @@ struct SecureFieldView<Focus: Hashable>: View {
     let focusCase: Focus
     var placeholder: String = "Password"
     var textContentType: UITextContentType? = .password
+    var submitLabel: SubmitLabel = .done
+    var onSubmit: (() -> Void)? = nil
     
     var body: some View {
         contentSecureField
@@ -26,6 +28,10 @@ struct SecureFieldView<Focus: Hashable>: View {
             .textContentType(textContentType)
             .autocapitalization(.none)
             .focused(focus, equals: focusCase)
+            .submitLabel(submitLabel)
+            .onSubmit {
+                onSubmit?()
+            }
     }
     
     private var contentSecureField: some View {

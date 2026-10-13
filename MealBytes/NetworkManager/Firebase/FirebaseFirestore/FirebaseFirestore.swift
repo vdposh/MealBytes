@@ -65,11 +65,18 @@ protocol FirebaseFirestoreProtocol {
 final class FirebaseFirestore: FirebaseFirestoreProtocol {
     private lazy var firestore = Firestore.firestore()
     
+    private var currentUID: String {
+        get throws {
+            guard let uid = Auth.auth().currentUser?.uid else {
+                throw AuthError.userNotFound
+            }
+            return uid
+        }
+    }
+    
     // MARK: - Load Meal
     func loadMealItemsFirestore() async throws -> [MealItem] {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let snapshot = try await firestore
             .collection("Users")
@@ -85,10 +92,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Save Meal
-    func addMealItemFirestore(_ mealItem: MealItem) throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+    func addMealItemFirestore(_ mealItem: MealItem) async throws {
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -100,10 +105,8 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Update Meal
-    func updateMealItemFirestore(_ mealItem: MealItem) throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+    func updateMealItemFirestore(_ mealItem: MealItem) async throws {
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -116,9 +119,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Delete Meal Item
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -131,9 +132,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Delete Meal Items for Date
     func deleteMealItemsFirestore(on date: Date) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
@@ -171,9 +170,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         from collectionPath: String,
         for mealType: MealType
     ) async throws -> [Food] {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let snapshot = try await firestore
             .collection("Users")
@@ -219,9 +216,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         to collectionPath: String,
         for mealType: MealType
     ) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let encodedFoods = try foods.map { try Firestore.Encoder().encode($0) }
         let documentReference = firestore
@@ -258,9 +253,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     func loadFoodMetadata(
         for mealType: MealType
     ) async throws -> [Int: FoodMetadata] {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let snapshot = try await firestore
             .collection("Users")
@@ -284,9 +277,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         _ metadata: FoodMetadata,
         for mealType: MealType
     ) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentId = "\(metadata.foodId)"
         
@@ -307,9 +298,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         foodName: String,
         mealType: MealType
     ) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentId = "\(foodId)"
         
@@ -326,9 +315,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Load PersonalIntake
     func loadPersonalIntakeFirestore() async throws -> PersonalIntakeData {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -342,9 +329,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Save PersonalIntake
     func savePersonalIntakeFirestore(_ personalIntakeData: PersonalIntakeData) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -357,9 +342,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Load MacrosIntake
     func loadMacrosIntakeFirestore() async throws -> MacrosIntake {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -371,10 +354,10 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     // MARK: - Save MacrosIntake
-    func saveMacrosIntakeFirestore(_ MacrosIntakeData: MacrosIntake) throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+    func saveMacrosIntakeFirestore(
+        _ MacrosIntakeData: MacrosIntake
+    ) async throws {
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -387,9 +370,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Load CustomIntake
     func loadCustomIntakeFirestore() async throws -> CustomIntake {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -402,9 +383,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Save CustomIntake
     func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -417,9 +396,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Load Intake
     func loadCurrentIntakeFirestore() async throws -> CurrentIntake {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -433,9 +410,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Save Intake
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")
@@ -448,9 +423,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Load Goals Disabled
     func loadDisplayGoalsFirestore() async throws -> Bool {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let snapshot = try await firestore
             .collection("Users")
@@ -469,9 +442,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Save Display Goals
     func saveDisplayGoalsFirestore(_ display: Bool) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         try await firestore
             .collection("Users")
@@ -483,9 +454,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Load Energy Unit
     func loadEnergyUnitFirestore() async throws -> String {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let snapshot = try await firestore
             .collection("Users")
@@ -504,9 +473,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     
     // MARK: - Save Energy Unit
     func saveEnergyUnitFirestore(_ unit: String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         try await firestore
             .collection("Users")
@@ -521,9 +488,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         email: String,
         isLoggedIn: Bool
     ) {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AuthError.userNotFound
-        }
+        let uid = try currentUID
         
         let snapshot = try await firestore
             .collection("Users")
@@ -545,9 +510,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         email: String,
         isLoggedIn: Bool
     ) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let data: [String: Any] = [
             "email": email,
@@ -563,9 +526,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
     }
     
     func deleteLoginDataFirestore() async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw AppError.decoding
-        }
+        let uid = try currentUID
         
         let documentReference = firestore
             .collection("Users")

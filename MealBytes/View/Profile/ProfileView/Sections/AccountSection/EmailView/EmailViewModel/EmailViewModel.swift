@@ -12,9 +12,7 @@ final class EmailViewModel: ObservableObject {
     @Published var alertType: EmailAlertType?
     @Published var newEmail: String = ""
     @Published var password: String = ""
-    @Published var isSuccess: Bool = false
     @Published var isLoading: Bool = false
-    @Published var error: AuthError?
     
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     

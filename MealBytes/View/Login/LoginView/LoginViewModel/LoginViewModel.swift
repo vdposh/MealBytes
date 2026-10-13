@@ -77,6 +77,8 @@ final class LoginViewModel: ObservableObject {
     
     // MARK: - Sign In
     func signIn() async {
+        guard isLoginEnabled() else { return }
+        
         await MainActor.run {
             isSignIn = true
         }

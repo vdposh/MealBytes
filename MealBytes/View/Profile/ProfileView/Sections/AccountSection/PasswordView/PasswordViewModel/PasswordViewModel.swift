@@ -26,14 +26,14 @@ final class PasswordViewModel: ObservableObject {
         
         if let errorMessage = validatePassword() {
             await MainActor.run {
-                alertTitle = "Error"
-                alertMessage = errorMessage
-                showAlert = true
+                showErrorAlert(errorMessage)
             }
             return
         }
         
-        await MainActor.run { isLoading = true }
+        await MainActor.run {
+            isLoading = true
+        }
         
         defer {
             Task { @MainActor in
@@ -63,21 +63,20 @@ final class PasswordViewModel: ObservableObject {
             
             await MainActor.run {
                 isSuccess = false
-                alertTitle = "Error"
-                alertMessage = errorMessage
-                showAlert = true
+                showErrorAlert(errorMessage)
             }
         }
     }
     
     private func validatePassword() -> String? {
         if newPassword != confirmPassword {
-            return "New password and confirmation do not match."
+            return AuthError.passwordMismatch.errorDescription
         }
         
         if newPassword.count < 6 {
-            return "Password must be at least 6 characters long."
+            return AuthError.weakPassword.errorDescription
         }
+        
         return nil
     }
     
@@ -105,6 +104,12 @@ final class PasswordViewModel: ObservableObject {
         !currentPassword.isEmpty &&
         !newPassword.isEmpty &&
         !confirmPassword.isEmpty
+    }
+    
+    private func showErrorAlert(_ message: String) {
+        alertTitle = "Error"
+        alertMessage = message
+        showAlert = true
     }
 }
 

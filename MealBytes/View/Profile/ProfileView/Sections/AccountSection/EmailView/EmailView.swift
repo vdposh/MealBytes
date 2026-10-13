@@ -47,12 +47,19 @@ struct EmailView: View {
                     focus: $emailFocus,
                     focusCase: true,
                     placeholder: "New Email",
-                    textContentType: .emailAddress
+                    textContentType: .emailAddress,
+                    submitLabel: .done,
+                    onSubmit: {
+                        Task {
+                            await emailViewModel.changeEmail()
+                        }
+                    }
                 )
             } footer: {
                 Text("Enter a new email. A verification link will be sent to it.")
             }
         }
+        .disabled(emailViewModel.isLoading)
     }
     
     @ToolbarContentBuilder

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import OSLog
 
 protocol SearchViewModelProtocol {
     var foodMetadataDict: [Int: FoodMetadata] { get set }
@@ -276,9 +277,7 @@ final class SearchViewModel: ObservableObject {
                 for: selectedMealType
             )
         } catch {
-            await MainActor.run {
-                self.appError = .network
-            }
+            Logger.search.error("saveBookmarkOrder failed: \(error.localizedDescription)")
         }
     }
     
@@ -321,6 +320,8 @@ final class SearchViewModel: ObservableObject {
                 for: selectedMealType
             )
         } catch {
+            Logger.search.error("removeBookmarks failed: \(error.localizedDescription)")
+            
             await MainActor.run {
                 favoriteFoods = originalFavoriteFoods
                 bookmarkedFoods = originalBookmarkedFoods
@@ -330,8 +331,6 @@ final class SearchViewModel: ObservableObject {
                 if query.isEmpty {
                     foods = favoriteFoods
                 }
-                
-                appError = .network
             }
         }
     }
@@ -371,6 +370,7 @@ final class SearchViewModel: ObservableObject {
             try await firestore
                 .addBookmarkFirestore(favoriteFoods, for: mealType)
         } catch {
+            Logger.search.error("toggleBookmark failed: \(error.localizedDescription)")
             await MainActor.run {
                 favoriteFoods = originalFavoriteFoods
                 bookmarkedFoods = originalBookmarkedFoods
@@ -380,7 +380,6 @@ final class SearchViewModel: ObservableObject {
                 if query.isEmpty {
                     foods = favoriteFoods
                 }
-                appError = .network
             }
         }
     }
@@ -407,9 +406,7 @@ final class SearchViewModel: ObservableObject {
                         mealType: mealType
                     )
                 } catch {
-                    await MainActor.run {
-                        appError = .network
-                    }
+                    Logger.search.error("deleteFoodMetadata failed: \(error.localizedDescription)")
                 }
             }
         }
@@ -503,9 +500,7 @@ final class SearchViewModel: ObservableObject {
             do {
                 try await firestore.addHistoryFirestore(history, for: mealType)
             } catch {
-                await MainActor.run {
-                    appError = .network
-                }
+                Logger.search.error("addHistoryFirestore failed: \(error.localizedDescription)")
             }
         }
     }

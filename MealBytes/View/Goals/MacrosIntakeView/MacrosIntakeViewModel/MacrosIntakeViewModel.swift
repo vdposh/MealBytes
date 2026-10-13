@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import OSLog
 
 protocol MacrosIntakeViewModelProtocol {
     var isValid: Bool { get }
@@ -23,7 +24,6 @@ protocol MacrosIntakeViewModelProtocol {
 }
 
 final class MacrosIntakeViewModel: ObservableObject {
-    @Published var appError: AppError?
     @Published var calories: String = ""
     @Published var fat: String = ""
     @Published var carbohydrate: String = ""
@@ -64,9 +64,7 @@ final class MacrosIntakeViewModel: ObservableObject {
                 !macrosIntakeData.protein.isEmpty
             }
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.goals.error("loadMacrosIntake failed: \(error.localizedDescription)")
         }
     }
     
@@ -99,9 +97,7 @@ final class MacrosIntakeViewModel: ObservableObject {
         do {
             try await firestore.saveMacrosIntakeFirestore(macrosIntakeData)
         } catch {
-            await MainActor.run {
-                appError = .decoding
-            }
+            Logger.goals.error("saveMacrosIntakeData failed: \(error.localizedDescription)")
         }
     }
     

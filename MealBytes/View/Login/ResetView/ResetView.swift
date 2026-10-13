@@ -32,25 +32,27 @@ struct ResetView: View {
                 LoginTextFieldView(
                     text: $resetViewModel.email,
                     focus: $resetFocus,
-                    focusCase: true
+                    focusCase: true,
+                    submitLabel: .done,
+                    onSubmit: {
+                        Task {
+                            await resetViewModel.resetPassword()
+                        }
+                    }
                 )
             } footer: {
                 Text("Enter email to request a password reset link.")
             }
         }
+        .disabled(resetViewModel.isLoading)
     }
     
     @ToolbarContentBuilder
     private var resetViewToolbar: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
-            switch resetViewModel.resetState {
-            case .loading:
+            if resetViewModel.isLoading {
                 ProgressView()
-                
-            case .emailSent:
-                EmptyView()
-                
-            case .ready:
+            } else {
                 Button(role: .confirm) {
                     Task {
                         await resetViewModel.resetPassword()

@@ -13,6 +13,8 @@ struct LoginTextFieldView<Focus: Hashable>: View {
     let focusCase: Focus
     var placeholder: String = "Email"
     var textContentType: UITextContentType? = .username
+    var submitLabel: SubmitLabel = .next
+    var onSubmit: (() -> Void)? = nil
     
     var body: some View {
         contentLoginTextField
@@ -28,6 +30,10 @@ struct LoginTextFieldView<Focus: Hashable>: View {
             .autocapitalization(.none)
             .disableAutocorrection(true)
             .focused(focus, equals: focusCase)
+            .submitLabel(submitLabel)
+            .onSubmit {
+                onSubmit?()
+            }
     }
     
     private var contentLoginTextField: some View {

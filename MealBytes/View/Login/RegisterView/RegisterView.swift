@@ -33,14 +33,21 @@ struct RegisterView: View {
                     text: $registerViewModel.email,
                     focus: $registerFocus,
                     focusCase: .email,
-                    textContentType: .emailAddress
+                    textContentType: .emailAddress,
+                    onSubmit: {
+                        registerFocus = .password
+                    }
                 )
                 
                 SecureFieldView(
                     text: $registerViewModel.password,
                     focus: $registerFocus,
                     focusCase: .password,
-                    textContentType: .newPassword
+                    textContentType: .newPassword,
+                    submitLabel: .next,
+                    onSubmit: {
+                        registerFocus = .confirmPassword
+                    }
                 )
                 
                 SecureFieldView(
@@ -48,12 +55,18 @@ struct RegisterView: View {
                     focus: $registerFocus,
                     focusCase: .confirmPassword,
                     placeholder: "Confirm Password",
-                    textContentType: .newPassword
+                    textContentType: .password,
+                    onSubmit: {
+                        Task {
+                            await registerViewModel.signUp()
+                        }
+                    }
                 )
             } footer: {
                 Text("Enter email and create a password (min 6 characters). A verification email will be sent.")
             }
         }
+        .disabled(registerViewModel.registerState == .loading)
     }
     
     @ToolbarContentBuilder
