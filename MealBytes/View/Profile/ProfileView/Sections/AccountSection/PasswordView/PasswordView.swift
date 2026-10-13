@@ -111,10 +111,12 @@ struct PasswordView: View {
     
     @ViewBuilder
     private var alertActions: some View {
-        Button("OK") {
+        Button {
             if passwordViewModel.isSuccess {
                 passwordViewModel.resetPasswordState()
             }
+        } label: {
+            Text("OK")
         }
     }
     

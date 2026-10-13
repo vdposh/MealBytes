@@ -138,20 +138,20 @@ struct MealHeaderView: View {
                 mainViewModel.moveMealItem(item, to: newMealType)
             },
             onDelete: {
-                mainViewModel
-                    .deleteMealItemMainView(
-                        with: item.id,
-                        for: mealType
-                    )
+                mainViewModel.deleteMealItemMainView(
+                    with: item.id,
+                    for: mealType,
+                    on: nil
+                )
             }
         )
         .swipeActions {
             Button(role: .destructive) {
-                mainViewModel
-                    .deleteMealItemMainView(
-                        with: item.id,
-                        for: mealType
-                    )
+                mainViewModel.deleteMealItemMainView(
+                    with: item.id,
+                    for: mealType,
+                    on: nil
+                )
             }
         }
     }

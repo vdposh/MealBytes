@@ -10,13 +10,15 @@ import FirebaseCore
 
 final class FoodViewModel: ObservableObject {
     @Published var selectedServing: Serving?
+    @Published var appError: AppError?
+    @Published var selectedDate: Date
     @Published var amount: String = ""
     @Published var originalAmount: String = ""
-    @Published var appError: AppError?
     @Published var isLoading: Bool = true
     @Published var isError: Bool = false
     @Published var isBookmarkFilled: Bool = false
     @Published var hasLoadedDetails = false
+    @Published var showDatePicker: Bool = false
     @Published var foodDetail: FoodDetail? {
         didSet {
             self.selectedServing = nil
@@ -25,6 +27,7 @@ final class FoodViewModel: ObservableObject {
     
     private let originalMealType: MealType
     private let originalCreatedAt: Date
+    private let originalDate: Date
     private let originalMealItemId: UUID
     private let initialMeasurementDescription: String
     private let isEditingMealItem: Bool
@@ -49,9 +52,11 @@ final class FoodViewModel: ObservableObject {
         initialMeasurementDescription: String = "",
         isEditingMealItem: Bool = false,
         originalCreatedAt: Date = Date(),
-        originalMealItemId: UUID? = nil
+        originalMealItemId: UUID? = nil,
+        originalDate: Date? = nil
     ) {
         self.food = food
+        self.selectedDate = originalDate ?? mainViewModel.date
         self.mealType = mealType
         self.originalMealType = mealType
         self.searchViewModel = searchViewModel
@@ -61,6 +66,7 @@ final class FoodViewModel: ObservableObject {
         self.isEditingMealItem = isEditingMealItem
         self.originalCreatedAt = originalCreatedAt
         self.originalMealItemId = originalMealItemId ?? UUID()
+        self.originalDate = originalDate ?? mainViewModel.date
     }
     
     // MARK: - Fetch Food Details
@@ -200,6 +206,10 @@ final class FoodViewModel: ObservableObject {
         guard let selectedServing else { return }
         
         let createdAt = didChangeMealType ? Date() : originalCreatedAt
+        let didChangeDate = !Calendar.current.isDate(
+            date,
+            inSameDayAs: originalDate
+        )
         
         let nutrients = storageNutrients
         
@@ -219,7 +229,7 @@ final class FoodViewModel: ObservableObject {
         )
         
         do {
-            if originalMealType == mealType {
+            if originalMealType == mealType && !didChangeDate {
                 await MainActor.run {
                     mainViewModel.updateMealItemMainView(
                         updatedMealItem,
@@ -234,6 +244,7 @@ final class FoodViewModel: ObservableObject {
                     mainViewModel.deleteMealItemMainView(
                         with: originalMealItemId,
                         for: originalMealType,
+                        on: originalDate,
                         animated: false
                     )
                 }
@@ -264,6 +275,7 @@ final class FoodViewModel: ObservableObject {
         mainViewModel.deleteMealItemMainView(
             with: originalMealItemId,
             for: originalMealType,
+            on: originalDate,
             animated: false
         )
     }
@@ -419,6 +431,7 @@ final class FoodViewModel: ObservableObject {
         
         return NutrientValueProvider()
             .fromServing(selectedServing)
+            .filter { $0.type != .servingSize }
             .map { value in
                 let rawValue = value.value * calculateSelectedAmountValue()
                 let isCalories = value.type == .calories

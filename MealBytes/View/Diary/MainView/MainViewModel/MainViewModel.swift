@@ -22,7 +22,12 @@ protocol MainViewModelProtocol {
     func filteredMealItems(for mealType: MealType, on date: Date) -> [MealItem]
     func addMealItemMainView(_ item: MealItem, to: MealType, for: Date)
     func updateMealItemMainView(_ item: MealItem, for: MealType, on: Date)
-    func deleteMealItemMainView(with id: UUID, for: MealType, animated: Bool)
+    func deleteMealItemMainView(
+        with id: UUID,
+        for mealType: MealType,
+        on date: Date?,
+        animated: Bool
+    )
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool)
     func formattedDate() -> String
     func resetMainState()
@@ -191,15 +196,19 @@ final class MainViewModel: ObservableObject {
     func deleteMealItemMainView(
         with id: UUID,
         for mealType: MealType,
+        on date: Date? = nil,
         animated: Bool = true
     ) {
-        let key = dateKey(for: date)
+        let targetDate = date ?? self.date
+        let key = dateKey(for: targetDate)
         let itemToDelete = mealItemsByDate[key]?[mealType]?
             .first(where: { $0.id == id })
         
         let update = {
             self.mealItemsByDate[key]?[mealType]?.removeAll { $0.id == id }
-            self.recalculateNutrients(for: self.date)
+            if self.calendar.isDate(targetDate, inSameDayAs: self.date) {
+                self.recalculateNutrients(for: self.date)
+            }
         }
         
         if animated {

@@ -71,7 +71,8 @@ struct MainView: View {
                     measurementDescription: mealItem.measurementDescription,
                     isEditingMealItem: true,
                     originalCreatedAt: mealItem.createdAt,
-                    originalMealItemId: mealItem.id
+                    originalMealItemId: mealItem.id,
+                    originalDate: mealItem.date
                 )
             }
         }

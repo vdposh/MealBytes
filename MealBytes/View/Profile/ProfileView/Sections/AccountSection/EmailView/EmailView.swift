@@ -111,8 +111,10 @@ struct EmailView: View {
             .disabled(emailViewModel.password.isEmpty)
             
         case .error, .success:
-            Button("OK") {
+            Button {
                 emailViewModel.alertType = nil
+            } label: {
+                Text("OK")
             }
             
         case .none:

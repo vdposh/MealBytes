@@ -70,22 +70,26 @@ struct SearchView: View {
             ToolbarItem(placement: .topBarLeading) {
                 if searchViewModel.selectedItems.count
                     < searchViewModel.favoriteFoods.count {
-                    Button("Select all") {
+                    Button {
                         withAnimation {
                             searchViewModel.selectedItems = Set(
                                 searchViewModel.favoriteFoods
                                     .map { $0.searchFoodId }
                             )
                         }
+                    } label: {
+                        Text("Select all")
+                            .fontWeight(.medium)
                     }
-                    .fontWeight(.medium)
                 } else {
-                    Button("Cancel select") {
+                    Button {
                         withAnimation {
                             searchViewModel.selectedItems.removeAll()
                         }
+                    } label: {
+                        Text("Cancel select")
+                            .fontWeight(.medium)
                     }
-                    .fontWeight(.medium)
                 }
             }
             

@@ -25,7 +25,8 @@ struct FoodView: View {
         measurementDescription: String,
         isEditingMealItem: Bool,
         originalCreatedAt: Date = Date(),
-        originalMealItemId: UUID? = nil
+        originalMealItemId: UUID? = nil,
+        originalDate: Date? = nil
     ) {
         self._mealType = State(initialValue: mealType)
         self.isEditingMealItem = isEditingMealItem
@@ -40,7 +41,8 @@ struct FoodView: View {
                 initialMeasurementDescription: measurementDescription,
                 isEditingMealItem: isEditingMealItem,
                 originalCreatedAt: originalCreatedAt,
-                originalMealItemId: originalMealItemId
+                originalMealItemId: originalMealItemId,
+                originalDate: originalDate
             )
         )
     }
@@ -101,6 +103,12 @@ struct FoodView: View {
             }
             .environment(\.defaultMinListRowHeight, 46)
             .listSectionSpacing(20)
+            .sheet(isPresented: $foodViewModel.showDatePicker) {
+                DatePickerSheet(
+                    selectedDate: $foodViewModel.selectedDate,
+                    isPresented: $foodViewModel.showDatePicker
+                )
+            }
         }
     }
     
@@ -139,6 +147,31 @@ struct FoodView: View {
     
     @ViewBuilder
     private var servingSizeSection: some View {
+        if isEditingMealItem {
+            Section {
+                DatePickerRow(
+                    selectedDate: $foodViewModel.selectedDate,
+                    isPresented: $foodViewModel.showDatePicker
+                )
+                
+                Label {
+                    Picker("Meal type", selection: $mealType) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Text(meal.rawValue)
+                                .tag(meal)
+                        }
+                    }
+                } icon: {
+                    Image(systemName: "fork.knife")
+                        .foregroundStyle(.customGray)
+                }
+                .onChange(of: mealType) {
+                    amountFocused = nil
+                    foodViewModel.normalizeAmount()
+                }
+            }
+        }
+        
         Section {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
@@ -176,39 +209,12 @@ struct FoodView: View {
                 }
             }
         }
-        
-        if isEditingMealItem {
-            Section {
-                Label {
-                    Picker("Meal type", selection: $mealType) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Text(meal.rawValue)
-                                .tag(meal)
-                        }
-                    }
-                } icon: {
-                    Image(systemName: "fork.knife")
-                        .foregroundStyle(.customGray)
-                }
-                .onChange(of: mealType) {
-                    amountFocused = nil
-                    foodViewModel.normalizeAmount()
-                }
-            }
-        }
     }
     
     private var nutritionFactsSection: some View {
         Section {
             NutrientValueSection(
                 nutrients: foodViewModel.nutrientValues,
-                servingFormattedText: foodViewModel.selectedServing.map {
-                    foodViewModel
-                        .formattedMealText(
-                            for: $0,
-                            amount: foodViewModel.amount
-                        )
-                },
                 isFoodView: true
             )
         } header: {
@@ -226,7 +232,7 @@ struct FoodView: View {
                         Task {
                             await foodViewModel.addMealItemFoodView(
                                 in: foodViewModel.mealType,
-                                for: foodViewModel.mainViewModel.date
+                                for: foodViewModel.selectedDate
                             )
                             
                             dismiss()
@@ -246,7 +252,7 @@ struct FoodView: View {
                     Button(role: .confirm) {
                         Task {
                             await foodViewModel.updateMealItemFoodView(
-                                for: foodViewModel.mainViewModel.date
+                                for: foodViewModel.selectedDate
                             )
                             
                             dismiss()
