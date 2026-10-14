@@ -20,23 +20,16 @@ struct CollapsibleRow<Content: View>: View {
                 onToggle()
             }
         } label: {
-            LabeledContent {
-                HStack(spacing: 10) {
-                    Text(value)
-                        .foregroundStyle(isExpanded ? .primary : .secondary)
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.footnote)
-                        .fontWeight(.bold)
-                        .foregroundStyle(isExpanded ? .primary : .tertiary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .animation(.default, value: isExpanded)
-                }
-                .padding(.trailing, 2)
-            } label: {
-                Text(title)
-                    .foregroundStyle(Color.primary)
-            }
+            Text(title)
+                .foregroundStyle(Color.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .overlay(alignment: .trailing) {
+            Text(value)
+                .foregroundStyle(isExpanded ? .accent : .primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Color(.systemGroupedBackground), in: .capsule)
         }
         
         if isExpanded {

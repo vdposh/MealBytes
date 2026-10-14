@@ -28,6 +28,7 @@ struct TabBarView: View {
             }
         }
         .disabled(profileViewModel.isDeletingAccount)
+        .scrollEdgeEffectStyle(.soft, for: .top)
         .alert(isPresented: $loginViewModel.showErrorAlert) {
             loginErrorAlert
         }

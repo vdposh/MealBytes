@@ -10,6 +10,11 @@ import SwiftUI
 struct DatePickerSheet: View {
     @Binding var selectedDate: Date
     @Binding var isPresented: Bool
+    var onConfirm: (() -> Void)? = nil
+    
+    private var hasConfirm: Bool {
+        onConfirm != nil
+    }
     
     var body: some View {
         NavigationStack {
@@ -23,12 +28,21 @@ struct DatePickerSheet: View {
             .navigationTitle("Date")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(role: .close) {
-                        isPresented = false
-                    } label: {
-                        Text("Close")
-                            .fontWeight(.medium)
+                if hasConfirm {
+                    ToolbarItem {
+                        Button(role: .confirm) {
+                            onConfirm?()
+                            isPresented = false
+                        }
+                    }
+                } else {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(role: .close) {
+                            isPresented = false
+                        } label: {
+                            Text("Close")
+                                .fontWeight(.medium)
+                        }
                     }
                 }
                 
@@ -43,5 +57,6 @@ struct DatePickerSheet: View {
             }
         }
         .presentationDetents([.medium])
+        .scrollEdgeEffectStyle(.soft, for: .top)
     }
 }

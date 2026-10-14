@@ -13,6 +13,7 @@ struct FoodItemRow: View {
     let energyUnit: EnergyUnit
     let formattedText: String
     let onSelect: () -> Void
+    let onDate: () -> Void
     let onMove: (MealType) -> Void
     let onDelete: () -> Void
     
@@ -36,13 +37,13 @@ struct FoodItemRow: View {
     
     @ViewBuilder
     private var foodItemContextMenu: some View {
+        Button {
+            onDate()
+        } label: {
+            Label("Date", systemImage: "calendar")
+        }
+        
         Menu {
-            Button {
-                
-            } label: {
-                Label("Date", systemImage: "calendar")
-            }
-            
             Picker("Meal type", selection: Binding(
                 get: { mealItem.mealType },
                 set: { onMove($0) }

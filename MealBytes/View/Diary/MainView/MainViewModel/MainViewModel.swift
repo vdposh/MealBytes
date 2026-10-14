@@ -46,9 +46,12 @@ final class MainViewModel: ObservableObject {
     @Published var selectedMealType: MealType?
     @Published var selectedFoodItem: MealItem?
     @Published var mealTypeToClear: MealType?
+    @Published var itemToMove: MealItem?
+    @Published var itemMoveDate: Date = Date()
     @Published var intakeSource: String = ""
     @Published var nutrientTargets = NutrientTargets()
     @Published var showDatePicker: Bool = false
+    @Published var showItemDatePicker: Bool = false
     @Published var showGoals: Bool = false
     @Published var displayGoals: Bool = true
     @Published var showNutrientTotals: Bool = false
@@ -157,10 +160,21 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Move Meal Item
-    func moveMealItem(_ item: MealItem, to newMealType: MealType) {
-        guard item.mealType != newMealType else { return }
+    func moveMealItem(
+        _ item: MealItem,
+        to newMealType: MealType? = nil,
+        date newDate: Date? = nil
+    ) {
+        let targetMealType = newMealType ?? item.mealType
+        let targetDate = newDate ?? item.date
         
-        let key = dateKey(for: item.date)
+        guard targetMealType != item.mealType ||
+                !calendar.isDate(targetDate, inSameDayAs: item.date) else {
+            return
+        }
+        
+        let oldKey = dateKey(for: item.date)
+        let newKey = dateKey(for: targetDate)
         
         let updatedItem = MealItem(
             id: item.id,
@@ -170,17 +184,22 @@ final class MainViewModel: ObservableObject {
             nutrients: item.nutrients,
             measurementDescription: item.measurementDescription,
             amount: item.amount,
-            date: item.date,
-            mealType: newMealType,
+            date: targetDate,
+            mealType: targetMealType,
             createdAt: Date()
         )
         
         withAnimation {
-            mealItemsByDate[key]?[item.mealType]?
+            mealItemsByDate[oldKey]?[item.mealType]?
                 .removeAll { $0.id == item.id }
-            mealItemsByDate[key]?[newMealType, default: []]
+            mealItemsByDate[newKey, default: [:]][targetMealType, default: []]
                 .append(updatedItem)
-            expandedSections[newMealType] = true
+            expandedSections[targetMealType] = true
+        }
+        
+        if calendar.isDate(targetDate, inSameDayAs: date) ||
+            calendar.isDate(item.date, inSameDayAs: date) {
+            recalculateNutrients(for: date)
         }
         
         Task {
@@ -190,6 +209,12 @@ final class MainViewModel: ObservableObject {
                 Logger.main.error("moveMealItem failed: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func prepareDateMove(for item: MealItem) {
+        itemToMove = item
+        itemMoveDate = item.date
+        showItemDatePicker = true
     }
     
     // MARK: - Delete Meal Item

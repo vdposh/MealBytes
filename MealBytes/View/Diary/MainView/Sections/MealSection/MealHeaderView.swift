@@ -134,9 +134,8 @@ struct MealHeaderView: View {
             onSelect: {
                 mainViewModel.selectedFoodItem = item
             },
-            onMove: { newMealType in
-                mainViewModel.moveMealItem(item, to: newMealType)
-            },
+            onDate: { mainViewModel.prepareDateMove(for: item) },
+            onMove: { mainViewModel.moveMealItem(item, to: $0) },
             onDelete: {
                 mainViewModel.deleteMealItemMainView(
                     with: item.id,

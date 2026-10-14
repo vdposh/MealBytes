@@ -76,6 +76,21 @@ struct MainView: View {
                 )
             }
         }
+        .sheet(isPresented: $mainViewModel.showItemDatePicker) {
+            DatePickerSheet(
+                selectedDate: $mainViewModel.itemMoveDate,
+                isPresented: $mainViewModel.showItemDatePicker,
+                onConfirm: {
+                    if let item = mainViewModel.itemToMove {
+                        mainViewModel
+                            .moveMealItem(
+                                item,
+                                date: mainViewModel.itemMoveDate
+                            )
+                    }
+                }
+            )
+        }
         .sheet(isPresented: $mainViewModel.showNutrientTotals) {
             NutrientTotalsSheet(
                 nutrients: mainViewModel.filteredNutrientValues,
