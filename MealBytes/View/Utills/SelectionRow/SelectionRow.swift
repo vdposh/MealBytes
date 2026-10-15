@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SelectionRow: View {
     let title: String
+    var icon: String? = nil
     var description: String? = nil
     let isSelected: Bool
     var checkmarkColor: Color = .accent
@@ -18,25 +19,44 @@ struct SelectionRow: View {
         Button {
             action()
         } label: {
-            VStack(alignment: .leading) {
-                Text(title)
-                    .foregroundStyle(Color.primary)
-                
-                if let description {
-                    Text(description)
-                        .font(.caption)
-                        .foregroundStyle(Color.secondary)
+            content
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing, 50)
+                .overlay(alignment: .trailing) {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.headline)
+                            .foregroundStyle(checkmarkColor)
+                            .padding(.trailing, 2)
+                    }
                 }
+        }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        if let icon {
+            Label {
+                textContent
+            } icon: {
+                Image(systemName: icon)
+                    .foregroundStyle(.customGray)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.trailing, 50)
-            .overlay(alignment: .trailing) {
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.headline)
-                        .foregroundStyle(checkmarkColor)
-                        .padding(.trailing, 2)
-                }
+        } else {
+            textContent
+        }
+    }
+    
+    @ViewBuilder
+    private var textContent: some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .foregroundStyle(Color.primary)
+            
+            if let description {
+                Text(description)
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
             }
         }
     }

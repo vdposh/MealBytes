@@ -200,7 +200,7 @@ struct FoodView: View {
                         }
                     }
                 } icon: {
-                    Image(systemName: "text.justify")
+                    Image(systemName: "text.menu")
                         .foregroundStyle(.customGray)
                 }
                 .onChange(of: selected) {

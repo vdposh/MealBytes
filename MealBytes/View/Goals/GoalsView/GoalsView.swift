@@ -72,7 +72,12 @@ struct GoalsView: View {
                 LabeledContent {
                     Text(goalsViewModel.selectedIntakeSource.title)
                 } label: {
-                    Text("Goal Type")
+                    Label {
+                        Text("Goal Source")
+                    } icon: {
+                        Image(systemName: "target")
+                            .foregroundStyle(.customRed)
+                    }
                 }
             }
         }

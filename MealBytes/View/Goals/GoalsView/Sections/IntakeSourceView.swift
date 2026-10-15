@@ -22,7 +22,7 @@ struct IntakeSourceView: View {
                 }
             }
         }
-        .navigationTitle("Goal Type")
+        .navigationTitle("Goal Source")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -14,13 +14,32 @@ struct ProfileView: View {
         profileViewContentBody
             .navigationTitle("Settings")
             .toolbarTitleDisplayMode(.inlineLarge)
+            .toolbar {
+                profileViewToolbar
+            }
     }
     
     private var profileViewContentBody: some View {
         Form {
-            AccountSection(profileViewModel: profileViewModel)
             GeneralSection(profileViewModel: profileViewModel)
             AppearanceSection()
+        }
+        .sheet(isPresented: $profileViewModel.showAccountView) {
+            NavigationStack {
+                AccountView(profileViewModel: profileViewModel)
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var profileViewToolbar: some ToolbarContent {
+        ToolbarItem {
+            Button {
+                profileViewModel.showAccountView = true
+            } label: {
+                Text("Account")
+                    .fontWeight(.medium)
+            }
         }
     }
 }

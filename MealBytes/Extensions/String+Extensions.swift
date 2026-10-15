@@ -39,10 +39,15 @@ extension String {
         return true
     }
     
-    var doubleValue: Double? {
+    private static let decimalFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
-        return formatter.number(from: self)?.doubleValue
+        formatter.locale = .current
+        return formatter
+    }()
+    
+    var doubleValue: Double? {
+        Self.decimalFormatter.number(from: self)?.doubleValue
     }
     
     // MARK: - Email

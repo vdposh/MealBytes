@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AccountView: View {
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
@@ -17,6 +18,9 @@ struct AccountView: View {
         }
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            accountViewToolbar
+        }
         .alert(
             profileViewModel.alertTitle,
             isPresented: Binding(
@@ -63,6 +67,18 @@ struct AccountView: View {
                 } label: {
                     Text("Password")
                 }
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var accountViewToolbar: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(role: .close) {
+                dismiss()
+            } label: {
+                Text("Close")
+                    .fontWeight(.medium)
             }
         }
     }

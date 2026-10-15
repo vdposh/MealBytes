@@ -31,14 +31,6 @@ enum ThemeMode: String, CaseIterable {
         case .system: "System"
         }
     }
-    
-    var iconName: String {
-        switch self {
-        case .light: "sun.max.fill"
-        case .dark: "moon.fill"
-        case .system: "circle.lefthalf.filled"
-        }
-    }
 }
 
 #Preview {

@@ -27,8 +27,7 @@ struct CollapsibleRow<Content: View>: View {
         .overlay(alignment: .trailing) {
             Text(value)
                 .foregroundStyle(isExpanded ? .accent : .primary)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
+                .padding(10)
                 .background(Color(.systemGroupedBackground), in: .capsule)
         }
         

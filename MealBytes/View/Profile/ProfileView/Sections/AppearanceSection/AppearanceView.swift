@@ -14,22 +14,15 @@ struct AppearanceView: View {
     var body: some View {
         Form {
             Section {
-                ThemeButton(
-                    theme: .light,
-                    text: "Light",
-                    isSelected: shouldShowCheckmark(for: .light),
-                    themeManager: themeManager
-                ) {
-                    themeManager.selectedTheme = .light
-                }
-                
-                ThemeButton(
-                    theme: .dark,
-                    text: "Dark",
-                    isSelected: shouldShowCheckmark(for: .dark),
-                    themeManager: themeManager
-                ) {
-                    themeManager.selectedTheme = .dark
+                ForEach([ThemeMode.light, .dark], id: \.self) { theme in
+                    ThemeButton(
+                        theme: theme,
+                        text: theme.themeName,
+                        isSelected: shouldShowCheckmark(for: theme),
+                        themeManager: themeManager
+                    ) {
+                        themeManager.selectedTheme = theme
+                    }
                 }
                 
                 Toggle(isOn: Binding(
@@ -69,12 +62,4 @@ struct AppearanceView: View {
     NavigationStack {
         AppearanceView(themeManager: ThemeManager())
     }
-}
-
-#Preview {
-    PreviewProfileView.profileView
-}
-
-#Preview {
-    PreviewContentView.contentView
 }

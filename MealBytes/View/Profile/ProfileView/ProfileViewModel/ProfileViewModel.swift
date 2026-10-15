@@ -13,9 +13,10 @@ final class ProfileViewModel: ObservableObject {
     @Published var email: String?
     @Published var deleteConfirmationText: String = ""
     @Published var alertContent: AlertContentProfile?
-    @Published var showAlert: Bool = false
-    @Published var displayGoals: Bool = true
     @Published var energyUnit: EnergyUnit = .kcal
+    @Published var showAlert: Bool = false
+    @Published var showAccountView: Bool = false
+    @Published var displayGoals: Bool = true
     @Published var isDeletingAccount: Bool = false
     
     @ObservedObject var loginViewModel: LoginViewModel
@@ -139,6 +140,10 @@ final class ProfileViewModel: ObservableObject {
         
         showAlert = false
         isDeletingAccount = false
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.showAccountView = false
+        }
         
         loginViewModel.resetLoginState()
     }
