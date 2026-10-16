@@ -25,7 +25,7 @@ struct CollapsibleRow<Content: View>: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .overlay(alignment: .trailing) {
-            Text(value)
+            NotSetRow(value: value)
                 .foregroundStyle(isExpanded ? .accent : .primary)
                 .padding(10)
                 .background(Color(.systemGroupedBackground), in: .capsule)

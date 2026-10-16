@@ -13,9 +13,7 @@ struct AgeSection: View {
     var body: some View {
         CollapsibleRow(
             title: "Age",
-            value: personalIntakeViewModel.age.isEmpty
-            ? ""
-            : personalIntakeViewModel.formattedAge,
+            value: personalIntakeViewModel.formattedAge,
             isExpanded: personalIntakeViewModel.isExpandedAge,
             onToggle: {
                 personalIntakeViewModel.toggleSection(.age)

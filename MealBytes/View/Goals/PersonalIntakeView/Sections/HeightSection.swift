@@ -13,9 +13,7 @@ struct HeightSection: View {
     var body: some View {
         CollapsibleRow(
             title: "Height",
-            value: personalIntakeViewModel.height.isEmpty
-            ? ""
-            : personalIntakeViewModel.heightText,
+            value: personalIntakeViewModel.heightText,
             isExpanded: personalIntakeViewModel.isExpandedHeight,
             onToggle: {
                 personalIntakeViewModel.toggleSection(.height)

@@ -13,9 +13,7 @@ struct WeightSection: View {
     var body: some View {
         CollapsibleRow(
             title: "Weight",
-            value: personalIntakeViewModel.weight.isEmpty
-            ? ""
-            : personalIntakeViewModel.weightText,
+            value: personalIntakeViewModel.weightText,
             isExpanded: personalIntakeViewModel.isExpandedWeight,
             onToggle: {
                 personalIntakeViewModel.toggleSection(.weight)

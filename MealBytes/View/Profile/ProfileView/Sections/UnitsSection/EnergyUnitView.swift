@@ -11,7 +11,7 @@ struct EnergyUnitView: View {
     @ObservedObject var profileViewModel: ProfileViewModel
     
     var body: some View {
-        Picker("Energy Unit", selection: Binding(
+        Picker("Energy", selection: Binding(
             get: { profileViewModel.energyUnit },
             set: { newValue in
                 Task {

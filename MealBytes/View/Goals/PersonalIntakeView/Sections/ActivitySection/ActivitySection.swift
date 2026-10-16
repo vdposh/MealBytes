@@ -18,7 +18,11 @@ struct ActivitySection: View {
                 )
             } label: {
                 LabeledContent {
-                    Text(personalIntakeViewModel.selectedActivity.rawValue)
+                    NotSetRow(
+                        value: personalIntakeViewModel
+                            .selectedActivity.rawValue
+                    )
+                    .lineLimit(1)
                 } label: {
                     Text("Activity")
                 }
