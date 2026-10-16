@@ -78,7 +78,7 @@ struct ActivityRingView: View {
                                         lineCap: .round
                                     )
                                 )
-                                .clipShape(.circle)
+                                .clipShape(Circle())
                                 .frame(
                                     width: lineWidth * 1.8,
                                     height: lineWidth * 1.8

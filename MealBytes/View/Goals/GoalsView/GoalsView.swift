@@ -40,7 +40,6 @@ struct GoalsView: View {
                 .disabled(!goalsViewModel.isSelectedValid)
             }
         }
-        .scrollEdgeEffectStyle(.soft, for: .top)
         .safeAreaInset(edge: .bottom) {
             switch goalsViewModel.selectedIntakeSource {
             case .custom:
@@ -76,6 +75,7 @@ struct GoalsView: View {
                         Text("Goal Source")
                     } icon: {
                         Image(systemName: "target")
+                            .fontWeight(.medium)
                             .foregroundStyle(.customRed)
                     }
                 }

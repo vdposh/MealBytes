@@ -37,7 +37,6 @@ struct SearchView: View {
         .toolbar {
             searchViewToolbar
         }
-        .scrollEdgeEffectStyle(.soft, for: .top)
         .environment(\.editMode, $editModeState)
         .onChange(of: mealType) {
             searchViewModel.displaySearchViewData(for: mealType)

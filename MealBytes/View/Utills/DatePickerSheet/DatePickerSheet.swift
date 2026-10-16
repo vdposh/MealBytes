@@ -57,6 +57,5 @@ struct DatePickerSheet: View {
             }
         }
         .presentationDetents([.medium])
-        .scrollEdgeEffectStyle(.soft, for: .top)
     }
 }

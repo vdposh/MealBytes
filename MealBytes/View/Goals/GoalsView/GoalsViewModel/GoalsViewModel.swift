@@ -219,7 +219,7 @@ enum IntakeSource: String, CaseIterable {
     var description: String {
         switch self {
         case .personal:
-            return "Based on body parameters"
+            return "Based on the Body Profile"
         case .macros:
             return "Calculated from macronutrients"
         case .custom:

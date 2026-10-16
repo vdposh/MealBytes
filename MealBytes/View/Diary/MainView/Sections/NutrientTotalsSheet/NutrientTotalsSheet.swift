@@ -50,7 +50,6 @@ struct NutrientTotalsSheet: View {
                 }
             }
         }
-        .scrollEdgeEffectStyle(.soft, for: .top)
     }
     
     private var closeButton: some View {

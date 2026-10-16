@@ -54,7 +54,6 @@ struct FoodView: View {
             .toolbar {
                 foodViewToolbar
             }
-            .scrollEdgeEffectStyle(.soft, for: .top)
             .safeAreaInset(edge: .bottom) {
                 foodViewSafeArea
             }

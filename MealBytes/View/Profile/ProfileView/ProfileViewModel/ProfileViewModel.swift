@@ -15,7 +15,6 @@ final class ProfileViewModel: ObservableObject {
     @Published var alertContent: AlertContentProfile?
     @Published var energyUnit: EnergyUnit = .kcal
     @Published var showAlert: Bool = false
-    @Published var showAccountView: Bool = false
     @Published var displayGoals: Bool = true
     @Published var isDeletingAccount: Bool = false
     
@@ -51,7 +50,7 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Goals Disabled
+    // MARK: - Goals
     func setDisplayGoals(_ display: Bool) async {
         await MainActor.run {
             displayGoals = display
@@ -140,10 +139,6 @@ final class ProfileViewModel: ObservableObject {
         
         showAlert = false
         isDeletingAccount = false
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.showAccountView = false
-        }
         
         loginViewModel.resetLoginState()
     }
