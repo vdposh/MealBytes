@@ -23,6 +23,7 @@ struct SearchView: View {
             mealType: searchViewModel.selectedMealType
         )
         .searchable(text: $searchViewModel.query)
+        .environment(\.editMode, $editModeState)
         .navigationTitle(searchViewModel.selectedMealType.rawValue)
         .toolbarTitleDisplayMode(.inline)
         .toolbarTitleMenu {
@@ -31,7 +32,6 @@ struct SearchView: View {
         .toolbar {
             searchViewToolbar
         }
-        .environment(\.editMode, $editModeState)
         .onDisappear {
             resetEditingState()
         }

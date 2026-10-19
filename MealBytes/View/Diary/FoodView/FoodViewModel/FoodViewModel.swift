@@ -340,7 +340,6 @@ final class FoodViewModel: ObservableObject {
     func updateMealType(_ newMealType: MealType) {
         mealType = newMealType
         updateBookmarkState()
-        searchViewModel.displaySearchViewData(for: newMealType)
     }
     
     // MARK: - Serving Selection and Amount Setting

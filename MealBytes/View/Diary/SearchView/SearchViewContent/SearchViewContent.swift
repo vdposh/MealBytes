@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SearchViewContent: View {
+    @State private var showClearAlert = false
     @Binding var editModeState: EditMode
     @Environment(\.isSearching) private var isSearching
     
@@ -95,13 +96,28 @@ struct SearchViewContent: View {
                     !searchViewModel.isEditModeActive {
                     Section {
                         ForEach(
-                            searchViewModel.historyFoods,
+                            searchViewModel.displayedHistoryFoods,
                             id: \.searchFoodId
                         ) { food in
                             foodRow(for: food)
                         }
+                        
+                        if searchViewModel.canShowMoreHistory {
+                            Button {
+                                searchViewModel.showAllHistory = true
+                            } label: {
+                                Text("More")
+                            }
+                        }
                     } header: {
-                        Text("Recent")
+                        HeaderButtonView(
+                            title: "Recent",
+                            actionTitle: "Clear",
+                            isEdit: !searchViewModel.isEditModeActive &&
+                            !isSearching
+                        ) {
+                            showClearAlert = true
+                        }
                     }
                     .selectionDisabled(
                         !searchViewModel.isEditModeActive ||
@@ -153,6 +169,17 @@ struct SearchViewContent: View {
                     searchViewModel.selectedItems = searchViewModel
                         .selectedItems
                 }
+            }
+            .alert("Clear Recent", isPresented: $showClearAlert) {
+                Button(role: .destructive) {
+                    Task {
+                        await searchViewModel.clearHistory()
+                    }
+                } label: {
+                    Text("Clear")
+                }
+            } message: {
+                Text("All recent items will be removed.")
             }
         }
     }

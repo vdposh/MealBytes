@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HeaderButtonView: View {
     let title: String
+    var actionTitle: String = "Edit"
     var calories: Double? = nil
     var fat: Double? = nil
     var carbs: Double? = nil
@@ -63,7 +64,7 @@ struct HeaderButtonView: View {
                     Button {
                         action()
                     } label: {
-                        Text("Edit")
+                        Text(actionTitle)
                             .foregroundStyle(.accent)
                     }
                     .buttonStyle(.borderless)

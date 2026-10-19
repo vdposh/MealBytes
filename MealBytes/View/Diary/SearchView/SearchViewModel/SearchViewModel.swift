@@ -45,9 +45,11 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
-    @Published var showMealType: Bool = false
     @Published var isLoading: Bool = false
+    @Published var showMealType: Bool = false
+    @Published var showAllHistory = false
     @Published var showRemoveDialog: Bool = false
+    @Published var showClearAlert: Bool = false
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     
@@ -56,7 +58,8 @@ final class SearchViewModel: ObservableObject {
     private var metadataByType: [MealType: [Int: FoodMetadata]] = [:]
     
     private var historyByType: [MealType: [Food]] = [:]
-    private let maxHistoryCount = 15
+    private let maxHistoryCount = 12
+    private let historyPreviewLimit = 5
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -260,6 +263,8 @@ final class SearchViewModel: ObservableObject {
             if query.isEmpty {
                 foods = favoriteFoods
             }
+            
+            showAllHistory = false
         }
     }
     
@@ -512,6 +517,36 @@ final class SearchViewModel: ObservableObject {
                 Logger.search.error("addHistoryFirestore failed: \(error.localizedDescription)")
             }
         }
+    }
+    
+    // MARK: - Clear History
+    func clearHistory() async {
+        let original = historyFoods
+        let mealType = selectedMealType
+        
+        await MainActor.run {
+            historyFoods.removeAll()
+            historyByType[mealType] = []
+        }
+        
+        do {
+            try await firestore.deleteHistoryFirestore(for: mealType)
+        } catch {
+            await MainActor.run {
+                historyFoods = original
+            }
+        }
+    }
+    
+    // MARK: - History Limit
+    var displayedHistoryFoods: [Food] {
+        showAllHistory || historyFoods.count <= historyPreviewLimit
+        ? historyFoods
+        : Array(historyFoods.prefix(historyPreviewLimit))
+    }
+    
+    var canShowMoreHistory: Bool {
+        !showAllHistory && historyFoods.count > historyPreviewLimit
     }
     
     // MARK: - Pagination

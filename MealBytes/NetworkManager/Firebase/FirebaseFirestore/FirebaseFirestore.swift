@@ -54,6 +54,7 @@ protocol FirebaseFirestoreProtocol {
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemsFirestore(on date: Date) async throws
+    func deleteHistoryFirestore(for mealType: MealType) async throws
     func deleteLoginDataFirestore() async throws
     func deleteFoodMetadata(
         for foodId: Int,
@@ -208,6 +209,17 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         for mealType: MealType
     ) async throws -> [Food] {
         try await loadFoodsFromFirestore(from: "History", for: mealType)
+    }
+    
+    // MARK: - Remove History
+    func deleteHistoryFirestore(for mealType: MealType) async throws {
+        let uid = try currentUID
+        try await firestore
+            .collection("Users").document(uid)
+            .collection("SearchView").document("History")
+            .collection(mealType.rawValue.lowercased())
+            .document("items")
+            .delete()
     }
     
     // MARK: - Save Foods SearchView
