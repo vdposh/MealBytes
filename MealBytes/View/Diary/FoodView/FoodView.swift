@@ -147,28 +147,26 @@ struct FoodView: View {
     
     @ViewBuilder
     private var servingSizeSection: some View {
-        if isEditingMealItem {
-            Section {
-                DatePickerRow(
-                    selectedDate: $foodViewModel.selectedDate,
-                    isPresented: $foodViewModel.showDatePicker
-                )
-                
-                Label {
-                    Picker("Meal type", selection: $mealType) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Text(meal.rawValue)
-                                .tag(meal)
-                        }
+        Section {
+            DatePickerRow(
+                selectedDate: $foodViewModel.selectedDate,
+                isPresented: $foodViewModel.showDatePicker
+            )
+            
+            Label {
+                Picker("Meal type", selection: $mealType) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Text(meal.rawValue)
+                            .tag(meal)
                     }
-                } icon: {
-                    Image(systemName: "fork.knife")
-                        .foregroundStyle(.customGray)
                 }
-                .onChange(of: mealType) {
-                    amountFocused = nil
-                    foodViewModel.normalizeAmount()
-                }
+            } icon: {
+                Image(systemName: "fork.knife")
+                    .foregroundStyle(.customGray)
+            }
+            .onChange(of: mealType) {
+                amountFocused = nil
+                foodViewModel.normalizeAmount()
             }
         }
         

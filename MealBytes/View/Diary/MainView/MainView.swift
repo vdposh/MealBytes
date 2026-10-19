@@ -14,7 +14,7 @@ struct MainView: View {
     var body: some View {
         mainViewContentBody
             .navigationTitle("Diary")
-            .navigationSubtitle(mainViewModel.formattedDate())
+            .navigationSubtitle(mainViewModel.date.formattedWeekdayDate())
             .toolbarTitleDisplayMode(.inlineLarge)
             .safeAreaPadding(.top)
             .toolbar {

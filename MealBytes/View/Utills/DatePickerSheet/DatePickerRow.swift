@@ -17,12 +17,7 @@ struct DatePickerRow: View {
         } label: {
             LabeledContent {
                 HStack(spacing: 10) {
-                    Text(
-                        selectedDate.formatted(
-                            date: .long,
-                            time: .omitted
-                        )
-                    )
+                    Text(selectedDate.formattedWeekdayDate())
                     
                     Image(systemName: "chevron.right")
                         .font(.footnote)

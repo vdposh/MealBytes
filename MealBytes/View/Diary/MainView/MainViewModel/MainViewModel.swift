@@ -29,7 +29,6 @@ protocol MainViewModelProtocol {
         animated: Bool
     )
     func setSectionExpanded(for mealType: MealType, to isExpanded: Bool)
-    func formattedDate() -> String
     func resetMainState()
 }
 
@@ -563,18 +562,6 @@ final class MainViewModel: ObservableObject {
         date.formatted(.iso8601.year().month().day())
     }
     
-    func formattedDate() -> String {
-        if calendar.isDate(date, equalTo: Date(), toGranularity: .year) {
-            return date.formatted(
-                .dateTime.weekday(.wide).day().month(.wide)
-            )
-        } else {
-            return date.formatted(
-                .dateTime.weekday(.abbreviated).day().month(.wide).year()
-            )
-        }
-    }
-    
     private func handleDateChange(from oldDate: Date, to newDate: Date) {
         guard !calendar.isDate(oldDate, inSameDayAs: newDate) else { return }
         
@@ -619,31 +606,12 @@ final class MainViewModel: ObservableObject {
     
     // MARK: - Alert
     func formattedDateForAlert() -> String {
-        let calendar = calendar
-        
-        if calendar.isDate(date, inSameDayAs: Date()) {
-            return "today"
+        switch date.relativeDay {
+        case .none:
+            date.formatted(date: .long, time: .omitted)
+        default:
+            date.relativeDay.rawValue
         }
-        
-        if let yesterday = calendar.date(
-            byAdding: .day,
-            value: -1,
-            to: Date()
-        ),
-           calendar.isDate(date, inSameDayAs: yesterday) {
-            return "yesterday"
-        }
-        
-        if let tomorrow = calendar.date(
-            byAdding: .day,
-            value: 1,
-            to: Date()
-        ),
-           calendar.isDate(date, inSameDayAs: tomorrow) {
-            return "tomorrow"
-        }
-        
-        return date.formatted(date: .long, time: .omitted)
     }
     
     // MARK: - UI Helper
