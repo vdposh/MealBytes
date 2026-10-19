@@ -244,19 +244,22 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Display SearchView Data
     func displaySearchViewData(for mealType: MealType) {
-        favoriteFoods = bookmarksByType[mealType] ?? []
-        bookmarkedFoods = bookmarkedIdsByType[mealType] ?? []
-        foodMetadataDict = metadataByType[mealType] ?? [:]
-        
-        let allHistory = historyByType[mealType] ?? []
-        historyFoods = allHistory
-            .filter { !bookmarkedFoods.contains($0.searchFoodId) }
-        
-        selectedMealType = mealType
-        isLoading = false
-        
-        if query.isEmpty {
-            foods = favoriteFoods
+        Task { @MainActor in
+            favoriteFoods = bookmarksByType[mealType] ?? []
+            bookmarkedFoods = bookmarkedIdsByType[mealType] ?? []
+            foodMetadataDict = metadataByType[mealType] ?? [:]
+            
+            let allHistory = historyByType[mealType] ?? []
+            historyFoods = allHistory
+                .filter { !bookmarkedFoods.contains($0.searchFoodId) }
+            
+            selectedMealType = mealType
+            
+            isLoading = false
+            
+            if query.isEmpty {
+                foods = favoriteFoods
+            }
         }
     }
     
