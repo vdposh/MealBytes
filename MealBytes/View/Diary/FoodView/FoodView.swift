@@ -62,9 +62,6 @@ struct FoodView: View {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
             }
-            .onChange(of: mealType) {
-                foodViewModel.mealType = mealType
-            }
             .onChange(of: amountFocused) {
                 let isFocused = amountFocused == true
                 foodViewModel.handleAmountFocusChange(
@@ -165,6 +162,7 @@ struct FoodView: View {
                     .foregroundStyle(.customGray)
             }
             .onChange(of: mealType) {
+                foodViewModel.updateMealType(mealType)
                 amountFocused = nil
                 foodViewModel.normalizeAmount()
             }

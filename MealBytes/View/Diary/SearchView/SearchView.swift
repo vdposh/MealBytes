@@ -8,28 +8,22 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State private var mealType: MealType
     @State private var editModeState: EditMode = .inactive
     @Environment(\.dismiss) private var dismiss
-    
     @ObservedObject var searchViewModel: SearchViewModel
     
-    init(
-        searchViewModel: SearchViewModel,
-        mealType: MealType
-    ) {
+    init(searchViewModel: SearchViewModel) {
         self.searchViewModel = searchViewModel
-        self._mealType = State(initialValue: mealType)
     }
     
     var body: some View {
         SearchViewContent(
             editModeState: $editModeState,
             searchViewModel: searchViewModel,
-            mealType: mealType
+            mealType: searchViewModel.selectedMealType
         )
         .searchable(text: $searchViewModel.query)
-        .navigationTitle(mealType.rawValue)
+        .navigationTitle(searchViewModel.selectedMealType.rawValue)
         .toolbarTitleDisplayMode(.inline)
         .toolbarTitleMenu {
             mealTypePicker
@@ -38,9 +32,6 @@ struct SearchView: View {
             searchViewToolbar
         }
         .environment(\.editMode, $editModeState)
-        .onChange(of: mealType) {
-            searchViewModel.displaySearchViewData(for: mealType)
-        }
         .onDisappear {
             resetEditingState()
         }
@@ -48,10 +39,15 @@ struct SearchView: View {
     
     // MARK: - Toolbar
     private var mealTypePicker: some View {
-        Picker("Meal type", selection: $mealType) {
+        Picker(
+            "Meal type",
+            selection: Binding(
+                get: { searchViewModel.selectedMealType },
+                set: { searchViewModel.displaySearchViewData(for: $0) }
+            )
+        ) {
             ForEach(MealType.allCases, id: \.self) { meal in
-                Text(meal.rawValue)
-                    .tag(meal)
+                Text(meal.rawValue).tag(meal)
             }
         }
         .disabled(searchViewModel.isEditModeActive)

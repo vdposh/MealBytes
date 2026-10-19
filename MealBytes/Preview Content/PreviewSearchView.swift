@@ -13,10 +13,7 @@ struct PreviewSearchView {
         let searchViewModel = SearchViewModel(mainViewModel: mainViewModel)
         
         return NavigationStack {
-            SearchView(
-                searchViewModel: searchViewModel,
-                mealType: .breakfast
-            )
+            SearchView(searchViewModel: searchViewModel)
         }
     }
 }

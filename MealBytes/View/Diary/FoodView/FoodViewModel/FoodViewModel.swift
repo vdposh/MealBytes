@@ -282,6 +282,8 @@ final class FoodViewModel: ObservableObject {
     
     // MARK: - Bookmark Management
     func toggleBookmarkFoodView() async {
+        searchViewModel.displaySearchViewData(for: mealType)
+        
         await MainActor.run {
             isBookmarkFilled.toggle()
         }
@@ -328,6 +330,17 @@ final class FoodViewModel: ObservableObject {
                 appError = .network
             }
         }
+    }
+    
+    func updateBookmarkState() {
+        isBookmarkFilled = searchViewModel.isBookmarked(food, for: mealType)
+    }
+    
+    // MARK: - Change MealType
+    func updateMealType(_ newMealType: MealType) {
+        mealType = newMealType
+        updateBookmarkState()
+        searchViewModel.displaySearchViewData(for: newMealType)
     }
     
     // MARK: - Serving Selection and Amount Setting

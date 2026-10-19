@@ -22,6 +22,7 @@ protocol SearchViewModelProtocol {
     func displaySearchViewData(for mealType: MealType)
     func addToHistory(_ food: Food, for mealType: MealType) async
     func isBookmarkedSearchView(_ food: Food) -> Bool
+    func isBookmarked(_ food: Food, for mealType: MealType) -> Bool
     func triggerFoodAlert()
     func resetQuery()
 }
@@ -458,6 +459,11 @@ final class SearchViewModel: ObservableObject {
         Task {
             await saveBookmarkOrder()
         }
+    }
+    
+    func isBookmarked(_ food: Food, for mealType: MealType) -> Bool {
+        let bookmarked = bookmarkedIdsByType[mealType] ?? []
+        return bookmarked.contains(food.searchFoodId)
     }
     
     // MARK: - Add to History

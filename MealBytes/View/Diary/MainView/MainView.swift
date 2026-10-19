@@ -45,14 +45,11 @@ struct MainView: View {
                 GoalsView(goalsViewModel: mainViewModel.goalsViewModel)
             }
         }
-        .sheet(item: $mainViewModel.selectedMealType) { mealType in
+        .sheet(item: $mainViewModel.selectedMealType) { _ in
             if let searchViewModel = mainViewModel
                 .searchViewModel as? SearchViewModel {
                 NavigationStack {
-                    SearchView(
-                        searchViewModel: searchViewModel,
-                        mealType: mealType
-                    )
+                    SearchView(searchViewModel: searchViewModel)
                 }
             }
         }
