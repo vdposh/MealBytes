@@ -10,7 +10,6 @@
 		FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F22D8C7611006FCC12 /* FirebaseCore */; };
 		FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FBA176F42D8C7611006FCC12 /* FirebaseFirestore */; };
 		FBCF4DAC2D9819F30008E46B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FBCF4DAB2D9819F30008E46B /* FirebaseAuth */; };
-		FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = FBD6B6C32D79AFC000AE0FDC /* Moya */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +30,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBA176F32D8C7611006FCC12 /* FirebaseCore in Frameworks */,
-				FBD6B6C42D79AFC000AE0FDC /* Moya in Frameworks */,
 				FBA176F52D8C7611006FCC12 /* FirebaseFirestore in Frameworks */,
 				FBCF4DAC2D9819F30008E46B /* FirebaseAuth in Frameworks */,
 			);
@@ -84,7 +82,6 @@
 			);
 			name = MealBytes;
 			packageProductDependencies = (
-				FBD6B6C32D79AFC000AE0FDC /* Moya */,
 				FBA176F22D8C7611006FCC12 /* FirebaseCore */,
 				FBA176F42D8C7611006FCC12 /* FirebaseFirestore */,
 				FBCF4DAB2D9819F30008E46B /* FirebaseAuth */,
@@ -118,7 +115,6 @@
 			mainGroup = FBD6B67D2D79AF0700AE0FDC;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */,
 				FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -375,14 +371,6 @@
 				minimumVersion = 11.10.0;
 			};
 		};
-		FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Moya/Moya";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 15.0.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -400,11 +388,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FBA176F12D8C7611006FCC12 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
-		};
-		FBD6B6C32D79AFC000AE0FDC /* Moya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FBD6B6C22D79AFC000AE0FDC /* XCRemoteSwiftPackageReference "Moya" */;
-			productName = Moya;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

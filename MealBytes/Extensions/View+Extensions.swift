@@ -67,8 +67,10 @@ extension View {
                     action()
                 } label: {
                     Text("Try Again")
+                        .fontWeight(.medium)
+                        .padding(6)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glassProminent)
             default:
                 EmptyView()
             }

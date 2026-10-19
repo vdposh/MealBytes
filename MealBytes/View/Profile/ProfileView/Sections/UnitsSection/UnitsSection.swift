@@ -14,7 +14,7 @@ struct UnitsSection: View {
         Section {
             EnergyUnitView(profileViewModel: profileViewModel)
         } header: {
-            Text("Units")
+            Text("Unit")
         }
     }
 }
