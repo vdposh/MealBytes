@@ -1,5 +1,5 @@
 //
-//  NutrientLabelRow.swift
+//  GoalsNutrientLabelRow.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 25.09.2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NutrientLabelRow: View {
+struct GoalsNutrientLabelRow: View {
     let type: NutrientType
     let value: String
     var unit: UnitNutrients? = nil

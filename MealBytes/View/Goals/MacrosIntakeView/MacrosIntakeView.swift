@@ -13,27 +13,27 @@ struct MacrosIntakeView: View {
     
     var body: some View {
         Section {
-            NutrientLabelRow(
+            GoalsNutrientLabelRow(
                 type: .calories,
                 value: macrosIntakeViewModel.displayCalories,
                 unit: macrosIntakeViewModel.energyUnit.unitNutrient
             )
             
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .fat,
                 text: $macrosIntakeViewModel.fat,
                 focus: $focus,
                 focusCase: .fat
             )
             
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .carbohydrate,
                 text: $macrosIntakeViewModel.carbohydrate,
                 focus: $focus,
                 focusCase: .carbohydrate
             )
             
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .protein,
                 text: $macrosIntakeViewModel.protein,
                 focus: $focus,

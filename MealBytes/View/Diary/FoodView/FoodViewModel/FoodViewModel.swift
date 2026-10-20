@@ -395,7 +395,7 @@ final class FoodViewModel: ObservableObject {
     }
     
     func formattedMealText(for serving: Serving, amount: String) -> String {
-        MealTextFormatter.format(
+        MealItemTextFormatter.format(
             amountValue: amount.doubleValue ?? 0,
             measurement: serving.measurementDescription,
             servingSize: serving.metricServingAmount,

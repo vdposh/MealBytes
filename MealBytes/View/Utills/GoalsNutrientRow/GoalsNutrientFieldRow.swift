@@ -1,5 +1,5 @@
 //
-//  NutrientFieldRow.swift
+//  GoalsNutrientFieldRow.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 25.09.2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NutrientFieldRow<Focus: Hashable>: View {
+struct GoalsNutrientFieldRow<Focus: Hashable>: View {
     let type: NutrientType
     @Binding var text: String
     let focus: FocusState<Focus?>.Binding

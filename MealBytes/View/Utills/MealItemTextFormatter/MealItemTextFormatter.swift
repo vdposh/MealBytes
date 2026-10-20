@@ -1,5 +1,5 @@
 //
-//  MealTextFormatter.swift
+//  MealItemTextFormatter.swift
 //  MealBytes
 //
 //  Created by Vlad Posherstnik on 11/10/2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum MealTextFormatter {
+enum MealItemTextFormatter {
     static func format(
         amountValue: Double,
         measurement: String,

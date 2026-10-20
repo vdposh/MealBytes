@@ -20,7 +20,7 @@ struct CustomIntakeView: View {
     
     var body: some View {
         Section {
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .calories,
                 text: $customIntakeViewModel.calories,
                 focus: $focus,
@@ -29,21 +29,21 @@ struct CustomIntakeView: View {
                 unit: customIntakeViewModel.energyUnit.unitNutrient
             )
             
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .fat,
                 text: $customIntakeViewModel.fat,
                 focus: $focus,
                 focusCase: .fat
             )
             
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .carbohydrate,
                 text: $customIntakeViewModel.carbohydrate,
                 focus: $focus,
                 focusCase: .carbohydrate
             )
             
-            NutrientFieldRow(
+            GoalsNutrientFieldRow(
                 type: .protein,
                 text: $customIntakeViewModel.protein,
                 focus: $focus,

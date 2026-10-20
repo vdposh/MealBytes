@@ -16,7 +16,7 @@ struct FoodDetailView: View {
         if let metadata = foodMetadata {
             FoodItemView(
                 foodName: food.searchFoodName,
-                formattedText: MealTextFormatter.format(
+                formattedText: MealItemTextFormatter.format(
                     amountValue: Double(metadata.amount) ?? 0,
                     measurement: metadata.measurementDescription,
                     servingSize: metadata.metricServingAmount,

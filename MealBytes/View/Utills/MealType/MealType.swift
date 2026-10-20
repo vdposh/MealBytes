@@ -14,7 +14,9 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     case dinner = "Dinner"
     case snacks = "Snacks"
     
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 }
 
 #Preview {

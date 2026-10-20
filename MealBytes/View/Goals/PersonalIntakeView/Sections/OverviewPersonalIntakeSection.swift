@@ -16,7 +16,7 @@ struct OverviewPersonalIntakeSection: View {
                 [NutrientType.calories, .fat, .carbohydrate, .protein],
                 id: \.self
             ) { type in
-                NutrientLabelRow(
+                GoalsNutrientLabelRow(
                     type: type,
                     value: personalIntakeViewModel.macroValues[type] ?? "0",
                     unit: type == .calories
