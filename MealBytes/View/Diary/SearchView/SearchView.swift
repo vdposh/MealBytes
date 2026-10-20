@@ -32,6 +32,10 @@ struct SearchView: View {
         .toolbar {
             searchViewToolbar
         }
+        .scrollEdgeEffectStyle(
+            searchViewModel.isEditModeActive ? .soft : .automatic,
+            for: .bottom
+        )
         .onDisappear {
             resetEditingState()
         }

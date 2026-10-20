@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SearchViewContent: View {
-    @State private var showClearAlert = false
     @Binding var editModeState: EditMode
     @Environment(\.isSearching) private var isSearching
     
@@ -110,14 +109,7 @@ struct SearchViewContent: View {
                             }
                         }
                     } header: {
-                        HeaderButtonView(
-                            title: "Recent",
-                            actionTitle: "Clear",
-                            isEdit: !searchViewModel.isEditModeActive &&
-                            !isSearching
-                        ) {
-                            showClearAlert = true
-                        }
+                        Text("Recent")
                     }
                     .selectionDisabled(
                         !searchViewModel.isEditModeActive ||
@@ -166,20 +158,9 @@ struct SearchViewContent: View {
             .disabled(searchViewModel.showRemoveDialog)
             .onChange(of: searchViewModel.selectedItems) {
                 withAnimation {
-                    searchViewModel.selectedItems = searchViewModel
-                        .selectedItems
+                    searchViewModel
+                        .selectedItems = searchViewModel.selectedItems
                 }
-            }
-            .alert("Clear Recent", isPresented: $showClearAlert) {
-                Button(role: .destructive) {
-                    Task {
-                        await searchViewModel.clearHistory()
-                    }
-                } label: {
-                    Text("Clear")
-                }
-            } message: {
-                Text("All recent items will be removed.")
             }
         }
     }

@@ -49,7 +49,6 @@ final class SearchViewModel: ObservableObject {
     @Published var showMealType: Bool = false
     @Published var showAllHistory = false
     @Published var showRemoveDialog: Bool = false
-    @Published var showClearAlert: Bool = false
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     
@@ -515,25 +514,6 @@ final class SearchViewModel: ObservableObject {
                 try await firestore.addHistoryFirestore(history, for: mealType)
             } catch {
                 Logger.search.error("addHistoryFirestore failed: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    // MARK: - Clear History
-    func clearHistory() async {
-        let original = historyFoods
-        let mealType = selectedMealType
-        
-        await MainActor.run {
-            historyFoods.removeAll()
-            historyByType[mealType] = []
-        }
-        
-        do {
-            try await firestore.deleteHistoryFirestore(for: mealType)
-        } catch {
-            await MainActor.run {
-                historyFoods = original
             }
         }
     }
