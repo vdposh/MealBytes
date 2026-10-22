@@ -100,16 +100,12 @@ struct AccountView: View {
             }
             .disabled(!profileViewModel.isDeleteConfirmed)
             
-            Button(role: .cancel) { }
-            
         case .signOut:
             Button(profileViewModel.destructiveTitle, role: .destructive) {
                 Task {
                     await profileViewModel.handleProfileAlertAction()
                 }
             }
-            
-            Button(role: .cancel) { }
             
         default:
             EmptyView()

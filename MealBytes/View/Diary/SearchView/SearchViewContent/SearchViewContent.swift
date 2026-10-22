@@ -9,8 +9,6 @@ import SwiftUI
 
 struct SearchViewContent: View {
     @Binding var editModeState: EditMode
-    @Environment(\.isSearching) private var isSearching
-    
     @ObservedObject var searchViewModel: SearchViewModel
     
     let mealType: MealType
@@ -26,10 +24,16 @@ struct SearchViewContent: View {
                 searchViewModel.performSearch(searchViewModel.query)
             }
             
-        case .empty:
+        case .emptyEntries:
+            contentUnavailableView(for: .noEntries, mealType: mealType) {}
+            
+        case .emptyBookmarks:
             contentUnavailableView(for: .noBookmarks, mealType: mealType) {
                 searchViewModel.performSearch(searchViewModel.query)
             }
+            
+        case .emptyRecent:
+            contentUnavailableView(for: .noRecent, mealType: mealType) {}
             
         case .results:
             List(
@@ -38,83 +42,59 @@ struct SearchViewContent: View {
                 : .constant([])
             ) {
                 // MARK: - Bookmarks Section
-                let filteredBookmarks = searchViewModel
-                    .favoriteFoods.filter { food in
-                        let query = searchViewModel.debouncedQuery
-                        if query.isEmpty {
-                            return true
-                        } else {
-                            return food.searchFoodName
-                                .lowercased()
-                                .contains(query.lowercased())
-                        }
-                    }
-                
-                if !filteredBookmarks.isEmpty {
-                    Section {
-                        ForEach(
-                            filteredBookmarks,
-                            id: \.searchFoodId
-                        ) { food in
-                            foodRow(for: food)
-                                .moveDisabled(
-                                    !searchViewModel.isEditModeActive
-                                )
-                        }
-                        .onMove { indices, newOffset in
-                            searchViewModel.moveBookmarks(
-                                from: indices,
-                                to: newOffset,
-                                in: filteredBookmarks
-                            )
-                        }
-                    } header: {
-                        HeaderButtonView(
-                            title: "Bookmarks",
-                            isEdit: !searchViewModel.isEditModeActive &&
-                            !isSearching
-                        ) {
-                            withAnimation {
-                                searchViewModel.editingState = .active
+                if searchViewModel.selectedSegment == .bookmarks ||
+                    !searchViewModel.debouncedQuery.isEmpty {
+                    let filteredBookmarks = searchViewModel
+                        .favoriteFoods.filter { food in
+                            let query = searchViewModel.debouncedQuery
+                            if query.isEmpty {
+                                return true
+                            } else {
+                                return food.searchFoodName
+                                    .lowercased()
+                                    .contains(query.lowercased())
                             }
-                            
-                            DispatchQueue.main
-                                .asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation {
-                                        editModeState = .active
-                                    }
-                                }
                         }
+                    
+                    if !filteredBookmarks.isEmpty {
+                        Section {
+                            ForEach(
+                                filteredBookmarks,
+                                id: \.searchFoodId
+                            ) { food in
+                                foodRow(for: food)
+                                    .moveDisabled(
+                                        !searchViewModel.isEditModeActive
+                                    )
+                            }
+                            .onMove { indices, newOffset in
+                                searchViewModel.moveBookmarks(
+                                    from: indices,
+                                    to: newOffset,
+                                    in: filteredBookmarks
+                                )
+                            }
+                        } header: {
+                            Text("Bookmarks")
+                        }
+                        .animation(nil, value: searchViewModel.foods)
                     }
-                    .animation(nil, value: searchViewModel.foods)
                 }
                 
                 // MARK: - History Section
-                if !searchViewModel.historyFoods.isEmpty &&
-                    searchViewModel.debouncedQuery.isEmpty &&
-                    !searchViewModel.isEditModeActive {
+                if searchViewModel.selectedSegment == .recent,
+                   !searchViewModel.historyFoods.isEmpty,
+                   searchViewModel.debouncedQuery.isEmpty {
                     Section {
                         ForEach(
-                            searchViewModel.displayedHistoryFoods,
+                            searchViewModel.historyFoods,
                             id: \.searchFoodId
                         ) { food in
                             foodRow(for: food)
-                        }
-                        
-                        if searchViewModel.canShowMoreHistory {
-                            Button {
-                                searchViewModel.showAllHistory = true
-                            } label: {
-                                Text("More")
-                            }
                         }
                     } header: {
                         Text("Recent")
                     }
-                    .selectionDisabled(
-                        !searchViewModel.isEditModeActive ||
-                        searchViewModel.isEditModeActive
-                    )
                 }
                 
                 // MARK: - Results Section
@@ -162,6 +142,14 @@ struct SearchViewContent: View {
                         .selectedItems = searchViewModel.selectedItems
                 }
             }
+            .onChange(of: editModeState) {
+                if editModeState.isEditing &&
+                    !searchViewModel.isEditModeActive {
+                    withAnimation {
+                        searchViewModel.editingState = .active
+                    }
+                }
+            }
         }
     }
     
@@ -195,11 +183,7 @@ struct SearchViewContent: View {
                 )
             }
             .swipeActions {
-                Button(
-                    role: searchViewModel.isBookmarkedSearchView(food)
-                    ? .destructive
-                    : nil
-                ) {
+                Button(role: .destructive) {
                     Task {
                         await searchViewModel
                             .toggleBookmarkSearchView(for: food)

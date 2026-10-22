@@ -32,12 +32,13 @@ struct SearchView: View {
         .toolbar {
             searchViewToolbar
         }
-        .scrollEdgeEffectStyle(
-            searchViewModel.isEditModeActive ? .soft : .automatic,
-            for: .bottom
-        )
+        .safeAreaBar(edge: .top) {
+            segmentPickerView
+        }
+        .scrollEdgeEffectStyle(.soft, for: .top)
+        .scrollEdgeEffectHidden(for: .bottom)
         .onDisappear {
-            resetEditingState()
+            exitEditMode()
         }
     }
     
@@ -63,7 +64,7 @@ struct SearchView: View {
         case .active:
             ToolbarItem {
                 Button(role: .confirm) {
-                    resetEditingState()
+                    exitEditMode()
                 }
             }
             
@@ -78,7 +79,7 @@ struct SearchView: View {
                             )
                         }
                     } label: {
-                        Text("Select all")
+                        Text("Select All")
                             .fontWeight(.medium)
                     }
                 } else {
@@ -87,7 +88,7 @@ struct SearchView: View {
                             searchViewModel.selectedItems.removeAll()
                         }
                     } label: {
-                        Text("Cancel select")
+                        Text("Deselect All")
                             .fontWeight(.medium)
                     }
                 }
@@ -125,7 +126,7 @@ struct SearchView: View {
                             idRemove.contains($0.searchFoodId)
                         }
                         
-                        resetEditingState()
+                        exitEditMode()
                         
                         Task {
                             await searchViewModel
@@ -138,6 +139,18 @@ struct SearchView: View {
             ToolbarSpacer(.flexible, placement: .bottomBar)
             
         case .inactive:
+            if searchViewModel.selectedSegment == .bookmarks &&
+                !searchViewModel.favoriteFoods.isEmpty {
+                ToolbarItem {
+                    Button {
+                        enterEditMode()
+                    } label: {
+                        Text("Select")
+                            .fontWeight(.medium)
+                    }
+                }
+            }
+            
             ToolbarItem(placement: .cancellationAction) {
                 Button(role: .close) {
                     dismiss()
@@ -151,13 +164,54 @@ struct SearchView: View {
         }
     }
     
-    private func resetEditingState() {
+    // MARK: - Segment Picker
+    @ViewBuilder
+    private var segmentPickerView: some View {
+        if searchViewModel.query.isEmpty &&
+            searchViewModel.debouncedQuery.isEmpty &&
+            (
+                !searchViewModel.favoriteFoods.isEmpty ||
+                !searchViewModel.historyFoods.isEmpty
+            ) {
+            Picker(
+                "Section",
+                selection: $searchViewModel.selectedSegment
+            ) {
+                ForEach(
+                    SearchViewListSegment.allCases,
+                    id: \.self
+                ) { segment in
+                    Text(segment.rawValue).tag(segment)
+                }
+            }
+            .pickerStyle(.segmented)
+            .disabled(searchViewModel.isEditModeActive)
+            .padding(.horizontal)
+            .padding(.top, 6)
+            .padding(.bottom, 4)
+        }
+    }
+    
+    // MARK: - UI Helper
+    private func exitEditMode() {
         withAnimation {
             searchViewModel.editingState = .inactive
         }
         
         searchViewModel.selectedItems.removeAll()
         editModeState = .inactive
+    }
+    
+    private func enterEditMode() {
+        withAnimation {
+            searchViewModel.editingState = .active
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation {
+                editModeState = .active
+            }
+        }
     }
 }
 

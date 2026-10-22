@@ -24,7 +24,7 @@ protocol SearchViewModelProtocol {
     func isBookmarkedSearchView(_ food: Food) -> Bool
     func isBookmarked(_ food: Food, for mealType: MealType) -> Bool
     func triggerFoodAlert()
-    func resetQuery()
+    func resetSearchView()
 }
 
 final class SearchViewModel: ObservableObject {
@@ -37,6 +37,7 @@ final class SearchViewModel: ObservableObject {
     @Published var appError: AppError?
     @Published var selectedMealType: MealType = .breakfast
     @Published var editingState: EditingState = .inactive
+    @Published var selectedSegment: SearchViewListSegment = .bookmarks
     @Published var debouncedQuery: String = ""
     @Published var query: String = "" {
         didSet {
@@ -47,7 +48,6 @@ final class SearchViewModel: ObservableObject {
     }
     @Published var isLoading: Bool = false
     @Published var showMealType: Bool = false
-    @Published var showAllHistory = false
     @Published var showRemoveDialog: Bool = false
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
@@ -58,7 +58,6 @@ final class SearchViewModel: ObservableObject {
     
     private var historyByType: [MealType: [Food]] = [:]
     private let maxHistoryCount = 12
-    private let historyPreviewLimit = 5
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
@@ -86,15 +85,32 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Search
     private func setupBindingsSearchView() {
         $query
+            .removeDuplicates()
+            .sink { [weak self] query in
+                guard let self else { return }
+                
+                if query.isEmpty {
+                    self.debouncedQuery = ""
+                    return
+                }
+                
+                if self.debouncedQuery.isEmpty {
+                    self.debouncedQuery = query
+                    self.currentPage = 0
+                    self.performSearch(query)
+                }
+            }
+            .store(in: &cancellables)
+        
+        $query
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] query in
-                self?.debouncedQuery = query
-                
-                if !query.isEmpty {
-                    self?.currentPage = 0
-                    self?.performSearch(query)
-                }
+                guard let self, !query.isEmpty,
+                      self.debouncedQuery != query else { return }
+                self.debouncedQuery = query
+                self.currentPage = 0
+                self.performSearch(query)
             }
             .store(in: &cancellables)
     }
@@ -244,6 +260,11 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    func resetSearchView() {
+        query = ""
+        selectedSegment = .bookmarks
+    }
+    
     // MARK: - Display SearchView Data
     func displaySearchViewData(for mealType: MealType) {
         Task { @MainActor in
@@ -263,12 +284,10 @@ final class SearchViewModel: ObservableObject {
                 foods = favoriteFoods
             }
             
-            showAllHistory = false
+            if favoriteFoods.isEmpty && historyFoods.isEmpty {
+                selectedSegment = .bookmarks
+            }
         }
-    }
-    
-    func resetQuery() {
-        query = ""
     }
     
     // MARK: - Save Bookmarks
@@ -366,7 +385,9 @@ final class SearchViewModel: ObservableObject {
                 bookmarksByType[mealType] = favoriteFoods
                 bookmarkedIdsByType[mealType] = bookmarkedFoods
                 
-                displaySearchViewData(for: mealType)
+                let allHistory = historyByType[mealType] ?? []
+                historyFoods = allHistory
+                    .filter { !bookmarkedFoods.contains($0.searchFoodId) }
                 
                 if query.isEmpty {
                     foods = favoriteFoods
@@ -518,17 +539,6 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    // MARK: - History Limit
-    var displayedHistoryFoods: [Food] {
-        showAllHistory || historyFoods.count <= historyPreviewLimit
-        ? historyFoods
-        : Array(historyFoods.prefix(historyPreviewLimit))
-    }
-    
-    var canShowMoreHistory: Bool {
-        !showAllHistory && historyFoods.count > historyPreviewLimit
-    }
-    
     // MARK: - Pagination
     enum PageDirection {
         case next
@@ -555,7 +565,42 @@ final class SearchViewModel: ObservableObject {
         performSearch(query)
     }
     
-    // MARK: - UI Helper
+    // MARK: - State
+    var contentState: SearchContentState {
+        if isLoading {
+            return .loading
+        }
+        if let error = appError {
+            return .error(error)
+        }
+        
+        if !debouncedQuery.isEmpty {
+            return foods.isEmpty ? .error(.results) : .results
+        }
+        
+        if favoriteFoods.isEmpty && historyFoods.isEmpty {
+            return .emptyEntries
+        }
+        
+        switch selectedSegment {
+        case .bookmarks:
+            return favoriteFoods.isEmpty ? .emptyBookmarks : .results
+        case .recent:
+            return historyFoods.isEmpty ? .emptyRecent : .results
+        }
+    }
+    
+    // MARK: - Error
+    enum SearchContentState: Equatable {
+        case loading
+        case error(AppError)
+        case emptyEntries
+        case emptyBookmarks
+        case emptyRecent
+        case results
+    }
+    
+    // MARK: - Alert
     func triggerFoodAlert() {
         Task { @MainActor in
             guard !isAlertInProgress else {
@@ -578,18 +623,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    var contentState: SearchContentState {
-        if isLoading {
-            .loading
-        } else if let error = appError {
-            .error(error)
-        } else if foods.isEmpty && historyFoods.isEmpty {
-            .empty
-        } else {
-            .results
-        }
-    }
-    
+    // MARK: - UI Helper
     var energyUnit: EnergyUnit {
         mainViewModel.energyUnit
     }
@@ -600,10 +634,10 @@ final class SearchViewModel: ObservableObject {
     
     var selectionStatusText: String {
         selectedItems.isEmpty
-        ? "Select bookmarks"
+        ? "Select Bookmarks"
         : selectedItems.count == 1
-        ? "1 Bookmark Selected"
-        : "\(selectedItems.count) Bookmarks Selected"
+        ? "1 Bookmark"
+        : "\(selectedItems.count) Bookmarks"
     }
     
     var removeDialogMessage: String {
@@ -632,13 +666,11 @@ final class SearchViewModel: ObservableObject {
         case inactive
         case active
     }
-    
-    enum SearchContentState: Equatable {
-        case loading
-        case error(AppError)
-        case empty
-        case results
-    }
+}
+
+enum SearchViewListSegment: String, CaseIterable {
+    case bookmarks = "Bookmarks"
+    case recent = "Recently Added"
 }
 
 extension SearchViewModel: SearchViewModelProtocol {}

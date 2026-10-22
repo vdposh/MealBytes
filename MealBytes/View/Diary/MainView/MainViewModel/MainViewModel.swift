@@ -629,7 +629,7 @@ final class MainViewModel: ObservableObject {
     func navigateToSearch(for mealType: MealType) {
         selectedMealType = mealType
         searchViewModel.displaySearchViewData(for: mealType)
-        searchViewModel.resetQuery()
+        searchViewModel.resetSearchView()
     }
     
     func clearDayAlert(for date: Date) -> Alert {

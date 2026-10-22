@@ -16,7 +16,9 @@ enum AppError: Error, Identifiable, LocalizedError, Equatable {
     case networkRefresh
     case decoding
     case results
+    case noEntries
     case noBookmarks
+    case noRecent
     case disconnected
     
     var errorDescription: String {
@@ -30,8 +32,12 @@ enum AppError: Error, Identifiable, LocalizedError, Equatable {
             "There was a problem reading the data. Ensure your connection is stable and try again later."
         case .results:
             ""
+        case .noEntries:
+            "No foods yet"
         case .noBookmarks:
             "No bookmarks yet"
+        case .noRecent:
+            "No recently added foods yet"
         case .disconnected:
             "Account disconnected. Log out and log back in to restore data sync."
         }

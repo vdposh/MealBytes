@@ -500,7 +500,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         guard let data = snapshot.data(),
               let email = data["email"] as? String,
               let isLoggedIn = data["isLoggedIn"] as? Bool else {
-            throw AppError.decoding
+            return ("", false)
         }
         
         return (email, isLoggedIn)
