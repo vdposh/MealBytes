@@ -37,7 +37,7 @@ struct SearchViewContent: View {
             
         case .results:
             List(
-                selection: searchViewModel.isEditModeActive
+                selection: editModeState.isEditing
                 ? $searchViewModel.selectedItems
                 : .constant([])
             ) {
@@ -63,9 +63,7 @@ struct SearchViewContent: View {
                                 id: \.searchFoodId
                             ) { food in
                                 foodRow(for: food)
-                                    .moveDisabled(
-                                        !searchViewModel.isEditModeActive
-                                    )
+                                    .moveDisabled(!editModeState.isEditing)
                             }
                             .onMove { indices, newOffset in
                                 searchViewModel.moveBookmarks(
@@ -77,7 +75,6 @@ struct SearchViewContent: View {
                         } header: {
                             Text("Bookmarks")
                         }
-                        .animation(nil, value: searchViewModel.foods)
                     }
                 }
                 
@@ -120,11 +117,9 @@ struct SearchViewContent: View {
                         } header: {
                             Text("Results")
                         }
-                        .animation(nil, value: searchViewModel.foods)
                     }
                 }
             }
-            .animation(nil, value: searchViewModel.editingState)
             .scrollDismissesKeyboard(.immediately)
             .overlay {
                 FoodAddedAlertView(
@@ -136,35 +131,9 @@ struct SearchViewContent: View {
                 )
             }
             .disabled(searchViewModel.showRemoveDialog)
-            .onChange(of: searchViewModel.selectedItems) {
-                withAnimation {
-                    searchViewModel
-                        .selectedItems = searchViewModel.selectedItems
-                }
-            }
-            .onChange(of: editModeState) {
-                if editModeState.isEditing &&
-                    !searchViewModel.isEditModeActive {
-                    withAnimation {
-                        searchViewModel.editingState = .active
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: - Food Row
-    @ViewBuilder
-    private func foodRow(for food: Food) -> some View {
-        if searchViewModel.isEditModeActive {
-            FoodDetailView(
-                food: food,
-                foodMetadata: searchViewModel
-                    .foodMetadataDict[food.searchFoodId],
-                energyUnit: searchViewModel.energyUnit
-            )
-        } else {
-            NavigationLink {
+            .navigationDestination(
+                item: $searchViewModel.selectedFood
+            ) { food in
                 FoodView(
                     mealType: mealType,
                     food: food,
@@ -174,43 +143,62 @@ struct SearchViewContent: View {
                     measurementDescription: "",
                     isEditingMealItem: false
                 )
-            } label: {
-                FoodDetailView(
-                    food: food,
-                    foodMetadata: searchViewModel
-                        .foodMetadataDict[food.searchFoodId],
-                    energyUnit: searchViewModel.energyUnit
-                )
             }
-            .swipeActions {
-                Button(role: .destructive) {
-                    Task {
-                        await searchViewModel
-                            .toggleBookmarkSearchView(for: food)
-                    }
-                } label: {
-                    Label {
-                        Text(
-                            searchViewModel
-                                .isBookmarkedSearchView(food)
-                            ? "Remove bookmark"
-                            : "Add bookmark"
-                        )
-                    } icon: {
-                        Image(
-                            systemName: searchViewModel
-                                .isBookmarkedSearchView(food)
-                            ? "bookmark.slash"
-                            : "bookmark"
-                        )
-                    }
+            .onChange(of: searchViewModel.selectedItems) {
+                withAnimation {
+                    searchViewModel
+                        .selectedItems = searchViewModel.selectedItems
                 }
-                .tint(
-                    searchViewModel.isBookmarkedSearchView(food)
-                    ? .red
-                    : .accent
-                )
             }
+            .onChange(of: editModeState) {
+                withAnimation {
+                    searchViewModel.isEditingActive = editModeState.isEditing
+                }
+            }
+        }
+    }
+    
+    // MARK: - Food Row
+    private func foodRow(for food: Food) -> some View {
+        Button {
+            searchViewModel.selectedFood = food
+        } label: {
+            FoodDetailView(
+                food: food,
+                foodMetadata: searchViewModel
+                    .foodMetadataDict[food.searchFoodId],
+                energyUnit: searchViewModel.energyUnit,
+                showChevron: !editModeState.isEditing
+            )
+        }
+        .swipeActions {
+            Button(role: .destructive) {
+                Task {
+                    await searchViewModel
+                        .toggleBookmarkSearchView(for: food)
+                }
+            } label: {
+                Label {
+                    Text(
+                        searchViewModel
+                            .isBookmarkedSearchView(food)
+                        ? "Remove bookmark"
+                        : "Add bookmark"
+                    )
+                } icon: {
+                    Image(
+                        systemName: searchViewModel
+                            .isBookmarkedSearchView(food)
+                        ? "bookmark.slash"
+                        : "bookmark"
+                    )
+                }
+            }
+            .tint(
+                searchViewModel.isBookmarkedSearchView(food)
+                ? .red
+                : .accent
+            )
         }
     }
     

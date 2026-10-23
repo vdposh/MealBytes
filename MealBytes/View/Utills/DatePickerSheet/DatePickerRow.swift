@@ -18,13 +18,14 @@ struct DatePickerRow: View {
             LabeledContent {
                 HStack(spacing: 10) {
                     Text(selectedDate.formattedWeekdayDate())
+                        .lineLimit(1)
                     
                     Image(systemName: "chevron.right")
                         .font(.footnote)
                         .fontWeight(.bold)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(Color(.placeholderText))
+                        .padding(.trailing, 2)
                 }
-                .padding(.trailing, 2)
             } label: {
                 Label {
                     Text("Date")

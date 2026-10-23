@@ -35,9 +35,9 @@ final class SearchViewModel: ObservableObject {
     @Published var foodMetadataDict: [Int: FoodMetadata] = [:]
     @Published var selectedItems = Set<Food.ID>()
     @Published var appError: AppError?
+    @Published var selectedFood: Food?
     @Published var selectedMealType: MealType = .breakfast
-    @Published var editingState: EditingState = .inactive
-    @Published var selectedSegment: SearchViewListSegment = .bookmarks
+    @Published var selectedSegment: ListSegment = .bookmarks
     @Published var debouncedQuery: String = ""
     @Published var query: String = "" {
         didSet {
@@ -49,6 +49,7 @@ final class SearchViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var showMealType: Bool = false
     @Published var showRemoveDialog: Bool = false
+    @Published var isEditingActive = false
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     
@@ -632,6 +633,10 @@ final class SearchViewModel: ObservableObject {
         return !query.isEmpty && contentState == .results
     }
     
+    var navigationSubtitleText: String {
+        isEditingActive ? selectionStatusText : ""
+    }
+    
     var selectionStatusText: String {
         selectedItems.isEmpty
         ? "Select Bookmarks"
@@ -641,36 +646,17 @@ final class SearchViewModel: ObservableObject {
     }
     
     var removeDialogMessage: String {
-        selectedItems.count == 1
-        ? "The selected bookmark will be removed from favorites."
-        : "The selected bookmarks will be removed from favorites."
+        "The selected \(selectedItems.count == 1 ? "bookmark" : "bookmarks") will be removed from favorites."
     }
     
     var removeDialogTitle: String {
-        let count = selectedItems.count
-        
-        return count == 1
-        ? "Remove bookmark"
-        : "Remove \(count) bookmarks"
+        "Remove \(selectedItems.count == 1 ? "bookmark" : "\(selectedItems.count) bookmarks")"
     }
     
-    var canEditMealType: Bool {
-        return !isLoading && !foods.isEmpty
+    enum ListSegment: String, CaseIterable {
+        case bookmarks = "Bookmarks"
+        case recent = "Recently Added"
     }
-    
-    var isEditModeActive: Bool {
-        editingState == .active
-    }
-    
-    enum EditingState {
-        case inactive
-        case active
-    }
-}
-
-enum SearchViewListSegment: String, CaseIterable {
-    case bookmarks = "Bookmarks"
-    case recent = "Recently Added"
 }
 
 extension SearchViewModel: SearchViewModelProtocol {}

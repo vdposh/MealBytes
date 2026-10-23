@@ -25,10 +25,8 @@ struct SearchView: View {
         .searchable(text: $searchViewModel.query)
         .environment(\.editMode, $editModeState)
         .navigationTitle(searchViewModel.selectedMealType.rawValue)
+        .navigationSubtitle(searchViewModel.navigationSubtitleText)
         .toolbarTitleDisplayMode(.inline)
-        .toolbarTitleMenu {
-            mealTypePicker
-        }
         .toolbar {
             searchViewToolbar
         }
@@ -43,25 +41,9 @@ struct SearchView: View {
     }
     
     // MARK: - Toolbar
-    private var mealTypePicker: some View {
-        Picker(
-            "Meal type",
-            selection: Binding(
-                get: { searchViewModel.selectedMealType },
-                set: { searchViewModel.displaySearchViewData(for: $0) }
-            )
-        ) {
-            ForEach(MealType.allCases, id: \.self) { meal in
-                Text(meal.rawValue).tag(meal)
-            }
-        }
-        .disabled(searchViewModel.isEditModeActive)
-    }
-    
     @ToolbarContentBuilder
     private var searchViewToolbar: some ToolbarContent {
-        switch searchViewModel.editingState {
-        case .active:
+        if searchViewModel.isEditingActive {
             ToolbarItem {
                 Button(role: .confirm) {
                     exitEditMode()
@@ -94,13 +76,6 @@ struct SearchView: View {
                 }
             }
             
-            ToolbarItem(placement: .status) {
-                Text(searchViewModel.selectionStatusText)
-                    .fixedSize()
-                    .transaction { $0.animation = nil }
-            }
-            .sharedBackgroundVisibility(.hidden)
-            
             ToolbarItem(placement: .bottomBar) {
                 Button(role: .destructive) {
                     searchViewModel.showRemoveDialog = true
@@ -109,7 +84,7 @@ struct SearchView: View {
                 }
                 .transaction { $0.animation = nil }
                 .disabled(
-                    !searchViewModel.isEditModeActive ||
+                    !editModeState.isEditing ||
                     searchViewModel.selectedItems.isEmpty
                 )
                 .confirmationDialog(
@@ -137,8 +112,7 @@ struct SearchView: View {
             }
             
             ToolbarSpacer(.flexible, placement: .bottomBar)
-            
-        case .inactive:
+        } else {
             if searchViewModel.selectedSegment == .bookmarks &&
                 !searchViewModel.favoriteFoods.isEmpty {
                 ToolbarItem {
@@ -161,6 +135,24 @@ struct SearchView: View {
             }
             
             DefaultToolbarItem(kind: .search, placement: .bottomBar)
+            
+            ToolbarTitleMenu {
+                mealTypePicker
+            }
+        }
+    }
+    
+    private var mealTypePicker: some View {
+        Picker(
+            "Meal type",
+            selection: Binding(
+                get: { searchViewModel.selectedMealType },
+                set: { searchViewModel.displaySearchViewData(for: $0) }
+            )
+        ) {
+            ForEach(MealType.allCases, id: \.self) { meal in
+                Text(meal.rawValue).tag(meal)
+            }
         }
     }
     
@@ -178,14 +170,14 @@ struct SearchView: View {
                 selection: $searchViewModel.selectedSegment
             ) {
                 ForEach(
-                    SearchViewListSegment.allCases,
+                    SearchViewModel.ListSegment.allCases,
                     id: \.self
                 ) { segment in
                     Text(segment.rawValue).tag(segment)
                 }
             }
             .pickerStyle(.segmented)
-            .disabled(searchViewModel.isEditModeActive)
+            .disabled(editModeState.isEditing)
             .padding(.horizontal)
             .padding(.top, 6)
             .padding(.bottom, 4)
@@ -193,25 +185,18 @@ struct SearchView: View {
     }
     
     // MARK: - UI Helper
+    private func enterEditMode() {
+        withAnimation {
+            editModeState = .active
+        }
+    }
+    
     private func exitEditMode() {
         withAnimation {
-            searchViewModel.editingState = .inactive
+            editModeState = .inactive
         }
         
         searchViewModel.selectedItems.removeAll()
-        editModeState = .inactive
-    }
-    
-    private func enterEditMode() {
-        withAnimation {
-            searchViewModel.editingState = .active
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            withAnimation {
-                editModeState = .active
-            }
-        }
     }
 }
 
