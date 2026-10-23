@@ -192,6 +192,8 @@ struct SearchView: View {
     }
     
     private func exitEditMode() {
+        guard !searchViewModel.isMoving else { return }
+        
         withAnimation {
             editModeState = .inactive
         }

@@ -50,6 +50,7 @@ final class SearchViewModel: ObservableObject {
     @Published var showMealType: Bool = false
     @Published var showRemoveDialog: Bool = false
     @Published var isEditingActive = false
+    @Published var isMoving = false
     @Published var isFoodAddedAlertVisible: Bool = false
     @Published var isAlertInProgress: Bool = false
     
@@ -480,6 +481,7 @@ final class SearchViewModel: ObservableObject {
         
         updatedFavorites.insert(contentsOf: itemsToMove, at: insertionIndex)
         favoriteFoods = updatedFavorites
+        isMoving = true
         
         if query.isEmpty {
             foods = updatedFavorites
@@ -487,6 +489,12 @@ final class SearchViewModel: ObservableObject {
         
         Task {
             await saveBookmarkOrder()
+            
+            try? await Task.sleep(for: .seconds(0.35))
+            
+            await MainActor.run {
+                isMoving = false
+            }
         }
     }
     
