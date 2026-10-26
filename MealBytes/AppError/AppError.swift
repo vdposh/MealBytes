@@ -37,7 +37,7 @@ enum AppError: Error, Identifiable, LocalizedError, Equatable {
         case .noBookmarks:
             "No bookmarks yet"
         case .noRecent:
-            "No recently added foods yet"
+            "No recent logs yet"
         case .disconnected:
             "Account disconnected. Log out and log back in to restore data sync."
         }

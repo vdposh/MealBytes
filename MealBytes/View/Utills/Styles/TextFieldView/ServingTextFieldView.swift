@@ -15,10 +15,10 @@ struct ServingTextFieldView<Focus: Hashable>: View {
     
     var placeholder: String = "0"
     var unitText: String = ""
-    var labelIconName: String = "plus.forwardslash.minus"
+    var labelIconName: String = ""
     var labelIconColor: Color = .customGray
     var stackText: String = ""
-    var useLabel: Bool = true
+    var useLabel: Bool = false
     var keyboardType: UIKeyboardType = .decimalPad
     var inputMode: InputMode = .decimal
     var maxInteger: Int = 100000
@@ -50,13 +50,6 @@ struct ServingTextFieldView<Focus: Hashable>: View {
     private var contentServingTextField: some View {
         if useLabel {
             Label {
-                field
-            } icon: {
-                Image(systemName: labelIconName)
-                    .foregroundStyle(labelIconColor)
-            }
-        } else {
-            Label {
                 HStack {
                     Text(stackText)
                     
@@ -76,6 +69,13 @@ struct ServingTextFieldView<Focus: Hashable>: View {
                 Image(systemName: labelIconName)
                     .fontWeight(.semibold)
                     .foregroundStyle(labelIconColor)
+            }
+        } else {
+            HStack {
+                Text("Amount")
+                
+                field
+                    .multilineTextAlignment(.trailing)
             }
         }
     }

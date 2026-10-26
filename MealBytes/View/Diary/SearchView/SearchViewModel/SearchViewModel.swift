@@ -12,7 +12,7 @@ import OSLog
 protocol SearchViewModelProtocol {
     var foodMetadataDict: [Int: FoodMetadata] { get set }
     
-    func toggleBookmarkSearchView(for food: Food) async
+    func toggleBookmarkSearchView(for food: Food, animated: Bool) async
     func loadBookmarksSearchView(for mealType: MealType) async
     func loadSearchViewData() async
     func updateMetadata(
@@ -48,7 +48,8 @@ final class SearchViewModel: ObservableObject {
     }
     @Published var isLoading: Bool = false
     @Published var showMealType: Bool = false
-    @Published var showRemoveDialog: Bool = false
+    @Published var showRemoveBookmarksDialog: Bool = false
+    @Published var showRemoveHistoryDialog = false
     @Published var isEditingActive = false
     @Published var isMoving = false
     @Published var isFoodAddedAlertVisible: Bool = false
@@ -69,7 +70,6 @@ final class SearchViewModel: ObservableObject {
     private let firebaseAuth: FirebaseAuthProtocol = FirebaseAuth()
     let mainViewModel: MainViewModelProtocol
     
-    private var currentTask: Task<Void, Never>?
     private var currentSearchTask: Task<Void, Never>?
     
     private var cancellables = Set<AnyCancellable>()
@@ -178,6 +178,8 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Load SearchView Data
     func loadSearchViewData() async {
+        async let segmentTask: () = loadSelectedSegment()
+        
         await withTaskGroup(of: Void.self) { group in
             await loadMetadataSearchView()
             
@@ -188,6 +190,8 @@ final class SearchViewModel: ObservableObject {
                 }
             }
         }
+        
+        await segmentTask
     }
     
     // MARK: - Load Bookmarks Data
@@ -234,6 +238,21 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Load Selected Segment
+    private func loadSelectedSegment() async {
+        do {
+            let raw = try await firestore.loadSelectedSegmentFirestore()
+            await MainActor.run {
+                selectedSegment = ListSegment(rawValue: raw) ?? .bookmarks
+            }
+        } catch {
+            Logger.search
+                .error(
+                    "loadSelectedSegment failed: \(error.localizedDescription)"
+                )
+        }
+    }
+    
     // MARK: - Load Metadata
     func loadMetadataSearchView() async {
         guard firebaseAuth.currentUserExists() else { return }
@@ -264,7 +283,9 @@ final class SearchViewModel: ObservableObject {
     
     func resetSearchView() {
         query = ""
-        selectedSegment = .bookmarks
+        selectedItems.removeAll()
+        selectedFood = nil
+        isEditingActive = false
     }
     
     // MARK: - Display SearchView Data
@@ -285,10 +306,6 @@ final class SearchViewModel: ObservableObject {
             if query.isEmpty {
                 foods = favoriteFoods
             }
-            
-            if favoriteFoods.isEmpty && historyFoods.isEmpty {
-                selectedSegment = .bookmarks
-            }
         }
     }
     
@@ -306,7 +323,10 @@ final class SearchViewModel: ObservableObject {
                 for: selectedMealType
             )
         } catch {
-            Logger.search.error("saveBookmarkOrder failed: \(error.localizedDescription)")
+            Logger.search
+                .error(
+                    "saveBookmarkOrder failed: \(error.localizedDescription)"
+                )
         }
     }
     
@@ -326,7 +346,10 @@ final class SearchViewModel: ObservableObject {
                 bookmarksByType[selectedMealType] = favoriteFoods
                 bookmarkedIdsByType[selectedMealType] = bookmarkedFoods
                 
-                displaySearchViewData(for: selectedMealType)
+                let allHistory = historyByType[selectedMealType] ?? []
+                historyFoods = allHistory.filter {
+                    !bookmarkedFoods.contains($0.searchFoodId)
+                }
                 
                 if query.isEmpty {
                     foods = favoriteFoods
@@ -349,7 +372,8 @@ final class SearchViewModel: ObservableObject {
                 for: selectedMealType
             )
         } catch {
-            Logger.search.error("removeBookmarks failed: \(error.localizedDescription)")
+            Logger.search
+                .error("removeBookmarks failed: \(error.localizedDescription)")
             
             await MainActor.run {
                 favoriteFoods = originalFavoriteFoods
@@ -364,36 +388,58 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    func removeSelectedBookmarks(ids: Set<Food.ID>) async {
+        let filtered = favoriteFoods
+            .filter { ids.contains($0.searchFoodId) }
+            .map { $0.searchFoodId }
+        
+        await removeBookmarks(for: Set(filtered))
+    }
+    
     // MARK: - Toggle Bookmark
-    func toggleBookmarkSearchView(for food: Food) async {
+    func toggleBookmarkSearchView(
+        for food: Food,
+        animated: Bool = true
+    ) async {
         let isAdding = !bookmarkedFoods.contains(food.searchFoodId)
         let mealType = selectedMealType
         
         let originalFavoriteFoods = favoriteFoods
         let originalBookmarkedFoods = bookmarkedFoods
         
+        let update = {
+            if isAdding {
+                self.favoriteFoods.append(food)
+                self.bookmarkedFoods.insert(food.searchFoodId)
+            } else {
+                self.favoriteFoods
+                    .removeAll { $0.searchFoodId == food.searchFoodId }
+                self.bookmarkedFoods.remove(food.searchFoodId)
+                self.deleteMetadataIfNotInHistory(
+                    for: food,
+                    mealType: mealType
+                )
+            }
+            
+            self.bookmarksByType[mealType] = self.favoriteFoods
+            self.bookmarkedIdsByType[mealType] = self.bookmarkedFoods
+            
+            let allHistory = self.historyByType[mealType] ?? []
+            self.historyFoods = allHistory
+                .filter { !self.bookmarkedFoods.contains($0.searchFoodId) }
+            
+            if self.query.isEmpty {
+                self.foods = self.favoriteFoods
+            }
+        }
+        
         await MainActor.run {
-            withAnimation {
-                if isAdding {
-                    favoriteFoods.append(food)
-                    bookmarkedFoods.insert(food.searchFoodId)
-                } else {
-                    favoriteFoods
-                        .removeAll { $0.searchFoodId == food.searchFoodId }
-                    bookmarkedFoods.remove(food.searchFoodId)
-                    deleteMetadataIfNotInHistory(for: food, mealType: mealType)
+            if animated {
+                withAnimation {
+                    update()
                 }
-                
-                bookmarksByType[mealType] = favoriteFoods
-                bookmarkedIdsByType[mealType] = bookmarkedFoods
-                
-                let allHistory = historyByType[mealType] ?? []
-                historyFoods = allHistory
-                    .filter { !bookmarkedFoods.contains($0.searchFoodId) }
-                
-                if query.isEmpty {
-                    foods = favoriteFoods
-                }
+            } else {
+                update()
             }
         }
         
@@ -401,7 +447,8 @@ final class SearchViewModel: ObservableObject {
             try await firestore
                 .addBookmarkFirestore(favoriteFoods, for: mealType)
         } catch {
-            Logger.search.error("toggleBookmark failed: \(error.localizedDescription)")
+            Logger.search
+                .error("toggleBookmark failed: \(error.localizedDescription)")
             await MainActor.run {
                 favoriteFoods = originalFavoriteFoods
                 bookmarkedFoods = originalBookmarkedFoods
@@ -437,7 +484,10 @@ final class SearchViewModel: ObservableObject {
                         mealType: mealType
                     )
                 } catch {
-                    Logger.search.error("deleteFoodMetadata failed: \(error.localizedDescription)")
+                    Logger.search
+                        .error(
+                            "deleteFoodMetadata failed: \(error.localizedDescription)"
+                        )
                 }
             }
         }
@@ -490,7 +540,7 @@ final class SearchViewModel: ObservableObject {
         Task {
             await saveBookmarkOrder()
             
-            try? await Task.sleep(for: .seconds(0.35))
+            try? await Task.sleep(for: .seconds(0.5))
             
             await MainActor.run {
                 isMoving = false
@@ -501,6 +551,70 @@ final class SearchViewModel: ObservableObject {
     func isBookmarked(_ food: Food, for mealType: MealType) -> Bool {
         let bookmarked = bookmarkedIdsByType[mealType] ?? []
         return bookmarked.contains(food.searchFoodId)
+    }
+    
+    // MARK: - Transfer Bookmarks
+    func transferBookmarks(for foods: [Food], to mealType: MealType) async {
+        let fromMealType = selectedMealType
+        guard fromMealType != mealType else { return }
+        
+        let fromIds = Set(foods.map { $0.searchFoodId })
+        let fromExisting = bookmarksByType[fromMealType] ?? []
+        let fromUpdated = fromExisting.filter {
+            !fromIds.contains($0.searchFoodId)
+        }
+        
+        let toExisting = bookmarksByType[mealType] ?? []
+        let toExistingIds = Set(toExisting.map { $0.searchFoodId })
+        let toUpdated = toExisting + foods.filter {
+            !toExistingIds.contains($0.searchFoodId)
+        }
+        
+        await MainActor.run {
+            withAnimation {
+                bookmarksByType[fromMealType] = fromUpdated
+                bookmarkedIdsByType[fromMealType] = Set(
+                    fromUpdated.map { $0.searchFoodId
+                    })
+                
+                bookmarksByType[mealType] = toUpdated
+                bookmarkedIdsByType[mealType] = Set(
+                    toUpdated.map { $0.searchFoodId
+                    })
+                
+                if selectedMealType == fromMealType {
+                    favoriteFoods = fromUpdated
+                    bookmarkedFoods = bookmarkedIdsByType[fromMealType] ?? []
+                    
+                    let allHistory = historyByType[fromMealType] ?? []
+                    historyFoods = allHistory.filter {
+                        !bookmarkedFoods.contains($0.searchFoodId)
+                    }
+                }
+            }
+        }
+        
+        do {
+            try await firestore
+                .addBookmarkFirestore(fromUpdated, for: fromMealType)
+            try await firestore.addBookmarkFirestore(toUpdated, for: mealType)
+            
+            for food in foods {
+                if let metadata = foodMetadataDict[food.searchFoodId] {
+                    try await firestore
+                        .saveFoodMetadata(metadata, for: mealType)
+                    
+                    await MainActor.run {
+                        var updated = metadataByType[mealType] ?? [:]
+                        updated[food.searchFoodId] = metadata
+                        metadataByType[mealType] = updated
+                    }
+                }
+            }
+        } catch {
+            Logger.search
+                .error("moveBookmarks failed: \(error.localizedDescription)")
+        }
     }
     
     // MARK: - Add to History
@@ -543,7 +657,111 @@ final class SearchViewModel: ObservableObject {
             do {
                 try await firestore.addHistoryFirestore(history, for: mealType)
             } catch {
-                Logger.search.error("addHistoryFirestore failed: \(error.localizedDescription)")
+                Logger.search
+                    .error(
+                        "addHistoryFirestore failed: \(error.localizedDescription)"
+                    )
+            }
+        }
+    }
+    
+    // MARK: - Delete History Item
+    func deleteHistoryItem(for ids: Set<Food.ID>) async {
+        let mealType = selectedMealType
+        let original = historyByType[mealType] ?? []
+        
+        let visibleIds = ids.filter { id in
+            historyFoods.contains { $0.searchFoodId == id }
+        }
+        
+        let updated = original.filter { !visibleIds.contains($0.searchFoodId) }
+        
+        await MainActor.run {
+            withAnimation {
+                historyByType[mealType] = updated
+                if selectedMealType == mealType {
+                    historyFoods = updated.filter {
+                        !bookmarkedFoods.contains($0.searchFoodId)
+                    }
+                }
+            }
+        }
+        
+        await deleteMetadataIfOrphaned(
+            for: Set(visibleIds),
+            mealType: mealType
+        )
+        
+        do {
+            try await firestore.addHistoryFirestore(updated, for: mealType)
+        } catch {
+            Logger.search
+                .error("removeHistory failed: \(error.localizedDescription)")
+            await MainActor.run {
+                historyByType[mealType] = original
+                historyFoods = original.filter {
+                    !bookmarkedFoods.contains($0.searchFoodId)
+                }
+            }
+        }
+    }
+    
+    private func deleteMetadataIfOrphaned(
+        for ids: Set<Food.ID>,
+        mealType: MealType
+    ) async {
+        let orphanedIds = await MainActor.run { () -> [Int] in
+            var result: [Int] = []
+            
+            for id in ids {
+                let inHistory = (historyByType[mealType] ?? []).contains {
+                    $0.searchFoodId == id
+                }
+                let inBookmarks = bookmarkedIdsByType[mealType]?.contains(
+                    id
+                ) ?? false
+                
+                guard !inHistory && !inBookmarks else { continue }
+                
+                foodMetadataDict.removeValue(forKey: id)
+                metadataByType[mealType]?.removeValue(forKey: id)
+                result.append(id)
+            }
+            
+            return result
+        }
+        
+        guard !orphanedIds.isEmpty else { return }
+        
+        do {
+            try await firestore.deleteFoodMetadataBatch(
+                for: orphanedIds,
+                mealType: mealType
+            )
+        } catch {
+            Logger.search.error(
+                "deleteFoodMetadataBatch failed: \(error.localizedDescription)"
+            )
+        }
+    }
+    
+    // MARK: - Select Segment
+    func selectSegment(_ segment: ListSegment) {
+        guard selectedSegment != segment else { return }
+        
+        withAnimation {
+            selectedSegment = segment
+        }
+        
+        Task {
+            do {
+                try await firestore
+                    .saveSelectedSegmentFirestore(segment.rawValue)
+            } catch {
+                Logger.search
+                    .error(
+                        "saveSelectedSegment failed: \(error.localizedDescription)"
+                    )
             }
         }
     }
@@ -645,26 +863,46 @@ final class SearchViewModel: ObservableObject {
         isEditingActive ? selectionStatusText : ""
     }
     
-    var selectionStatusText: String {
-        selectedItems.isEmpty
-        ? "Select Bookmarks"
-        : selectedItems.count == 1
-        ? "1 Bookmark"
-        : "\(selectedItems.count) Bookmarks"
+    var selectedBookmarksCount: Int {
+        favoriteFoods.filter { selectedItems.contains($0.searchFoodId) }.count
+    }
+
+    var selectedHistoryCount: Int {
+        historyFoods.filter { selectedItems.contains($0.searchFoodId) }.count
     }
     
+    var selectionStatusText: String {
+        let count = selectedSegment == .bookmarks
+        ? selectedBookmarksCount
+        : selectedHistoryCount
+        
+        guard count > 0 else { return "Select" }
+        
+        return count == 1
+        ? "1 \(selectedSegment == .bookmarks ? "Bookmark" : "Recent Log")"
+        : "\(count) \(selectedSegment == .bookmarks ? "Bookmarks" : "Recent Logs")"
+    }
+
     var removeDialogMessage: String {
-        "The selected \(selectedItems.count == 1 ? "bookmark" : "bookmarks") will be removed from favorites."
+        "The selected \(selectedBookmarksCount == 1 ? "bookmark" : "bookmarks") will be removed."
     }
     
     var removeDialogTitle: String {
-        "Remove \(selectedItems.count == 1 ? "bookmark" : "\(selectedItems.count) bookmarks")"
+        "Remove \(selectedBookmarksCount) \(selectedBookmarksCount == 1 ? "bookmark" : "bookmarks")"
     }
     
-    enum ListSegment: String, CaseIterable {
-        case bookmarks = "Bookmarks"
-        case recent = "Recently Added"
+    var deleteHistoryDialogMessage: String {
+        "The selected \(selectedHistoryCount == 1 ? "recent log" : "recent logs") will be deleted."
     }
+    
+    var deleteHistoryDialogTitle: String {
+        "Delete \(selectedHistoryCount) recent \(selectedHistoryCount == 1 ? "log" : "logs")"
+    }
+}
+
+enum ListSegment: String, CaseIterable {
+    case bookmarks = "Bookmarks"
+    case recent = "Recent Logs"
 }
 
 extension SearchViewModel: SearchViewModelProtocol {}

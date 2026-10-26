@@ -14,6 +14,7 @@ protocol FirebaseFirestoreProtocol {
     func loadMealItemsFirestore() async throws -> [MealItem]
     func loadBookmarksFirestore(for mealType: MealType) async throws -> [Food]
     func loadHistoryFirestore(for mealType: MealType) async throws -> [Food]
+    func loadSelectedSegmentFirestore() async throws -> String
     func loadFoodMetadata(
         for mealType: MealType
     ) async throws -> [Int: FoodMetadata]
@@ -50,14 +51,20 @@ protocol FirebaseFirestoreProtocol {
     func saveCustomIntakeFirestore(_ customIntake: CustomIntake) async throws
     func saveCurrentIntakeFirestore(_ data: CurrentIntake) async throws
     func saveDisplayGoalsFirestore(_ disabled: Bool) async throws
+    func saveSelectedSegmentFirestore(_ segment: String) async throws
     func saveEnergyUnitFirestore(_ unit: String) async throws
     func updateMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemFirestore(_ mealItem: MealItem) async throws
     func deleteMealItemsFirestore(on date: Date) async throws
+    func deleteHistoryFirestore(for mealType: MealType) async throws
     func deleteLoginDataFirestore() async throws
     func deleteFoodMetadata(
         for foodId: Int,
         foodName: String,
+        mealType: MealType
+    ) async throws
+    func deleteFoodMetadataBatch(
+        for foodIds: [Int],
         mealType: MealType
     ) async throws
 }
@@ -210,6 +217,48 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         try await loadFoodsFromFirestore(from: "History", for: mealType)
     }
     
+    // MARK: - Delete History
+    func deleteHistoryFirestore(for mealType: MealType) async throws {
+        let uid = try currentUID
+        try await firestore
+            .collection("Users").document(uid)
+            .collection("SearchView").document("History")
+            .collection(mealType.rawValue.lowercased())
+            .document("items")
+            .delete()
+    }
+    
+    // MARK: - Load Selected Segment
+    func loadSelectedSegmentFirestore() async throws -> String {
+        let uid = try currentUID
+        
+        let snapshot = try await firestore
+            .collection("Users")
+            .document(uid)
+            .collection("SearchView")
+            .document("Segment")
+            .getDocument()
+        
+        guard let data = snapshot.data(),
+              let segment = data["segment"] as? String else {
+            return ListSegment.bookmarks.rawValue
+        }
+        
+        return segment
+    }
+    
+    // MARK: - Save Selected Segment
+    func saveSelectedSegmentFirestore(_ segment: String) async throws {
+        let uid = try currentUID
+        
+        try await firestore
+            .collection("Users")
+            .document(uid)
+            .collection("SearchView")
+            .document("Segment")
+            .setData(["segment": segment])
+    }
+    
     // MARK: - Save Foods SearchView
     private func saveFoodsToFirestore(
         _ foods: [Food],
@@ -311,6 +360,28 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(documentId)
         
         try await path.delete()
+    }
+    
+    func deleteFoodMetadataBatch(
+        for foodIds: [Int],
+        mealType: MealType
+    ) async throws {
+        guard !foodIds.isEmpty else { return }
+        
+        let uid = try currentUID
+        let batch = firestore.batch()
+        
+        for id in foodIds {
+            let ref = firestore
+                .collection("Users").document(uid)
+                .collection("SearchView").document("Metadata")
+                .collection(mealType.rawValue.lowercased())
+                .document("\(id)")
+            
+            batch.deleteDocument(ref)
+        }
+        
+        try await batch.commit()
     }
     
     // MARK: - Load PersonalIntake

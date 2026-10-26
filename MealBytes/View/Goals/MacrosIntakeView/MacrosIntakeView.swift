@@ -12,7 +12,9 @@ struct MacrosIntakeView: View {
     @ObservedObject var macrosIntakeViewModel: MacrosIntakeViewModel
     
     var body: some View {
-        Section {
+        Section(
+            footer: Text("Enter macronutrients values to calculate calories.")
+        ) {
             GoalsNutrientLabelRow(
                 type: .calories,
                 value: macrosIntakeViewModel.displayCalories,
@@ -39,8 +41,6 @@ struct MacrosIntakeView: View {
                 focus: $focus,
                 focusCase: .protein
             )
-        } footer: {
-            Text("Enter macronutrients values to calculate calories.")
         }
         .onChange(of: focus) {
             handleFocusLoss(focus)

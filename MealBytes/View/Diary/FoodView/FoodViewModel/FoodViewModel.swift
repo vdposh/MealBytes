@@ -288,7 +288,10 @@ final class FoodViewModel: ObservableObject {
             isBookmarkFilled.toggle()
         }
         
-        await searchViewModel.toggleBookmarkSearchView(for: food)
+        await searchViewModel.toggleBookmarkSearchView(
+            for: food,
+            animated: false
+        )
         
         guard isBookmarkFilled,
               let selectedServing else { return }

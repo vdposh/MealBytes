@@ -141,12 +141,10 @@ struct MainView: View {
     private var mainViewToolbar: some ToolbarContent {
         if !mainViewModel.isTodaySelected {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
+                Button("Today") {
                     mainViewModel.setDate(Date())
-                } label: {
-                    Text("Today")
-                        .fontWeight(.medium)
                 }
+                .fontWeight(.medium)
             }
         }
         
@@ -165,18 +163,14 @@ struct MainView: View {
         
         if mainViewModel.hasMealItems {
             ToolbarOverflowMenu {
-                Button {
+                Button("Select", systemImage: "checkmark.circle") {
                     
-                } label: {
-                    Label("Select", systemImage: "checkmark.circle")
                 }
                 
                 Divider()
                 
-                Button(role: .destructive) {
+                Button("Clear Day", systemImage: "trash", role: .destructive) {
                     mainViewModel.showClearDayAlert = true
-                } label: {
-                    Label("Clear Day", systemImage: "trash")
                 }
             }
         }

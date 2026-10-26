@@ -47,12 +47,10 @@ struct DatePickerSheet: View {
                 }
                 
                 ToolbarItem(placement: .bottomBar) {
-                    Button {
+                    Button("Today") {
                         selectedDate = Date()
-                    } label: {
-                        Text("Today")
-                            .fontWeight(.medium)
                     }
+                    .fontWeight(.medium)
                 }
             }
         }

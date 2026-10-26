@@ -37,11 +37,7 @@ struct FoodItemRow: View {
     
     @ViewBuilder
     private var foodItemContextMenu: some View {
-        Button {
-            onDate()
-        } label: {
-            Label("Date", systemImage: "calendar")
-        }
+        Button("Date", systemImage: "calendar", action: onDate)
         
         Menu {
             Picker("Meal type", selection: Binding(

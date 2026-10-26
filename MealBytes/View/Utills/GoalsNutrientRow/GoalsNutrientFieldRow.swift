@@ -28,7 +28,7 @@ struct GoalsNutrientFieldRow<Focus: Hashable>: View {
             labelIconName: type.iconName,
             labelIconColor: type.iconColor,
             stackText: type.title,
-            useLabel: false,
+            useLabel: true,
             keyboardType: .numberPad,
             inputMode: .integer,
             maxIntegerDigits: maxIntegerDigits

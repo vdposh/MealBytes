@@ -74,6 +74,7 @@ struct FoodView: View {
             }
     }
     
+    // MARK: - Content
     @ViewBuilder
     private var foodViewContentBody: some View {
         switch foodViewModel.viewState {
@@ -94,7 +95,7 @@ struct FoodView: View {
             
         case .loaded:
             Form {
-                titleSection
+                foodItemSection
                 servingSizeSection
                 nutritionFactsSection
             }
@@ -109,7 +110,8 @@ struct FoodView: View {
         }
     }
     
-    private var titleSection: some View {
+    // MARK: - Food Item
+    private var foodItemSection: some View {
         Section {
             if let serving = foodViewModel.selectedServing {
                 let nutrients = foodViewModel.nutrientValues
@@ -142,6 +144,7 @@ struct FoodView: View {
         }
     }
     
+    // MARK: - Serving
     @ViewBuilder
     private var servingSizeSection: some View {
         Section {
@@ -150,16 +153,11 @@ struct FoodView: View {
                 isPresented: $foodViewModel.showDatePicker
             )
             
-            Label {
-                Picker("Meal type", selection: $mealType) {
-                    ForEach(MealType.allCases, id: \.self) { meal in
-                        Text(meal.rawValue)
-                            .tag(meal)
-                    }
+            Picker("Meal type", selection: $mealType) {
+                ForEach(MealType.allCases, id: \.self) { meal in
+                    Text(meal.rawValue)
+                        .tag(meal)
                 }
-            } icon: {
-                Image(systemName: "fork.knife")
-                    .foregroundStyle(.customGray)
             }
             .onChange(of: mealType) {
                 foodViewModel.updateMealType(mealType)
@@ -172,31 +170,25 @@ struct FoodView: View {
             ServingTextFieldView(
                 text: $foodViewModel.amount,
                 focus: $amountFocused,
-                focusCase: true,
-                placeholder: "Enter amount"
+                focusCase: true
             )
             
             if let selected = foodViewModel.selectedServing,
                let servings = foodViewModel.foodDetail?.servings.serving {
-                Label {
-                    Picker(
-                        "Portion",
-                        selection: $foodViewModel.selectedServing
-                    ) {
-                        ForEach(servings, id: \.self) { serving in
-                            Text(
-                                foodViewModel
-                                    .servingDescription(
-                                        for: serving,
-                                        showUnit: true
-                                    )
-                            )
-                            .tag(serving as Serving?)
-                        }
+                Picker(
+                    "Portion",
+                    selection: $foodViewModel.selectedServing
+                ) {
+                    ForEach(servings, id: \.self) { serving in
+                        Text(
+                            foodViewModel
+                                .servingDescription(
+                                    for: serving,
+                                    showUnit: true
+                                )
+                        )
+                        .tag(serving as Serving?)
                     }
-                } icon: {
-                    Image(systemName: "text.menu")
-                        .foregroundStyle(.customGray)
                 }
                 .onChange(of: selected) {
                     foodViewModel.updateServing(selected)
@@ -207,6 +199,7 @@ struct FoodView: View {
         }
     }
     
+    // MARK: - Nutrition Facts
     private var nutritionFactsSection: some View {
         Section {
             NutrientValueSection(
@@ -218,6 +211,7 @@ struct FoodView: View {
         }
     }
     
+    // MARK: - Toolbar
     @ToolbarContentBuilder
     private var foodViewToolbar: some ToolbarContent {
         switch foodViewModel.viewMode {
@@ -271,6 +265,7 @@ struct FoodView: View {
         }
     }
     
+    // MARK: - Safearea
     private var foodViewSafeArea: some View {
         HStack {
             if !foodViewModel.isLoading && foodViewModel.shouldShowToolbar {

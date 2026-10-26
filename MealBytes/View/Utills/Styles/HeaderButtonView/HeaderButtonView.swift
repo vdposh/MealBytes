@@ -61,13 +61,8 @@ struct HeaderButtonView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if isEdit {
-                    Button {
-                        action()
-                    } label: {
-                        Text(actionTitle)
-                            .foregroundStyle(.accent)
-                    }
-                    .buttonStyle(.borderless)
+                    Button(actionTitle, action: action)
+                        .buttonStyle(.borderless)
                 }
             }
             .transaction { $0.animation = nil }

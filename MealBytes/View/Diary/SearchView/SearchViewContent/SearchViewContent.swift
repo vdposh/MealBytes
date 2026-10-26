@@ -73,32 +73,53 @@ struct SearchViewContent: View {
                                 )
                             }
                         } header: {
-                            Text("Bookmarks")
+                            if !searchViewModel.debouncedQuery.isEmpty {
+                                Text("Bookmarks")
+                            }
                         }
                     }
                 }
                 
                 // MARK: - History Section
-                if searchViewModel.selectedSegment == .recent,
-                   !searchViewModel.historyFoods.isEmpty,
-                   searchViewModel.debouncedQuery.isEmpty {
-                    Section {
-                        ForEach(
-                            searchViewModel.historyFoods,
-                            id: \.searchFoodId
-                        ) { food in
-                            foodRow(for: food)
+                if searchViewModel.selectedSegment == .recent ||
+                    !searchViewModel.debouncedQuery.isEmpty {
+                    let filteredHistory = searchViewModel
+                        .historyFoods.filter { food in
+                            let query = searchViewModel.debouncedQuery
+                            if query.isEmpty {
+                                return true
+                            } else {
+                                return food.searchFoodName
+                                    .lowercased()
+                                    .contains(query.lowercased())
+                            }
                         }
-                    } header: {
-                        Text("Recent")
+                    
+                    if !filteredHistory.isEmpty {
+                        Section {
+                            ForEach(
+                                filteredHistory,
+                                id: \.searchFoodId
+                            ) { food in
+                                foodRow(for: food)
+                            }
+                        } header: {
+                            if !searchViewModel.debouncedQuery.isEmpty {
+                                Text("Recent Log")
+                            }
+                        }
                     }
                 }
                 
                 // MARK: - Results Section
                 if !searchViewModel.debouncedQuery.isEmpty {
+                    let historyIds = Set(
+                        searchViewModel.historyFoods.map { $0.searchFoodId
+                        })
                     let filteredResults = searchViewModel
                         .foods.filter { food in
-                            !searchViewModel.isBookmarkedSearchView(food)
+                            !searchViewModel.isBookmarkedSearchView(food) &&
+                            !historyIds.contains(food.searchFoodId)
                         }
                     
                     if !filteredResults.isEmpty {
@@ -120,6 +141,7 @@ struct SearchViewContent: View {
                     }
                 }
             }
+            .animation(nil, value: searchViewModel.selectedSegment)
             .scrollDismissesKeyboard(.immediately)
             .overlay {
                 FoodAddedAlertView(
@@ -130,7 +152,10 @@ struct SearchViewContent: View {
                     value: searchViewModel.isFoodAddedAlertVisible
                 )
             }
-            .disabled(searchViewModel.showRemoveDialog)
+            .disabled(
+                searchViewModel.showRemoveBookmarksDialog ||
+                searchViewModel.showRemoveHistoryDialog
+            )
             .navigationDestination(
                 item: $searchViewModel.selectedFood
             ) { food in
@@ -150,11 +175,6 @@ struct SearchViewContent: View {
                         .selectedItems = searchViewModel.selectedItems
                 }
             }
-            .onChange(of: editModeState) {
-                withAnimation {
-                    searchViewModel.isEditingActive = editModeState.isEditing
-                }
-            }
         }
     }
     
@@ -172,33 +192,61 @@ struct SearchViewContent: View {
             )
         }
         .swipeActions {
+            if searchViewModel.selectedSegment == .recent {
+                Button(role: .destructive) {
+                    Task {
+                        await searchViewModel
+                            .deleteHistoryItem(for: [food.searchFoodId])
+                    }
+                }
+            }
+            
             Button(role: .destructive) {
                 Task {
                     await searchViewModel
                         .toggleBookmarkSearchView(for: food)
                 }
             } label: {
-                Label {
-                    Text(
-                        searchViewModel
-                            .isBookmarkedSearchView(food)
-                        ? "Remove bookmark"
-                        : "Add bookmark"
-                    )
-                } icon: {
-                    Image(
-                        systemName: searchViewModel
-                            .isBookmarkedSearchView(food)
-                        ? "bookmark.slash"
-                        : "bookmark"
-                    )
-                }
+                Label(
+                    searchViewModel.isBookmarkedSearchView(food)
+                    ? "Unbookmark"
+                    : "Bookmark",
+                    systemImage: searchViewModel.isBookmarkedSearchView(food)
+                    ? "bookmark.slash"
+                    : "bookmark"
+                )
             }
             .tint(
                 searchViewModel.isBookmarkedSearchView(food)
-                ? .red
-                : .accent
+                ? nil
+                : .yellow
             )
+            
+            if searchViewModel.selectedSegment == .bookmarks {
+                Menu {
+                    Picker(
+                        "Meal Type",
+                        selection: Binding(
+                            get: { searchViewModel.selectedMealType },
+                            set: { newMealType in
+                                Task {
+                                    await searchViewModel.transferBookmarks(
+                                        for: [food],
+                                        to: newMealType
+                                    )
+                                }
+                            }
+                        )
+                    ) {
+                        ForEach(MealType.allCases, id: \.self) { meal in
+                            Text(meal.rawValue).tag(meal)
+                        }
+                    }
+                } label: {
+                    Label("Meal Type", systemImage: "fork.knife")
+                }
+                .tint(.orange)
+            }
         }
     }
     

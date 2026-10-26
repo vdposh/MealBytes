@@ -27,13 +27,8 @@ struct DatePickerRow: View {
                         .padding(.trailing, 2)
                 }
             } label: {
-                Label {
-                    Text("Date")
-                        .foregroundStyle(Color.primary)
-                } icon: {
-                    Image(systemName: "calendar")
-                        .foregroundStyle(.customGray)
-                }
+                Text("Date")
+                    .foregroundStyle(Color.primary)
             }
         }
     }

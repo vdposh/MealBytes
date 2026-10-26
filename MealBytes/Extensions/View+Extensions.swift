@@ -18,52 +18,40 @@ extension View {
         ContentUnavailableView {
             switch error {
             case .network, .networkRefresh:
-                Label {
-                    Text("Network error")
-                } icon: {
-                    Image(systemName: "wifi.slash")
-                }
-                .symbolEffect(.pulse)
+                Label("Network error", systemImage: "wifi.slash")
+                    .symbolEffect(.pulse)
                 
             case .decoding:
-                Label {
-                    Text("Data processing issue")
-                } icon: {
-                    Image(systemName: "exclamationmark.triangle")
-                }
+                Label(
+                    "Data processing issue",
+                    systemImage: "exclamationmark.triangle"
+                )
                 .symbolEffect(.rotate, options: .nonRepeating)
                 
             case .results:
                 ContentUnavailableView.search(text: query)
                 
             case .noEntries:
-                Label {
-                    Text("No \(mealType.rawValue) entries yet")
-                } icon: {
-                    Image(systemName: "fork.knife")
-                }
+                Label(
+                    "No \(mealType.rawValue) entries yet",
+                    systemImage: "fork.knife"
+                )
                 
             case .noBookmarks:
-                Label {
-                    Text("No \(mealType.rawValue) bookmarks yet")
-                } icon: {
-                    Image(systemName: "bookmark")
-                }
+                Label(
+                    "No \(mealType.rawValue) bookmarks yet",
+                    systemImage: "bookmark"
+                )
                 
             case .noRecent:
-                Label {
-                    Text("No \(mealType.rawValue) recent foods yet")
-                } icon: {
-                    Image(systemName: "clock")
-                }
+                Label(
+                    "No \(mealType.rawValue) recent logs yet",
+                    systemImage: "clock"
+                )
                 
             case .disconnected:
-                Label {
-                    Text("Disconnected")
-                } icon: {
-                    Image(systemName: "person.fill.questionmark")
-                }
-                .symbolEffect(.breathe)
+                Label("Disconnected", systemImage: "person.fill.questionmark")
+                    .symbolEffect(.breathe)
             }
         } description: {
             switch error {

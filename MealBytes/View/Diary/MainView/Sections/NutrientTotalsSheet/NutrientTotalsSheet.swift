@@ -29,11 +29,10 @@ struct NutrientTotalsSheet: View {
                 }
             } else {
                 ContentUnavailableView {
-                    Label {
-                        Text("Nothing logged yet")
-                    } icon: {
-                        Image(systemName: "text.rectangle.page")
-                    }
+                    Label(
+                        "Nothing logged yet",
+                        systemImage: "text.rectangle.page"
+                    )
                 } description: {
                     Text("Add some food to view nutrient totals.")
                 }
@@ -43,10 +42,6 @@ struct NutrientTotalsSheet: View {
                     ToolbarItem(placement: .cancellationAction) {
                         closeButton
                     }
-                }
-                .background {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
                 }
             }
         }
