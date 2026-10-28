@@ -64,6 +64,7 @@ final class SearchViewModel: ObservableObject {
     
     private var maxResultsPerPage: Int = 20
     private var currentPage: Int = 0
+    private var isLastPage = false
     
     private let fatSecretManager: FatSecretManagerProtocol = FatSecretManager()
     private let firestore: FirebaseFirestoreProtocol = FirebaseFirestore()
@@ -149,6 +150,25 @@ final class SearchViewModel: ObservableObject {
                     self.foods = foods
                     self.appError = nil
                     self.isLoading = false
+                    self.isLastPage = foods.count < self.maxResultsPerPage
+                }
+            } catch AppError.results {
+                guard !Task.isCancelled, self.query == searchQuery else {
+                    return
+                }
+                
+                await MainActor.run {
+                    guard !Task.isCancelled, self.query == searchQuery else {
+                        return
+                    }
+                    
+                    if self.currentPage > 0 {
+                        self.appError = nil
+                        self.isLastPage = true
+                    } else {
+                        self.appError = .results
+                    }
+                    self.isLoading = false
                 }
             } catch {
                 guard !Task.isCancelled, self.query == searchQuery else {
@@ -170,6 +190,7 @@ final class SearchViewModel: ObservableObject {
     
     private func resetSearch() {
         currentPage = 0
+        isLastPage = false
         foods = favoriteFoods
         appError = nil
         isLoading = false
@@ -316,7 +337,7 @@ final class SearchViewModel: ObservableObject {
             )
         }
     }
-
+    
     /// Syncs displayed bookmark state for the current mealType.
     private func applyCurrentBookmarks(
         favorites: [Food],
@@ -334,14 +355,14 @@ final class SearchViewModel: ObservableObject {
             foods = favorites
         }
     }
-
+    
     /// Returns history for mealType excluding items already bookmarked.
     private func visibleHistory(for mealType: MealType) -> [Food] {
         let bookmarked = bookmarkedIdsByType[mealType] ?? []
         let allHistory = historyByType[mealType] ?? []
         return allHistory.filter { !bookmarked.contains($0.searchFoodId) }
     }
-
+    
     /// Persists bookmarks for the given mealType.
     private func persistBookmarks(
         _ favorites: [Food],
@@ -357,7 +378,7 @@ final class SearchViewModel: ObservableObject {
                 .error("saveBookmarks failed: \(error.localizedDescription)")
         }
     }
-
+    
     /// Rolls back bookmark state to the given snapshot.
     private func rollbackBookmarks(
         favorites: [Food],
@@ -374,7 +395,7 @@ final class SearchViewModel: ObservableObject {
             )
         }
     }
-
+    
     /// Deletes metadata for food if it is not in history for the given mealType.
     private func removeMetadataIfNotInHistory(
         for food: Food,
@@ -814,7 +835,7 @@ final class SearchViewModel: ObservableObject {
     
     func canLoadPage(direction: PageDirection) -> Bool {
         switch direction {
-        case .next: foods.count == maxResultsPerPage
+        case .next: !isLastPage && foods.count == maxResultsPerPage
         case .previous: currentPage > 0
         }
     }
@@ -890,6 +911,31 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Filtered Lists
+    var filteredBookmarks: [Food] {
+        filteredByQuery(favoriteFoods)
+    }
+    
+    var filteredHistory: [Food] {
+        filteredByQuery(historyFoods)
+    }
+    
+    var filteredResults: [Food] {
+        let historyIds = Set(historyFoods.map { $0.searchFoodId })
+        return foods.filter { food in
+            !isBookmarkedSearchView(food) &&
+            !historyIds.contains(food.searchFoodId)
+        }
+    }
+    
+    private func filteredByQuery(_ list: [Food]) -> [Food] {
+        guard !debouncedQuery.isEmpty else { return list }
+        let lowercased = debouncedQuery.lowercased()
+        return list.filter {
+            $0.searchFoodName.lowercased().contains(lowercased)
+        }
+    }
+    
     // MARK: - UI Helper
     var energyUnit: EnergyUnit {
         mainViewModel.energyUnit
@@ -906,7 +952,7 @@ final class SearchViewModel: ObservableObject {
     var selectedBookmarksCount: Int {
         favoriteFoods.filter { selectedItems.contains($0.searchFoodId) }.count
     }
-
+    
     var selectedHistoryCount: Int {
         historyFoods.filter { selectedItems.contains($0.searchFoodId) }.count
     }
@@ -922,7 +968,7 @@ final class SearchViewModel: ObservableObject {
         ? "1 \(selectedSegment == .bookmarks ? "Bookmark" : "Recent Log")"
         : "\(count) \(selectedSegment == .bookmarks ? "Bookmarks" : "Recent Logs")"
     }
-
+    
     var removeDialogMessage: String {
         "The selected \(selectedBookmarksCount == 1 ? "bookmark" : "bookmarks") will be removed."
     }

@@ -20,7 +20,11 @@ struct SearchViewContent: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         case .error(let error):
-            contentUnavailableView(for: error, mealType: mealType) {
+            contentUnavailableView(
+                for: error,
+                mealType: mealType,
+                query: searchViewModel.debouncedQuery
+            ) {
                 searchViewModel.performSearch(searchViewModel.query)
             }
             
@@ -36,139 +40,119 @@ struct SearchViewContent: View {
             contentUnavailableView(for: .noRecent, mealType: mealType) {}
             
         case .results:
-            List(
-                selection: editModeState.isEditing
-                ? $searchViewModel.selectedItems
-                : .constant([])
-            ) {
-                // MARK: - Bookmarks Section
-                if searchViewModel.selectedSegment == .bookmarks ||
-                    !searchViewModel.debouncedQuery.isEmpty {
-                    let filteredBookmarks = searchViewModel
-                        .favoriteFoods.filter { food in
-                            let query = searchViewModel.debouncedQuery
-                            if query.isEmpty {
-                                return true
-                            } else {
-                                return food.searchFoodName
-                                    .lowercased()
-                                    .contains(query.lowercased())
-                            }
-                        }
-                    
-                    if !filteredBookmarks.isEmpty {
-                        Section {
-                            ForEach(
-                                filteredBookmarks,
-                                id: \.searchFoodId
-                            ) { food in
-                                foodRow(for: food)
-                                    .moveDisabled(!editModeState.isEditing)
-                            }
-                            .onMove { indices, newOffset in
-                                searchViewModel.moveBookmarks(
-                                    from: indices,
-                                    to: newOffset,
-                                    in: filteredBookmarks
-                                )
-                            }
-                        } header: {
-                            Text("Bookmarks")
-                        }
-                    }
-                }
-                
-                // MARK: - History Section
-                if searchViewModel.selectedSegment == .recent ||
-                    !searchViewModel.debouncedQuery.isEmpty {
-                    let filteredHistory = searchViewModel
-                        .historyFoods.filter { food in
-                            let query = searchViewModel.debouncedQuery
-                            if query.isEmpty {
-                                return true
-                            } else {
-                                return food.searchFoodName
-                                    .lowercased()
-                                    .contains(query.lowercased())
-                            }
-                        }
-                    
-                    if !filteredHistory.isEmpty {
-                        Section {
-                            ForEach(
-                                filteredHistory,
-                                id: \.searchFoodId
-                            ) { food in
-                                foodRow(for: food)
-                            }
-                        } header: {
-                            Text("Recent Log")
-                        }
-                    }
-                }
-                
-                // MARK: - Results Section
-                if !searchViewModel.debouncedQuery.isEmpty {
-                    let historyIds = Set(
-                        searchViewModel.historyFoods.map { $0.searchFoodId
-                        })
-                    let filteredResults = searchViewModel
-                        .foods.filter { food in
-                            !searchViewModel.isBookmarkedSearchView(food) &&
-                            !historyIds.contains(food.searchFoodId)
-                        }
-                    
-                    if !filteredResults.isEmpty {
-                        Section {
-                            ForEach(
-                                filteredResults,
-                                id: \.searchFoodId
-                            ) { food in
-                                foodRow(for: food)
-                            }
-                            
-                            if searchViewModel.showPagination {
-                                pageButton(direction: .next)
-                                pageButton(direction: .previous)
-                            }
-                        } header: {
-                            Text("Results")
-                        }
-                    }
-                }
-            }
-            .animation(nil, value: searchViewModel.selectedSegment)
-            .scrollDismissesKeyboard(.immediately)
-            .overlay {
-                FoodAddedAlertView(
-                    isVisible: $searchViewModel.isFoodAddedAlertVisible
-                )
-                .animation(
-                    .bouncy(duration: 0.3),
-                    value: searchViewModel.isFoodAddedAlertVisible
-                )
-            }
-            .disabled(
-                searchViewModel.showRemoveBookmarksDialog ||
-                searchViewModel.showRemoveHistoryDialog
+            resultsList
+        }
+    }
+    
+    // MARK: - Results List
+    private var resultsList: some View {
+        List(
+            selection: editModeState.isEditing
+            ? $searchViewModel.selectedItems
+            : .constant([])
+        ) {
+            bookmarksSection
+            historySection
+            resultsSection
+        }
+        .animation(nil, value: searchViewModel.selectedSegment)
+        .scrollDismissesKeyboard(.immediately)
+        .overlay {
+            FoodAddedAlertView(
+                isVisible: $searchViewModel.isFoodAddedAlertVisible
             )
-            .navigationDestination(
-                item: $searchViewModel.selectedFood
-            ) { food in
-                FoodView(
-                    mealType: mealType,
-                    food: food,
-                    searchViewModel: searchViewModel,
-                    mainViewModel: searchViewModel.mainViewModel,
-                    amount: "",
-                    measurementDescription: "",
-                    isEditingMealItem: false
-                )
+            .animation(
+                .bouncy(duration: 0.3),
+                value: searchViewModel.isFoodAddedAlertVisible
+            )
+        }
+        .disabled(
+            searchViewModel.showRemoveBookmarksDialog ||
+            searchViewModel.showRemoveHistoryDialog
+        )
+        .onChange(of: searchViewModel.selectedItems) {
+            withAnimation {
+                searchViewModel
+                    .selectedItems = searchViewModel.selectedItems
             }
-            .onChange(of: searchViewModel.selectedItems) {
-                withAnimation {
-                    searchViewModel
-                        .selectedItems = searchViewModel.selectedItems
+        }
+        .navigationDestination(
+            item: $searchViewModel.selectedFood
+        ) { food in
+            FoodView(
+                mealType: mealType,
+                food: food,
+                searchViewModel: searchViewModel,
+                mainViewModel: searchViewModel.mainViewModel,
+                amount: "",
+                measurementDescription: "",
+                isEditingMealItem: false
+            )
+        }
+    }
+    
+    // MARK: - Bookmarks Section
+    @ViewBuilder
+    private var bookmarksSection: some View {
+        let showBookmarks = searchViewModel.selectedSegment == .bookmarks ||
+        !searchViewModel.debouncedQuery.isEmpty
+        let items = searchViewModel.filteredBookmarks
+        
+        if showBookmarks && !items.isEmpty {
+            Section {
+                ForEach(items, id: \.searchFoodId) { food in
+                    foodRow(for: food)
+                        .moveDisabled(!editModeState.isEditing)
+                }
+                .onMove { indices, newOffset in
+                    searchViewModel.moveBookmarks(
+                        from: indices,
+                        to: newOffset,
+                        in: items
+                    )
+                }
+            } header: {
+                Text("Bookmarks")
+            }
+        }
+    }
+    
+    // MARK: - History Section
+    @ViewBuilder
+    private var historySection: some View {
+        let showHistory = searchViewModel.selectedSegment == .recent ||
+        !searchViewModel.debouncedQuery.isEmpty
+        let items = searchViewModel.filteredHistory
+        
+        if showHistory && !items.isEmpty {
+            Section {
+                ForEach(items, id: \.searchFoodId) { food in
+                    foodRow(for: food)
+                }
+            } header: {
+                Text("Recent Log")
+            }
+        }
+    }
+    
+    // MARK: - Results Section
+    @ViewBuilder
+    private var resultsSection: some View {
+        if !searchViewModel.debouncedQuery.isEmpty {
+            let items = searchViewModel.filteredResults
+            
+            if !items.isEmpty {
+                Section {
+                    ForEach(items, id: \.searchFoodId) { food in
+                        foodRow(for: food)
+                    }
+                    
+                    if searchViewModel.showPagination {
+                        pageButton(direction: .next)
+                        pageButton(direction: .previous)
+                    }
+                } header: {
+                    Text("Results")
                 }
             }
         }
@@ -274,8 +258,6 @@ struct SearchViewContent: View {
                 }
             }
             .foregroundStyle(.accent)
-        } else {
-            EmptyView()
         }
     }
 }
