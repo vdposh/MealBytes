@@ -18,22 +18,24 @@ struct DirectionToolbarView: View {
     
     var body: some View {
         HStack {
-            HStack {
-                ToolbarButtonView(
-                    icon: "chevron.up",
-                    action: moveUp,
-                    focused: focused,
-                    isActive: canMoveUp,
-                    isArrows: true
-                )
-                
-                ToolbarButtonView(
-                    icon: "chevron.down",
-                    action: moveDown,
-                    focused: focused,
-                    isActive: canMoveDown,
-                    isArrows: true
-                )
+            GlassEffectContainer {
+                HStack {
+                    ToolbarButtonView(
+                        icon: "chevron.up",
+                        action: moveUp,
+                        focused: focused,
+                        isActive: canMoveUp,
+                        isArrows: true
+                    )
+                    
+                    ToolbarButtonView(
+                        icon: "chevron.down",
+                        action: moveDown,
+                        focused: focused,
+                        isActive: canMoveDown,
+                        isArrows: true
+                    )
+                }
             }
             .glassEffect(.regular.interactive(), in: .capsule)
             .padding(.horizontal, UIScreen.horizontalPadding(focused: focused))

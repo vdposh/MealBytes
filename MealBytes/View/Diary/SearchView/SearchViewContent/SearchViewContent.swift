@@ -73,9 +73,7 @@ struct SearchViewContent: View {
                                 )
                             }
                         } header: {
-                            if !searchViewModel.debouncedQuery.isEmpty {
-                                Text("Bookmarks")
-                            }
+                            Text("Bookmarks")
                         }
                     }
                 }
@@ -104,9 +102,7 @@ struct SearchViewContent: View {
                                 foodRow(for: food)
                             }
                         } header: {
-                            if !searchViewModel.debouncedQuery.isEmpty {
-                                Text("Recent Log")
-                            }
+                            Text("Recent Log")
                         }
                     }
                 }

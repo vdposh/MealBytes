@@ -121,7 +121,7 @@ struct SearchView: View {
                     .transaction { $0.animation = nil }
                     .disabled(searchViewModel.selectedBookmarksCount == 0)
                     
-                    Button(role: .destructive) {
+                    Button {
                         searchViewModel.showRemoveBookmarksDialog = true
                     } label: {
                         Image(systemName: "bookmark.slash")
@@ -170,8 +170,6 @@ struct SearchView: View {
                     
                     Button(role: .destructive) {
                         searchViewModel.showRemoveHistoryDialog = true
-                    } label: {
-                        Image(systemName: "trash")
                     }
                     .transaction { $0.animation = nil }
                     .disabled(searchViewModel.selectedHistoryCount == 0)
@@ -260,6 +258,7 @@ struct SearchView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal)
             .padding(.top, 6)
+            .padding(.bottom, 2)
         }
     }
     
