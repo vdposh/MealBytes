@@ -740,16 +740,22 @@ final class SearchViewModel: ObservableObject {
                 .addBookmarkFirestore(fromUpdated, for: fromMealType)
             try await firestore.addBookmarkFirestore(toUpdated, for: mealType)
             
-            for food in foods {
-                if let metadata = foodMetadataDict[food.searchFoodId] {
-                    try await firestore
-                        .saveFoodMetadata(metadata, for: mealType)
-                    
-                    await MainActor.run {
-                        var updated = metadataByType[mealType] ?? [:]
-                        updated[food.searchFoodId] = metadata
-                        metadataByType[mealType] = updated
+            let metadataToMove = foods.compactMap {
+                foodMetadataDict[$0.searchFoodId]
+            }
+            
+            if !metadataToMove.isEmpty {
+                try await firestore.saveFoodMetadataBatch(
+                    metadataToMove,
+                    for: mealType
+                )
+                
+                await MainActor.run {
+                    var updated = metadataByType[mealType] ?? [:]
+                    for item in metadataToMove {
+                        updated[item.foodId] = item
                     }
+                    metadataByType[mealType] = updated
                 }
             }
         } catch {

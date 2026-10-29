@@ -41,6 +41,10 @@ protocol FirebaseFirestoreProtocol {
         _ metadata: FoodMetadata,
         for mealType: MealType
     ) async throws
+    func saveFoodMetadataBatch(
+        _ metadata: [FoodMetadata],
+        for mealType: MealType
+    ) async throws
     func saveLoginDataFirestore(email: String, isLoggedIn: Bool) async throws
     func saveMacrosIntakeFirestore(
         _ MacrosIntakeData: MacrosIntake
@@ -339,6 +343,33 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(documentId)
         
         try path.setData(from: metadata, merge: true)
+    }
+    
+    // MARK: - Save Metadata Batch
+    func saveFoodMetadataBatch(
+        _ metadata: [FoodMetadata],
+        for mealType: MealType
+    ) async throws {
+        guard !metadata.isEmpty else { return }
+        
+        let uid = try currentUID
+        let batch = firestore.batch()
+        
+        for item in metadata {
+            let ref = firestore
+                .collection("Users").document(uid)
+                .collection("SearchView").document("Metadata")
+                .collection(mealType.rawValue.lowercased())
+                .document("\(item.foodId)")
+            
+            try batch.setData(
+                from: item,
+                forDocument: ref,
+                merge: true
+            )
+        }
+        
+        try await batch.commit()
     }
     
     // MARK: - Delete Metadata
