@@ -426,6 +426,7 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
+    
     // MARK: - Save Bookmarks
     func saveBookmarkOrder() async {
         await MainActor.run {
@@ -825,6 +826,13 @@ final class SearchViewModel: ObservableObject {
                     )
             }
         }
+    }
+    
+    var currentSegmentFoodIds: Set<Food.ID> {
+        let sourceFoods = selectedSegment == .bookmarks
+        ? favoriteFoods
+        : historyFoods
+        return Set(sourceFoods.map { $0.searchFoodId })
     }
     
     // MARK: - Pagination

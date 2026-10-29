@@ -28,14 +28,7 @@ struct SearchView: View {
         .navigationSubtitle(searchViewModel.navigationSubtitleText)
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
-            switch toolbarMode {
-            case .editingBookmarks:
-                editingBookmarksToolbar
-            case .editingRecent:
-                editingRecentToolbar
-            case .viewing:
-                viewingToolbar
-            }
+            searchViewToolbar
         }
         .safeAreaBar(edge: .top) {
             segmentPickerView
@@ -49,53 +42,32 @@ struct SearchView: View {
         }
     }
     
-    // MARK: - Toolbar Mode
-    private enum ToolbarMode {
-        case editingBookmarks
-        case editingRecent
-        case viewing
-    }
-    
-    private var toolbarMode: ToolbarMode {
+    // MARK: - Toolbar
+    @ToolbarContentBuilder
+    private var searchViewToolbar: some ToolbarContent {
         if searchViewModel.isEditingActive {
-            return searchViewModel.selectedSegment == .bookmarks
-            ? .editingBookmarks
-            : .editingRecent
-        }
-        return .viewing
-    }
-    
-    // MARK: - Editing Toolbars
-    @ToolbarContentBuilder
-    private var editingBookmarksToolbar: some ToolbarContent {
-        editingConfirmButton
-        editingLeadingSelectionButton
-        ToolbarSpacer(.flexible, placement: .bottomBar)
-        editingBookmarksBottomBar
-    }
-    
-    @ToolbarContentBuilder
-    private var editingRecentToolbar: some ToolbarContent {
-        editingConfirmButton
-        editingLeadingSelectionButton
-        ToolbarSpacer(.flexible, placement: .bottomBar)
-        editingRecentBottomBar
-    }
-    
-    // MARK: - Viewing Toolbar
-    @ToolbarContentBuilder
-    private var viewingToolbar: some ToolbarContent {
-        viewingSelectButton
-        viewingCloseButton
-        DefaultToolbarItem(kind: .search, placement: .bottomBar)
-        ToolbarTitleMenu {
-            mealTypePicker
+            confirmEditButton
+            selectionToggleButton
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            
+            if searchViewModel.selectedSegment == .bookmarks {
+                bookmarksBottomBar
+            } else if searchViewModel.selectedSegment == .recent {
+                recentBottomBar
+            }
+        } else {
+            selectButton
+            closeButton
+            DefaultToolbarItem(kind: .search, placement: .bottomBar)
+            ToolbarTitleMenu {
+                mealTypePicker
+            }
         }
     }
     
     // MARK: - Editing Buttons
     @ToolbarContentBuilder
-    private var editingConfirmButton: some ToolbarContent {
+    private var confirmEditButton: some ToolbarContent {
         ToolbarItem {
             Button(role: .confirm) {
                 exitEditMode()
@@ -104,45 +76,33 @@ struct SearchView: View {
     }
     
     @ToolbarContentBuilder
-    private var editingLeadingSelectionButton: some ToolbarContent {
+    private var selectionToggleButton: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            selectionToggleButton
-        }
-    }
-    
-    @ViewBuilder
-    private var selectionToggleButton: some View {
-        let sourceIds = currentSourceIds
-        
-        if !sourceIds.isEmpty {
-            if sourceIds.isSubset(of: searchViewModel.selectedItems) {
-                Button("Deselect All") {
-                    withAnimation {
-                        searchViewModel.selectedItems.subtract(sourceIds)
+            let sourceIds = searchViewModel.currentSegmentFoodIds
+            
+            if !sourceIds.isEmpty {
+                if sourceIds.isSubset(of: searchViewModel.selectedItems) {
+                    Button("Deselect All") {
+                        withAnimation {
+                            searchViewModel.selectedItems.subtract(sourceIds)
+                        }
                     }
-                }
-                .fontWeight(.medium)
-            } else {
-                Button("Select All") {
-                    withAnimation {
-                        searchViewModel.selectedItems.formUnion(sourceIds)
+                    .fontWeight(.medium)
+                } else {
+                    Button("Select All") {
+                        withAnimation {
+                            searchViewModel.selectedItems.formUnion(sourceIds)
+                        }
                     }
+                    .fontWeight(.medium)
                 }
-                .fontWeight(.medium)
             }
         }
     }
     
-    private var currentSourceIds: Set<Food.ID> {
-        let sourceFoods = searchViewModel.selectedSegment == .bookmarks
-        ? searchViewModel.favoriteFoods
-        : searchViewModel.historyFoods
-        return Set(sourceFoods.map { $0.searchFoodId })
-    }
-    
     // MARK: - Editing Bookmarks Bottom Bar
     @ToolbarContentBuilder
-    private var editingBookmarksBottomBar: some ToolbarContent {
+    private var bookmarksBottomBar: some ToolbarContent {
         ToolbarItemGroup(placement: .bottomBar) {
             bookmarksMealTypeMenu
             bookmarksRemoveButton
@@ -213,7 +173,7 @@ struct SearchView: View {
     
     // MARK: - Editing Recent Bottom Bar
     @ToolbarContentBuilder
-    private var editingRecentBottomBar: some ToolbarContent {
+    private var recentBottomBar: some ToolbarContent {
         ToolbarItemGroup(placement: .bottomBar) {
             recentAddBookmarksButton
             recentDeleteButton
@@ -267,7 +227,7 @@ struct SearchView: View {
     
     // MARK: - Viewing Buttons
     @ToolbarContentBuilder
-    private var viewingSelectButton: some ToolbarContent {
+    private var selectButton: some ToolbarContent {
         if canEnterEditMode {
             ToolbarItem {
                 Button("Select") {
@@ -288,7 +248,7 @@ struct SearchView: View {
     }
     
     @ToolbarContentBuilder
-    private var viewingCloseButton: some ToolbarContent {
+    private var closeButton: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
             Button(role: .close) {
                 dismiss()
