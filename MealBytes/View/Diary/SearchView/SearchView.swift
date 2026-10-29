@@ -48,6 +48,7 @@ struct SearchView: View {
         if searchViewModel.isEditingActive {
             confirmEditButton
             selectionToggleButton
+            
             ToolbarSpacer(.flexible, placement: .bottomBar)
             
             if searchViewModel.selectedSegment == .bookmarks {
@@ -58,7 +59,9 @@ struct SearchView: View {
         } else {
             selectButton
             closeButton
+            
             DefaultToolbarItem(kind: .search, placement: .bottomBar)
+            
             ToolbarTitleMenu {
                 mealTypePicker
             }
@@ -161,7 +164,9 @@ struct SearchView: View {
         ) {
             Button(role: .destructive) {
                 let ids = searchViewModel.selectedItems
+                
                 exitEditMode()
+                
                 Task {
                     await searchViewModel.removeSelectedBookmarks(ids: ids)
                 }
@@ -190,10 +195,7 @@ struct SearchView: View {
             exitEditMode()
             
             Task {
-                for food in foodsToAdd {
-                    await searchViewModel
-                        .toggleBookmarkSearchView(for: food)
-                }
+                await searchViewModel.addBookmarks(for: foodsToAdd)
             }
         } label: {
             Image(systemName: "bookmark")
@@ -215,7 +217,9 @@ struct SearchView: View {
         ) {
             Button(role: .destructive) {
                 let ids = searchViewModel.selectedItems
+                
                 exitEditMode()
+                
                 Task {
                     await searchViewModel.deleteHistoryItem(for: ids)
                 }
@@ -277,7 +281,6 @@ struct SearchView: View {
     @ViewBuilder
     private var segmentPickerView: some View {
         if searchViewModel.query.isEmpty &&
-            searchViewModel.debouncedQuery.isEmpty &&
             (!searchViewModel.favoriteFoods.isEmpty ||
              !searchViewModel.historyFoods.isEmpty) {
             Picker(

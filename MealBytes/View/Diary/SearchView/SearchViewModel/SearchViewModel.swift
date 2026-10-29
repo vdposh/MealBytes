@@ -427,6 +427,25 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    /// Removes metadata from memory for foods not in history and returns their ids.
+    private func orphanedMetadataIds(
+        for foods: [Food],
+        mealType: MealType
+    ) -> [Int] {
+        let history = historyByType[mealType] ?? []
+        
+        return foods.compactMap { food in
+            let isInHistory = history.contains {
+                $0.searchFoodId == food.searchFoodId
+            }
+            guard !isInHistory else { return nil }
+            
+            foodMetadataDict.removeValue(forKey: food.searchFoodId)
+            metadataByType[mealType]?.removeValue(forKey: food.searchFoodId)
+            return food.searchFoodId
+        }
+    }
+    
     // MARK: - Save Bookmarks
     func saveBookmarkOrder() async {
         await MainActor.run {
@@ -447,7 +466,7 @@ final class SearchViewModel: ObservableObject {
             ids.contains($0.searchFoodId)
         }
         
-        await MainActor.run {
+        let orphanedIds = await MainActor.run { () -> [Int] in
             withAnimation {
                 favoriteFoods.removeAll { ids.contains($0.searchFoodId) }
                 bookmarkedFoods.subtract(ids)
@@ -460,14 +479,24 @@ final class SearchViewModel: ObservableObject {
                     foods = favoriteFoods
                 }
             }
+            
+            return orphanedMetadataIds(
+                for: foodsToRemove,
+                mealType: selectedMealType
+            )
         }
         
-        await MainActor.run {
-            for food in foodsToRemove {
-                removeMetadataIfNotInHistory(
-                    for: food,
+        if !orphanedIds.isEmpty {
+            do {
+                try await firestore.deleteFoodMetadataBatch(
+                    for: orphanedIds,
                     mealType: selectedMealType
                 )
+            } catch {
+                Logger.search
+                    .error(
+                        "deleteFoodMetadataBatch failed: \(error.localizedDescription)"
+                    )
             }
         }
         
@@ -549,6 +578,56 @@ final class SearchViewModel: ObservableObject {
         } catch {
             Logger.search
                 .error("toggleBookmark failed: \(error.localizedDescription)")
+            await MainActor.run {
+                rollbackBookmarks(
+                    favorites: originalFavoriteFoods,
+                    bookmarked: originalBookmarkedFoods,
+                    for: mealType
+                )
+            }
+        }
+    }
+    
+    // MARK: - Add Bookmarks
+    func addBookmarks(for foods: [Food]) async {
+        guard !foods.isEmpty else { return }
+        
+        let mealType = selectedMealType
+        
+        let originalFavoriteFoods = favoriteFoods
+        let originalBookmarkedFoods = bookmarkedFoods
+        
+        let update = {
+            for food in foods
+                    where !self.bookmarkedFoods.contains(food.searchFoodId) {
+                self.favoriteFoods.append(food)
+                self.bookmarkedFoods.insert(food.searchFoodId)
+            }
+            
+            self.bookmarksByType[mealType] = self.favoriteFoods
+            self.bookmarkedIdsByType[mealType] = self.bookmarkedFoods
+            
+            self.historyFoods = self.visibleHistory(for: mealType)
+            
+            if self.query.isEmpty {
+                self.foods = self.favoriteFoods
+            }
+        }
+        
+        await MainActor.run {
+            withAnimation {
+                update()
+            }
+        }
+        
+        do {
+            try await firestore.addBookmarkFirestore(
+                favoriteFoods,
+                for: mealType
+            )
+        } catch {
+            Logger.search
+                .error("addBookmarks failed: \(error.localizedDescription)")
             await MainActor.run {
                 rollbackBookmarks(
                     favorites: originalFavoriteFoods,

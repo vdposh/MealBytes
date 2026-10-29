@@ -14,6 +14,13 @@ struct SearchViewContent: View {
     let mealType: MealType
     
     var body: some View {
+        contentBody
+        .transition(.identity)
+    }
+    
+    // MARK: - Content Body
+    @ViewBuilder
+    private var contentBody: some View {
         switch searchViewModel.contentState {
         case .loading:
             ProgressView()
