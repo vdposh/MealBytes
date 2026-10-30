@@ -46,16 +46,11 @@ struct SearchView: View {
     @ToolbarContentBuilder
     private var searchViewToolbar: some ToolbarContent {
         if searchViewModel.isEditingActive {
-            confirmEditButton
-            selectionToggleButton
-            
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            
-            if searchViewModel.selectedSegment == .bookmarks {
-                bookmarksBottomBar
-            } else if searchViewModel.selectedSegment == .recent {
-                recentBottomBar
-            }
+            selectAllButton
+            addButton
+            cancelEditButton
+            bookmarksBottomBar
+            recentBottomBar
         } else {
             selectButton
             closeButton
@@ -70,17 +65,19 @@ struct SearchView: View {
     
     // MARK: - Editing Buttons
     @ToolbarContentBuilder
-    private var confirmEditButton: some ToolbarContent {
-        ToolbarItem {
-            Button(role: .confirm) {
+    private var cancelEditButton: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button {
                 exitEditMode()
+            } label: {
+                Text("Cancel")
             }
         }
     }
     
     @ToolbarContentBuilder
-    private var selectionToggleButton: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+    private var selectAllButton: some ToolbarContent {
+        ToolbarItem(placement: .bottomBar) {
             let sourceIds = searchViewModel.currentSegmentFoodIds
             
             if !sourceIds.isEmpty {
@@ -103,75 +100,97 @@ struct SearchView: View {
         }
     }
     
-    // MARK: - Editing Bookmarks Bottom Bar
+    // MARK: - Bookmarks Bottom Bar
     @ToolbarContentBuilder
     private var bookmarksBottomBar: some ToolbarContent {
-        ToolbarItemGroup(placement: .bottomBar) {
+        if searchViewModel.selectedSegment == .bookmarks {
+            ToolbarSpacer(.flexible, placement: .bottomBar)
             bookmarksMealTypeMenu
             bookmarksRemoveButton
         }
     }
     
-    private var bookmarksMealTypeMenu: some View {
-        Menu {
-            Picker(
-                "Meal Type",
-                selection: Binding(
-                    get: { searchViewModel.selectedMealType },
-                    set: { newMealType in
-                        let ids = searchViewModel.selectedItems
-                        let foodsToMove = searchViewModel
-                            .favoriteFoods.filter {
-                                ids.contains($0.searchFoodId)
-                            }
-                        
-                        exitEditMode()
-                        
-                        Task {
-                            await searchViewModel
-                                .transferBookmarks(
-                                    for: foodsToMove,
-                                    to: newMealType
-                                )
-                        }
-                    }
-                )
-            ) {
-                ForEach(MealType.allCases, id: \.self) { meal in
-                    Text(meal.rawValue).tag(meal)
-                }
+    @ToolbarContentBuilder
+    private var addButton: some ToolbarContent {
+        ToolbarItem {
+            Button(role: .confirm) {
+                
+            } label: {
+                Text("Add")
+                    .fontWeight(.medium)
             }
-        } label: {
-            Image(systemName: "fork.knife")
+            .badge(searchViewModel.selectedItems.count)
+            .disabled(searchViewModel.selectedItems.isEmpty)
         }
-        .menuOrder(.fixed)
-        .transaction { $0.animation = nil }
-        .disabled(searchViewModel.selectedBookmarksCount == 0)
     }
     
-    private var bookmarksRemoveButton: some View {
-        Button {
-            searchViewModel.showRemoveBookmarksDialog = true
-        } label: {
-            Image(systemName: "bookmark.slash")
-        }
-        .transaction { $0.animation = nil }
-        .disabled(searchViewModel.selectedBookmarksCount == 0)
-        .confirmationDialog(
-            searchViewModel.removeDialogMessage,
-            isPresented: $searchViewModel.showRemoveBookmarksDialog,
-            titleVisibility: .visible
-        ) {
-            Button(role: .destructive) {
-                let ids = searchViewModel.selectedItems
-                
-                exitEditMode()
-                
-                Task {
-                    await searchViewModel.removeSelectedBookmarks(ids: ids)
+    @ToolbarContentBuilder
+    private var bookmarksMealTypeMenu: some ToolbarContent {
+        ToolbarItem(placement: .bottomBar) {
+            Menu {
+                Picker(
+                    searchViewModel.moveToMenuTitle,
+                    selection: Binding(
+                        get: { searchViewModel.selectedMealType },
+                        set: { newMealType in
+                            let ids = searchViewModel.selectedItems
+                            let foodsToMove = searchViewModel
+                                .favoriteFoods.filter {
+                                    ids.contains($0.searchFoodId)
+                                }
+                            
+                            exitEditMode()
+                            
+                            Task {
+                                await searchViewModel
+                                    .transferBookmarks(
+                                        for: foodsToMove,
+                                        to: newMealType
+                                    )
+                            }
+                        }
+                    )
+                ) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Text(meal.rawValue).tag(meal)
+                    }
                 }
+                .labelsVisibility(.visible)
             } label: {
-                Text(searchViewModel.removeDialogTitle)
+                Image(systemName: "fork.knife")
+            }
+            .menuOrder(.fixed)
+            .transaction { $0.animation = nil }
+            .disabled(searchViewModel.selectedBookmarksCount == 0)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var bookmarksRemoveButton: some ToolbarContent {
+        ToolbarItem(placement: .bottomBar) {
+            Button {
+                searchViewModel.showRemoveBookmarksDialog = true
+            } label: {
+                Image(systemName: "bookmark.slash")
+            }
+            .transaction { $0.animation = nil }
+            .disabled(searchViewModel.selectedBookmarksCount == 0)
+            .confirmationDialog(
+                searchViewModel.removeDialogMessage,
+                isPresented: $searchViewModel.showRemoveBookmarksDialog,
+                titleVisibility: .visible
+            ) {
+                Button(role: .destructive) {
+                    let ids = searchViewModel.selectedItems
+                    
+                    exitEditMode()
+                    
+                    Task {
+                        await searchViewModel.removeSelectedBookmarks(ids: ids)
+                    }
+                } label: {
+                    Text(searchViewModel.removeDialogTitle)
+                }
             }
         }
     }
@@ -179,52 +198,59 @@ struct SearchView: View {
     // MARK: - Editing Recent Bottom Bar
     @ToolbarContentBuilder
     private var recentBottomBar: some ToolbarContent {
-        ToolbarItemGroup(placement: .bottomBar) {
+        if searchViewModel.selectedSegment == .recent {
+            ToolbarSpacer(.flexible, placement: .bottomBar)
             recentAddBookmarksButton
             recentDeleteButton
         }
     }
     
-    private var recentAddBookmarksButton: some View {
-        Button {
-            let ids = searchViewModel.selectedItems
-            let foodsToAdd = searchViewModel.historyFoods.filter {
-                ids.contains($0.searchFoodId)
-            }
-            
-            exitEditMode()
-            
-            Task {
-                await searchViewModel.addBookmarks(for: foodsToAdd)
-            }
-        } label: {
-            Image(systemName: "bookmark")
-        }
-        .transaction { $0.animation = nil }
-        .disabled(searchViewModel.selectedHistoryCount == 0)
-    }
-    
-    private var recentDeleteButton: some View {
-        Button(role: .destructive) {
-            searchViewModel.showRemoveHistoryDialog = true
-        }
-        .transaction { $0.animation = nil }
-        .disabled(searchViewModel.selectedHistoryCount == 0)
-        .confirmationDialog(
-            searchViewModel.deleteHistoryDialogMessage,
-            isPresented: $searchViewModel.showRemoveHistoryDialog,
-            titleVisibility: .visible
-        ) {
-            Button(role: .destructive) {
+    @ToolbarContentBuilder
+    private var recentAddBookmarksButton: some ToolbarContent {
+        ToolbarItem(placement: .bottomBar) {
+            Button {
                 let ids = searchViewModel.selectedItems
+                let foodsToAdd = searchViewModel.historyFoods.filter {
+                    ids.contains($0.searchFoodId)
+                }
                 
                 exitEditMode()
                 
                 Task {
-                    await searchViewModel.deleteHistoryItem(for: ids)
+                    await searchViewModel.addBookmarks(for: foodsToAdd)
                 }
             } label: {
-                Text(searchViewModel.deleteHistoryDialogTitle)
+                Image(systemName: "bookmark")
+            }
+            .transaction { $0.animation = nil }
+            .disabled(searchViewModel.selectedHistoryCount == 0)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var recentDeleteButton: some ToolbarContent {
+        ToolbarItem(placement: .bottomBar) {
+            Button(role: .destructive) {
+                searchViewModel.showRemoveHistoryDialog = true
+            }
+            .transaction { $0.animation = nil }
+            .disabled(searchViewModel.selectedHistoryCount == 0)
+            .confirmationDialog(
+                searchViewModel.deleteHistoryDialogMessage,
+                isPresented: $searchViewModel.showRemoveHistoryDialog,
+                titleVisibility: .visible
+            ) {
+                Button(role: .destructive) {
+                    let ids = searchViewModel.selectedItems
+                    
+                    exitEditMode()
+                    
+                    Task {
+                        await searchViewModel.deleteHistoryItem(for: ids)
+                    }
+                } label: {
+                    Text(searchViewModel.deleteHistoryDialogTitle)
+                }
             }
         }
     }

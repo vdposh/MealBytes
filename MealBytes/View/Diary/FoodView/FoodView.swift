@@ -153,7 +153,7 @@ struct FoodView: View {
                 isPresented: $foodViewModel.showDatePicker
             )
             
-            Picker("Meal type", selection: $mealType) {
+            Picker("Meal Type", selection: $mealType) {
                 ForEach(MealType.allCases, id: \.self) { meal in
                     Text(meal.rawValue)
                         .tag(meal)
@@ -230,7 +230,6 @@ struct FoodView: View {
                     } label: {
                         Text("Add")
                             .fontWeight(.medium)
-                            .foregroundStyle(.white)
                     }
                     .disabled(!foodViewModel.canAddFood)
                 }

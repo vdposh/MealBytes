@@ -1062,6 +1062,14 @@ final class SearchViewModel: ObservableObject {
         : "\(count) \(selectedSegment == .bookmarks ? "Bookmarks" : "Recent Logs")"
     }
     
+    var moveToMenuTitle: String {
+        let count = selectedBookmarksCount
+        guard count > 0 else { return "Move to..." }
+        
+        let noun = count == 1 ? "Bookmark" : "Bookmarks"
+        return "Move \(count) \(noun) to..."
+    }
+    
     var removeDialogMessage: String {
         "The selected \(selectedBookmarksCount == 1 ? "bookmark" : "bookmarks") will be removed."
     }

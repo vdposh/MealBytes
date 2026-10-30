@@ -212,7 +212,7 @@ struct SearchViewContent: View {
             if searchViewModel.selectedSegment == .bookmarks {
                 Menu {
                     Picker(
-                        "Meal Type",
+                        searchViewModel.moveToMenuTitle,
                         selection: Binding(
                             get: { searchViewModel.selectedMealType },
                             set: { newMealType in
@@ -229,6 +229,7 @@ struct SearchViewContent: View {
                             Text(meal.rawValue).tag(meal)
                         }
                     }
+                    .labelsVisibility(.visible)
                 } label: {
                     Label("Meal Type", systemImage: "fork.knife")
                 }
