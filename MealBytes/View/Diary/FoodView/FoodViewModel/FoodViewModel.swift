@@ -145,6 +145,7 @@ final class FoodViewModel: ObservableObject {
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
+            metricServingUnit: selectedServing?.metricServingUnit ?? "",
             amount: amount.doubleValue ?? 0,
             date: date, mealType: mealType
         )
@@ -219,6 +220,7 @@ final class FoodViewModel: ObservableObject {
             portionUnit: selectedServing.portionUnit,
             nutrients: nutrients,
             measurementDescription: selectedServing.measurementDescription,
+            metricServingUnit: selectedServing.metricServingUnit,
             amount: amount.doubleValue ?? 0,
             date: date,
             mealType: mealType,

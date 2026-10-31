@@ -15,6 +15,7 @@ struct MealItem: Codable, Identifiable, Hashable {
     let portionUnit: String
     var nutrients: [NutrientType: Double]
     let measurementDescription: String
+    let metricServingUnit: String
     let amount: Double
     let date: Date
     let mealType: MealType
@@ -27,6 +28,7 @@ struct MealItem: Codable, Identifiable, Hashable {
         portionUnit: String,
         nutrients: [NutrientType: Double],
         measurementDescription: String,
+        metricServingUnit: String = "",
         amount: Double,
         date: Date = Date(),
         mealType: MealType,
@@ -38,6 +40,7 @@ struct MealItem: Codable, Identifiable, Hashable {
         self.portionUnit = portionUnit
         self.nutrients = nutrients
         self.measurementDescription = measurementDescription
+        self.metricServingUnit = metricServingUnit
         self.amount = amount
         self.date = date
         self.mealType = mealType
@@ -54,6 +57,7 @@ struct MealItem: Codable, Identifiable, Hashable {
             measurementDescription,
             forKey: .measurementDescription
         )
+        try container.encode(metricServingUnit, forKey: .metricServingUnit)
         try container.encode(amount, forKey: .amount)
         try container.encode(date, forKey: .date)
         try container.encode(mealType, forKey: .mealType)
@@ -77,6 +81,10 @@ struct MealItem: Codable, Identifiable, Hashable {
             String.self,
             forKey: .measurementDescription
         )
+        metricServingUnit = try container.decodeIfPresent(
+            String.self,
+            forKey: .metricServingUnit
+        ) ?? ""
         amount = try container.decode(Double.self, forKey: .amount)
         date = try container.decode(Date.self, forKey: .date)
         mealType = try container.decode(MealType.self, forKey: .mealType)
@@ -96,6 +104,7 @@ struct MealItem: Codable, Identifiable, Hashable {
              portionUnit,
              nutrients,
              measurementDescription,
+             metricServingUnit,
              amount,
              date,
              mealType,

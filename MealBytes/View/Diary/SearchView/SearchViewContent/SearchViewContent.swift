@@ -23,16 +23,10 @@ struct SearchViewContent: View {
     private var contentBody: some View {
         switch searchViewModel.contentState {
         case .loading:
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
-                }
+            LoadingView()
             
         case .adding:
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            LoadingView()
             
         case .error(let error):
             contentUnavailableView(

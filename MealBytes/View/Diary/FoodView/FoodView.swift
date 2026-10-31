@@ -75,12 +75,7 @@ struct FoodView: View {
     private var foodViewContentBody: some View {
         switch foodViewModel.viewState {
         case .loading:
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
-                }
+            LoadingView()
             
         case .error(let error):
             contentUnavailableView(

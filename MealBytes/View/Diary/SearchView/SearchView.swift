@@ -362,7 +362,7 @@ struct SearchView: View {
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
-            .padding(.top, 6)
+            .padding(.top, 4)
             .padding(.bottom, 2)
         }
     }

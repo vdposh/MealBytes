@@ -182,6 +182,7 @@ final class MainViewModel: ObservableObject {
             portionUnit: item.portionUnit,
             nutrients: item.nutrients,
             measurementDescription: item.measurementDescription,
+            metricServingUnit: item.metricServingUnit,
             amount: item.amount,
             date: targetDate,
             mealType: targetMealType,
@@ -543,14 +544,16 @@ final class MainViewModel: ObservableObject {
             displayMeasurement = measurement.pluralized(for: amountValue)
         }
         
-        let unit = mealItem.portionUnit
+        let unit = mealItem.metricServingUnit.isEmpty
+        ? mealItem.portionUnit
+        : mealItem.metricServingUnit
         
         if servingSize == 0 {
             return "\(formattedAmount) \(displayMeasurement)"
         }
         
         if measurement == "g" || measurement == "ml" {
-            return "\(formattedAmount) \(unit)"
+            return "\(formattedAmount) \(measurement)"
         }
         
         let totalSize = servingSize * amountValue

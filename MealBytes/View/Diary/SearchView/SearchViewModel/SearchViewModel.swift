@@ -450,17 +450,6 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Save Bookmarks
-    func saveBookmarkOrder() async {
-        await MainActor.run {
-            if query.isEmpty {
-                self.favoriteFoods = self.foods
-            }
-        }
-        
-        await persistBookmarks(favoriteFoods, for: selectedMealType)
-    }
-    
     // MARK: - Remove Bookmarks
     func removeBookmarks(for ids: Set<Food.ID>) async {
         let originalFavoriteFoods = favoriteFoods
@@ -680,6 +669,7 @@ final class SearchViewModel: ObservableObject {
         
         updatedFavorites.insert(contentsOf: itemsToMove, at: insertionIndex)
         favoriteFoods = updatedFavorites
+        bookmarksByType[selectedMealType] = updatedFavorites
         isMoving = true
         
         if query.isEmpty {
@@ -687,7 +677,7 @@ final class SearchViewModel: ObservableObject {
         }
         
         Task {
-            await saveBookmarkOrder()
+            await persistBookmarks(favoriteFoods, for: selectedMealType)
             
             try? await Task.sleep(for: .seconds(0.5))
             
@@ -1004,6 +994,7 @@ final class SearchViewModel: ObservableObject {
                             nutrients: nutrients,
                             measurementDescription: serving
                                 .measurementDescription,
+                            metricServingUnit: serving.metricServingUnit,
                             amount: defaultAmount,
                             date: date,
                             mealType: mealType
@@ -1099,6 +1090,7 @@ final class SearchViewModel: ObservableObject {
             : metadata.measurementDescription,
             nutrients: metadata.nutrients,
             measurementDescription: metadata.measurementDescription,
+            metricServingUnit: metadata.metricServingUnit,
             amount: Double(metadata.amount) ?? 0,
             date: date,
             mealType: mealType
