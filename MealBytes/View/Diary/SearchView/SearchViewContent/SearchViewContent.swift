@@ -25,6 +25,14 @@ struct SearchViewContent: View {
         case .loading:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
+            
+        case .adding:
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         case .error(let error):
             contentUnavailableView(
@@ -179,62 +187,71 @@ struct SearchViewContent: View {
             )
         }
         .swipeActions {
-            if searchViewModel.selectedSegment == .recent {
-                Button(role: .destructive) {
-                    Task {
-                        await searchViewModel
-                            .deleteHistoryItem(for: [food.searchFoodId])
-                    }
-                }
-            }
-            
+            historyDeleteSwipeAction(for: food)
+            bookmarkSwipeAction(for: food)
+            moveToMealTypeSwipeAction(for: food)
+        }
+    }
+
+    // MARK: - Swipe Actions
+    @ViewBuilder
+    private func historyDeleteSwipeAction(for food: Food) -> some View {
+        if searchViewModel.selectedSegment == .recent &&
+            searchViewModel.debouncedQuery.isEmpty {
             Button(role: .destructive) {
                 Task {
                     await searchViewModel
-                        .toggleBookmarkSearchView(for: food)
+                        .deleteHistoryItem(for: [food.searchFoodId])
                 }
-            } label: {
-                Label(
-                    searchViewModel.isBookmarkedSearchView(food)
-                    ? "Unbookmark"
-                    : "Bookmark",
-                    systemImage: searchViewModel.isBookmarkedSearchView(food)
-                    ? "bookmark.slash"
-                    : "bookmark"
-                )
             }
-            .tint(
-                searchViewModel.isBookmarkedSearchView(food)
-                ? nil
-                : .yellow
-            )
+        }
+    }
+
+    private func bookmarkSwipeAction(for food: Food) -> some View {
+        let isBookmarked = searchViewModel.isBookmarkedSearchView(food)
             
-            if searchViewModel.selectedSegment == .bookmarks {
-                Menu {
-                    Picker(
-                        searchViewModel.moveToMenuTitle,
-                        selection: Binding(
-                            get: { searchViewModel.selectedMealType },
-                            set: { newMealType in
-                                Task {
-                                    await searchViewModel.transferBookmarks(
-                                        for: [food],
-                                        to: newMealType
-                                    )
-                                }
-                            }
-                        )
-                    ) {
-                        ForEach(MealType.allCases, id: \.self) { meal in
-                            Text(meal.rawValue).tag(meal)
-                        }
-                    }
-                    .labelsVisibility(.visible)
-                } label: {
-                    Label("Meal Type", systemImage: "fork.knife")
-                }
-                .tint(.orange)
+        return Button(role: .destructive) {
+            Task {
+                await searchViewModel
+                    .toggleBookmarkSearchView(for: food)
             }
+        } label: {
+            Label(
+                isBookmarked ? "Unbookmark" : "Bookmark",
+                systemImage: isBookmarked ? "bookmark.slash" : "bookmark"
+            )
+        }
+        .tint(isBookmarked ? nil : .yellow)
+    }
+
+    @ViewBuilder
+    private func moveToMealTypeSwipeAction(for food: Food) -> some View {
+        if searchViewModel.selectedSegment == .bookmarks &&
+            searchViewModel.debouncedQuery.isEmpty {
+            Menu {
+                Picker(
+                    searchViewModel.moveToMenuTitle,
+                    selection: Binding(
+                        get: { searchViewModel.selectedMealType },
+                        set: { newMealType in
+                            Task {
+                                await searchViewModel.transferBookmarks(
+                                    for: [food],
+                                    to: newMealType
+                                )
+                            }
+                        }
+                    )
+                ) {
+                    ForEach(MealType.allCases, id: \.self) { meal in
+                        Text(meal.rawValue).tag(meal)
+                    }
+                }
+                .labelsVisibility(.visible)
+            } label: {
+                Label("Meal Type", systemImage: "fork.knife")
+            }
+            .tint(.orange)
         }
     }
     

@@ -47,6 +47,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
     @Published var isLoading: Bool = false
+    @Published var isAddingLoading: Bool = false
     @Published var showMealType: Bool = false
     @Published var showRemoveBookmarksDialog: Bool = false
     @Published var showRemoveHistoryDialog = false
@@ -301,6 +302,9 @@ final class SearchViewModel: ObservableObject {
         selectedItems.removeAll()
         selectedFood = nil
         isEditingActive = false
+        isAddingLoading = false
+        isFoodAddedAlertVisible = false
+        isAlertInProgress = false
     }
     
     // MARK: - Display SearchView Data
@@ -812,6 +816,61 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Add History Batch
+    private func addHistoryBatch(
+        _ newFoods: [Food],
+        for mealType: MealType
+    ) async {
+        guard !newFoods.isEmpty else { return }
+        
+        var history = historyByType[mealType] ?? []
+        let newIds = Set(newFoods.map { $0.searchFoodId })
+        
+        history.removeAll { newIds.contains($0.searchFoodId) }
+        history.insert(contentsOf: newFoods, at: 0)
+        
+        var removedFoods: [Food] = []
+        while history.count > maxHistoryCount {
+            if let removed = history.popLast() {
+                removedFoods.append(removed)
+            }
+        }
+        
+        historyByType[mealType] = history
+        
+        let finalHistory = history
+        let removedFoodsCopy = removedFoods
+        
+        await MainActor.run {
+            for removedFood in removedFoodsCopy
+                    where !bookmarkedFoods.contains(removedFood.searchFoodId) {
+                removeMetadataIfNotInHistory(
+                    for: removedFood,
+                    mealType: mealType
+                )
+            }
+            
+            if selectedMealType == mealType {
+                historyFoods = finalHistory.filter {
+                    !bookmarkedFoods.contains($0.searchFoodId)
+                }
+            }
+            displaySearchViewData(for: mealType)
+        }
+        
+        do {
+            try await firestore.addHistoryFirestore(
+                finalHistory,
+                for: mealType
+            )
+        } catch {
+            Logger.search
+                .error(
+                    "addHistoryBatch failed: \(error.localizedDescription)"
+                )
+        }
+    }
+    
     // MARK: - Delete History Item
     func deleteHistoryItem(for ids: Set<Food.ID>) async {
         let mealType = selectedMealType
@@ -892,6 +951,236 @@ final class SearchViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Add Meal Items Batch
+    func addMealItemsBatch(
+        for foods: [Food],
+        to mealType: MealType,
+        on date: Date,
+        showFeedback: Bool = true
+    ) async {
+        guard !foods.isEmpty else { return }
+        
+        if showFeedback {
+            await MainActor.run {
+                isAddingLoading = true
+            }
+        }
+        
+        var itemsToSave: [MealItem] = []
+        var metadataToSave: [FoodMetadata] = []
+        
+        for food in foods {
+            if let metadata = foodMetadataDict[food.searchFoodId] {
+                itemsToSave.append(
+                    makeMealItem(
+                        from: food,
+                        metadata: metadata,
+                        mealType: mealType,
+                        date: date
+                    )
+                )
+            } else {
+                do {
+                    let detail = try await fatSecretManager
+                        .fetchFoodDetails(foodId: food.searchFoodId)
+
+                    guard let serving = detail.servings.serving.first else {
+                        continue
+                    }
+                    
+                    let defaultAmount: Double = serving.isMetricMeasurement
+                    ? 100
+                    : 1
+                    let nutrients = storageNutrients(
+                        for: serving,
+                        amount: defaultAmount
+                    )
+
+                    itemsToSave.append(
+                        MealItem(
+                            foodId: food.searchFoodId,
+                            foodName: food.searchFoodName,
+                            portionUnit: serving.portionUnit,
+                            nutrients: nutrients,
+                            measurementDescription: serving
+                                .measurementDescription,
+                            amount: defaultAmount,
+                            date: date,
+                            mealType: mealType
+                        )
+                    )
+
+                    metadataToSave.append(
+                        makeFoodMetadata(
+                            from: food,
+                            serving: serving,
+                            amount: defaultAmount,
+                            nutrients: nutrients,
+                            mealType: mealType
+                        )
+                    )
+                } catch {
+                    Logger.search
+                        .error(
+                            "addMealItemsBatch fetch failed: \(error.localizedDescription)"
+                        )
+                }
+            }
+        }
+        
+        guard !itemsToSave.isEmpty else {
+            if showFeedback {
+                await MainActor.run { isAddingLoading = false }
+            }
+            return
+        }
+        
+        let finalItems = itemsToSave
+        let finalMetadata = metadataToSave
+        
+        await MainActor.run {
+            for item in finalItems {
+                mainViewModel.addMealItemMainView(
+                    item,
+                    to: mealType,
+                    for: date
+                )
+            }
+        }
+        
+        do {
+            try await firestore.addMealItemsFirestoreBatch(finalItems)
+            
+            if !finalMetadata.isEmpty {
+                try await firestore.saveFoodMetadataBatch(
+                    finalMetadata,
+                    for: mealType
+                )
+                
+                await MainActor.run {
+                    for metadata in finalMetadata {
+                        updateMetadata(metadata, for: mealType)
+                    }
+                }
+            }
+            
+            await addHistoryBatch(foods, for: mealType)
+        } catch {
+            Logger.search
+                .error(
+                    "addMealItemsBatch save failed: \(error.localizedDescription)"
+                )
+        }
+        
+        if showFeedback {
+            await MainActor.run {
+                isAddingLoading = false
+            }
+            
+            triggerFoodAlert()
+        }
+    }
+
+    // MARK: - Batch Helpers
+    private func makeMealItem(
+        from food: Food,
+        metadata: FoodMetadata,
+        mealType: MealType,
+        date: Date
+    ) -> MealItem {
+        let isMetric = [UnitNutrients.g.rawValue, UnitNutrients.ml.rawValue]
+            .contains(metadata.measurementDescription)
+        
+        return MealItem(
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            portionUnit: isMetric
+            ? metadata.metricServingUnit
+            : metadata.measurementDescription,
+            nutrients: metadata.nutrients,
+            measurementDescription: metadata.measurementDescription,
+            amount: Double(metadata.amount) ?? 0,
+            date: date,
+            mealType: mealType
+        )
+    }
+
+    private func makeFoodMetadata(
+        from food: Food,
+        serving: Serving,
+        amount: Double,
+        nutrients: [NutrientType: Double],
+        mealType: MealType
+    ) -> FoodMetadata {
+        let adjusted = adjustedMacros(from: nutrients)
+        
+        return FoodMetadata(
+            foodId: food.searchFoodId,
+            foodName: food.searchFoodName,
+            mealType: mealType,
+            amount: String(amount),
+            servingDescription: serving.measurementDescription,
+            calories: adjusted.calories,
+            fat: adjusted.fat,
+            carbs: adjusted.carbs,
+            protein: adjusted.protein,
+            formattedText: MealItemTextFormatter.format(
+                amountValue: amount,
+                measurement: serving.measurementDescription,
+                servingSize: serving.metricServingAmount,
+                unit: serving.metricServingUnit
+            ),
+            measurementDescription: serving.measurementDescription,
+            metricServingAmount: serving.metricServingAmount,
+            metricServingUnit: serving.metricServingUnit,
+            nutrients: nutrients
+        )
+    }
+
+    private func storageNutrients(
+        for serving: Serving,
+        amount: Double
+    ) -> [NutrientType: Double] {
+        let baseAmount = serving.isMetricMeasurement ? amount * 0.01 : amount
+        
+        return NutrientValueProvider()
+            .fromServing(serving)
+            .reduce(into: [NutrientType: Double]()) { result, value in
+                let scaled = value.value * baseAmount
+                result[value.type] = value.type == .servingSize
+                ? value.value
+                : scaled
+            }
+    }
+
+    private func adjustedMacros(
+        from nutrients: [NutrientType: Double]
+    ) -> (calories: Double, fat: Double, carbs: Double, protein: Double) {
+        (
+            nutrients[.calories] ?? 0,
+            nutrients[.fat] ?? 0,
+            nutrients[.carbohydrate] ?? 0,
+            nutrients[.protein] ?? 0
+        )
+    }
+    
+    var selectedFoodsToAdd: [Food] {
+        let ids = selectedItems
+        guard !ids.isEmpty else { return [] }
+        
+        let bookmarked = favoriteFoods.filter {
+            ids.contains($0.searchFoodId)
+        }
+        let bookmarkedIds = Set(bookmarked.map { $0.searchFoodId })
+        
+        let recent = historyFoods.filter {
+            ids.contains($0.searchFoodId) &&
+            !bookmarkedIds.contains($0.searchFoodId)
+        }
+        
+        return bookmarked + recent
+    }
+    
     // MARK: - Select Segment
     func selectSegment(_ segment: ListSegment) {
         guard selectedSegment != segment else { return }
@@ -951,6 +1240,11 @@ final class SearchViewModel: ObservableObject {
         if isLoading {
             return .loading
         }
+        
+        if isAddingLoading {
+               return .adding
+        }
+        
         if let error = appError {
             return .error(error)
         }
@@ -974,6 +1268,7 @@ final class SearchViewModel: ObservableObject {
     // MARK: - Error
     enum SearchContentState: Equatable {
         case loading
+        case adding
         case error(AppError)
         case emptyEntries
         case emptyBookmarks

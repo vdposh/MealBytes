@@ -17,28 +17,38 @@ struct SearchView: View {
     }
     
     var body: some View {
-        SearchViewContent(
+        searchViewCore
+            .environment(\.editMode, $editModeState)
+            .navigationTitle(searchViewModel.selectedMealType.rawValue)
+            .navigationSubtitle(searchViewModel.navigationSubtitleText)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                searchViewToolbar
+            }
+            .safeAreaBar(edge: .top) {
+                segmentPickerView
+            }
+            .scrollEdgeEffectStyle(.soft, for: .top)
+            .scrollEdgeEffectHidden(for: .bottom)
+            .onChange(of: editModeState) {
+                withAnimation {
+                    searchViewModel.isEditingActive = editModeState.isEditing
+                }
+            }
+    }
+    
+    @ViewBuilder
+    private var searchViewCore: some View {
+        let content = SearchViewContent(
             editModeState: $editModeState,
             searchViewModel: searchViewModel,
             mealType: searchViewModel.selectedMealType
         )
-        .searchable(text: $searchViewModel.query)
-        .environment(\.editMode, $editModeState)
-        .navigationTitle(searchViewModel.selectedMealType.rawValue)
-        .navigationSubtitle(searchViewModel.navigationSubtitleText)
-        .toolbarTitleDisplayMode(.inline)
-        .toolbar {
-            searchViewToolbar
-        }
-        .safeAreaBar(edge: .top) {
-            segmentPickerView
-        }
-        .scrollEdgeEffectStyle(.soft, for: .top)
-        .scrollEdgeEffectHidden(for: .bottom)
-        .onChange(of: editModeState) {
-            withAnimation {
-                searchViewModel.isEditingActive = editModeState.isEditing
-            }
+        
+        if searchViewModel.isAddingLoading {
+            content
+        } else {
+            content.searchable(text: $searchViewModel.query)
         }
     }
     
@@ -114,11 +124,40 @@ struct SearchView: View {
     private var addButton: some ToolbarContent {
         ToolbarItem {
             Button(role: .confirm) {
+                let foodsToAdd = searchViewModel.selectedFoodsToAdd
+                let allHaveMetadata = foodsToAdd.allSatisfy {
+                    searchViewModel.foodMetadataDict[$0.searchFoodId] != nil
+                }
                 
+                if allHaveMetadata {
+                    dismiss()
+                    
+                    Task {
+                        await searchViewModel.addMealItemsBatch(
+                            for: foodsToAdd,
+                            to: searchViewModel.selectedMealType,
+                            on: searchViewModel.mainViewModel.date,
+                            showFeedback: false
+                        )
+                    }
+                } else {
+                    exitEditMode()
+                    
+                    Task {
+                        await searchViewModel.addMealItemsBatch(
+                            for: foodsToAdd,
+                            to: searchViewModel.selectedMealType,
+                            on: searchViewModel.mainViewModel.date
+                        )
+                        
+                        dismiss()
+                    }
+                }
             } label: {
                 Text("Add")
                     .fontWeight(.medium)
             }
+            .transaction { $0.animation = nil }
             .badge(searchViewModel.selectedItems.count)
             .disabled(searchViewModel.selectedItems.isEmpty)
         }
@@ -258,7 +297,7 @@ struct SearchView: View {
     // MARK: - Viewing Buttons
     @ToolbarContentBuilder
     private var selectButton: some ToolbarContent {
-        if canEnterEditMode {
+        if canEnterEditMode && !searchViewModel.isAddingLoading {
             ToolbarItem {
                 Button("Select") {
                     enterEditMode()
@@ -307,6 +346,7 @@ struct SearchView: View {
     @ViewBuilder
     private var segmentPickerView: some View {
         if searchViewModel.query.isEmpty &&
+            !searchViewModel.isAddingLoading &&
             (!searchViewModel.favoriteFoods.isEmpty ||
              !searchViewModel.historyFoods.isEmpty) {
             Picker(

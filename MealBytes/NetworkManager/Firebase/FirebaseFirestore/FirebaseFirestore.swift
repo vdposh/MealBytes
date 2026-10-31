@@ -29,6 +29,7 @@ protocol FirebaseFirestoreProtocol {
     func loadDisplayGoalsFirestore() async throws -> Bool
     func loadEnergyUnitFirestore() async throws -> String
     func addMealItemFirestore(_ mealItem: MealItem) async throws
+    func addMealItemsFirestoreBatch(_ mealItems: [MealItem]) async throws
     func addBookmarkFirestore(
         _ foods: [Food],
         for mealType: MealType
@@ -102,7 +103,7 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
         return mealItems
     }
     
-    // MARK: - Save Meal
+    // MARK: - Add Meal
     func addMealItemFirestore(_ mealItem: MealItem) async throws {
         let uid = try currentUID
         
@@ -113,6 +114,26 @@ final class FirebaseFirestore: FirebaseFirestoreProtocol {
             .document(mealItem.id.uuidString)
         
         try documentReference.setData(from: mealItem)
+    }
+    
+    // MARK: - Add Meal Batch
+    func addMealItemsFirestoreBatch(_ mealItems: [MealItem]) async throws {
+        guard !mealItems.isEmpty else { return }
+        
+        let uid = try currentUID
+        let batch = firestore.batch()
+        
+        for mealItem in mealItems {
+            let ref = firestore
+                .collection("Users")
+                .document(uid)
+                .collection("MainView")
+                .document(mealItem.id.uuidString)
+            
+            try batch.setData(from: mealItem, forDocument: ref)
+        }
+        
+        try await batch.commit()
     }
     
     // MARK: - Update Meal

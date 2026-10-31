@@ -94,6 +94,10 @@ struct Serving: Decodable, Hashable {
         case metricServingAmount = "metric_serving_amount"
         case metricServingUnit = "metric_serving_unit"
     }
+    
+    var portionUnit: String {
+        isMetricMeasurement ? metricServingUnit : measurementDescription
+    }
 }
 
 #Preview {

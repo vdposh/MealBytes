@@ -40,7 +40,6 @@ struct AppearanceView: View {
                 )) {
                     Text("System")
                 }
-                .toggleStyle(SwitchToggleStyle(tint: .accent))
             } footer: {
                 Text("Enable for appearance to follow system settings")
             }

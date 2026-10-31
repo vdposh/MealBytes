@@ -141,9 +141,7 @@ final class FoodViewModel: ObservableObject {
         let newItem = MealItem(
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
-            portionUnit: selectedServing?.measurementDescription == "ml"
-            ? "ml"
-            : selectedServing?.metricServingUnit ?? "",
+            portionUnit: selectedServing?.portionUnit ?? "",
             nutrients: nutrients,
             measurementDescription:
                 selectedServing?.measurementDescription ?? "",
@@ -181,6 +179,7 @@ final class FoodViewModel: ObservableObject {
                         .measurementDescription,
                     metricServingAmount: selectedServing.metricServingAmount,
                     metricServingUnit: selectedServing.metricServingUnit,
+                    nutrients: storageNutrients
                 )
                 
                 try await firestore
@@ -217,9 +216,7 @@ final class FoodViewModel: ObservableObject {
             id: originalMealItemId,
             foodId: food.searchFoodId,
             foodName: food.searchFoodName,
-            portionUnit: selectedServing.measurementDescription == "ml"
-            ? "ml"
-            : selectedServing.metricServingUnit,
+            portionUnit: selectedServing.portionUnit,
             nutrients: nutrients,
             measurementDescription: selectedServing.measurementDescription,
             amount: amount.doubleValue ?? 0,
@@ -315,6 +312,7 @@ final class FoodViewModel: ObservableObject {
             measurementDescription: selectedServing.measurementDescription,
             metricServingAmount: selectedServing.metricServingAmount,
             metricServingUnit: selectedServing.metricServingUnit,
+            nutrients: storageNutrients
         )
         
         await MainActor.run {

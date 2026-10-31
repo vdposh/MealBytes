@@ -58,10 +58,6 @@ struct FoodView: View {
                 foodViewSafeArea
             }
             .ignoresSafeArea(edges: amountFocused == true ? [] : .bottom)
-            .background {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-            }
             .onChange(of: amountFocused) {
                 let isFocused = amountFocused == true
                 foodViewModel.handleAmountFocusChange(
@@ -81,6 +77,10 @@ struct FoodView: View {
         case .loading:
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
             
         case .error(let error):
             contentUnavailableView(

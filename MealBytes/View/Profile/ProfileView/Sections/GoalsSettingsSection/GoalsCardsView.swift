@@ -21,7 +21,6 @@ struct GoalsCardsView: View {
         )) {
             Text("Cards")
         }
-        .toggleStyle(SwitchToggleStyle(tint: .accent))
     }
 }
 
